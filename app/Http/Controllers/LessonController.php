@@ -2,24 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lesson;
 use Illuminate\Http\Request;
+use App\Models\Category;
+use App\Models\Level;
 
 class LessonController extends Controller
 {
+    const Numero_de_items_pagina =25;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $lessons = Lesson::paginate(self::Numero_de_items_pagina);
+        return inertia('Lessons/Index', ['lessons' => $lessons]);
     }
-
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+        $levels = Level::all();
+        return inertia('Lessons/Create', ['categories' => $categories, 'levels' => $levels]);
     }
 
     /**

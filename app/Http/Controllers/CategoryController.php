@@ -9,12 +9,13 @@ use App\Http\Requests\CategoryRequest;
 
 class CategoryController extends Controller
 {
+    const Numero_de_items_pagina =25;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $categories = Category::paginate(25);
+        $categories = Category::paginate(self::Numero_de_items_pagina);
         return inertia('Categories/Index', ['categories' => $categories]);
     }
 
@@ -46,24 +47,26 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Category $category)
     {
-        //
+        return inertia('Categories/Edit', ['category' => $category]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CategoryRequest $request, Category $category)
     {
-        //
+        $category->update($request->validated());
+        return redirect()->route('categories.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        //
+        $category->delete();
+        return redirect()->route('categories.index');
     }
 }
