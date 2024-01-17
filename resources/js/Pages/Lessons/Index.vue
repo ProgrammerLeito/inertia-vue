@@ -35,7 +35,7 @@ const deleteLesson = id =>{
                 <div class="p-6 bg-white border-b border-gray-600">
                     <div class="flex justify-between" v-if="$page.props.user.permissions.includes('create lessons')">
                         <Link :href="route('lessons.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded" v-if="$page.props.user.permissions.includes('create lessons')">
-                            CREAR LECCION
+                            Crear Leccion
                         </Link>
                     </div>
                     <div class="mt-4">
@@ -48,8 +48,8 @@ const deleteLesson = id =>{
                                 </div>
                                 <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
                                     <p class="text-md leading-6 text-gray-900">
-                                        <Link class="py-2 px-4 text-green-500" :href="route('lessons.edit', lesson.id)" v-if="$page.props.user.permissions.includes('update lessons')">Edit</Link>
-                                        <Link class="py-2 px-4 text-red-500" @click="deleteLesson(lesson.id)" v-if="$page.props.user.permissions.includes('delete lessons')">Delete</Link>
+                                        <Link class="py-2 px-4 text-green-500" :href="route('lessons.edit', lesson.id)" v-if="$page.props.user.permissions.includes('update lessons')">Editar</Link>
+                                        <Link class="py-2 px-4 text-red-500" @click="deleteLesson(lesson.id)" v-if="$page.props.user.permissions.includes('delete lessons')">Eliminar</Link>
                                     </p>
                                 </div>
                             </li>

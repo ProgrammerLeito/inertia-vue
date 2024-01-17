@@ -12,7 +12,7 @@ import InputLabel from '@/Components/InputLabel.vue'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
 import TextInput from '@/Components/TextInput.vue'
 import SecondaryButton from '@/Components/SecondaryButton.vue'
-import CollectionSelector from '../Common/CollectionSelector.vue'
+import CollectionSelector from '@/Components/Common/CollectionSelector.vue';
 
 defineProps({
     form: {
@@ -41,11 +41,11 @@ defineEmits(['submit'])
 <template>
     <FormSection @submitted="$emit('submit')">
         <template #title>
-            {{ updating ? 'Update Lesson' : 'Create new Lesson' }}
+            {{ updating ? 'Actualizar lección' : 'Crear nueva lección' }}
         </template>
 
         <template #description>
-            {{ updating ? 'Update The Selected Lesson' : 'Create a New Lesson From Scratch' }}
+            {{ updating ? 'Actualizar la lección seleccionada' : 'Crea una nueva lección desde cero' }}
         </template>
 
         <template #form>
@@ -77,7 +77,7 @@ defineEmits(['submit'])
 
         <template #actions>
             <PrimaryButton>
-                {{ updating ? 'Update' : 'Create' }}
+                {{ updating ? 'Actualizar' : 'Crear' }}
             </PrimaryButton>
         </template>
 

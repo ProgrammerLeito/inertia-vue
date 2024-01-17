@@ -22,7 +22,7 @@ const handleAddToSelection = () => {
     <select v-model="currentSelection">
         <option v-for="(item, index) in collection" :key="index">{{ item?.name }}</option>
     </select>
-    <button @click="handleAddToSelection">Add</button>
+    <button @click="handleAddToSelection">Agregar</button>
     <div>
         <ul>
             <li v-for="(item, index) in selection" :key="index">{{ item }}</li>

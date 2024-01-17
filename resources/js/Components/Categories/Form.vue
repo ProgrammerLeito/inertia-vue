@@ -31,11 +31,11 @@ defineEmits(['submit'])
 <template>
     <FormSection @submitted="$emit('submit')">
         <template #title>
-            {{ updating ? 'Update Category' : 'Create new Category' }}
+            {{ updating ? 'Actualizar categoría' : 'Crear nueva categoría' }}
         </template>
 
         <template #description>
-            {{ updating ? 'Update The Selected Category' : 'Create a New Category From Scratch' }}
+            {{ updating ? 'Actualizar la categoría seleccionada' : 'Crear una nueva categoría desde cero' }}
         </template>
 
         <template #form>
@@ -48,7 +48,7 @@ defineEmits(['submit'])
 
         <template #actions>
             <PrimaryButton>
-                {{ updating ? 'Update' : 'Create' }}
+                {{ updating ? 'Actualizar' : 'Crear' }}
             </PrimaryButton>
         </template>
 
