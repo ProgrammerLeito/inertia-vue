@@ -17,7 +17,7 @@ defineProps({
 });
 
 const deleteCategory = id =>{
-    if (confirm('Are you sure?')){
+    if (confirm('¿Desea eliminar la categoria?')){
         Inertia.delete(route('categories.destroy', id))
     }
 }
@@ -36,6 +36,9 @@ const deleteCategory = id =>{
                     <div class="flex justify-between" v-if="$page.props.user.permissions.includes('create categories')">
                         <Link :href="route('categories.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded" v-if="$page.props.user.permissions.includes('create categories')">
                             Crear Categoria
+                        </Link>
+                        <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
+                            Ingresar Producto
                         </Link>
                     </div>
                     <div class="mt-4">
