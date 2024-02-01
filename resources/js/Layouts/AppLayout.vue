@@ -53,8 +53,8 @@ const logout = () => {
                                 </NavLink>
                             </div>
 
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" v-if="$page.props.user.permissions.includes('read categories')">
-                                <NavLink :href="route('categories.index')" :active="route().current('categories.*')">
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('productos.index')" :active="route().current('productos.*')">
                                     Inventario
                                 </NavLink>
                             </div>
@@ -214,8 +214,8 @@ const logout = () => {
                         </ResponsiveNavLink>
                     </div>
 
-                    <div class="pt-2 pb-3 space-y-1" v-if="$page.props.user.permissions.includes('read categories')">
-                        <ResponsiveNavLink :href="route('categories.index')" :active="route().current('categories.*')">
+                    <div class="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink :href="route('productos.index')" :active="route().current('productos.*')">
                             Inventario
                         </ResponsiveNavLink>
                     </div>

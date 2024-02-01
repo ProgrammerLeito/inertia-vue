@@ -25,6 +25,10 @@ defineProps({
     categories: {
         type : Object,
         required: true
+    },
+    productos: {
+        type : Object,
+        required: true
     }
 })
 
@@ -48,6 +52,12 @@ defineEmits(['submit'])
                 <InputLabel for="insumo" value="Insumo"/>
                 <TextInput id="insumo" v-model="form.insumo" type="text" autocomplete="insumo" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.insumo" class="mt-2"/>
+
+                <InputLabel for="category_id" value="Categorias"/>
+                <select name="category_id" id="category_id">
+                    <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
+                </select>
+                <InputError :message="$page.props.errors.category_id" class="mt-2"/>
 
                 <InputLabel for="marca" value="Marca"/>
                 <TextInput id="marca" v-model="form.marca" type="text" autocomplete="marca" class="mt-1 block w-full"/>

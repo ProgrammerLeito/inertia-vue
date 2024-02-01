@@ -27,14 +27,14 @@ const deleteProducto = id =>{
 <template>
     <AppLayout>
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight">Categorias</h1>
+            <h1 class="font-semibold text-xl text-gray-800 leading-tight">Insumos</h1>
         </template>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-b border-gray-600">
-                    <div class="flex justify-between" v-if="$page.props.user.permissions.includes('create productos')">
-                        <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded" v-if="$page.props.user.permissions.includes('create categories')">
+                    <div class="flex justify-between">
+                        <Link :href="route('categories.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
                             Crear Categoria
                         </Link>
                         <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
@@ -43,10 +43,50 @@ const deleteProducto = id =>{
                     </div>
                     <div class="mt-4">
                         <ul role="list" class="divide-y divide-gray-100">
-                            <li class="flex justify-between gap-x-6 py-5" v-for="producto in productos.name">
+                            <li class="flex justify-between gap-x-6 py-5" v-for="producto in productos.data">
                                 <div class="flex min-w-0 gap-x-4">
                                     <div class="min-w-0 flex-auto">
-                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.name }}</p>
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.insumo }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.marca }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.modelo }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.cantidad }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.unidad_medida }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.fecha }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.empresa }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.comentario }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.category_id }}</p>
                                     </div>
                                 </div>
                                 <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">

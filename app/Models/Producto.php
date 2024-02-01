@@ -11,9 +11,9 @@ class Producto extends Model
 
     protected $guarded = [];
 
-    public function categories()
+    public function category()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function producto()
@@ -30,5 +30,6 @@ class Producto extends Model
         'fecha',
         'empresa',
         'comentario',
+        'category_id',
     ];
 }

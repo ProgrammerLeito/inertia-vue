@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Producto;
 use Inertia\Response;
+use App\Models\Category;
 
 class ProductoController extends Controller
 {
@@ -23,7 +24,9 @@ class ProductoController extends Controller
      */
     public function create()
     {
-        return inertia('Productos/Create');
+        $categories = Category::all();
+        $productos = Producto::all();
+        return inertia('Productos/Create', ['categories' => $categories, 'productos' => $productos]);
     }
 
     /**
@@ -40,6 +43,7 @@ class ProductoController extends Controller
             'fecha' => 'required',
             'empresa' => 'required|string',
             'comentario' => 'nullable|string',
+            'category_id' => 'required',
         ]);
     
         Producto::create($validated);

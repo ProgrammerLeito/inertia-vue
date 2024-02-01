@@ -9,6 +9,17 @@ import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProductosForm from '@/Components/Productos/Form.vue';
 
+defineProps({
+    categories: {
+        type : Object,
+        required: true
+    },
+    productos: {
+        type : Object,
+        required: true
+    }
+})
+
 const form = useForm ({
     insumo: '',
     marca: '',
@@ -18,13 +29,14 @@ const form = useForm ({
     fecha: '',
     empresa: '',
     comentario: '',
+    category_id: '',
 })
 </script>
 
 <template>
     <AppLayout title="Crear Producto">
         <template #header>
-                <h1 class="font-semibold text-xl text-gray-800 leading-tight">Productos</h1>
+                <h1 class="font-semibold text-xl text-gray-800 leading-tight">Ingresar Producto</h1>
         </template>
 
         <div class="py-12">
@@ -32,7 +44,7 @@ const form = useForm ({
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                         <div class="p-6 bg-white border-b border-gray-200">
-                            <ProductosForm :form="form" @submit="form.post(route('productos.store'))"/>
+                            <ProductosForm :form="form" :categories="categories" :productos="productos" @submit="form.post(route('productos.store'))"/>
                         </div>
                     </div>
                 </div>
