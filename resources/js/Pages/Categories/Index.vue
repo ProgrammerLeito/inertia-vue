@@ -37,9 +37,6 @@ const deleteCategory = id =>{
                         <Link :href="route('categories.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded" v-if="$page.props.user.permissions.includes('create categories')">
                             Crear Categoria
                         </Link>
-                        <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
-                            Ingresar Producto
-                        </Link>
                     </div>
                     <div class="mt-4">
                         <ul role="list" class="divide-y divide-gray-100">
@@ -51,8 +48,9 @@ const deleteCategory = id =>{
                                 </div>
                                 <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
                                     <p class="text-md leading-6 text-gray-900">
-                                        <Link class="py-2 px-4 text-green-500" :href="route('categories.edit', category.id)" v-if="$page.props.user.permissions.includes('update categories')">Editar</Link>
-                                        <Link class="py-2 px-4 text-red-500" @click="deleteCategory(category.id)" v-if="$page.props.user.permissions.includes('delete categories')">Eliminar</Link>
+                                        <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link>
+                                        <Link class="py-2 px-4 text-green-500" :href="route('categories.edit', category.id)" v-if="$page.props.user.permissions.includes('update categories')"><i class="bi bi-pencil-square"></i></Link>
+                                        <Link class="py-2 px-4 text-red-500" @click="deleteCategory(category.id)" v-if="$page.props.user.permissions.includes('delete categories')"><i class="bi bi-trash3"></i></Link>
                                     </p>
                                 </div>
                             </li>

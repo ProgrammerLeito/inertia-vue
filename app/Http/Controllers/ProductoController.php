@@ -13,10 +13,22 @@ class ProductoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $productos = Producto::paginate(self::Numero_de_items_pagina);
-        return inertia('Productos/Index', ['productos' => $productos]);
+        $categoryId = $request->query('category_id');
+
+        $query = Producto::query()->with('category');
+
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        $productos = $query->paginate(self::Numero_de_items_pagina);
+
+        return inertia('Productos/Index', [
+            'productos' => $productos,
+            'selectedCategoryId' => $categoryId,
+        ]);
     }
 
     /**
@@ -48,7 +60,7 @@ class ProductoController extends Controller
     
         Producto::create($validated);
 
-        return redirect()->route('productos.index');
+        return redirect()->route('categories.index');
     }
 
     /**
@@ -79,9 +91,10 @@ class ProductoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Producto $productos)
+    public function destroy(Producto $productos, Category $categories)
     {
         $productos->delete();
+        $categories->delete();
         return redirect()->route('productos.index');
     }
 }

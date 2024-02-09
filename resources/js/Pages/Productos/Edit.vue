@@ -8,7 +8,7 @@ export default {
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import CategoryForm from '@/Components/Categories/Form.vue';
+import ProductosForm from '@/Components/Productos/Form.vue';
 
 const props = defineProps({
     productos: {
@@ -18,7 +18,15 @@ const props = defineProps({
 })
 
 const form = useForm({
-    name: props.category.name
+    insumo: props.productos.insumo,
+    marca: props.productos.marca,
+    modelo: props.productos.modelo,
+    cantidad: props.productos.cantidad,
+    unidad_medida: props.productos.unidad_medida,
+    fecha: props.productos.fecha,
+    empresa: props.productos.empresa,
+    comentario: props.productos.insumo,
+    category_id: props.productos.category_id
 })
 
 </script>
@@ -33,7 +41,7 @@ const form = useForm({
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg"></div>
                 <div class="p-6 bg-white border-b border-gray-800">
-                    <CategoryForm :updating="true" :form="form" @submit="form.put(route('productos.update', productos.id))"/>
+                    <ProductosForm :updating="true" :form="form" @submit="form.put(route('productos.update', productos.id))"/>
                 </div>
             </div>
         </div>

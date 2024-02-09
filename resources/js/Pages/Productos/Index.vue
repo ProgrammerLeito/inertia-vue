@@ -34,8 +34,8 @@ const deleteProducto = id =>{
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-b border-gray-600">
                     <div class="flex justify-between">
-                        <Link :href="route('categories.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
-                            Crear Categoria
+                        <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded">
+                            Regresar
                         </Link>
                         <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
                             Ingresar Producto
@@ -47,6 +47,11 @@ const deleteProducto = id =>{
                                 <div class="flex min-w-0 gap-x-4">
                                     <div class="min-w-0 flex-auto">
                                         <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.insumo }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex min-w-0 gap-x-4">
+                                    <div class="min-w-0 flex-auto">
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.category.name }}</p>
                                     </div>
                                 </div>
                                 <div class="flex min-w-0 gap-x-4">
@@ -84,15 +89,10 @@ const deleteProducto = id =>{
                                         <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.comentario }}</p>
                                     </div>
                                 </div>
-                                <div class="flex min-w-0 gap-x-4">
-                                    <div class="min-w-0 flex-auto">
-                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ producto.category_id }}</p>
-                                    </div>
-                                </div>
                                 <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
                                     <p class="text-md leading-6 text-gray-900">
-                                        <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.id)">Editar</Link>
-                                        <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.id)">Eliminar</Link>
+                                        <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.id)"><i class="bi bi-pencil-square"></i></Link>
+                                        <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.id)"><i class="bi bi-trash3"></i></Link>
                                     </p>
                                 </div>
                             </li>
