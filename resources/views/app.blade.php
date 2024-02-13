@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,10 +15,23 @@
 
         <!-- Scripts -->
         @routes
-        @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
+        @vite(['resources/css/app.css', 'resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>
     <body class="font-sans antialiased">
         @inertia
+        {{-- Boton para cambiar modo --}}
+        <div class="modo_oscuro w-full flex justify-between px-4 py-2 border-t border-gray-300 dark:border-gray-700">
+            <div class="info h-8 flex items-center w-36 text-gray-700 dark:text-gray-400 gap-4 overflow-hidden">
+                <i class='bx bx-moon h-6 w-6 text-2xl' ></i>
+                <span class="font-normal text-sm">Modo Oscuro</span>
+            </div>
+            <div id="swith_modo_oscuro" class="w-14 h-8 flex items-center justify-center cursor-pointer">
+                <div class="base_swith w-9 h-5 rounded-full bg-slate-700 relative flex items-center">
+                    <div class="circulo_swith duration-300 w-4 h-4 rounded-full bg-gray-100 absolute left-0.5"></div>
+                </div>
+            </div>
+        </div>
+        {{-- Boton para cambiar modo --}}
     </body>
 </html>

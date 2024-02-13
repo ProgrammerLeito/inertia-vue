@@ -52,11 +52,6 @@ defineEmits(['submit'])
                 <InputLabel for="insumo" value="Insumo"/>
                 <TextInput id="insumo" v-model="form.insumo" type="text" autocomplete="insumo" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.insumo" class="mt-2"/>
-
-                <!--<select name="category_id" id="category_id">
-                    <option value="0" disabled="" selected="selected">Selecciona una Categoria</option>
-                    <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
-                </select> -->
                 
                 <InputLabel for="category_id" value="Categorias"/>
                 <select v-model="form.category_id" name="category_id" id="category_id">

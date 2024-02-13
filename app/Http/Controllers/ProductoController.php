@@ -74,27 +74,27 @@ class ProductoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Producto $productos)
+    public function edit(Producto $producto)
     {
-        return inertia('Productos/Edit', ['productos' => $productos]);
+        $category = Category::all();
+        return inertia('Productos/Edit', ['productos' => $producto, 'categories' => $category]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Producto $productos)
+    public function update(Request $request, Producto $producto)
     {
-        $productos->update($request->all());
-        return redirect()->route('productos.index');
+        $producto->update($request->all());
+        return redirect()->route('categories.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Producto $productos, Category $categories)
+    public function destroy(Producto $producto)
     {
-        $productos->delete();
-        $categories->delete();
-        return redirect()->route('productos.index');
+        $producto->delete();
+        return redirect()->route('categories.index');
     }
 }

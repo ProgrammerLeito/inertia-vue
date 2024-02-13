@@ -39,22 +39,24 @@ const deleteCategory = id =>{
                         </Link>
                     </div>
                     <div class="mt-4">
-                        <ul role="list" class="divide-y divide-gray-100">
-                            <li class="flex justify-between gap-x-6 py-5" v-for="category in categories.data">
-                                <div class="flex min-w-0 gap-x-4">
-                                    <div class="min-w-0 flex-auto">
-                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ category.name }}</p>
-                                    </div>
-                                </div>
-                                <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-                                    <p class="text-md leading-6 text-gray-900">
+                        <table class="table-auto w-full">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="category in categories.data">
+                                    <td class="p-3 border">{{ category.name }}</td>
+                                    <td class="p-3 border text-right">
                                         <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link>
                                         <Link class="py-2 px-4 text-green-500" :href="route('categories.edit', category.id)" v-if="$page.props.user.permissions.includes('update categories')"><i class="bi bi-pencil-square"></i></Link>
                                         <Link class="py-2 px-4 text-red-500" @click="deleteCategory(category.id)" v-if="$page.props.user.permissions.includes('delete categories')"><i class="bi bi-trash3"></i></Link>
-                                    </p>
-                                </div>
-                            </li>
-                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div class="flex justify-between mt-2">
                         <Link v-if="categories.current_page > 1" :href="categories.prev_page_url" class="py-2 px-4 rounded">
