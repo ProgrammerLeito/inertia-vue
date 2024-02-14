@@ -26,7 +26,7 @@ const form = useForm ({
     comentario_salida: '',
     tecnico: '',
     fecha: '',
-    salida_id: '',
+    producto_id: '',
 })
 </script>
 

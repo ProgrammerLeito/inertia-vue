@@ -13,7 +13,7 @@ class Salida extends Model
 
     public function producto()
     {
-        return $this->belongsTo(Producto::class);
+        return $this->belongsTo(Producto::class, 'producto_id');
     }
 
     public function salida()
@@ -27,6 +27,6 @@ class Salida extends Model
         'comentario_salida',
         'tecnico',
         'fecha',
-        'salida_id',
+        'producto_id',
     ];
 }

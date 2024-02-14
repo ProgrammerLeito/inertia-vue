@@ -20,8 +20,8 @@ return new class extends Migration
             $table->date('fecha');
             $table->timestamps();
 
-            $table->unsignedBigInteger('salida_id');
-            $table->foreign('salida_id')->references('id')->on('productos');
+            $table->unsignedBigInteger('producto_id'); // Cambiado de 'producto_id' a 'producto_id'
+            $table->foreign('producto_id')->references('id')->on('productos');
         });
     }
 

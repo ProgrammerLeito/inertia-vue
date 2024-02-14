@@ -20,7 +20,7 @@ class SalidaSeeder extends Seeder
             'comentario_salida' => 'Ninguno',
             'tecnico' => 'Franco',
             'fecha' => '2024-01-25',
-            'salida_id' => '1',
+            'producto_id' => '1',
         ]);
     }
 }

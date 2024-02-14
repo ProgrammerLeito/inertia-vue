@@ -41,7 +41,7 @@ const deleteProducto = id =>{
                             Ingresar Producto
                         </Link>
                     </div>
-                    <div class="mt-4">
+                    <div class="mt-4 overflow-auto">
                         <table class="table-auto w-full">
                             <thead>
                                 <tr>
@@ -60,7 +60,7 @@ const deleteProducto = id =>{
                             <tbody>
                                 <tr v-for="producto in productos.data">
                                     <td class="p-3 border">{{ producto.insumo }}</td>
-                                    <td class="p-3 border">{{ producto.category.name }}</td>
+                                    <td class="p-3 border">{{ producto.category?.name }}</td>
                                     <td class="p-3 border">{{ producto.marca }}</td>
                                     <td class="p-3 border">{{ producto.modelo }}</td>
                                     <td class="p-3 border">{{ producto.cantidad }}</td>
@@ -69,7 +69,7 @@ const deleteProducto = id =>{
                                     <td class="p-3 border">{{ producto.empresa }}</td>
                                     <td class="p-3 border">{{ producto.comentario }}</td>
                                     <td class="p-3 border text-right">
-                                        <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index')"><i class="bi bi-eye"></i></Link>
+                                        <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.id })"><i class="bi bi-eye"></i></Link>
                                         <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.id)"><i class="bi bi-pencil-square"></i></Link>
                                         <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.id)"><i class="bi bi-trash3"></i></Link>
                                     </td>

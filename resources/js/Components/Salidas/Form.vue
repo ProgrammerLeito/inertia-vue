@@ -52,12 +52,12 @@ defineEmits(['submit'])
                 <TextInput id="empresa" v-model="form.empresa" type="text" autocomplete="empresa" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.empresa" class="mt-2"/>
 
-                <InputLabel for="salida_id" value="Seleccionar Producto"/>
-                <select v-model="form.salida_id" name="salida_id" id="salida_id">
+                <InputLabel for="producto_id" value="Seleccionar Producto"/>
+                <select v-model="form.producto_id" name="producto_id" id="producto_id">
                     <option value="" disabled="" selected="selected">Selecciona un Producto</option>
                     <option v-for="producto in productos" :key="producto.id" :value="producto.id">{{ producto.insumo }}</option>
                 </select>
-                <InputError :message="$page.props.errors.salida_id" class="mt-2"/>
+                <InputError :message="$page.props.errors.producto_id" class="mt-2"/>
 
                 <InputLabel for="unidad_salida" value="Unidad de Salida"/>
                 <TextInput id="unidad_salida" v-model="form.unidad_salida" type="text" autocomplete="unidad_salida" class="mt-1 block w-full"/>

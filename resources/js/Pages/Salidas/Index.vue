@@ -55,7 +55,7 @@ const deleteSalidas = id =>{
                                 </div>
                                 <div class="flex min-w-0 gap-x-4">
                                     <div class="min-w-0 flex-auto">
-                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ salida.salida_id }}</p>
+                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ salida.producto?.insumo }}</p>
                                     </div>
                                 </div>
                                 <div class="flex min-w-0 gap-x-4">
@@ -80,7 +80,7 @@ const deleteSalidas = id =>{
                                 </div>
                                 <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
                                     <p class="text-md leading-6 text-gray-900">
-                                        <Link class="py-2 px-4 text-green-500"><i class="bi bi-pencil-square"></i></Link>
+                                        <Link class="py-2 px-4 text-green-500" :href="route('salidas.edit', salida.id)"><i class="bi bi-pencil-square"></i></Link>
                                         <Link class="py-2 px-4 text-red-500" @click="deleteSalidas(salida.id)"><i class="bi bi-trash3"></i></Link>
                                     </p>
                                 </div>
