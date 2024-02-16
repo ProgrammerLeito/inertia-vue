@@ -37,6 +37,9 @@ const deleteProducto = id =>{
                         <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded">
                             Regresar
                         </Link>
+                        <Link :href="route('entradas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
+                            Ingresar Entrada
+                        </Link>
                         <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
                             Ingresar Producto
                         </Link>
@@ -50,10 +53,12 @@ const deleteProducto = id =>{
                                     <th>Marca</th>
                                     <th>Modelo</th>
                                     <th>Cantidad</th>
-                                    <th>Unidad de Medida</th>
+                                    <th>Cantidad Ultima Entrada</th>
+                                    <th>Medida</th>
                                     <th>Fecha</th>
                                     <th>Empresa</th>
                                     <th>Comentario</th>
+                                    <th>Stock</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -64,10 +69,12 @@ const deleteProducto = id =>{
                                     <td class="p-3 border">{{ producto.marca }}</td>
                                     <td class="p-3 border">{{ producto.modelo }}</td>
                                     <td class="p-3 border">{{ producto.cantidad }}</td>
+                                    <td class="p-3 border">{{ producto.ultima_entrada }}</td>
                                     <td class="p-3 border">{{ producto.unidad_medida }}</td>
                                     <td class="p-3 border">{{ producto.fecha }}</td>
                                     <td class="p-3 border">{{ producto.empresa }}</td>
                                     <td class="p-3 border">{{ producto.comentario }}</td>
+                                    <td class="p-3 border">{{ producto.stock }}</td>
                                     <td class="p-3 border text-right">
                                         <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.id })"><i class="bi bi-eye"></i></Link>
                                         <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.id)"><i class="bi bi-pencil-square"></i></Link>

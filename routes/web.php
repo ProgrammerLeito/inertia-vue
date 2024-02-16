@@ -7,6 +7,7 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\SalidasController;
+use App\Http\Controllers\EntradaController;
 
 //Rutas no autenticadas
 Route::get('/', [DashboardController::class, 'index']);
@@ -19,5 +20,6 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     Route::resource('/roles', RoleController::class);
     Route::resource('/productos', ProductoController::class);
     Route::resource('/salidas', SalidasController::class);
+    Route::resource('/entradas', EntradaController::class);
 });
 

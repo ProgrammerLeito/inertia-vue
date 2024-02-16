@@ -23,6 +23,8 @@ class ProductosSeeder extends Seeder
             'fecha' => '2024-01-25',
             'empresa' => 'Sakana',
             'comentario' => 'en buen estado',
+            'stock' => 10,
+            'ultima_entrada' => 10,
             'category_id' => '1',
         ]);
     }

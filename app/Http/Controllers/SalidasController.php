@@ -64,9 +64,9 @@ class SalidasController extends Controller
 
             // Encuentra el producto y resta la cantidad
             $producto = Producto::findOrFail($validated['producto_id']);
-            $producto->cantidad -= $validated['unidad_salida']; // Asegúrate de que 'cantidad' es el campo correcto para la cantidad en stock
+            $producto->stock -= $validated['unidad_salida']; // Asegúrate de que 'cantidad' es el campo correcto para la cantidad en stock
 
-            if ($producto->cantidad < 0) {
+            if ($producto->stock < 0) {
                 // Opcional: Manejar casos donde la salida es mayor que el stock disponible
                 throw new \Exception("La cantidad de salida no puede ser mayor que el stock disponible.");
             }
@@ -132,9 +132,9 @@ class SalidasController extends Controller
             $diferencia_cantidad = $cantidad_original - $validated['unidad_salida'];
 
             // Actualiza la cantidad disponible del producto
-            $producto->cantidad += $diferencia_cantidad;
+            $producto->stock += $diferencia_cantidad;
 
-            if ($producto->cantidad < 0) {
+            if ($producto->stock < 0) {
                 // Opcional: Manejar casos donde la cantidad disponible del producto sea negativa
                 throw new \Exception("La cantidad disponible del producto no puede ser negativa.");
             }
@@ -157,7 +157,29 @@ class SalidasController extends Controller
      */
     public function destroy(Salida $salida)
     {
-        $salida->delete();
-        return redirect()->route('salidas.index');
+        // Inicia una transacción para asegurar la integridad de los datos
+        DB::beginTransaction();
+        try {
+            // Encuentra el producto asociado a la salida
+            $producto = Producto::findOrFail($salida->producto_id);
+    
+            // Restaura la cantidad de la salida al stock del producto
+            $producto->stock += $salida->unidad_salida; // Asegúrate de que 'cantidad' es el campo correcto para la cantidad en stock
+    
+            // Guarda el producto
+            $producto->save();
+    
+            // Elimina la salida
+            $salida->delete();
+    
+            // Confirma los cambios en la base de datos
+            DB::commit();
+    
+            return redirect()->route('salidas.index')->with('success', 'Salida eliminada y stock restaurado correctamente.');
+        } catch (\Exception $e) {
+            // Revierte los cambios en caso de error
+            DB::rollBack();
+            return redirect()->route('salidas.index')->withErrors('Error al eliminar la salida: ' . $e->getMessage());
+        }
     }
 }

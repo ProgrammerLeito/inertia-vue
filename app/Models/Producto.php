@@ -30,6 +30,8 @@ class Producto extends Model
         'fecha',
         'empresa',
         'comentario',
+        'stock',
+        'ultima_entrada',
         'category_id',
     ];
 }

@@ -37,6 +37,9 @@ const deleteCategory = id =>{
                         <Link :href="route('categories.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded" v-if="$page.props.user.permissions.includes('create categories')">
                             Crear Categoria
                         </Link>
+                        <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
+                            Ingresar Producto
+                        </Link>
                     </div>
                     <div class="mt-4">
                         <table class="table-auto w-full">

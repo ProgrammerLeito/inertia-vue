@@ -55,6 +55,8 @@ class ProductoController extends Controller
             'fecha' => 'required',
             'empresa' => 'required|string',
             'comentario' => 'nullable|string',
+            'stock' => 'required|numeric',
+            'ultima_entrada' => 'required|numeric',
             'category_id' => 'required',
         ]);
     

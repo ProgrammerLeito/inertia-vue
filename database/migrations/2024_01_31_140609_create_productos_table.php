@@ -21,6 +21,8 @@ return new class extends Migration
             $table->date('fecha');
             $table->string('empresa', 250);
             $table->string('comentario', 250);
+            $table->string('stock', 250);
+            $table->string('ultima_entrada', 250);
             $table->timestamps();
 
             $table->unsignedBigInteger('category_id');

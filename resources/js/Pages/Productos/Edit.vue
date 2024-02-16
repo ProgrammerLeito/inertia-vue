@@ -30,6 +30,8 @@ const form = useForm({
     fecha: props.productos.fecha,
     empresa: props.productos.empresa,
     comentario: props.productos.comentario,
+    stock: props.productos.stock,
+    ultima_entrada: props.productos.ultima_entrada,
     category_id: props.productos.category_id
 })
 

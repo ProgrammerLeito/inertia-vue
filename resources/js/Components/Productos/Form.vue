@@ -68,9 +68,25 @@ defineEmits(['submit'])
                 <TextInput id="modelo" v-model="form.modelo" type="text" autocomplete="modelo" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.modelo" class="mt-2"/>
 
-                <InputLabel for="cantidad" value="Cantidad"/>
-                <TextInput id="cantidad" v-model="form.cantidad" type="text" autocomplete="cantidad" class="mt-1 block w-full"/>
-                <InputError :message="$page.props.errors.cantidad" class="mt-2"/>
+                <div v-if="!updating">
+                    <InputLabel for="cantidad" value="Cantidad"/>
+                    <TextInput id="cantidad" v-model="form.cantidad" type="text" autocomplete="cantidad" class="mt-1 block w-full"/>
+                    <InputError :message="$page.props.errors.cantidad" class="mt-2"/>
+                </div>
+                    
+                <div class="hidden">
+                    <div v-if="!updating">
+                        <InputLabel for="stock" value="Stock"/>
+                        <TextInput id="stock" v-model="form.stock" type="text" autocomplete="stock" class="mt-1 block w-full"/>
+                        <InputError :message="$page.props.errors.stock" class="mt-2"/>
+                    </div>
+
+                    <div v-if="!updating">
+                        <InputLabel for="ultima_entrada" value="Cantidad Ultima Entrada"/>
+                        <TextInput id="ultima_entrada" v-model="form.ultima_entrada" type="text" autocomplete="ultima_entrada" class="mt-1 block w-full"/>
+                        <InputError :message="$page.props.errors.ultima_entrada" class="mt-2"/>
+                    </div>
+                </div>
 
                 <InputLabel for="unidad_medida" value="Unidad de Medida"/>
                 <TextInput id="unidad_medida" v-model="form.unidad_medida" type="text" autocomplete="unidad_medida" class="mt-1 block w-full"/>
