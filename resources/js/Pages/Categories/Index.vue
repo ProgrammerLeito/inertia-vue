@@ -1,7 +1,23 @@
 <script>
 export default {
-    name: 'CategoriesIndex'
-}
+    name: 'CategoriesIndex',
+    data() {
+        return {
+        searchQuery: '',
+        };
+    },
+    computed: {
+        filteredCategories() {
+        // Filtrar categorías según searchQuery
+        // Considere usar una expresión regular para un filtrado de nombres y números más sólido
+        return this.categories.data.filter(category => {
+            const normalizedQuery = this.searchQuery.toLowerCase();
+            return category.name.toLowerCase().includes(normalizedQuery) ||
+                category.id.toString().includes(normalizedQuery); // Suponiendo que 'id' es un número
+        });
+        },
+    },
+};
 </script>
 
 <script setup>
@@ -42,6 +58,17 @@ const deleteCategory = id =>{
                         </Link>
                     </div>
                     <div class="mt-4">
+                        <div class="pb-4 bg-white dark:bg-white">
+                            <label for="table-search" class="sr-only">Buscar</label>
+                            <div class="relative mt-1">
+                                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                    </svg>
+                                </div>
+                                <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar la categoria">
+                            </div>
+                        </div>
                         <table class="table-auto w-full">
                             <thead>
                                 <tr>
@@ -50,7 +77,7 @@ const deleteCategory = id =>{
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="category in categories.data">
+                                <tr v-for="category in filteredCategories">
                                     <td class="p-3 border">{{ category.name }}</td>
                                     <td class="p-3 border text-right">
                                         <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link>

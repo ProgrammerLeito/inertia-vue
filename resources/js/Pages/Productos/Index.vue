@@ -84,6 +84,16 @@ const deleteProducto = id =>{
                             </tbody>
                         </table>
                     </div>
+                    <div class="flex justify-between mt-2">
+                        <Link v-if="productos.current_page > 1" :href="productos.prev_page_url" class="py-2 px-4 rounded">
+                            Prev
+                        </Link>
+                        <div v-else></div>
+                        <Link v-if="productos.current_page < productos.last_page" :href="productos.next_page_url" class="py-2 px-4 rounded">
+                            Next
+                        </Link>
+                        <div v-else></div>
+                    </div>
                 </div>
             </div>
         </div>

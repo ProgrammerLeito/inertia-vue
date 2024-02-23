@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Producto;
 use Inertia\Response;
 use App\Models\Category;
+use App\Http\Requests\ProductoRequest;
 
 class ProductoController extends Controller
 {
@@ -24,6 +25,8 @@ class ProductoController extends Controller
         }
 
         $productos = $query->paginate(self::Numero_de_items_pagina);
+
+        $productos->appends(['category_id' => $categoryId]); 
 
         return inertia('Productos/Index', [
             'productos' => $productos,
@@ -44,23 +47,9 @@ class ProductoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductoRequest $request)
     {
-        $validated = $request->validate([
-            'insumo' => 'required|string',
-            'marca' => 'required|string',
-            'modelo' => 'required|string',
-            'cantidad' => 'required|numeric',
-            'unidad_medida' => 'required|string',
-            'fecha' => 'required',
-            'empresa' => 'required|string',
-            'comentario' => 'nullable|string',
-            'stock' => 'required|numeric',
-            'ultima_entrada' => 'required|numeric',
-            'category_id' => 'required',
-        ]);
-    
-        Producto::create($validated);
+        Producto::create($request->validated());
 
         return redirect()->route('categories.index');
     }

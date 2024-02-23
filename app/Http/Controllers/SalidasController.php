@@ -25,6 +25,8 @@ class SalidasController extends Controller
 
         $salidas = $query->paginate(self::Numero_de_items_pagina);
 
+        $salidas->appends(['producto_id' => $productoId]);
+
         return inertia('Salidas/Index', [
             'salidas' => $salidas,
             'selectedProductoId' => $productoId, // Pasamos el 'producto_id' seleccionado para poder hacer algo con él en la vista si es necesario

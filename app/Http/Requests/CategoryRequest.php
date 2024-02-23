@@ -30,7 +30,7 @@ class CategoryRequest extends FormRequest
     public function messages():array
     {
         return [
-            'name.unique' => __('The category already exists.')
+            
         ];
     }
 }

@@ -87,6 +87,16 @@ const deleteSalidas = id =>{
                             </li>
                         </ul>
                     </div>
+                    <div class="flex justify-between mt-2">
+                        <Link v-if="salidas.current_page > 1" :href="salidas.prev_page_url" class="py-2 px-4 rounded">
+                            Prev
+                        </Link>
+                        <div v-else></div>
+                        <Link v-if="salidas.current_page < salidas.last_page" :href="salidas.next_page_url" class="py-2 px-4 rounded">
+                            Next
+                        </Link>
+                        <div v-else></div>
+                    </div>
                 </div>
             </div>
         </div>
