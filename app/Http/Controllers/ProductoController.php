@@ -49,9 +49,9 @@ class ProductoController extends Controller
      */
     public function store(ProductoRequest $request)
     {
-        Producto::create($request->validated());
+        $producto = Producto::create($request->validated());
 
-        return redirect()->route('categories.index');
+        return redirect()->route('productos.index', ['category_id' => $producto->category_id]);
     }
 
     /**
@@ -77,7 +77,8 @@ class ProductoController extends Controller
     public function update(Request $request, Producto $producto)
     {
         $producto->update($request->all());
-        return redirect()->route('categories.index');
+
+        return redirect()->route('productos.index', ['category_id' => $request->category_id]);
     }
 
     /**
@@ -85,7 +86,9 @@ class ProductoController extends Controller
      */
     public function destroy(Producto $producto)
     {
+        $category_id = $producto->category_id; // Asumiendo que el producto tiene un 'category_id'
         $producto->delete();
-        return redirect()->route('categories.index');
+
+        return redirect()->route('productos.index', ['category_id' => $category_id]);
     }
 }

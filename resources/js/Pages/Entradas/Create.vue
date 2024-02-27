@@ -8,6 +8,7 @@
 import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import EntradasForm from '@/Components/Entradas/Form.vue';
+import { onMounted } from 'vue';
 
 defineProps({
     entradas: {
@@ -25,6 +26,12 @@ const form = useForm ({
     fecha: '',
     producto_id: '',
 })
+
+onMounted(() => {
+    const today = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual y la formatea como yyyy-mm-dd
+    form.fecha = today; // Asigna la fecha actual al modelo de datos del formulario
+});
+
 </script>
 
 <template>

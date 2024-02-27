@@ -54,7 +54,7 @@ defineEmits(['submit'])
                 <InputError :message="$page.props.errors.insumo" class="mt-2"/>
                 
                 <InputLabel for="category_id" value="Categorias"/>
-                <select v-model="form.category_id" name="category_id" id="category_id">
+                <select v-model="form.category_id" name="category_id" id="category_id" class="bg-white border border-gray-300 text-gray-900 mb-2 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option value="" disabled="" selected="selected">Selecciona una Categoria</option>
                     <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
                 </select>
@@ -101,7 +101,7 @@ defineEmits(['submit'])
                 <InputError :message="$page.props.errors.empresa" class="mt-2"/>
 
                 <InputLabel for="comentario" value="Comentario"/>
-                <TextInput id="comentario" v-model="form.comentario" type="text" autocomplete="comentario" class="mt-1 block w-full"/>
+                <textarea id="comentario" v-model="form.comentario" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba una descripcion para el producto"></textarea>
                 <InputError :message="$page.props.errors.comentario" class="mt-2"/>
             </div>
         </template>

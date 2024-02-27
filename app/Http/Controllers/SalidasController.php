@@ -78,7 +78,7 @@ class SalidasController extends Controller
             // Confirma los cambios en la base de datos
             DB::commit();
 
-            return redirect()->route('salidas.index')->with('success', 'Salida registrada y stock actualizado correctamente.');
+            return redirect()->route('salidas.index', ['producto_id' => $producto->id])->with('success', 'Salida registrada y stock actualizado correctamente.');
         } catch (\Exception $e) {
             // Revierte los cambios en caso de error
             DB::rollBack();
@@ -146,7 +146,7 @@ class SalidasController extends Controller
             // Confirma los cambios en la base de datos
             DB::commit();
 
-            return redirect()->route('salidas.index')->with('success', 'Salida actualizada y stock actualizado correctamente.');
+            return redirect()->route('salidas.index', ['producto_id' => $producto->id])->with('success', 'Salida actualizada y stock actualizado correctamente.');
         } catch (\Exception $e) {
             // Revierte los cambios en caso de error
             DB::rollBack();
@@ -177,7 +177,7 @@ class SalidasController extends Controller
             // Confirma los cambios en la base de datos
             DB::commit();
     
-            return redirect()->route('salidas.index')->with('success', 'Salida eliminada y stock restaurado correctamente.');
+            return redirect()->route('salidas.index', ['producto_id' => $producto->id])->with('success', 'Salida eliminada y stock restaurado correctamente.');
         } catch (\Exception $e) {
             // Revierte los cambios en caso de error
             DB::rollBack();

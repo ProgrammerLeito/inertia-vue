@@ -4,18 +4,15 @@ import { Head, Link, router } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <div class="flex">
-        <div class="h-full bg-gray-800" id="side-bar" :class="dataOpenSideBar==true?'side-bar-visible':'side-bar-close'">
+        <div class="min-h-screen bg-gray-800" id="side-bar" :class="dataOpenSideBar==true?'side-bar-visible':'side-bar-close'">
             <div class="bg-gray-700 text-white dark:text-white h-[60px] flex justify-center items-center">
                 <link href='http://127.0.0.1:8000/font/alphamalemodern.ttf' rel="stylesheet" type="text/css">
                 <span v-show="dataOpenSideBar" class="gap-1 self-center text-2xl font-semibold whitespace-nowrap dark:text-white flex justify-center items-center">
                     <div class="border-dashed border-4 w-12 h-12 p-2 flex justify-center items-center rounded-full border-white">
                 <span class="text-4xl flex justify-center items-center" id="B_logo">B</span></div><span id="nombre_Logo">ALINSA</span>
                 </span>
-                <!-- <div class="text-xl font-bold text-center flex items-center justify-center text-white h-full" v-show="dataOpenSideBar">Balinsa</div> -->
                 <img src="/img/hombre.png" v-show="!dataOpenSideBar" class="p-1 w-8 h-8 rounded-full ring-2 ring-gray-100 dark:ring-gray-500" alt="">
             </div>
-
             <div class="flex flex-col justify-between h-[cal(100vh-3rem)] bg-gray-800">
                 <div class="menu-man text-left px-2 whitespace-nowrap">
                     <div class="profile flex justify-center items-center text-center p-5">
@@ -64,7 +61,6 @@ import { Head, Link, router } from '@inertiajs/vue3';
                 </div>
             </div>
         </div>
-    </div>
 </template>
 
 <script>
@@ -91,6 +87,11 @@ export default {
 
 .side-bar-close {
     width: 50px !important;
+}
+@media (max-width: 768px) {
+    .side-bar-close {
+        width: 0px !important;
+    }
 }
 </style>
 

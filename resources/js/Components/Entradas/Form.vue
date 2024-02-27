@@ -49,7 +49,7 @@ defineEmits(['submit'])
         <template #form>
             <div class="col-span-6 sm:col-span-6">
                 <InputLabel for="producto_id" value="Seleccionar Producto"/>
-                <select v-model="form.producto_id" name="producto_id" id="producto_id">
+                <select v-model="form.producto_id" name="producto_id" id="producto_id" class="bg-white border border-gray-300 text-gray-900 mb-2 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option value="" disabled="" selected="selected">Selecciona un Producto</option>
                     <option v-for="producto in productos" :key="producto.id" :value="producto.id">{{ producto.insumo }}</option>
                 </select>

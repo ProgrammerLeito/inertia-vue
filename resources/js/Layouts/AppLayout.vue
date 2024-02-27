@@ -47,29 +47,29 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div class="">
         <Head :title="title" />
 
         <Banner />
         
         <Header :dataOpenSideBar="openSidebar" :clickHamburger="toggleSidebar" />
-        
-        
-    </div>
-    <div class="flex">
-        <Sidebar :dataOpenSideBar="openSidebar"/>
-        <div class="min-h-screen bg-gray-100 w-screen">
-            <!-- Page Heading -->
-            <header v-if="$slots.header" class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
-                </div>
-            </header>
 
-            <!-- Page Content -->
-            <main>
-                <slot />
-            </main>
+        <div class="relative w-full flex md:pl-[50px] min-h-screen">
+            <Sidebar class="absolute left-0 top-0 z-[100000]" :dataOpenSideBar="openSidebar"/>
+            <div class="w-full relative">
+                <!-- Page Heading -->
+                <header v-if="$slots.header" class="bg-white shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        <slot name="header" />
+                    </div>
+                </header>
+        
+                <!-- Page Content -->
+                <main>
+                    <slot />
+                </main>
+            </div>
         </div>
+        
     </div>
 </template>

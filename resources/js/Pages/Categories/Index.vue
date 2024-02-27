@@ -69,24 +69,29 @@ const deleteCategory = id =>{
                                 <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar la categoria">
                             </div>
                         </div>
-                        <table class="table-auto w-full">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="category in filteredCategories">
-                                    <td class="p-3 border">{{ category.name }}</td>
-                                    <td class="p-3 border text-right">
-                                        <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link>
-                                        <Link class="py-2 px-4 text-green-500" :href="route('categories.edit', category.id)" v-if="$page.props.user.permissions.includes('update categories')"><i class="bi bi-pencil-square"></i></Link>
-                                        <Link class="py-2 px-4 text-red-500" @click="deleteCategory(category.id)" v-if="$page.props.user.permissions.includes('delete categories')"><i class="bi bi-trash3"></i></Link>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-black uppercase bg-green-600 dark:bg-green-600 dark:text-black">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">Nombre</th>
+                                        <th scope="col" class="text-center px-6 py-3">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-white text-black border-b dark:bg-gray-200 dark:border-gray-400 dark:text-black" v-for="category in filteredCategories">
+                                        <td class="px-6 py-4">{{ category.name }}</td>
+                                        <td class="p-3 border-b text-right dark:border-gray-400">
+                                            <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link>
+                                            <Link class="py-2 px-4 text-green-500" :href="route('categories.edit', category.id)" v-if="$page.props.user.permissions.includes('update categories')"><i class="bi bi-pencil-square"></i></Link>
+                                            <Link class="py-2 px-4 text-red-500" @click="deleteCategory(category.id)" v-if="$page.props.user.permissions.includes('delete categories')"><i class="bi bi-trash3"></i></Link>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-if="filteredCategories.length === 0" class="text-center py-2">
+                                No se encontraron datos.
+                            </div>
+                        </div>
                     </div>
                     <div class="flex justify-between mt-2">
                         <Link v-if="categories.current_page > 1" :href="categories.prev_page_url" class="py-2 px-4 rounded">

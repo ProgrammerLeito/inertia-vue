@@ -1,6 +1,22 @@
 <script>
 export default {
-    name: 'EntradasIndex'
+    name: 'EntradasIndex',
+    data() {
+        return {
+        searchQuery: '',
+        };
+    },
+    computed: {
+        filteredEntradas() {
+        // Filtrar categorías según searchQuery
+        // Considere usar una expresión regular para un filtrado de nombres y números más sólido
+        return this.entradas.data.filter(entrada => {
+            const normalizedQuery = this.searchQuery.toLowerCase();
+            return entrada.producto?.insumo.toLowerCase().includes(normalizedQuery) ||
+                entrada.id.toString().includes(normalizedQuery); // Suponiendo que 'id' es un número
+        });
+        },
+    },
 }
 </script>
 
@@ -46,31 +62,43 @@ const deleteEntradas = id =>{
                         </Link>
                     </div>
                     <div class="mt-4">
-                        <ul role="list" class="divide-y divide-gray-100">
-                            <li class="flex justify-between gap-x-6 py-5" v-for="entrada in entradas.data">
-                                <div class="flex min-w-0 gap-x-4">
-                                    <div class="min-w-0 flex-auto">
-                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ entrada.producto?.insumo  }}</p>
-                                    </div>
+                        <div class="pb-4 bg-white dark:bg-white">
+                            <label for="table-search" class="sr-only">Buscar</label>
+                            <div class="relative mt-1">
+                                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                    </svg>
                                 </div>
-                                <div class="flex min-w-0 gap-x-4">
-                                    <div class="min-w-0 flex-auto">
-                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ entrada.cantidad }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex min-w-0 gap-x-4">
-                                    <div class="min-w-0 flex-auto">
-                                        <p class="text-md font-semibold leading-6 text-gray-900">{{ entrada.fecha }}</p>
-                                    </div>
-                                </div>
-                                <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-                                    <p class="text-md leading-6 text-gray-900">
-                                        <Link class="py-2 px-4 text-green-500" :href="route('entradas.edit', entrada.id)"><i class="bi bi-pencil-square"></i></Link>
-                                        <Link class="py-2 px-4 text-red-500" @click="deleteEntradas(entrada.id)"><i class="bi bi-trash3"></i></Link>
-                                    </p>
-                                </div>
-                            </li>
-                        </ul>
+                                <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar entradas">
+                            </div>
+                        </div>
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-black uppercase bg-green-600 dark:bg-green-600 dark:text-black">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">Producto</th>
+                                        <th scope="col" class="px-6 py-3">Cantidad</th>
+                                        <th scope="col" class="px-6 py-3">fecha</th>
+                                        <th scope="col" class="px-6 py-3">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-white text-black border-b dark:bg-gray-200 dark:border-gray-400 dark:text-black" v-for="entrada in filteredEntradas">
+                                        <td class="px-6 py-4">{{ entrada.producto?.insumo }}</td>
+                                        <td class="px-6 py-4">{{ entrada.cantidad }}</td>
+                                        <td class="px-6 py-4">{{ entrada.fecha }}</td>
+                                        <td class="p-3 border-b text-right dark:border-gray-400">
+                                            <Link class="py-2 px-4 text-green-500" :href="route('entradas.edit', entrada.id)"><i class="bi bi-pencil-square"></i></Link>
+                                            <Link class="py-2 px-4 text-red-500" @click="deleteEntradas(entrada.id)"><i class="bi bi-trash3"></i></Link>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-if="filteredEntradas.length === 0" class="text-center py-2">
+                                No se encontraron datos.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

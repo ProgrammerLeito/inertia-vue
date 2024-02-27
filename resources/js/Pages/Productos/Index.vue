@@ -1,6 +1,22 @@
 <script>
 export default {
-    name: 'ProductosIndex'
+    name: 'ProductosIndex',
+    data() {
+        return {
+        searchQuery: '',
+        };
+    },
+    computed: {
+        filteredProductos() {
+        // Filtrar categorías según searchQuery
+        // Considere usar una expresión regular para un filtrado de nombres y números más sólido
+        return this.productos.data.filter(producto => {
+            const normalizedQuery = this.searchQuery.toLowerCase();
+            return producto.insumo.toLowerCase().includes(normalizedQuery) ||
+                producto.id.toString().includes(normalizedQuery); // Suponiendo que 'id' es un número
+        });
+        },
+    },
 }
 </script>
 
@@ -27,7 +43,7 @@ const deleteProducto = id =>{
 <template>
     <AppLayout>
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight">Insumos</h1>
+            <h1 class="font-semibold text-xl text-gray-800 leading-tight">Productos</h1>
         </template>
 
         <div class="py-12">
@@ -45,44 +61,60 @@ const deleteProducto = id =>{
                         </Link>
                     </div>
                     <div class="mt-4 overflow-auto">
-                        <table class="table-auto w-full">
-                            <thead>
-                                <tr>
-                                    <th>Insumo</th>
-                                    <th>Categoria</th>
-                                    <th>Marca</th>
-                                    <th>Modelo</th>
-                                    <th>Cantidad</th>
-                                    <th>Cantidad Ultima Entrada</th>
-                                    <th>Medida</th>
-                                    <th>Fecha</th>
-                                    <th>Empresa</th>
-                                    <th>Comentario</th>
-                                    <th>Stock</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="producto in productos.data">
-                                    <td class="p-3 border">{{ producto.insumo }}</td>
-                                    <td class="p-3 border">{{ producto.category?.name }}</td>
-                                    <td class="p-3 border">{{ producto.marca }}</td>
-                                    <td class="p-3 border">{{ producto.modelo }}</td>
-                                    <td class="p-3 border">{{ producto.cantidad }}</td>
-                                    <td class="p-3 border">{{ producto.ultima_entrada }}</td>
-                                    <td class="p-3 border">{{ producto.unidad_medida }}</td>
-                                    <td class="p-3 border">{{ producto.fecha }}</td>
-                                    <td class="p-3 border">{{ producto.empresa }}</td>
-                                    <td class="p-3 border">{{ producto.comentario }}</td>
-                                    <td class="p-3 border">{{ producto.stock }}</td>
-                                    <td class="p-3 border text-right">
-                                        <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.id })"><i class="bi bi-eye"></i></Link>
-                                        <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.id)"><i class="bi bi-pencil-square"></i></Link>
-                                        <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.id)"><i class="bi bi-trash3"></i></Link>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="pb-4 bg-white dark:bg-white">
+                            <label for="table-search" class="sr-only">Buscar</label>
+                            <div class="relative mt-1">
+                                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                    </svg>
+                                </div>
+                                <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
+                            </div>
+                        </div>
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-500">
+                                <thead class="text-xs text-black uppercase bg-green-600 dark:bg-green-600 dark:text-black">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">Insumo</th>
+                                        <th scope="col" class="px-6 py-3">Categoria</th>
+                                        <th scope="col" class="px-6 py-3">Marca</th>
+                                        <th scope="col" class="px-6 py-3">Modelo</th>
+                                        <th scope="col" class="px-6 py-3">Cantidad</th>
+                                        <th scope="col" class="px-6 py-3">Cantidad Ultima Entrada</th>
+                                        <th scope="col" class="px-6 py-3">Medida</th>
+                                        <th scope="col" class="px-6 py-3">Fecha</th>
+                                        <th scope="col" class="px-6 py-3">Empresa</th>
+                                        <th scope="col" class="px-6 py-3">Comentario</th>
+                                        <th scope="col" class="px-6 py-3">Stock</th>
+                                        <th scope="col" class="px-6 py-3">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-white text-black border-b dark:bg-gray-200 dark:border-gray-400" v-for="producto in filteredProductos">
+                                        <td class="px-6 py-4">{{ producto.insumo }}</td>
+                                        <td class="px-6 py-4">{{ producto.category?.name }}</td>
+                                        <td class="px-6 py-4">{{ producto.marca }}</td>
+                                        <td class="px-6 py-4">{{ producto.modelo }}</td>
+                                        <td class="px-6 py-4">{{ producto.cantidad }}</td>
+                                        <td class="px-6 py-4">{{ producto.ultima_entrada }}</td>
+                                        <td class="px-6 py-4">{{ producto.unidad_medida }}</td>
+                                        <td class="px-6 py-4">{{ producto.fecha }}</td>
+                                        <td class="px-6 py-4">{{ producto.empresa }}</td>
+                                        <td class="px-6 py-4">{{ producto.comentario }}</td>
+                                        <td class="px-6 py-4">{{ producto.stock }}</td>
+                                        <td class="p-3 border-b text-right dark:border-gray-400">
+                                            <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.id })"><i class="bi bi-eye"></i></Link>
+                                            <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.id)"><i class="bi bi-pencil-square"></i></Link>
+                                            <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.id)"><i class="bi bi-trash3"></i></Link>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-if="filteredProductos.length === 0" class="text-center py-2">
+                                No se encontraron datos.
+                            </div>
+                        </div>
                     </div>
                     <div class="flex justify-between mt-2">
                         <Link v-if="productos.current_page > 1" :href="productos.prev_page_url" class="py-2 px-4 rounded">
