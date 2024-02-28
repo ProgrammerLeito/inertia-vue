@@ -7,6 +7,7 @@ use App\Models\Producto;
 use Inertia\Response;
 use App\Models\Category;
 use App\Http\Requests\ProductoRequest;
+use Illuminate\Support\Facades\DB;
 
 class ProductoController extends Controller
 {
@@ -18,15 +19,31 @@ class ProductoController extends Controller
     {
         $categoryId = $request->query('category_id');
 
-        $query = Producto::query()->with('category');
+        $productos = DB::table('categories')
+                        ->join('productos', 'categories.id', '=', 'productos.category_id')
+                        ->select(
+                            'categories.id',
+                            'categories.name',
+                            'productos.id as producto_id', // Asegúrate de incluir el id del producto si es necesario
+                            'productos.insumo',
+                            'productos.marca',
+                            'productos.modelo',
+                            'productos.cantidad',
+                            'productos.unidad_medida',
+                            'productos.fecha',
+                            'productos.empresa',
+                            'productos.comentario',
+                            'productos.stock',
+                            'productos.ultima_entrada',
+                            'productos.category_id',
+                            DB::raw('(SELECT COALESCE(SUM(cantidad), 0) FROM entradas WHERE entradas.producto_id = productos.id) as total_entradas'),
+                            DB::raw('(SELECT COALESCE(SUM(unidad_salida), 0) FROM salidas WHERE salidas.producto_id = productos.id) as total_salidas'),
+                            DB::raw('(SELECT COALESCE((SELECT cantidad FROM entradas WHERE entradas.producto_id = productos.id ORDER BY id DESC LIMIT 1), 0)) as ultima_cantidad_entrada')
+                        )
+                        ->where('categories.id', '=', $categoryId)
+                        ->paginate(self::Numero_de_items_pagina);
 
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
-        }
-
-        $productos = $query->paginate(self::Numero_de_items_pagina);
-
-        $productos->appends(['category_id' => $categoryId]); 
+        $productos->appends(['category_id' => $categoryId]);
 
         return inertia('Productos/Index', [
             'productos' => $productos,

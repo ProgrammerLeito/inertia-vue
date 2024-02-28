@@ -58,12 +58,6 @@ class EntradaController extends Controller
         $entrada->fecha = $request->fecha;
         $entrada->save();
     
-        // Actualizar la cantidad de productos reemplazando la cantidad existente
-        $producto = Producto::find($request->producto_id);
-        $producto->cantidad = $request->cantidad; // Reemplazar la cantidad
-        $producto->stock = $producto->cantidad + $producto->stock; // Sumar al stock existente
-        $producto->save();
-    
         return redirect()->route('entradas.index')
                          ->with('success', 'Entrada creada exitosamente.');
     }
@@ -105,24 +99,6 @@ class EntradaController extends Controller
                 throw new \Exception("Entrada no encontrada.");
             }
 
-            // Revertir el stock y la cantidad del producto original
-            DB::table('productos')
-                ->where('id', $entradaActual->producto_id)
-                ->decrement('stock', $entradaActual->cantidad);
-
-            // Si se cambia de producto, actualizamos el stock del nuevo producto
-            if ($entradaActual->producto_id != $request->producto_id) {
-                DB::table('productos')
-                    ->where('id', $request->producto_id)
-                    ->increment('stock', $request->cantidad);
-            } else {
-                // Si el producto no cambia, ajustamos el stock basado en la diferencia de cantidad
-                $diferenciaCantidad = $request->cantidad - $entradaActual->cantidad;
-                DB::table('productos')
-                    ->where('id', $request->producto_id)
-                    ->increment('stock', $diferenciaCantidad);
-            }
-
             // Actualizar la entrada
             DB::table('entradas')->where('id', $id)->update([
                 'producto_id' => $request->producto_id,
@@ -146,15 +122,6 @@ class EntradaController extends Controller
     {
         // Encuentra la entrada a eliminar
         $entrada = Entrada::findOrFail($id);
-    
-        // Guarda la cantidad de la entrada antes de eliminarla
-        $cantidad = $entrada->cantidad;
-    
-        // Actualiza la cantidad de productos y su stock correspondiente
-        $producto = Producto::find($entrada->producto_id);
-        // $producto->cantidad -= $cantidad;
-        $producto->stock -= $cantidad;
-        $producto->save();
     
         // Elimina la entrada
         $entrada->delete();

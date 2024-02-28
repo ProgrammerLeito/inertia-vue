@@ -1,6 +1,25 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+
+// Agrega cualquier otra importación necesaria
+
+const isDarkMode = ref(false); // Estado para controlar el modo oscuro
+
+// Función para cambiar el modo oscuro
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    document.documentElement.classList.toggle('dark', isDarkMode.value);
+    localStorage.setItem('modoOscuro', isDarkMode.value);
+};
+
+// Verificar si el modo oscuro está activado en localStorage al cargar el componente
+onMounted(() => {
+    const modoOscuroLocalStorage = localStorage.getItem('modoOscuro') === 'true';
+    isDarkMode.value = modoOscuroLocalStorage;
+    document.documentElement.classList.toggle('dark', modoOscuroLocalStorage);
+});
+
 </script>
 
 <template>
@@ -58,6 +77,17 @@ import { Head, Link, router } from '@inertiajs/vue3';
             <div class="menu-man text-left px-2 justify-self-end whitespace-nowrap">
                 <div class="py-3 rounded-md cursor-pointer text-gray-400 hover:text-white">
                     <a href="#" target="-blanck" class="px-2 flex space-x-2"><i class='bi bi-house-door' ></i><span v-show="dataOpenSideBar">Cerrar Sesion</span></a>
+                </div>
+            </div>
+            <div class="modo_oscuro w-full flex justify-between px-4 py-2 border-t border-gray-300 dark:border-gray-700">
+                <div class="info h-8 flex items-center w-36 text-gray-700 dark:text-gray-400 gap-4 overflow-hidden">
+                    <i class='bx bx-moon h-6 w-6 text-2xl' ></i>
+                    <span class="font-normal text-sm">Modo Oscuro</span>
+                </div>
+                <div @click="toggleDarkMode" class="w-14 h-8 flex items-center justify-center cursor-pointer">
+                    <div class="base_swith w-9 h-5 rounded-full bg-slate-700 relative flex items-center">
+                        <div :class="{ 'bg-green-500': isDarkMode, 'bg-slate-700': !isDarkMode }" class="circulo_swith duration-300 w-4 h-4 rounded-full bg-gray-100 absolute left-0.5"></div>
+                    </div>
                 </div>
             </div>
         </div>

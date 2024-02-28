@@ -18,20 +18,25 @@
         @vite(['resources/css/app.css', 'resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>
-    <body class="font-sans antialiased box-border">
+    
+    <body class="antialiased bg-white h-full">
         @inertia
-        {{-- Boton para cambiar modo --}}
-        <div class="modo_oscuro w-full flex justify-between px-4 py-2 border-t border-gray-300 dark:border-gray-700">
-            <div class="info h-8 flex items-center w-36 text-gray-700 dark:text-gray-400 gap-4 overflow-hidden">
-                <i class='bx bx-moon h-6 w-6 text-2xl' ></i>
-                <span class="font-normal text-sm">Modo Oscuro</span>
-            </div>
-            <div id="swith_modo_oscuro" class="w-14 h-8 flex items-center justify-center cursor-pointer">
-                <div class="base_swith w-9 h-5 rounded-full bg-slate-700 relative flex items-center">
-                    <div class="circulo_swith duration-300 w-4 h-4 rounded-full bg-gray-100 absolute left-0.5"></div>
-                </div>
-            </div>
+        <div id="app" class="overflow-hidden"></div>
+        {{-- <div id="contenido"></div> --}}
+        
+        {{-- <div class="min-h-[calc(100%-148px)] overflow-hidden"> --}}
+        <div class="overflow-hidden">
         </div>
-        {{-- Boton para cambiar modo --}}
+        <footer class="ml-auto bg-[#F7BE15] dark:bg-[#F7BE15] border-t border-gray-300 dark:border-gray-700">
+            <div class="mx-auto">
+                <div class="h-20 flex items-center justify-center"><h3 class="text-gray-900 dark:text-white text-center text-sm w-64 md:w-full">Todos los derechos reservados. Diseñado y desarrollado por <b>Industrias Balinsa.</b></h3></div>
+                <!-- <div class="h-20 flex items-center justify-center"><h3 class="text-gray-900 dark:text-gray-300 text-center text-sm w-64 md:w-full">Todos los derechos reservados. Diseñado y desarrollado por <b>Leonardo Garcia Jimenez</b></h3></div> -->
+            </div>
+        </footer>
     </body>
+
+    {{-- <body class="font-sans antialiased box-border">
+        @inertia
+        
+    </body> --}}
 </html>

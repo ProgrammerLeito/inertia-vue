@@ -13,7 +13,7 @@ export default {
         return this.productos.data.filter(producto => {
             const normalizedQuery = this.searchQuery.toLowerCase();
             return producto.insumo.toLowerCase().includes(normalizedQuery) ||
-                producto.id.toString().includes(normalizedQuery); // Suponiendo que 'id' es un número
+                producto.producto_id.toString().includes(normalizedQuery); // Suponiendo que 'id' es un número
         });
         },
     },
@@ -32,9 +32,9 @@ defineProps({
     }
 });
 
-const deleteProducto = id =>{
+const deleteProducto = producto_id =>{
     if (confirm('Are you sure?')){
-        Inertia.delete(route('productos.destroy', id))
+        Inertia.delete(route('productos.destroy', producto_id))
     }
 }
 
@@ -46,17 +46,17 @@ const deleteProducto = id =>{
             <h1 class="font-semibold text-xl text-gray-800 leading-tight">Productos</h1>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="py-2 md:py-4">
+            <div class=" mx-auto sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-b border-gray-600">
-                    <div class="flex justify-between">
-                        <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded">
+                    <div class="flex flex-wrap gap-2 justify-between">
+                        <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Regresar
                         </Link>
-                        <Link :href="route('entradas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
+                        <Link :href="route('entradas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Ingresar Entrada
                         </Link>
-                        <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
+                        <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Ingresar Producto
                         </Link>
                     </div>
@@ -69,12 +69,12 @@ const deleteProducto = id =>{
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                                     </svg>
                                 </div>
-                                <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
+                                <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
                             </div>
                         </div>
                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-500">
-                                <thead class="text-xs text-black uppercase bg-green-600 dark:bg-green-600 dark:text-black">
+                                <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3">Insumo</th>
                                         <th scope="col" class="px-6 py-3">Categoria</th>
@@ -92,21 +92,21 @@ const deleteProducto = id =>{
                                 </thead>
                                 <tbody>
                                     <tr class="bg-white text-black border-b dark:bg-gray-200 dark:border-gray-400" v-for="producto in filteredProductos">
-                                        <td class="px-6 py-4">{{ producto.insumo }}</td>
-                                        <td class="px-6 py-4">{{ producto.category?.name }}</td>
+                                        <td class="px-6 py-4 font-semibold">{{ producto.insumo }}</td>
+                                        <td class="px-6 py-4">{{ producto?.name }}</td>
                                         <td class="px-6 py-4">{{ producto.marca }}</td>
                                         <td class="px-6 py-4">{{ producto.modelo }}</td>
                                         <td class="px-6 py-4">{{ producto.cantidad }}</td>
-                                        <td class="px-6 py-4">{{ producto.ultima_entrada }}</td>
+                                        <td class="px-6 py-4">{{ producto.ultima_cantidad_entrada == "0" ? producto.ultima_entrada : producto.ultima_cantidad_entrada }}</td>
                                         <td class="px-6 py-4">{{ producto.unidad_medida }}</td>
                                         <td class="px-6 py-4">{{ producto.fecha }}</td>
                                         <td class="px-6 py-4">{{ producto.empresa }}</td>
                                         <td class="px-6 py-4">{{ producto.comentario }}</td>
-                                        <td class="px-6 py-4">{{ producto.stock }}</td>
+                                        <td class="px-6 py-4">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) - parseInt(producto.total_salidas) }}</td>
                                         <td class="p-3 border-b text-right dark:border-gray-400">
-                                            <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.id })"><i class="bi bi-eye"></i></Link>
-                                            <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.id)"><i class="bi bi-pencil-square"></i></Link>
-                                            <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.id)"><i class="bi bi-trash3"></i></Link>
+                                            <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.producto_id })"><i class="bi bi-eye"></i></Link>
+                                            <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.producto_id)"><i class="bi bi-pencil-square"></i></Link>
+                                            <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.producto_id)"><i class="bi bi-trash3"></i></Link>
                                         </td>
                                     </tr>
                                 </tbody>

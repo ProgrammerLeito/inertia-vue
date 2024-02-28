@@ -51,14 +51,14 @@ const deleteSalidas = id =>{
             <h1 class="font-semibold text-xl text-gray-800 leading-tight">Salidas de Productos</h1>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="py-2 md:py-4">
+            <div class=" mx-auto sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-b border-gray-600">
-                    <div class="flex justify-between">
-                        <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded">
+                    <div class="flex flex-wrap gap-2 justify-between">
+                        <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Regresar
                         </Link>
-                        <Link :href="route('salidas.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded">
+                        <Link :href="route('salidas.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Ingresar Salida
                         </Link>
                     </div>
@@ -71,12 +71,12 @@ const deleteSalidas = id =>{
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                                     </svg>
                                 </div>
-                                <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar la salida">
+                                <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar la salida">
                             </div>
                         </div>
                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <thead class="text-xs text-black uppercase bg-green-600 dark:bg-green-600 dark:text-black">
+                                <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3">Empresa</th>
                                         <th scope="col" class="px-6 py-3">Producto</th>
@@ -89,7 +89,7 @@ const deleteSalidas = id =>{
                                 </thead>
                                 <tbody>
                                     <tr class="bg-white text-black border-b dark:bg-gray-200 dark:border-gray-400 dark:text-black" v-for="salida in filteredSalidas">
-                                        <td class="px-6 py-4">{{ salida.empresa }}</td>
+                                        <td class="px-6 py-4 font-semibold">{{ salida.empresa }}</td>
                                         <td class="px-6 py-4">{{ salida.producto?.insumo }}</td>
                                         <td class="px-6 py-4">{{ salida.unidad_salida }}</td>
                                         <td class="px-6 py-4">{{ salida.comentario_salida }}</td>

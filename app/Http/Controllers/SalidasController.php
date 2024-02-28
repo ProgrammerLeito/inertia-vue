@@ -49,41 +49,17 @@ class SalidasController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'empresa' => 'required|string',
-            'unidad_salida' => 'required|numeric',
-            'comentario_salida' => 'required|string',
-            'tecnico' => 'required|string',
+        $validatedData  = $request->validate([
+            'empresa' => 'required',
+            'unidad_salida' => 'required',
+            'comentario_salida' => 'required',
+            'tecnico' => 'required',
             'fecha' => 'required',
             'producto_id' => 'required',
         ]);
 
-        // Inicia una transacción para asegurar la integridad de los datos
-        DB::beginTransaction();
-        try {
-            // Registra la salida
-            $salida = Salida::create($validated);
-
-            // Encuentra el producto y resta la cantidad
-            $producto = Producto::findOrFail($validated['producto_id']);
-            $producto->stock -= $validated['unidad_salida']; // Asegúrate de que 'cantidad' es el campo correcto para la cantidad en stock
-
-            if ($producto->stock < 0) {
-                // Opcional: Manejar casos donde la salida es mayor que el stock disponible
-                throw new \Exception("La cantidad de salida no puede ser mayor que el stock disponible.");
-            }
-
-            $producto->save();
-
-            // Confirma los cambios en la base de datos
-            DB::commit();
-
-            return redirect()->route('salidas.index', ['producto_id' => $producto->id])->with('success', 'Salida registrada y stock actualizado correctamente.');
-        } catch (\Exception $e) {
-            // Revierte los cambios en caso de error
-            DB::rollBack();
-            return redirect()->route('salidas.create')->withErrors('Error al registrar la salida: ' . $e->getMessage());
-        }
+        Salida::create($validatedData);
+        return redirect()->route('salidas.index');
     }
 
     /**
@@ -121,27 +97,12 @@ class SalidasController extends Controller
         // Inicia una transacción para asegurar la integridad de los datos
         DB::beginTransaction();
         try {
-            // Obtiene la cantidad original de la salida antes de la actualización
-            $cantidad_original = $salida->unidad_salida;
 
             // Actualiza los datos de la salida
             $salida->update($validated);
 
             // Encuentra el producto asociado a la salida
             $producto = Producto::findOrFail($validated['producto_id']);
-
-            // Calcula la diferencia entre la cantidad original y la nueva cantidad
-            $diferencia_cantidad = $cantidad_original - $validated['unidad_salida'];
-
-            // Actualiza la cantidad disponible del producto
-            $producto->stock += $diferencia_cantidad;
-
-            if ($producto->stock < 0) {
-                // Opcional: Manejar casos donde la cantidad disponible del producto sea negativa
-                throw new \Exception("La cantidad disponible del producto no puede ser negativa.");
-            }
-
-            $producto->save();
 
             // Confirma los cambios en la base de datos
             DB::commit();
@@ -164,12 +125,6 @@ class SalidasController extends Controller
         try {
             // Encuentra el producto asociado a la salida
             $producto = Producto::findOrFail($salida->producto_id);
-    
-            // Restaura la cantidad de la salida al stock del producto
-            $producto->stock += $salida->unidad_salida; // Asegúrate de que 'cantidad' es el campo correcto para la cantidad en stock
-    
-            // Guarda el producto
-            $producto->save();
     
             // Elimina la salida
             $salida->delete();

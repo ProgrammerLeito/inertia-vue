@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use Inertia\Response;
 use App\Http\Requests\CategoryRequest;
+use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
@@ -15,7 +16,10 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::paginate(self::Numero_de_items_pagina);
+        $categories = DB::table('categories')
+                        ->select('id', 'name') // Selecciona los campos que desees
+                        ->paginate(self::Numero_de_items_pagina);
+
         return inertia('Categories/Index', ['categories' => $categories]);
     }
 
