@@ -20,10 +20,14 @@ onMounted(() => {
     document.documentElement.classList.toggle('dark', modoOscuroLocalStorage);
 });
 
+//Operacion para poder salir cerrar la sesion
+const logout = () => {
+    router.post(route('logout')); // Realiza la llamada para cerrar sesión
+};
 </script>
 
 <template>
-        <div class="min-h-screen bg-gray-800" id="side-bar" :class="dataOpenSideBar==true?'side-bar-visible':'side-bar-close'">
+        <div class="min-h-[calc(100vh-110px)] bg-gray-800" id="side-bar" :class="dataOpenSideBar==true?'side-bar-visible':'side-bar-close'">
             <div class="bg-gray-700 text-white dark:text-white h-[60px] flex justify-center items-center">
                 <link href='http://127.0.0.1:8000/font/alphamalemodern.ttf' rel="stylesheet" type="text/css">
                 <span v-show="dataOpenSideBar" class="gap-1 self-center text-2xl font-semibold whitespace-nowrap dark:text-white flex justify-center items-center">
@@ -34,59 +38,83 @@ onMounted(() => {
             </div>
             <div class="flex flex-col justify-between h-[cal(100vh-3rem)] bg-gray-800">
                 <div class="menu-man text-left px-2 whitespace-nowrap">
-                    <div class="profile flex justify-center items-center text-center p-5">
+                    <div :class="{'profile flex justify-center items-center text-center p-5': dataOpenSideBar, 'flex justify-center items-center text-center': !dataOpenSideBar }">
                         <div class="text-center text-white" v-show="dataOpenSideBar">
                             <img src="/img/hombre.png" class="p-1 w-24 h-24 rounded-full ring-2 ring-gray-300 dark:ring-gray-500 mb-4" alt="">
                             <h5 class="text-xl font-medium leading-tight mb-2">Leonardo</h5>
                             <p class="text-gray-500">Admin</p>
                         </div>
                     </div>
-                    <div class="py-3 rounded-sm cursor-pointer text-gray-400 hover:text-white">
-                        <Link :href="route('dashboard')" :active="route().current('dashboard')" class="px-2 flex space-x-2"><span class='bi bi-people'></span><span v-show="dataOpenSideBar">Clientes</span></Link>
+                    <!-- Scrool para sidebar -->
+                    <div :class="{'scroll-sidebar max-h-[calc(100vh-478px)] overflow-x-auto': dataOpenSideBar, 'max-h-[calc(100vh-255px)] overflow-hidden': !dataOpenSideBar}">
+                        <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
+                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-people'><span v-show="dataOpenSideBar" class="ml-2">Clientes</span></span></summary>
+                            <Link :href="route('dashboard')" :active="route().current('dashboard')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Clientes</span></Link>
+                        </details>
+                        <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
+                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-telephone'><span v-show="dataOpenSideBar" class="ml-2">Visitas y Llamadas</span></span></summary>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Control de llamadas Diarias</span> <img src="../../../public/img/excel.png" class="w-4"></Link>
+                        </details>
+                        <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
+                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-cart'><span v-show="dataOpenSideBar" class="ml-2">Productos</span></span></summary>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Catalago de Productos</span></Link>
+                        </details>
+                        <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
+                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-gear-wide-connected'><span v-show="dataOpenSideBar" class="ml-2">Servicio Tecnico</span></span></summary>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Manuales y Calibracion</span> <img src="../../../public/img/one_drive.png" class="w-4"></Link>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Hojas de Servicio</span></Link>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Ticket</span></Link>
+                        </details>
+                        <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
+                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-graph-up-arrow'><span v-show="dataOpenSideBar" class="ml-2">Cotizaciones</span></span></summary>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Cotizacion por Venta</span></Link>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Cotizacion por Servicio</span></Link>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Cotizaciones</span></Link>
+                        </details>
+                        <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
+                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-bar-chart-line'><span v-show="dataOpenSideBar" class="ml-2">Prestamos o Alquiler</span></span></summary>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Equipos</span></Link>
+                        </details>
+                        <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
+                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-patch-check'><span v-show="dataOpenSideBar" class="ml-2">Certificaciones</span></span></summary>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Registrar Solicitud Certificacion</span></Link>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Solicitudes Emitidas</span></Link>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Certificaciones Emitidas</span></Link>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Certificaciones por Caducar</span></Link>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Lista Certificados emitidos TW</span> <img src="../../../public/img/excel.png" class="w-4"></Link>
+                        </details>
+                        <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
+                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-gear'><span v-show="dataOpenSideBar" class="ml-2">Configuraciones</span></span></summary>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Usuarios</span></Link>
+                        </details>
+                        <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
+                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-inboxes'><span v-show="dataOpenSideBar" class="ml-2">Recursos</span></span></summary>
+                            <Link :href="route('categories.index')" :active="route().current('productos.*')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white"><span class="ml-4">Inventario</span></Link>
+                            <p v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Reuniones Semanales</span> <img src="../../../public/img/excel.png" class="w-4"></p>
+                            <p v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Ocurrencias</span> <img src="../../../public/img/excel.png" class="w-4"></p>
+                        </details>
                     </div>
-                    <div class="py-3 rounded-sm cursor-pointer text-gray-400 hover:text-white">
-                        <Link href="" class="px-2 flex space-x-2"><span class='bi bi-telephone'></span><span v-show="dataOpenSideBar">Visitas y Llamadas</span></Link>
-                    </div>
-                    <div class="py-3 rounded-sm cursor-pointer text-gray-400 hover:text-white">
-                        <Link href="" class="px-2 flex space-x-2"><span class='bi bi-cart'></span><span v-show="dataOpenSideBar">Productos</span></Link>
-                    </div>
-                    <div class="py-3 rounded-sm cursor-pointer text-gray-400 hover:text-white">
-                        <Link href="" class="px-2 flex space-x-2"><span class='bi bi-gear-wide-connected'></span><span v-show="dataOpenSideBar">Servicio Tecnico</span></Link>
-                    </div>
-                    <div class="py-3 rounded-sm cursor-pointer text-gray-400 hover:text-white">
-                        <Link href="" class="px-2 flex space-x-2"><span class='bi bi-graph-up-arrow'></span><span v-show="dataOpenSideBar">Cotizaciones</span></Link>
-                    </div>
-                    <div class="py-3 rounded-sm cursor-pointer text-gray-400 hover:text-white">
-                        <Link href="" class="px-2 flex space-x-2"><span class='bi bi-bar-chart-line'></span><span v-show="dataOpenSideBar">Prestamos o Alquiler</span></Link>
-                    </div>
-                    <div class="py-3 rounded-sm cursor-pointer text-gray-400 hover:text-white">
-                        <Link href="" class="px-2 flex space-x-2"><span class='bi bi-patch-check'></span><span v-show="dataOpenSideBar">Certificaciones</span></Link>
-                    </div>
-                    <div class="py-3 rounded-sm cursor-pointer text-gray-400 hover:text-white">
-                        <Link href="" class="px-2 flex space-x-2"><span class='bi bi-gear'></span><span v-show="dataOpenSideBar">Configuraciones</span></Link>
-                    </div>
-                    <div class="py-3 rounded-sm cursor-pointer text-gray-400 hover:text-white">
-                        <Link :href="route('categories.index')" :active="route().current('productos.*')" class="px-2 flex space-x-2"><span class='bi bi-inboxes'></span><span v-show="dataOpenSideBar">Recursos</span></Link>
-                    </div>
-                    <!-- <details class="py-3 rounded-sm cursor-pointer text-gray-400 hover:text-white">
-                        <summary class="px-2 flex space-x-2"><span class='bi bi-feather'><span v-show="dataOpenSideBar">Cotizaciones</span></span></summary>
-                        <p class="px-2 flex space-x-2 p-2 ms-4">Cotizaciones Pendientes</p>
-                    </details> -->
+                    <!-- Scrool para sidebar -->
                 </div>
             </div>
-            <div class="menu-man text-left px-2 justify-self-end whitespace-nowrap">
-                <div class="py-3 rounded-md cursor-pointer text-gray-400 hover:text-white">
-                    <a href="#" target="-blanck" class="px-2 flex space-x-2"><i class='bi bi-house-door' ></i><span v-show="dataOpenSideBar">Cerrar Sesion</span></a>
+            <div class="menu-man text-left px-2 justify-self-end whitespace-nowrap border-t border-gray-700 dark:border-gray-700">
+                <div class="py-3 rounded-md cursor-pointer text-gray-400 hover:text-white" @click="logout">
+                    <span class="px-2 flex space-x-2 gap-4">
+                        <i class='bi bi-door-open-fill'></i>
+                        <span v-show="dataOpenSideBar">Cerrar Sesión</span>
+                    </span>
                 </div>
             </div>
-            <div class="modo_oscuro w-full flex justify-between px-4 py-2 border-t border-gray-300 dark:border-gray-700">
-                <div class="info h-8 flex items-center w-36 text-gray-700 dark:text-gray-400 gap-4 overflow-hidden">
-                    <i class='bx bx-moon h-6 w-6 text-2xl' ></i>
-                    <span class="font-normal text-sm">Modo Oscuro</span>
+            <div class="modo_oscuro w-full flex justify-between px-4 py-2 hover:text-white">
+                <div class="info h-8 flex items-center w-36 text-gray-300 hover:text-gray-100 dark:text-gray-400 gap-4 overflow-hidden cursor-pointer" @click="toggleDarkMode">
+                    <i class='bx bx-moon h-6 w-6 text-xl text-gray-400 hover:text-white'></i>
+                    <span class="font-normal text-base text-gray-400">Modo Oscuro</span>
                 </div>
-                <div @click="toggleDarkMode" class="w-14 h-8 flex items-center justify-center cursor-pointer">
-                    <div class="base_swith w-9 h-5 rounded-full bg-slate-700 relative flex items-center">
-                        <div :class="{ 'bg-green-500': isDarkMode, 'bg-slate-700': !isDarkMode }" class="circulo_swith duration-300 w-4 h-4 rounded-full bg-gray-100 absolute left-0.5"></div>
+                <div v-show="dataOpenSideBar" @click="toggleDarkMode" class="w-14 h-8 flex items-center justify-center cursor-pointer">
+                    <div class="base_swith w-10 h-5 rounded-full bg-slate-700 relative flex items-center" :class="{ 'bg-green-700': isDarkMode, 'bg-gray-800': !isDarkMode }" >
+                    <div :class="{ 'bg-white': isDarkMode, 'bg-white': !isDarkMode }" 
+                        :style="{ left: isDarkMode ? 'calc(80% - 0.75rem)' : '0.25rem' }"
+                        class="circulo_swith duration-300 w-4 h-4 rounded-full bg-gray-100 absolute"></div>
                     </div>
                 </div>
             </div>
@@ -95,10 +123,32 @@ onMounted(() => {
 
 <script>
 export default {
-    props: {
-        dataOpenSideBar:Boolean
-    }
-}
+  props: {
+    dataOpenSideBar: Boolean
+  },
+  setup() {
+    const isDarkMode = ref(false);
+    const switchPosition = computed(() => isDarkMode.value ? 'calc(80% - 0.75rem)' : '0.25rem');
+
+    const toggleDarkMode = () => {
+      isDarkMode.value = !isDarkMode.value;
+      document.documentElement.classList.toggle('dark', isDarkMode.value);
+      localStorage.setItem('modoOscuro', isDarkMode.value);
+    };
+
+    onMounted(() => {
+      const modoOscuroLocalStorage = localStorage.getItem('modoOscuro') === 'true';
+      isDarkMode.value = modoOscuroLocalStorage;
+      document.documentElement.classList.toggle('dark', modoOscuroLocalStorage);
+    });
+
+    return {
+      isDarkMode,
+      toggleDarkMode,
+      switchPosition
+    };
+  }
+};
 </script>
 
 <style>
@@ -123,6 +173,25 @@ export default {
         width: 0px !important;
     }
 }
+
+.scroll-sidebar::-webkit-scrollbar{
+    width: 5px;
+}
+
+.scroll-sidebar::-webkit-scrollbar-track{
+    border: 7px solid #232943;
+    box-shadow: 0 0 5px 5px rgba(0, 0, 0, .5) inset;
+}
+
+.scroll-sidebar::-webkit-scrollbar-thumb{
+    border-radius: 3px;
+    background: linear-gradient(
+        10deg,
+        #7F7F7F,
+        #7F7F7F
+    );
+}
+
 </style>
 
 <style scoped>

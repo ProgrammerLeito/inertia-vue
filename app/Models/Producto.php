@@ -28,9 +28,10 @@ class Producto extends Model
         'cantidad',
         'unidad_medida',
         'fecha',
-        'empresa',
+        'comprador',
         'comentario',
         'stock',
+        'precio',
         'ultima_entrada',
         'category_id',
     ];

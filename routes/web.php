@@ -21,5 +21,6 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     Route::resource('/productos', ProductoController::class);
     Route::resource('/salidas', SalidasController::class);
     Route::resource('/entradas', EntradaController::class);
+    Route::get('/comprobar_salida', [SalidasController::class , 'comprobar_salida']);
 });
 

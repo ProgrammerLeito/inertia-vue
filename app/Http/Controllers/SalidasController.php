@@ -20,16 +20,29 @@ class SalidasController extends Controller
         $query = Salida::query()->with('producto');
 
         if ($productoId) {
-            $query->where('producto_id', $productoId); // Asegúrate de que 'producto_id' es el nombre correcto del campo en tu base de datos
+            $query->where('producto_id', $productoId);
         }
 
-        $salidas = $query->paginate(self::Numero_de_items_pagina);
+        $salidas = DB::table('salidas')
+                        ->join('users', 'users.id', '=', 'salidas.tecnico')
+                        ->join('productos', 'productos.id', '=', 'salidas.producto_id')
+                        ->select(
+                            'salidas.id',
+                            'salidas.empresa',
+                            'salidas.unidad_salida',
+                            'salidas.comentario_salida',
+                            'users.name',
+                            'salidas.fecha',
+                            'productos.insumo'
+                        )
+                        ->where('salidas.producto_id', '=', $productoId)
+                        ->paginate(self::Numero_de_items_pagina);
 
         $salidas->appends(['producto_id' => $productoId]);
 
         return inertia('Salidas/Index', [
             'salidas' => $salidas,
-            'selectedProductoId' => $productoId, // Pasamos el 'producto_id' seleccionado para poder hacer algo con él en la vista si es necesario
+            'selectedProductoId' => $productoId,
         ]);
     }
 
@@ -41,7 +54,16 @@ class SalidasController extends Controller
     {
         $salidas = Salida::all();
         $productos = Producto::all();
-        return inertia('Salidas/Create', ['salidas' => $salidas, 'productos' => $productos]);
+
+        $tecnico_salidas = DB::table('users')
+            ->select('id','name','password')
+            ->get();
+            
+        return inertia('Salidas/Create', ['salidas' => $salidas, 'tecnico_salidas' => $tecnico_salidas, 'productos' => $productos]);
+    }
+
+    public function comprobar_salida () {
+        
     }
 
     /**

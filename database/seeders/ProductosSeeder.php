@@ -21,10 +21,11 @@ class ProductosSeeder extends Seeder
             'cantidad' => 10,
             'unidad_medida' => 'und',
             'fecha' => '2024-01-25',
-            'empresa' => 'Sakana',
+            'comprador' => 'Franco',
             'comentario' => 'en buen estado',
             'stock' => 10,
             'ultima_entrada' => 10,
+            'precio' => 'S/ 15.00',
             'category_id' => '1',
         ]);
     }

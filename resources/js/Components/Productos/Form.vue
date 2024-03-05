@@ -49,12 +49,12 @@ defineEmits(['submit'])
         <template #form>
             <div class="col-span-6 sm:col-span-6">
 
-                <InputLabel for="insumo" value="Insumo"/>
+                <InputLabel for="insumo" value="Producto"/>
                 <TextInput id="insumo" v-model="form.insumo" type="text" autocomplete="insumo" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.insumo" class="mt-2"/>
                 
                 <InputLabel for="category_id" value="Categorias"/>
-                <select v-model="form.category_id" name="category_id" id="category_id" class="bg-white border border-gray-300 text-gray-900 mb-2 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <select v-model="form.category_id" name="category_id" id="category_id" class="bg-white border border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option value="" disabled="" selected="selected">Selecciona una Categoria</option>
                     <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
                 </select>
@@ -96,9 +96,13 @@ defineEmits(['submit'])
                 <TextInput id="fecha" v-model="form.fecha" type="date" autocomplete="fecha" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.fecha" class="mt-2"/>
                 
-                <InputLabel for="empresa" value="Empresa"/>
-                <TextInput id="empresa" v-model="form.empresa" type="text" autocomplete="empresa" class="mt-1 block w-full"/>
-                <InputError :message="$page.props.errors.empresa" class="mt-2"/>
+                <InputLabel for="comprador" value="Comprador"/>
+                <TextInput id="comprador" v-model="form.comprador" type="text" autocomplete="comprador" class="mt-1 block w-full"/>
+                <InputError :message="$page.props.errors.comprador" class="mt-2"/>
+
+                <InputLabel for="precio" value="Precio"/>
+                <TextInput id="precio" v-model="form.precio" type="text" autocomplete="precio" class="mt-1 block w-full"/>
+                <InputError :message="$page.props.errors.precio" class="mt-2"/>
 
                 <InputLabel for="comentario" value="Comentario"/>
                 <textarea id="comentario" v-model="form.comentario" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba una descripcion para el producto"></textarea>

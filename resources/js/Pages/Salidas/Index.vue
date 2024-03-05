@@ -46,13 +46,13 @@ const deleteSalidas = id =>{
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout title="Salidas">
         <template #header>
             <h1 class="font-semibold text-xl text-gray-800 leading-tight">Salidas de Productos</h1>
         </template>
 
-        <div class="py-2 md:py-4">
-            <div class=" mx-auto sm:px-6 lg:px-8">
+        <div class="py-2 md:py-4 max-h-[calc(100vh-185px)] overflow-auto">
+            <div class="h-full mx-auto sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-b border-gray-600">
                     <div class="flex flex-wrap gap-2 justify-between">
                         <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
@@ -90,10 +90,10 @@ const deleteSalidas = id =>{
                                 <tbody>
                                     <tr class="bg-white text-black border-b dark:bg-gray-200 dark:border-gray-400 dark:text-black" v-for="salida in filteredSalidas">
                                         <td class="px-6 py-4 font-semibold">{{ salida.empresa }}</td>
-                                        <td class="px-6 py-4">{{ salida.producto?.insumo }}</td>
+                                        <td class="px-6 py-4">{{ salida.insumo }}</td>
                                         <td class="px-6 py-4">{{ salida.unidad_salida }}</td>
                                         <td class="px-6 py-4">{{ salida.comentario_salida }}</td>
-                                        <td class="px-6 py-4">{{ salida.tecnico }}</td>
+                                        <td class="px-6 py-4">{{ salida.name }}</td>
                                         <td class="px-6 py-4">{{ salida.fecha }}</td>
                                         <td class="p-3 border-b text-right dark:border-gray-400">
                                             <Link class="py-2 px-4 text-green-500" :href="route('salidas.edit', salida.id)"><i class="bi bi-pencil-square"></i></Link>

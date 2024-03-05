@@ -28,9 +28,10 @@ class ProductoRequest extends FormRequest
             'cantidad' => ['required', 'numeric'],
             'unidad_medida' => ['required', 'string', 'max:250'],
             'fecha' => ['required'],
-            'empresa' => ['required', 'string', 'max:250'],
+            'comprador' => ['required', 'string', 'max:250'],
             'comentario' => ['required', 'string', 'max:250'],
             'stock' => ['required', 'numeric'],
+            'precio' => ['required', 'string', 'max:250'],
             'ultima_entrada' => ['required', 'numeric'],
             'category_id' => ['required'],
         ];

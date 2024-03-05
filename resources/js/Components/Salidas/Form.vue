@@ -29,6 +29,10 @@ defineProps({
     productos: {
         type : Object,
         required: true
+    },
+    tecnico_salidas: {
+        type : Object,
+        required: true
     }
 })
 
@@ -48,12 +52,15 @@ defineEmits(['submit'])
 
         <template #form>
             <div class="col-span-6 sm:col-span-6">
+
+                <!-- {{ tecnico_salidas }} -->
+
                 <InputLabel for="empresa" value="Empresa"/>
                 <TextInput id="empresa" v-model="form.empresa" type="text" autocomplete="empresa" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.empresa" class="mt-2"/>
 
                 <InputLabel for="producto_id" value="Seleccionar Producto"/>
-                <select v-model="form.producto_id" name="producto_id" id="producto_id" class="bg-white border border-gray-300 text-gray-900 mb-2 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <select v-model="form.producto_id" name="producto_id" id="producto_id" class="bg-white border border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option value="" disabled="" selected="selected">Selecciona un Producto</option>
                     <option v-for="producto in productos" :key="producto.id" :value="producto.id">{{ producto.insumo }}</option>
                 </select>
@@ -63,8 +70,11 @@ defineEmits(['submit'])
                 <TextInput id="unidad_salida" v-model="form.unidad_salida" type="text" autocomplete="unidad_salida" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.unidad_salida" class="mt-2"/>
 
-                <InputLabel for="tecnico" value="Tecnico"/>
-                <TextInput id="tecnico" v-model="form.tecnico" type="text" autocomplete="tecnico" class="mt-1 block w-full"/>
+                <InputLabel for="tecnico" value="Seleccionar Personal"/>
+                <select v-model="form.tecnico" name="tecnico" id="tecnico" class="bg-white border border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="" disabled="" selected="selected">Selecciona Personal</option>
+                    <option v-for="user in tecnico_salidas" :key="user.id" :value="user.id">{{ user.name }}</option>
+                </select>
                 <InputError :message="$page.props.errors.tecnico" class="mt-2"/>
 
                 <InputLabel for="fecha" value="Fecha"/>

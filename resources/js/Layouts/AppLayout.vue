@@ -54,11 +54,11 @@ export default {
         
         <Header :dataOpenSideBar="openSidebar" :clickHamburger="toggleSidebar" />
 
-        <div class="relative w-full flex md:pl-[50px] min-h-screen">
+        <div class="relative w-full flex md:pl-[50px] min-h-[calc(100vh-111px)]">
             <Sidebar class="absolute left-0 top-0 z-[100000]" :dataOpenSideBar="openSidebar"/>
             <div class="w-full relative">
                 <!-- Page Heading -->
-                <header v-if="$slots.header" class="bg-white shadow">
+                <header v-if="$slots.header" class="bg-white shadow relative z-[10000]">
                     <div class=" mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         <slot name="header" />
                     </div>

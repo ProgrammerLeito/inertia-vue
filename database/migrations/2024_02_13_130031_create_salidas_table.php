@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('fecha');
             $table->timestamps();
 
-            $table->unsignedBigInteger('producto_id'); // Cambiado de 'producto_id' a 'producto_id'
+            $table->unsignedBigInteger('producto_id');
             $table->foreign('producto_id')->references('id')->on('productos');
         });
     }
