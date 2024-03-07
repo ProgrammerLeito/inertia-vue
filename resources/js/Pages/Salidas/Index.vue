@@ -48,12 +48,12 @@ const deleteSalidas = id =>{
 <template>
     <AppLayout title="Salidas">
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight">Salidas de Productos</h1>
+            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Salidas de Productos</h1>
         </template>
 
-        <div class="py-2 md:py-4 max-h-[calc(100vh-185px)] overflow-auto">
-            <div class="h-full mx-auto sm:px-6 lg:px-8">
-                <div class="p-6 bg-white border-b border-gray-600">
+        <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
+            <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
                         <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Regresar
@@ -63,7 +63,7 @@ const deleteSalidas = id =>{
                         </Link>
                     </div>
                     <div class="mt-4">
-                        <div class="pb-4 bg-white dark:bg-white">
+                        <div class="pb-4 bg-white dark:bg-gray-800">
                             <label for="table-search" class="sr-only">Buscar</label>
                             <div class="relative mt-1">
                                 <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -74,7 +74,7 @@ const deleteSalidas = id =>{
                                 <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar la salida">
                             </div>
                         </div>
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-200 dark:shadow-gray-500">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
@@ -88,7 +88,7 @@ const deleteSalidas = id =>{
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="bg-white text-black border-b dark:bg-gray-200 dark:border-gray-400 dark:text-black" v-for="salida in filteredSalidas">
+                                    <tr class="bg-white text-black border-b dark:bg-gray-700 dark:border-gray-400 dark:text-white" v-for="salida in filteredSalidas">
                                         <td class="px-6 py-4 font-semibold">{{ salida.empresa }}</td>
                                         <td class="px-6 py-4">{{ salida.insumo }}</td>
                                         <td class="px-6 py-4">{{ salida.unidad_salida }}</td>

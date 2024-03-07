@@ -25,7 +25,7 @@ class ProductosSeeder extends Seeder
             'comentario' => 'en buen estado',
             'stock' => 10,
             'ultima_entrada' => 10,
-            'precio' => 'S/ 15.00',
+            'precio' => '15',
             'category_id' => '1',
         ]);
     }

@@ -27,7 +27,7 @@ const logout = () => {
 </script>
 
 <template>
-        <div class="min-h-[calc(100vh-110px)] bg-gray-800" id="side-bar" :class="dataOpenSideBar==true?'side-bar-visible':'side-bar-close'">
+        <div class="min-h-[calc(100vh-50px)] bg-gray-800" id="side-bar" :class="dataOpenSideBar==true?'side-bar-visible':'side-bar-close'">
             <div class="bg-gray-700 text-white dark:text-white h-[60px] flex justify-center items-center">
                 <link href='http://127.0.0.1:8000/font/alphamalemodern.ttf' rel="stylesheet" type="text/css">
                 <span v-show="dataOpenSideBar" class="gap-1 self-center text-2xl font-semibold whitespace-nowrap dark:text-white flex justify-center items-center">
@@ -46,10 +46,10 @@ const logout = () => {
                         </div>
                     </div>
                     <!-- Scrool para sidebar -->
-                    <div :class="{'scroll-sidebar max-h-[calc(100vh-478px)] overflow-x-auto': dataOpenSideBar, 'max-h-[calc(100vh-255px)] overflow-hidden': !dataOpenSideBar}">
+                    <div :class="{'scroll-sidebar h-[calc(100vh-415px)] overflow-x-auto': dataOpenSideBar, 'h-[calc(100vh-205px)] overflow-hidden': !dataOpenSideBar}">
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-people'><span v-show="dataOpenSideBar" class="ml-2">Clientes</span></span></summary>
-                            <Link :href="route('dashboard')" :active="route().current('dashboard')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Clientes</span></Link>
+                            <Link :href="route('clientes.index')" :active="route().current('clientes.*')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Clientes</span></Link>
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-telephone'><span v-show="dataOpenSideBar" class="ml-2">Visitas y Llamadas</span></span></summary>
@@ -111,7 +111,7 @@ const logout = () => {
                     <span class="font-normal text-base text-gray-400">Modo Oscuro</span>
                 </div>
                 <div v-show="dataOpenSideBar" @click="toggleDarkMode" class="w-14 h-8 flex items-center justify-center cursor-pointer">
-                    <div class="base_swith w-10 h-5 rounded-full bg-slate-700 relative flex items-center" :class="{ 'bg-green-700': isDarkMode, 'bg-gray-800': !isDarkMode }" >
+                    <div class="base_swith w-10 h-5 rounded-full relative flex items-center" :class="{ 'bg-green-600': isDarkMode, 'bg-gray-700': !isDarkMode }" >
                     <div :class="{ 'bg-white': isDarkMode, 'bg-white': !isDarkMode }" 
                         :style="{ left: isDarkMode ? 'calc(80% - 0.75rem)' : '0.25rem' }"
                         class="circulo_swith duration-300 w-4 h-4 rounded-full bg-gray-100 absolute"></div>

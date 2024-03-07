@@ -27,12 +27,12 @@ const deleteLesson = id =>{
 <template>
     <AppLayout>
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight">Lecciones</h1>
+            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Lecciones</h1>
         </template>
 
-        <div class="py-2 md:py-4 max-h-[calc(100vh-185px)] overflow-auto">
-            <div class="h-full mx-auto sm:px-6 lg:px-8">
-                <div class="p-6 bg-white border-b border-gray-600">
+        <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
+            <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex justify-between" v-if="$page.props.user.permissions.includes('create lessons')">
                         <Link :href="route('lessons.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded" v-if="$page.props.user.permissions.includes('create lessons')">
                             Crear Leccion

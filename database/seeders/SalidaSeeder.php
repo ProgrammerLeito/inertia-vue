@@ -18,7 +18,7 @@ class SalidaSeeder extends Seeder
             'empresa' => 'Sakana',
             'unidad_salida' => '1',
             'comentario_salida' => 'Ninguno',
-            'tecnico' => 'Franco',
+            'tecnico' => '1',
             'fecha' => '2024-01-25',
             'producto_id' => '1',
         ]);

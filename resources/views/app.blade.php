@@ -27,12 +27,6 @@
         {{-- <div class="min-h-[calc(100%-148px)] overflow-hidden"> --}}
         <div class="overflow-hidden">
         </div>
-        <footer class="ml-auto bg-[#F7BE15] dark:bg-[#F7BE15] border-t border-gray-300 dark:border-gray-700">
-            <div class="mx-auto">
-                <div class="h-[60px] flex items-center justify-center"><h3 class="text-white dark:text-white text-center text-sm w-64 md:w-full"><b>Copyright © 2024 </b>Todos los derechos reservados. Diseñado y desarrollado por <b>Industrias Balinsa.</b></h3></div>
-                <!-- <div class="h-20 flex items-center justify-center"><h3 class="text-gray-900 dark:text-gray-300 text-center text-sm w-64 md:w-full">Todos los derechos reservados. Diseñado y desarrollado por <b>Leonardo Garcia Jimenez</b></h3></div> -->
-            </div>
-        </footer>
     </body>
 
     {{-- <body class="font-sans antialiased box-border">

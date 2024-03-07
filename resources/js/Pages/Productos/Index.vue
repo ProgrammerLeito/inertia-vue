@@ -32,7 +32,7 @@ defineProps({
     }
 });
 
-const deleteProducto = producto_id =>{
+const deleteProducto = (producto_id) =>{
     if (confirm('Are you sure?')){
         Inertia.delete(route('productos.destroy', producto_id))
     }
@@ -43,12 +43,12 @@ const deleteProducto = producto_id =>{
 <template>
     <AppLayout title="Productos">
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight">Productos</h1>
+            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Productos</h1>
         </template>
 
-        <div class="py-2 md:py-4 max-h-[calc(100vh-185px)] overflow-auto">
-            <div class="h-full mx-auto sm:px-6 lg:px-8">
-                <div class="p-6 bg-white border-b border-gray-600">
+        <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
+            <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
                         <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Regresar
@@ -61,7 +61,7 @@ const deleteProducto = producto_id =>{
                         </Link>
                     </div>
                     <div class="mt-4 overflow-auto">
-                        <div class="pb-4 bg-white dark:bg-white">
+                        <div class="pb-4 bg-white dark:bg-gray-800">
                             <label for="table-search" class="sr-only">Buscar</label>
                             <div class="relative mt-1">
                                 <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -72,42 +72,42 @@ const deleteProducto = producto_id =>{
                                 <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
                             </div>
                         </div>
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-200 dark:shadow-gray-500">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Codigo</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Categoria</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Producto</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Marca</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Modelo</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Cantidad</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Cantidad Ultima Entrada</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Medida</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Fecha</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Comprador</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Comentario</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Stock</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Precio Aproximado</th>
-                                        <th scope="col" class="px-6 py-3 text-center border-r dark:border-white border-b-2">Acciones</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Codigo</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Categoria</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Producto</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Marca</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Modelo</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad Ultima Entrada</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Medida</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Fecha</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Comprador</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Comentario</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Stock</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Aproximado</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="bg-white text-black border-b dark:bg-gray-200 dark:border-gray-400" v-for="producto in filteredProductos">
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-center">{{ producto.producto_id }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-left">{{ producto?.name }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 font-semibold text-left">{{ producto.insumo }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-center">{{ producto.marca }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-center">{{ producto.modelo }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-center">{{ producto.cantidad }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-center">{{ producto.ultima_cantidad_entrada == "0" ? producto.ultima_entrada : producto.ultima_cantidad_entrada }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-center">{{ producto.unidad_medida }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-center">{{ producto.fecha }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-center">{{ producto.comprador }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-left">{{ producto.comentario }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) - parseInt(producto.total_salidas) }}</td>
-                                        <td class="px-6 py-4 border-r dark:border-gray-400 text-center">S/. {{ parseFloat(producto.precio).toFixed(2) }}</td>
-                                        <td class="p-3 border-b text-right dark:border-gray-400">
+                                    <tr class="bg-white text-black dark:bg-gray-700 dark:text-white border-b" v-for="producto in filteredProductos">
+                                        <td class="px-6 py-4 text-center">{{ producto.producto_id }}</td>
+                                        <td class="px-6 py-4 text-left">{{ producto?.name }}</td>
+                                        <td class="px-6 py-4 font-semibold text-left">{{ producto.insumo }}</td>
+                                        <td class="px-6 py-4 text-center">{{ producto.marca }}</td>
+                                        <td class="px-6 py-4 text-center">{{ producto.modelo }}</td>
+                                        <td class="px-6 py-4 text-center">{{ producto.cantidad }}</td>
+                                        <td class="px-6 py-4 text-center">{{ producto.ultima_cantidad_entrada == "0" ? producto.ultima_entrada : producto.ultima_cantidad_entrada }}</td>
+                                        <td class="px-6 py-4 text-center">{{ producto.unidad_medida }}</td>
+                                        <td class="px-6 py-4 text-center">{{ producto.fecha }}</td>
+                                        <td class="px-6 py-4 text-center">{{ producto.comprador }}</td>
+                                        <td class="px-6 py-4 text-left">{{ producto.comentario }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) - parseInt(producto.total_salidas) }}</td>
+                                        <td class="px-6 py-4 text-center">S/. {{ parseFloat(producto.precio).toFixed(2) }}</td>
+                                        <td class="p-3 text-center">
                                             <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.producto_id })"><i class="bi bi-eye"></i></Link>
                                             <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.producto_id)"><i class="bi bi-pencil-square"></i></Link>
                                             <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.producto_id)"><i class="bi bi-trash3"></i></Link>

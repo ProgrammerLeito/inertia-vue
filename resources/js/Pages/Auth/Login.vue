@@ -7,6 +7,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import { ref, onMounted } from 'vue';
 
 defineProps({
     canResetPassword: Boolean,
@@ -27,10 +28,15 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
+
+onMounted(() => {
+    const modoOscuroLocalStorage = localStorage.getItem('modoOscuro') === 'true';
+    document.documentElement.classList.toggle('dark', modoOscuroLocalStorage);
+});
 </script>
 
 <template>
-    <Head title="Log in" />
+    <Head title="Login" />
 
     <AuthenticationCard>
         <template #logo>
@@ -72,7 +78,7 @@ const submit = () => {
             <div class="block mt-4">
                 <label class="flex items-center">
                     <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">Recordarme</span>
+                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Recordarme</span>
                 </label>
             </div>
 
@@ -81,8 +87,8 @@ const submit = () => {
                     ¿Olvidaste tu contraseña?
                 </Link> -->
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Inicar Sesion
+                <PrimaryButton class="ms-4 bg-gray-700 dark:bg-gray-600" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Ingresar
                 </PrimaryButton>
             </div>
         </form>
