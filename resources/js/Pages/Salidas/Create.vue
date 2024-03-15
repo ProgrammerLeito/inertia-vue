@@ -1,4 +1,6 @@
 <script>
+// import bcrypt from 'bcryptjs';
+// import Route from 'vendor/tightenco/ziggy/src/js/Route';
     export default {
         name: 'ProductosCreate'
     }
@@ -10,6 +12,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import SalidasForm from '@/Components/Salidas/Form.vue';
 import { onMounted } from 'vue';
 import Swal from 'sweetalert2';
+import { Head, Link, router } from '@inertiajs/vue3';
+import axios from "axios";
 
 defineProps({
     salidas: {
@@ -42,26 +46,62 @@ onMounted(() => {
 
 function warn(event) {
     if (event) {
-        console.log("ingreso")
         event.preventDefault()
     }
-    Swal.fire({
-        title: "Ingrese su Contraseña para confirmar su salida",
-        input: "text",
-        inputAttributes: {
-            autocapitalize: "off"
-        },
-        showCancelButton: true,
-        confirmButtonText: "Confirmar",
-        showLoaderOnConfirm: true,
-        cancelButtonText: "Cancelar",
-        allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-        if (result.isConfirmed) {
-            console.log("holas")
-            comprobar_salida
-        }
-    });
+    let id = document.getElementById('tecnico').value;
+    if (id == 0 || id == "") {
+        Swal.fire({
+            icon: 'error',
+            title: 'Debe seleccionar un tecnico',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }else{
+        Swal.fire({
+            title: "Ingrese su Contraseña para confirmar su salida",
+            input: "password",
+            inputAttributes: {
+                autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Confirmar",
+            showLoaderOnConfirm: true,
+            cancelButtonText: "Cancelar",
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let passwordconfirmacion = result.value;
+    
+                // Enviar solicitud al backend usando axios
+                axios.post('/comprobarSalida', { id: id, passwordconfirmacion: passwordconfirmacion })
+                .then(response => {
+                    if (response.data.siexisteusuario === true){
+                        Swal.fire({
+                            icon: 'success',
+                            title: "Salida Exitosa",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        submit();
+                    }else if (response.data.siexisteusuario === false){
+                        Swal.fire({
+                            icon: 'error',
+                            title: "Contraseña Incorrecta",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al enviar la solicitud:', error);
+                });
+            }
+        });
+    }
+}
+
+function submit(){
+    router.post('/salidas.store', form)
 }
 
 </script>
@@ -77,7 +117,7 @@ function warn(event) {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                         <div class="p-6 bg-white border-gray-200 dark:bg-gray-800">
-                            <SalidasForm :form="form" :productos="productos" :salidas="salidas" :tecnico_salidas="tecnico_salidas" @submit="warn($event)"/>
+                            <SalidasForm :form="form" :productos="productos" :salidas="salidas" :tecnico_salidas="tecnico_salidas" @submit="warn($event)" />
                         </div>
                     </div>
                 </div>

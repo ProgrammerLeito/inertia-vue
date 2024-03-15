@@ -115,7 +115,7 @@ const deleteProducto = (producto_id) =>{
                                     </tr>
                                 </tbody>
                             </table>
-                            <div v-if="filteredProductos.length === 0" class="text-center py-2">
+                            <div v-if="filteredProductos.length === 0" class="text-center py-2 dark:text-white">
                                 No se encontraron datos.
                             </div>
                         </div>

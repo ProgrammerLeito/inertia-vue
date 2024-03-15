@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Salida;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Producto;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 
 class SalidasController extends Controller
 {
@@ -62,8 +66,22 @@ class SalidasController extends Controller
         return inertia('Salidas/Create', ['salidas' => $salidas, 'tecnico_salidas' => $tecnico_salidas, 'productos' => $productos]);
     }
 
-    public function comprobar_salida () {
-        
+    public function comprobarSalida(Request $request)
+    {
+        $idTec = $request->input('id');
+        $passwordconfirmacion = $request->input('passwordconfirmacion');
+
+        // Obtener el usuario por su ID
+        $usuario = User::find($idTec);
+
+        if (!$usuario) {
+            return response()->json(['siexisteusuario' => false]);
+        }
+
+        // Verificar la contraseña utilizando Hash::check()
+        $contraseñaCorrecta = Hash::check($passwordconfirmacion, $usuario->password);
+
+        return response()->json(['siexisteusuario' => $contraseñaCorrecta]);
     }
 
     /**
@@ -80,8 +98,11 @@ class SalidasController extends Controller
             'producto_id' => 'required',
         ]);
 
+        // Encuentra el producto asociado a la salida
+        $producto = Producto::findOrFail($validatedData['producto_id']);
+
         Salida::create($validatedData);
-        return redirect()->route('salidas.index');
+        return redirect()->route('salidas.index', ['producto_id' => $producto->id]);
     }
 
     /**
@@ -98,7 +119,12 @@ class SalidasController extends Controller
     public function edit(Salida $salida)
     {
         $producto = Producto::all();
-        return inertia('Salidas/Edit', ['salidas' => $salida, 'productos' => $producto]);
+
+        $tecnico_salidas = DB::table('users')
+            ->select('id','name','password')
+            ->get();
+
+        return inertia('Salidas/Edit', ['salidas' => $salida, 'productos' => $producto, 'tecnico_salidas' => $tecnico_salidas]);
     }
 
     /**
@@ -111,7 +137,7 @@ class SalidasController extends Controller
             'empresa' => 'required|string',
             'unidad_salida' => 'required|numeric',
             'comentario_salida' => 'required|string',
-            'tecnico' => 'required|string',
+            'tecnico' => 'required|integer',
             'fecha' => 'required',
             'producto_id' => 'required',
         ]);
@@ -120,6 +146,7 @@ class SalidasController extends Controller
         DB::beginTransaction();
         try {
 
+            // dd($validated);
             // Actualiza los datos de la salida
             $salida->update($validated);
 

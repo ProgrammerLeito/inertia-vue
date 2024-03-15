@@ -45,13 +45,13 @@ defineEmits(['submit'])
         <template #form>
             <div class="col-span-6 sm:col-span-6">
 
-                <InputLabel for="cli_razonSocial" value="Razon Social"/>
-                <TextInput id="cli_razonSocial" v-model="form.cli_razonSocial" type="text" autocomplete="cli_razonSocial" class="mt-1 block w-full"/>
-                <InputError :message="$page.props.errors.cli_razonSocial" class="mt-2"/>
-
                 <InputLabel for="cli_ruc" value="Ruc"/>
                 <TextInput id="cli_ruc" v-model="form.cli_ruc" type="text" autocomplete="cli_ruc" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.cli_ruc" class="mt-2"/>
+
+                <InputLabel for="cli_razonSocial" value="Razon Social"/>
+                <TextInput id="cli_razonSocial" v-model="form.cli_razonSocial" type="text" autocomplete="cli_razonSocial" class="mt-1 block w-full"/>
+                <InputError :message="$page.props.errors.cli_razonSocial" class="mt-2"/>
 
                 <InputLabel for="cli_ciudad" value="Ciudad"/>
                 <TextInput id="cli_ciudad" v-model="form.cli_ciudad" type="text" autocomplete="cli_ciudad" class="mt-1 block w-full"/>

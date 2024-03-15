@@ -13,7 +13,7 @@ export default {
         return this.salidas.data.filter(salida => {
             const normalizedQuery = this.searchQuery.toLowerCase();
             return salida.empresa.toLowerCase().includes(normalizedQuery) ||
-                salida.tecnico.toLowerCase().includes(normalizedQuery) ||
+                salida.name.toLowerCase().includes(normalizedQuery) ||
                 salida.id.toString().includes(normalizedQuery); // Suponiendo que 'id' es un número
         });
         },
@@ -102,7 +102,7 @@ const deleteSalidas = id =>{
                                     </tr>
                                 </tbody>
                             </table>
-                            <div v-if="filteredSalidas.length === 0" class="text-center py-2">
+                            <div v-if="filteredSalidas.length === 0" class="text-center py-2 dark:text-white">
                                 No se encontraron datos.
                             </div>
                         </div>

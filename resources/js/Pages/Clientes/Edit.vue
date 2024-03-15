@@ -11,20 +11,20 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import ClientesForm from '@/Components/Clientes/Form.vue';
 
 const props = defineProps({
-    clientes: {
+    cliente: {
         type: Object,
         required: true,
     }
 })
 
 const form = useForm({
-    cli_razonSocial: props.clientes.cli_razonSocial,
-    cli_ruc: props.clientes.cli_ruc,
-    cli_ciudad: props.clientes.cli_ciudad,
-    cli_direccionlegal: props.clientes.cli_direccionlegal,
-    cli_direccion1: props.clientes.cli_direccion1,
-    cli_direccion2: props.clientes.cli_direccion2,
-    cli_observacion: props.clientes.cli_observacion
+    cli_razonSocial: props.cliente.cli_razonSocial,
+    cli_ruc: props.cliente.cli_ruc,
+    cli_ciudad: props.cliente.cli_ciudad,
+    cli_direccionlegal: props.cliente.cli_direccionlegal,
+    cli_direccion1: props.cliente.cli_direccion1,
+    cli_direccion2: props.cliente.cli_direccion2,
+    cli_observacion: props.cliente.cli_observacion
 })
 
 </script>
@@ -39,7 +39,7 @@ const form = useForm({
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg"></div>
                 <div class="p-6 bg-white border-gray-200 dark:bg-gray-800">
-                    <ClientesForm :updating="true" :form="form" @submit="form.put(route('clientes.update', clientes.idCliente))"/>
+                    <ClientesForm :updating="true" :form="form" @submit="form.put(route('clientes.update', cliente.idCliente))"/>
                 </div>
             </div>
         </div>
