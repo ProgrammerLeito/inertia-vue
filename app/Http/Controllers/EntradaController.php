@@ -15,6 +15,7 @@ class EntradaController extends Controller
      */
     public function index(Request $request)
     {
+        $productos = Producto::all();
         $productoId = $request->query('producto_id');
 
         $query = Entrada::query()->with('producto');
@@ -28,6 +29,7 @@ class EntradaController extends Controller
         return inertia('Entradas/Index', [
             'entradas' => $entradas,
             'selectedProductoId' => $productoId, // Pasamos el 'producto_id' seleccionado para poder hacer algo con él en la vista si es necesario
+            'productos' => $productos,
         ]);
     }
 

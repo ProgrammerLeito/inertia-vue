@@ -21,9 +21,11 @@ export default {
 </script>
 
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link } from '@inertiajs/vue3'
-import { Inertia } from '@inertiajs/inertia'
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { Link } from '@inertiajs/vue3';
+import DangerButton from '@/Components/DangerButton.vue';
+import Swal from 'sweetalert2';
+import {useForm} from '@inertiajs/vue3';
 
 defineProps({
     productos: {
@@ -32,10 +34,38 @@ defineProps({
     }
 });
 
-const deleteProducto = (producto_id) =>{
-    if (confirm('Are you sure?')){
-        Inertia.delete(route('productos.destroy', producto_id))
-    }
+const form = useForm ({
+    insumo: '',
+    marca: '',
+    modelo: '',
+    cantidad: '',
+    unidad_medida: '',
+    fecha: '',
+    comprador: '',
+    comentario: '',
+    stock: '',
+    ultima_entrada: '',
+    precio: '',
+    category_id: '',
+});
+
+const deleteProducto = (id, insumo) => {
+    const alerta = Swal.mixin({
+        buttonsStyling:true
+    });
+    alerta.fire({
+        title: '¿Estás seguro de eliminar ' +insumo+ '?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('productos.destroy', id),{
+                onSuccess: () => {ok('Producto eliminado')}
+            });
+        }
+    })
 }
 
 </script>
@@ -50,15 +80,15 @@ const deleteProducto = (producto_id) =>{
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
-                        <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            Regresar
-                        </Link>
-                        <Link :href="route('entradas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            Ingresar Entrada
-                        </Link>
                         <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Registrar Producto
                         </Link>
+                        <Link :href="route('entradas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                            Listar Entradas
+                        </Link>
+                        <!-- <Link :href="route('salidas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                            Listar Salidas
+                        </Link> -->
                     </div>
                     <div class="mt-4 overflow-auto">
                         <div class="pb-4 bg-white dark:bg-gray-800">
@@ -80,13 +110,12 @@ const deleteProducto = (producto_id) =>{
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Producto</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Stock</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Categoria</th>
+                                        <!-- <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Categoria</th> -->
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Marca</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Modelo</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad Ultima Entrada</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Medida</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Fecha</th>
+                                        <!-- <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad Ultima Entrada</th> -->
+                                        <!-- <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Fecha</th> -->
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Comprador</th>
                                         <!-- <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Comentario</th> -->
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Aproximado</th>
@@ -99,20 +128,22 @@ const deleteProducto = (producto_id) =>{
                                         <td class="px-6 py-4 text-center"><img :src="'/img/productos/' + producto.imagen_producto" alt="Foto del Producto" class="px-6 py- object-cover"></td>
                                         <td class="px-6 py-4 font-semibold text-left">{{ producto.insumo }}</td>
                                         <td class="px-6 py-4 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) - parseInt(producto.total_salidas) }}</td>
-                                        <td class="px-6 py-4 text-left">{{ producto?.name }}</td>
+                                        <!-- <td class="px-6 py-4 text-left">{{ producto?.name }}</td> -->
                                         <td class="px-6 py-4 text-center">{{ producto.marca }}</td>
                                         <td class="px-6 py-4 text-center">{{ producto.modelo }}</td>
-                                        <td class="px-6 py-4 text-center">{{ producto.cantidad }}</td>
-                                        <td class="px-6 py-4 text-center">{{ producto.ultima_cantidad_entrada == "0" ? producto.ultima_entrada : producto.ultima_cantidad_entrada }}</td>
-                                        <td class="px-6 py-4 text-center">{{ producto.unidad_medida }}</td>
-                                        <td class="px-6 py-4 text-center">{{ producto.fecha }}</td>
+                                        <td class="px-6 py-4 text-center">{{ producto.cantidad }}   {{ producto.unidad_medida }}</td>
+                                        <!-- <td class="px-6 py-4 text-center">{{ producto.ultima_cantidad_entrada == "0" ? producto.ultima_entrada : producto.ultima_cantidad_entrada }}</td> -->
+                                        <!-- <td class="px-6 py-4 text-center">{{ producto.fecha }}</td> -->
                                         <td class="px-6 py-4 text-center">{{ producto.comprador }}</td>
                                         <td class="px-6 py-4 text-center">S/. {{ parseFloat(producto.precio).toFixed(2) }}</td>
                                         <!-- <td class="px-6 py-4 text-left">{{ producto.comentario }}</td> -->
                                         <td class="p-3 text-center">
                                             <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.producto_id })"><i class="bi bi-eye"></i></Link>
                                             <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.producto_id)"><i class="bi bi-pencil-square"></i></Link>
-                                            <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.producto_id)"><i class="bi bi-trash3"></i></Link>
+                                            <!-- <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.producto_id)"><i class="bi bi-trash3"></i></Link> -->
+                                            <DangerButton @click="$event => deleteProducto(producto.id,producto.insumo)" class="ml-1">
+                                                <i class="fa-solid fa-trash mr-1 fa-sm"></i>
+                                            </DangerButton>
                                         </td>
                                     </tr>
                                 </tbody>

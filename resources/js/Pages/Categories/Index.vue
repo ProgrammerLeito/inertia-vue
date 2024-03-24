@@ -23,19 +23,88 @@ export default {
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/vue3'
-import { Inertia } from '@inertiajs/inertia'
-
+import InputLabel from '@/Components/InputLabel.vue';
+import InputError from '@/Components/InputError.vue';
+import TextInput from '@/Components/TextInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import Modal from '@/Components/Modal.vue';
+import Swal from 'sweetalert2';
+import {useForm} from '@inertiajs/vue3';
+import { nextTick, ref } from 'vue';
+ 
+const nameInput = ref(null);
+const modal = ref(false);
+const title = ref('');
+const operation = ref(1);
+const id = ref('');
+ 
 defineProps({
     categories: {
         type : Object,
         required: true
     }
 });
-
-const deleteCategory = id =>{
-    if (confirm('¿Desea eliminar la categoria?')){
-        Inertia.delete(route('categories.destroy', id))
+ 
+const form = useForm ({
+    name: ''
+})
+ 
+const openModal = (op,name,category)=>{
+    modal.value = true;
+    nextTick( () => nameInput.value.focus());
+    operation.value = op;
+    id.value = category;
+    if(op ==1){
+        title.value = 'Registrar categoria';
     }
+    else{
+        title.value = 'Actualizar categoria';
+        form.name=name;
+    }
+}
+ 
+ 
+const closeModal = () =>{
+    modal.value = false;
+    form.reset();
+}
+const save = () => {
+    if (operation.value == 1) {
+        form.post(route('categories.store'), {
+            onSuccess: () => { ok('categoria registrada') } // Llama a la función ok con el mensaje correcto
+        });
+    } else {
+        form.put(route('categories.update', id.value), {
+            onSuccess: () => { ok('categoria actualizado') } // Llama a la función ok con el mensaje correcto
+        });
+    }
+}
+ 
+const ok = (msj) =>{
+    form.reset();
+    // closeModal(); se puede comentar para que el modal se mantenga abierto y hacie seguir creando
+    closeModal();
+    Swal.fire({title:msj,icon:'success'});
+}
+ 
+const deleteEmployee = (id, name) => {
+    const alerta = Swal.mixin({
+        buttonsStyling:true
+    });
+    alerta.fire({
+        title: '¿Estás seguro de eliminar ' +name+ '?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('categories.destroy', id),{
+                onSuccess: () => {ok('Entrada Eiminada')}
+            });
+        }
+    })
 }
 
 </script>
@@ -50,9 +119,12 @@ const deleteCategory = id =>{
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between" v-if="$page.props.user.permissions.includes('create categories')">
-                        <Link :href="route('categories.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('create categories')">
+                        <!-- <Link @click="$event => openModal(1)" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('create categories')">
                             Registrar Categoria
-                        </Link>
+                        </Link> -->
+                        <PrimaryButton @click="$event => openModal(1)">
+                            <i class="fa-solid  fa-plus-circle mx-1"></i> registrar categoria
+                        </PrimaryButton>
                     </div>
                     <div class="mt-4">
                         <div class="pb-4 bg-white dark:bg-gray-800">
@@ -70,7 +142,7 @@ const deleteCategory = id =>{
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-white uppercase bg-green-600">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">Nombre</th>
+                                        <th scope="col" class="px-6 py-3">Categorias</th>
                                         <th scope="col" class="text-right px-6 py-3">Acciones</th>
                                     </tr>
                                 </thead>
@@ -79,8 +151,14 @@ const deleteCategory = id =>{
                                         <td class="px-6 py-4 font-semibold">{{ category.name }}</td>
                                         <td class="p-3 text-right">
                                             <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link>
-                                            <Link class="py-2 px-4 text-green-500" :href="route('categories.edit', category.id)" v-if="$page.props.user.permissions.includes('update categories')"><i class="bi bi-pencil-square"></i></Link>
-                                            <Link class="py-2 px-4 text-red-500" @click="deleteCategory(category.id)" v-if="$page.props.user.permissions.includes('delete categories')"><i class="bi bi-trash3"></i></Link>
+                                            <!-- <Link class="py-2 px-4 text-green-500" @click="$event => openModal(2,category.name,category.id)" v-if="$page.props.user.permissions.includes('update categories')"><i class="bi bi-pencil-square"></i></Link>
+                                            <Link class="py-2 px-4 text-red-500" @click="$event => deleteEmployee(category.id,category.name)" v-if="$page.props.user.permissions.includes('delete categories')"><i class="bi bi-trash3"></i></Link> -->
+                                            <PrimaryButton @click="$event => openModal(2,category.name,category.id)">
+                                                <i class="fa-solid fa-edit fa-sm"></i>
+                                            </PrimaryButton>
+                                            <DangerButton @click="$event => deleteEmployee(category.id,category.name)" class="ml-1">
+                                                <i class="fa-solid fa-trash mr-1 fa-sm"></i>
+                                            </DangerButton>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -103,5 +181,26 @@ const deleteCategory = id =>{
                 </div>
             </div>
         </div>
+        <Modal :show="modal" @close="closeModal">
+            <div class="p-4">
+                <h2 class="text-lg font-medium text-gray-900 text-center uppercase mb-4">{{ title }}</h2>
+                <div class="p-3 ">
+                    <InputLabel for="name" value="NOMBRE:" class="mb-2"></InputLabel>
+                    <TextInput id="cantnameidad" ref="nameInput" v-model="form.name" type="text" class="w-full"
+                        placeholder="Nombre de la categoria"></TextInput>
+                    <InputError :message="form.errors.name" class="mt-2"></InputError>
+                </div>
+                <div class="p-3 flex justify-center">
+                    <PrimaryButton :disabled="form.processing" @click="save">
+                        <i class="fa-solid fa-save"></i>Registrar
+                    </PrimaryButton>
+                    <DangerButton class="ml-3" :disabled="form.processing"
+                    @click="closeModal">
+                        Cancelar
+                    </DangerButton>
+                </div>
+                <!-- Agrega más campos según sea necesario -->
+            </div>
+        </Modal>
     </AppLayout>
 </template>
