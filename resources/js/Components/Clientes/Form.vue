@@ -49,6 +49,8 @@ defineEmits(['submit'])
                 <TextInput id="cli_ruc" v-model="form.cli_ruc" type="text" autocomplete="cli_ruc" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.cli_ruc" class="mt-2"/>
 
+                <!-- <label id="razon-social-two">{{ $razonSocial }}</label> -->
+
                 <InputLabel for="cli_razonSocial" value="Razon Social"/>
                 <TextInput id="cli_razonSocial" v-model="form.cli_razonSocial" type="text" autocomplete="cli_razonSocial" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.cli_razonSocial" class="mt-2"/>

@@ -33,6 +33,7 @@ class ProductoRequest extends FormRequest
             'stock' => ['required', 'numeric'],
             'precio' => ['required', 'string', 'max:250'],
             'ultima_entrada' => ['required', 'numeric'],
+            'imagen_producto' => ['required'],
             'category_id' => ['required'],
         ];
     }

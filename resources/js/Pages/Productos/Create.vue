@@ -37,6 +37,7 @@ const form = useForm ({
     ultima_entrada: '',
     precio: '',
     category_id: '',
+    imagen_producto: '',
 })
 
 // Importante para duplicar

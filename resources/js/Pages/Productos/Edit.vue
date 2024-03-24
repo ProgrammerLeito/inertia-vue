@@ -33,7 +33,8 @@ const form = useForm({
     stock: props.productos.stock,
     precio: props.productos.precio,
     ultima_entrada: props.productos.ultima_entrada,
-    category_id: props.productos.category_id
+    category_id: props.productos.category_id,
+    imagen_producto: props.productos.imagen_producto
 })
 
 </script>

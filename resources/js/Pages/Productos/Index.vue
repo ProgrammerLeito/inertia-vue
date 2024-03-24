@@ -57,7 +57,7 @@ const deleteProducto = (producto_id) =>{
                             Ingresar Entrada
                         </Link>
                         <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            Ingresar Producto
+                            Registrar Producto
                         </Link>
                     </div>
                     <div class="mt-4 overflow-auto">
@@ -77,8 +77,10 @@ const deleteProducto = (producto_id) =>{
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Codigo</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Categoria</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Producto</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Stock</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Categoria</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Marca</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Modelo</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad</th>
@@ -86,8 +88,7 @@ const deleteProducto = (producto_id) =>{
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Medida</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Comprador</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Comentario</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Stock</th>
+                                        <!-- <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Comentario</th> -->
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Aproximado</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                     </tr>
@@ -95,8 +96,10 @@ const deleteProducto = (producto_id) =>{
                                 <tbody>
                                     <tr class="bg-white text-black dark:bg-gray-700 dark:text-white border-b" v-for="producto in filteredProductos">
                                         <td class="px-6 py-4 text-center">{{ producto.producto_id }}</td>
-                                        <td class="px-6 py-4 text-left">{{ producto?.name }}</td>
+                                        <td class="px-6 py-4 text-center"><img :src="'/img/productos/' + producto.imagen_producto" alt="Foto del Producto" class="px-6 py- object-cover"></td>
                                         <td class="px-6 py-4 font-semibold text-left">{{ producto.insumo }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) - parseInt(producto.total_salidas) }}</td>
+                                        <td class="px-6 py-4 text-left">{{ producto?.name }}</td>
                                         <td class="px-6 py-4 text-center">{{ producto.marca }}</td>
                                         <td class="px-6 py-4 text-center">{{ producto.modelo }}</td>
                                         <td class="px-6 py-4 text-center">{{ producto.cantidad }}</td>
@@ -104,9 +107,8 @@ const deleteProducto = (producto_id) =>{
                                         <td class="px-6 py-4 text-center">{{ producto.unidad_medida }}</td>
                                         <td class="px-6 py-4 text-center">{{ producto.fecha }}</td>
                                         <td class="px-6 py-4 text-center">{{ producto.comprador }}</td>
-                                        <td class="px-6 py-4 text-left">{{ producto.comentario }}</td>
-                                        <td class="px-6 py-4 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) - parseInt(producto.total_salidas) }}</td>
                                         <td class="px-6 py-4 text-center">S/. {{ parseFloat(producto.precio).toFixed(2) }}</td>
+                                        <!-- <td class="px-6 py-4 text-left">{{ producto.comentario }}</td> -->
                                         <td class="p-3 text-center">
                                             <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.producto_id })"><i class="bi bi-eye"></i></Link>
                                             <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.producto_id)"><i class="bi bi-pencil-square"></i></Link>

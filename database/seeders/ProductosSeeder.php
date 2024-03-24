@@ -26,6 +26,7 @@ class ProductosSeeder extends Seeder
             'stock' => 10,
             'ultima_entrada' => 10,
             'precio' => '15',
+            'imagen_producto' => '',
             'category_id' => '1',
         ]);
     }

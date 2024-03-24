@@ -36,6 +36,7 @@ class ProductoController extends Controller
                             'productos.stock',
                             'productos.precio',
                             'productos.ultima_entrada',
+                            'productos.imagen_producto',
                             'productos.category_id',
                             DB::raw('(SELECT COALESCE(SUM(cantidad), 0) FROM entradas WHERE entradas.producto_id = productos.id) as total_entradas'),
                             DB::raw('(SELECT COALESCE(SUM(unidad_salida), 0) FROM salidas WHERE salidas.producto_id = productos.id) as total_salidas'),
@@ -68,6 +69,14 @@ class ProductoController extends Controller
     public function store(ProductoRequest $request)
     {
         $producto = Producto::create($request->validated());
+
+        if ($request->hasFile('imagen_producto')) {
+            $file = $request->file('imagen_producto');
+            $nombreArchivo = hash('sha256', time() . '_' . $file->getClientOriginalName()) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path().'/img/productos', $nombreArchivo);
+            $producto->imagen_producto = $nombreArchivo;
+        }
+        $producto->save();
 
         return redirect()->route('productos.index', ['category_id' => $producto->category_id]);
     }

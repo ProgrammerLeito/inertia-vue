@@ -32,6 +32,7 @@ class Producto extends Model
         'comentario',
         'stock',
         'precio',
+        'imagen_producto',
         'ultima_entrada',
         'category_id',
     ];

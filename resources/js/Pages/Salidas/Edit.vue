@@ -37,9 +37,27 @@ const form = useForm({
     producto_id: props.salidas.producto_id
 })
 
+// Funcion validateform para ver si al crear la salida estan los campos rellenados
+function validateForm() {
+    if (!form.empresa || !form.producto_id || !form.unidad_salida || !form.tecnico || !form.fecha || !form.comentario_salida) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Todos los campos son requeridos',
+            showConfirmButton: false,
+            timer: 1500
+        });
+        return false;
+    }
+    return true;
+}
+
 function warn(event) {
     if (event) {
         event.preventDefault()
+    }
+    // llamar a la funcion validateform para ver si al crear la salida estan los campos rellenados
+    if (!validateForm()) {
+        return;
     }
     let id = document.getElementById('tecnico').value;
     if (id == 0 || id == "") {
@@ -93,8 +111,8 @@ function warn(event) {
     }
 }
 
-function submit(){
-    router.post('/salidas.update', form)
+function submit() {
+    form.put(route('salidas.update', {salida: props.salidas.id}));
 }
 
 </script>

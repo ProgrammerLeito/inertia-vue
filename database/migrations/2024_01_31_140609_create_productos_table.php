@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('stock', 250);
             $table->string('ultima_entrada', 250);
             $table->string('precio', 250);
+            $table->string('imagen_producto');
             $table->timestamps();
 
             $table->unsignedBigInteger('category_id');

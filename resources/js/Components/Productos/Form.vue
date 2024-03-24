@@ -1,7 +1,34 @@
 <script>
 export default {
-    name: 'ProductosForm'
+    name: 'ProductosForm',
+    methods: {
+        obtenerImagen(e){
+            const file = e.target.files[0];
+            this.form.imagen_producto = file;
+
+            this.cargarImagen(file);
+        },
+
+        cargarImagen(file){
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.imagenMiniatura= e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    },
+    data() {
+        return {
+            imagenMiniatura: '',
+        }
+    },
+    computed: {
+        imagen(){
+            return this.imagenMiniatura;
+        }
+    }
 }
+
 </script>
 
 <script setup>
@@ -107,6 +134,15 @@ defineEmits(['submit'])
                 <InputLabel for="comentario" value="Comentario"/>
                 <textarea id="comentario" v-model="form.comentario" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba una descripcion para el producto"></textarea>
                 <InputError :message="$page.props.errors.comentario" class="mt-2"/>
+                
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Seleccionar Imagen</label>
+                <input @change="obtenerImagen" :v-model="form.imagen_producto" class="p-2 block w-full text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
+                <InputError :message="$page.props.errors.imagen_producto" class="mt-2"/>
+                
+                <figure class="mt-4 ml-14" v-if="imagenMiniatura !== ''">
+                    <img width="200" height="200" :src="imagenMiniatura" alt="Foto del Producto">
+                </figure>
+
             </div>
         </template>
 

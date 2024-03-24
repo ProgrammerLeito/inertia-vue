@@ -37,9 +37,15 @@ defineProps({
     }
 });
 
-const deleteSalidas = id =>{
-    if (confirm('Are you sure?')){
-        Inertia.delete(route('salidas.destroy', id))
+const deleteSalidas = id => {
+    if (confirm('¿Estás seguro?')){
+        Inertia.delete(route('salidas.destroy', id)).then(() => {
+            // Actualizar página después de eliminar la salida
+            this.$inertia.reload({ preserveState: false });
+        }).catch(error => {
+            console.error('Error al eliminar la salida:', error);
+            // Manejar errores aquí si es necesario
+        });
     }
 }
 

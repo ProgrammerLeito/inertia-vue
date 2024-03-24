@@ -8,18 +8,15 @@ class ConsultarRucController extends Controller
 {
     public function ComprobarRuc(Request $request)
     {
-        $token = 'apis-token-1.aTSI1U7KEuT-6bbbCguH-4Y8TI6KS73N';
-        $ruc = 'ruc';
+        $token = 'apis-token-7907.K0qLm91OLHYP07iBLCqF4INtKqqtu0H6';
+        $ruc = $request->input('ruc');
 
         // Iniciar llamada a API
         $curl = curl_init();
 
         // Buscar ruc sunat
         curl_setopt_array($curl, array(
-        // para usar la versión 2
         CURLOPT_URL => 'https://api.apis.net.pe/v2/sunat/ruc?numero=' . $ruc,
-        // para usar la versión 1
-        // CURLOPT_URL => 'https://api.apis.net.pe/v1/ruc?numero=' . $ruc,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_SSL_VERIFYPEER => 0,
         CURLOPT_ENCODING => '',
@@ -37,7 +34,11 @@ class ConsultarRucController extends Controller
 
         curl_close($curl);
         // Datos de empresas según padron reducido
-        $empresa = json_decode($response);
-        var_dump($empresa);
+        $empresa = json_decode($response, true);
+
+        $razonSocial = $empresa['razonSocial'] ?? 'No Disponible';
+
+        // Retornar a una vista con la razón social
+        return view('ClientesForm', ['razonSocial' => $razonSocial]);
     }
 }

@@ -25,6 +25,6 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     Route::resource('/entradas', EntradaController::class);
     Route::post('/comprobarSalida', [SalidasController::class , 'comprobarSalida']);
     Route::post('/salidas.store', [SalidasController::class , 'store']);
-    Route::post('/salidas.update', [SalidasController::class , 'update']);
+    Route::put('/salidas.update', [SalidasController::class , 'update']);
 });
 
