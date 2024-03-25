@@ -1,6 +1,14 @@
 <script>
 export default {
-    name: 'SalidasForm'
+    name: 'SalidasForm',
+    mounted() {
+        const checkbox = document.getElementById('default-checkbox');
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                console.log(1); // Imprimir '1' si el checkbox está marcado
+            }
+        });
+    }
 }
 </script>
 
@@ -11,6 +19,7 @@ import InputError from '@/Components/InputError.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
 import TextInput from '@/Components/TextInput.vue'
+import { watch } from 'vue';
 
 defineProps({
     form: {
@@ -52,13 +61,6 @@ defineEmits(['submit'])
 
         <template #form>
             <div class="col-span-6 sm:col-span-6">
-
-                <!-- {{ tecnico_salidas }} -->
-
-                <InputLabel for="empresa" value="Empresa"/>
-                <TextInput id="empresa" v-model="form.empresa" type="text" autocomplete="empresa" class="mt-1 block w-full"/>
-                <InputError :message="$page.props.errors.empresa" class="mt-2"/>
-
                 <InputLabel for="producto_id" value="Seleccionar Producto"/>
                 <select v-model="form.producto_id" name="producto_id" id="producto_id" class="bg-white border border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option value="" disabled="" selected="selected">Selecciona un Producto</option>
@@ -66,16 +68,31 @@ defineEmits(['submit'])
                 </select>
                 <InputError :message="$page.props.errors.producto_id" class="mt-2"/>
 
-                <InputLabel for="unidad_salida" value="Unidad de Salida"/>
-                <TextInput id="unidad_salida" v-model="form.unidad_salida" type="text" autocomplete="unidad_salida" class="mt-1 block w-full"/>
-                <InputError :message="$page.props.errors.unidad_salida" class="mt-2"/>
+                <div class="flex items-center mb-4 mt-4">
+                    <input id="default-checkbox" v-model="form.devolucion" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="default-checkbox" class="ms-2 text-sm font-medium text-white">Devolucion del Producto</label>
+                </div>
+                
+                <InputLabel for="empresa" value="Empresa"/>
+                <TextInput id="empresa" v-model="form.empresa" type="text" autocomplete="empresa" class="mt-1 block w-full"/>
+                <InputError :message="$page.props.errors.empresa" class="mt-2"/>
 
-                <InputLabel for="tecnico" value="Seleccionar Personal"/>
-                <select v-model="form.tecnico" name="tecnico" id="tecnico" class="bg-white border border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option value="" disabled="" selected="selected">Selecciona Personal</option>
-                    <option v-for="user in tecnico_salidas" :key="user.id" :value="user.id">{{ user.name }}</option>
-                </select>
-                <InputError :message="$page.props.errors.tecnico" class="mt-2"/>
+                <div class="mt-2 grid grid-cols-3 gap-x-6 gap-y-8 sm:grid-cols-6 md:grid-cols-20">
+                    <div class="sm:col-span-3">
+                        <InputLabel for="unidad_salida" value="Unidad de Salida"/>
+                        <TextInput id="unidad_salida" v-model="form.unidad_salida" type="text" autocomplete="unidad_salida" class="mt-1 block w-full"/>
+                        <InputError :message="$page.props.errors.unidad_salida" class="mt-2"/>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <InputLabel for="tecnico" value="Seleccionar Personal"/>
+                        <select v-model="form.tecnico" name="tecnico" id="tecnico" class="bg-white border border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="" disabled="" selected="selected">Selecciona Personal</option>
+                            <option v-for="user in tecnico_salidas" :key="user.id" :value="user.id">{{ user.name }}</option>
+                        </select>
+                        <InputError :message="$page.props.errors.tecnico" class="mt-2"/>
+                    </div>
+                </div>
+
 
                 <InputLabel for="fecha" value="Fecha"/>
                 <TextInput id="fecha" v-model="form.fecha" type="date" autocomplete="fecha" class="mt-1 block w-full"/>
@@ -89,7 +106,7 @@ defineEmits(['submit'])
 
         <template #actions>
             <PrimaryButton>
-                {{ updating ? 'Actualizar' : 'Crear' }}
+                {{ updating ? 'Actualizar' : 'Retirar Producto' }}
             </PrimaryButton>
         </template>
 

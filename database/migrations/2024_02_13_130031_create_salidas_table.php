@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('comentario_salida', 250);
             $table->string('tecnico', 250);
             $table->date('fecha');
+            $table->string('devolucion', 2)->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('producto_id');

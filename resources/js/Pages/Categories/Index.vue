@@ -26,7 +26,10 @@ import { Link } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
+import ButtonRegister from '@/Components/ButtonRegister.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ButtonEdit from '@/Components/ButtonEdit.vue';
+import ButtonDelete from '@/Components/ButtonDelete.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import Modal from '@/Components/Modal.vue';
 import Swal from 'sweetalert2';
@@ -122,9 +125,9 @@ const deleteEmployee = (id, name) => {
                         <!-- <Link @click="$event => openModal(1)" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('create categories')">
                             Registrar Categoria
                         </Link> -->
-                        <PrimaryButton @click="$event => openModal(1)">
-                            <i class="fa-solid  fa-plus-circle mx-1"></i> registrar categoria
-                        </PrimaryButton>
+                        <ButtonRegister @click="$event => openModal(1)">
+                            Registrar Categoria
+                        </ButtonRegister>
                     </div>
                     <div class="mt-4">
                         <div class="pb-4 bg-white dark:bg-gray-800">
@@ -143,22 +146,22 @@ const deleteEmployee = (id, name) => {
                                 <thead class="text-xs text-white uppercase bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3">Categorias</th>
-                                        <th scope="col" class="text-right px-6 py-3">Acciones</th>
+                                        <th scope="col" class="text-center px-6 py-3">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="bg-white text-black dark:bg-gray-700 dark:text-white" v-for="category in filteredCategories">
                                         <td class="px-6 py-4 font-semibold">{{ category.name }}</td>
-                                        <td class="p-3 text-right">
+                                        <td class="p-3 text-center">
                                             <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link>
                                             <!-- <Link class="py-2 px-4 text-green-500" @click="$event => openModal(2,category.name,category.id)" v-if="$page.props.user.permissions.includes('update categories')"><i class="bi bi-pencil-square"></i></Link>
                                             <Link class="py-2 px-4 text-red-500" @click="$event => deleteEmployee(category.id,category.name)" v-if="$page.props.user.permissions.includes('delete categories')"><i class="bi bi-trash3"></i></Link> -->
-                                            <PrimaryButton @click="$event => openModal(2,category.name,category.id)">
-                                                <i class="fa-solid fa-edit fa-sm"></i>
-                                            </PrimaryButton>
-                                            <DangerButton @click="$event => deleteEmployee(category.id,category.name)" class="ml-1">
-                                                <i class="fa-solid fa-trash mr-1 fa-sm"></i>
-                                            </DangerButton>
+                                            <ButtonEdit @click="$event => openModal(2,category.name,category.id)">
+                                                <i class="bi bi-pencil-square text-green-500"></i>
+                                            </ButtonEdit>
+                                            <ButtonDelete @click="$event => deleteEmployee(category.id,category.name)" class="ml-1">
+                                                <i class="bi bi-trash3 ml-2 text-red-500"></i>
+                                            </ButtonDelete>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -183,7 +186,7 @@ const deleteEmployee = (id, name) => {
         </div>
         <Modal :show="modal" @close="closeModal">
             <div class="p-4">
-                <h2 class="text-lg font-medium text-gray-900 text-center uppercase mb-4">{{ title }}</h2>
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white text-center uppercase mb-4">{{ title }}</h2>
                 <div class="p-3 ">
                     <InputLabel for="name" value="NOMBRE:" class="mb-2"></InputLabel>
                     <TextInput id="cantnameidad" ref="nameInput" v-model="form.name" type="text" class="w-full"
@@ -192,7 +195,7 @@ const deleteEmployee = (id, name) => {
                 </div>
                 <div class="p-3 flex justify-center">
                     <PrimaryButton :disabled="form.processing" @click="save">
-                        <i class="fa-solid fa-save"></i>Registrar
+                        <i class="fa-solid fa-save mx-1"></i>Registrar
                     </PrimaryButton>
                     <DangerButton class="ml-3" :disabled="form.processing"
                     @click="closeModal">

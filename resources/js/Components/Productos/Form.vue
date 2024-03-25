@@ -87,26 +87,26 @@ defineEmits(['submit'])
                 <TextInput id="insumo" v-model="form.insumo" type="text" autocomplete="insumo" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.insumo" class="mt-2"/>
 
-                <div class="mt-2 grid grid-cols-3 gap-x-6 gap-y-8 sm:grid-cols-6 md:grid-cols-20">
-                    <div class="sm:col-span-3">
+                <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
+                    <div class="sm:col-span-1">
                         <InputLabel for="marca" value="Marca"/>
                         <TextInput id="marca" v-model="form.marca" type="text" autocomplete="marca" class="mt-1 block w-full"/>
                         <InputError :message="$page.props.errors.marca" class="mt-2"/>
                     </div>
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-1">
                         <InputLabel for="modelo" value="Modelo"/>
                         <TextInput id="modelo" v-model="form.modelo" type="text" autocomplete="modelo" class="mt-1 block w-full"/>
                         <InputError :message="$page.props.errors.modelo" class="mt-2"/>
                     </div>
                 </div>
 
-                <div class="mt-2 grid grid-cols-3 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div class="sm:col-span-3">
+                <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
+                    <div class="sm:col-span-1">
                         <InputLabel for="cantidad" value="Cantidad"/>
                         <TextInput id="cantidad" v-model="form.cantidad" type="text" autocomplete="cantidad" class="mt-1 block w-full"/>
                         <InputError :message="$page.props.errors.cantidad" class="mt-2"/>
                     </div>
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-1">
                         <InputLabel for="unidad_medida" value="Unidad de Medida"/>
                         <TextInput id="unidad_medida" v-model="form.unidad_medida" type="text" autocomplete="unidad_medida" class="mt-1 block w-full"/>
                         <InputError :message="$page.props.errors.unidad_medida" class="mt-2"/>
@@ -127,20 +127,19 @@ defineEmits(['submit'])
                     </div>
                 </div>
 
-                <div class="mt-2 grid grid-cols-3 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div class="sm:col-span-3 xl:w-1/2">
+                <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
+                    <div class="sm:col-span-1">
                         <InputLabel for="fecha" value="Fecha"/>
                         <TextInput id="fecha" v-model="form.fecha" type="date" autocomplete="fecha" class="mt-1 block w-full"/>
                         <InputError :message="$page.props.errors.fecha" class="mt-2"/>
                     </div>
-                    <div class="sm:col-span-3">
+                    <div class="sm:col-span-1">
                         <InputLabel for="comprador" value="Comprador"/>
                         <TextInput id="comprador" v-model="form.comprador" type="text" autocomplete="comprador" class="mt-1 block w-full"/>
                         <InputError :message="$page.props.errors.comprador" class="mt-2"/>
                     </div>
                 </div>
                 
-
                 <InputLabel for="precio" value="Precio"/>
                 <TextInput id="precio" v-model="form.precio" type="text" autocomplete="precio" class="mt-1 block w-full"/>
                 <InputError :message="$page.props.errors.precio" class="mt-2"/>
@@ -162,7 +161,7 @@ defineEmits(['submit'])
 
         <template #actions>
             <PrimaryButton>
-                {{ updating ? 'Actualizar' : 'Ingresar' }}
+                {{ updating ? 'Actualizar' : 'Registrar Producto' }}
             </PrimaryButton>
         </template>
 

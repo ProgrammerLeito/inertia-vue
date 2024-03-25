@@ -90,6 +90,7 @@ const deleteSalidas = id => {
                                         <th scope="col" class="px-6 py-3">Comentario</th>
                                         <th scope="col" class="px-6 py-3">Tecnico</th>
                                         <th scope="col" class="px-6 py-3">Fecha</th>
+                                        <th scope="col" class="px-6 py-3">Devolucion</th>
                                         <th scope="col" class="text-center px-6 py-3">Acciones</th>
                                     </tr>
                                 </thead>
@@ -101,7 +102,8 @@ const deleteSalidas = id => {
                                         <td class="px-6 py-4">{{ salida.comentario_salida }}</td>
                                         <td class="px-6 py-4">{{ salida.name }}</td>
                                         <td class="px-6 py-4">{{ salida.fecha }}</td>
-                                        <td class="p-3 border-b text-right dark:border-gray-400">
+                                        <td class="px-6 py-4">{{ salida.devolucion }}</td>
+                                        <td class="p-3 border-b text-center dark:border-gray-400">
                                             <Link class="py-2 px-4 text-green-500" :href="route('salidas.edit', salida.id)"><i class="bi bi-pencil-square"></i></Link>
                                             <Link class="py-2 px-4 text-red-500" @click="deleteSalidas(salida.id)"><i class="bi bi-trash3"></i></Link>
                                         </td>

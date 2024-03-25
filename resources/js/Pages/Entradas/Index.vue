@@ -27,11 +27,15 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ButtonEdit from '@/Components/ButtonEdit.vue';
+import ButtonDelete from '@/Components/ButtonDelete.vue';
+import ButtonRegister from '@/Components/ButtonRegister.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import Modal from '@/Components/Modal.vue';
 import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
+import { onMounted } from 'vue';
  
 const nameInput = ref(null);
 const modal = ref(false);
@@ -62,6 +66,7 @@ const form = useForm ({
 
 const openModal = (op,cantidad,fecha,producto,entrada)=>{
     modal.value = true;
+    setCurrentDate();
     nextTick( () => nameInput.value.focus());
     operation.value = op;
     id.value = entrada;
@@ -118,6 +123,16 @@ const deleteEntrada = (id, cantidad) => {
     })
 }
 
+const setCurrentDate = () => {
+    const today = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual y la formatea como yyyy-mm-dd
+    form.fecha = today; // Asigna la fecha actual al modelo de datos del formulario
+}
+
+// Llama a la función para establecer la fecha actual cada vez que se monte el componente
+onMounted(() => {
+    setCurrentDate();
+});
+
 </script>
 
 <template>
@@ -133,12 +148,9 @@ const deleteEntrada = (id, cantidad) => {
                         <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Regresar
                         </Link>
-                        <!-- <Link :href="route('entradas.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <ButtonRegister @click="$event => openModal(1)">
                             Ingresar Entrada
-                        </Link> -->
-                        <PrimaryButton @click="$event => openModal(1)">
-                            <i class="fa-solid  fa-plus-circle mx-1"></i>Ingresar Entrada
-                        </PrimaryButton>
+                        </ButtonRegister>
                     </div>
                     <div class="mt-4">
                         <div class="pb-4 bg-white dark:bg-gray-800">
@@ -159,7 +171,7 @@ const deleteEntrada = (id, cantidad) => {
                                         <th scope="col" class="px-6 py-3">Producto</th>
                                         <th scope="col" class="px-6 py-3">Cantidad</th>
                                         <th scope="col" class="px-6 py-3">fecha</th>
-                                        <th scope="col" class="px-6 py-3">Acciones</th>
+                                        <th scope="col" class="px-6 py-3 text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -170,12 +182,12 @@ const deleteEntrada = (id, cantidad) => {
                                         <td class="p-3 text-center">
                                             <!-- <Link class="py-2 px-4 text-green-500" :href="route('entradas.edit', entrada.id)"><i class="bi bi-pencil-square"></i></Link>
                                             <Link class="py-2 px-4 text-red-500" @click="deleteEntradas(entrada.id)"><i class="bi bi-trash3"></i></Link> -->
-                                            <PrimaryButton @click="$event => openModal(2,entrada.cantidad,entrada.fecha,entrada.producto_id,entrada.id)">
-                                                <i class="fa-solid fa-edit fa-sm"></i>
-                                            </PrimaryButton>
-                                            <DangerButton @click="$event => deleteEntrada(entrada.id,entrada.cantidad)" class="ml-1">
-                                                <i class="fa-solid fa-trash mr-1 fa-sm"></i>
-                                            </DangerButton>
+                                            <ButtonEdit @click="$event => openModal(2,entrada.cantidad,entrada.fecha,entrada.producto_id,entrada.id)">
+                                                <i class="bi bi-pencil-square text-green-500"></i>
+                                            </ButtonEdit>
+                                            <ButtonDelete @click="$event => deleteEntrada(entrada.id,entrada.cantidad)" class="ml-1">
+                                                <i class="bi bi-trash3 ml-2 text-red-500"></i>
+                                            </ButtonDelete>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -190,9 +202,9 @@ const deleteEntrada = (id, cantidad) => {
         </div>
         <Modal :show="modal" @close="closeModal">
             <div class="p-4">
-                <h2 class="text-lg font-medium text-gray-900 text-center uppercase mb-4">{{ title }}</h2>
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white text-center uppercase mb-4">{{ title }}</h2>
                 <div class="p-1">
-                    <label for="producto_id" class="block text-sm font-medium text-black">Productos:</label>
+                    <label for="producto_id" class="block text-sm font-medium text-black dark:text-white">Productos:</label>
                     <select id="producto_id" v-model="form.producto_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
                         <option value="">Seleccionar una Producto</option>
                         <option v-for="producto in productos" :key="producto.id" :value="producto.id" class="text-gray-900">{{ producto.insumo }}</option>
@@ -215,7 +227,7 @@ const deleteEntrada = (id, cantidad) => {
                 </div>
                 <div class="p-1 flex justify-center">
                     <PrimaryButton :disabled="form.processing" @click="save">
-                        <i class="fa-solid fa-save"></i>Registrar
+                        <i class="fa-solid fa-save mx-1"></i>Registrar
                     </PrimaryButton>
                     <DangerButton class="ml-3" :disabled="form.processing"
                     @click="closeModal">

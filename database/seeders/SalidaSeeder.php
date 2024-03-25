@@ -21,6 +21,7 @@ class SalidaSeeder extends Seeder
             'tecnico' => '1',
             'fecha' => '2024-01-25',
             'producto_id' => '1',
+            'devolucion' => '1',
         ]);
     }
 }

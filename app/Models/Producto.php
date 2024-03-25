@@ -35,5 +35,6 @@ class Producto extends Model
         'imagen_producto',
         'ultima_entrada',
         'category_id',
+        'devolucion',
     ];
 }

@@ -37,7 +37,8 @@ class SalidasController extends Controller
                             'salidas.comentario_salida',
                             'users.name',
                             'salidas.fecha',
-                            'productos.insumo'
+                            'productos.insumo',
+                            'salidas.devolucion'
                         )
                         ->where('salidas.producto_id', '=', $productoId)
                         ->paginate(self::Numero_de_items_pagina);

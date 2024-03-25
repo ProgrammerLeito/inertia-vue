@@ -24,6 +24,8 @@ export default {
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
 import DangerButton from '@/Components/DangerButton.vue';
+import ButtonEdit from '@/Components/ButtonEdit.vue';
+import ButtonDelete from '@/Components/ButtonDelete.vue';
 import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
 
@@ -141,9 +143,9 @@ const deleteProducto = (id, insumo) => {
                                             <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.producto_id })"><i class="bi bi-eye"></i></Link>
                                             <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.producto_id)"><i class="bi bi-pencil-square"></i></Link>
                                             <!-- <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.producto_id)"><i class="bi bi-trash3"></i></Link> -->
-                                            <DangerButton @click="$event => deleteProducto(producto.id,producto.insumo)" class="ml-1">
-                                                <i class="fa-solid fa-trash mr-1 fa-sm"></i>
-                                            </DangerButton>
+                                            <ButtonDelete @click="$event => deleteProducto(producto.id,producto.insumo)" class="ml-1">
+                                                <i class="bi bi-trash3 ml-2 text-red-500"></i>
+                                            </ButtonDelete>
                                         </td>
                                     </tr>
                                 </tbody>
