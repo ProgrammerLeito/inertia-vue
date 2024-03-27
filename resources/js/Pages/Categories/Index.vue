@@ -4,6 +4,10 @@ export default {
     data() {
         return {
         searchQuery: '',
+        modal: false,
+        title: '',
+        operation: 1,
+        id: '',
         };
     },
     computed: {
@@ -195,7 +199,7 @@ const deleteEmployee = (id, name) => {
                 </div>
                 <div class="p-3 flex justify-center">
                     <PrimaryButton :disabled="form.processing" @click="save">
-                        <i class="fa-solid fa-save mx-1"></i>Registrar
+                        <i class="fa-solid fa-save mx-1"></i>{{ operation == 1 ? 'Registrar Categoria' : 'Actualizar' }}
                     </PrimaryButton>
                     <DangerButton class="ml-3" :disabled="form.processing"
                     @click="closeModal">

@@ -37,7 +37,7 @@ const form = useForm ({
     tecnico: '',
     fecha: '',
     producto_id: '',
-    devolucion: '',
+    devolucion: '0',
 })
 
 onMounted(() => {

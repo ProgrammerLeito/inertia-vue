@@ -40,6 +40,7 @@ class ProductoController extends Controller
                             'productos.category_id',
                             DB::raw('(SELECT COALESCE(SUM(cantidad), 0) FROM entradas WHERE entradas.producto_id = productos.id) as total_entradas'),
                             DB::raw('(SELECT COALESCE(SUM(unidad_salida), 0) FROM salidas WHERE salidas.producto_id = productos.id) as total_salidas'),
+                            DB::raw('(SELECT COALESCE(SUM(unidad_devolucion), 0) FROM salidas WHERE salidas.producto_id = productos.id) as total_devolucion'),
                             DB::raw('(SELECT COALESCE((SELECT cantidad FROM entradas WHERE entradas.producto_id = productos.id ORDER BY id DESC LIMIT 1), 0)) as ultima_cantidad_entrada')
                         )
                         ->where('categories.id', '=', $categoryId)
@@ -113,9 +114,19 @@ class ProductoController extends Controller
      */
     public function destroy(Producto $producto)
     {
-        $category_id = $producto->category_id; // Asumiendo que el producto tiene un 'category_id'
-        $producto->delete();
+        // Verificar si hay entradas relacionadas con este producto
+        $tieneEntradas = DB::table('entradas')->where('producto_id', $producto->id)->exists();
 
+        if ($tieneEntradas) {
+            // Si hay entradas relacionadas, simplemente redirige de vuelta a la página anterior
+            return redirect()->back();
+        }
+    
+        // No hay entradas relacionadas, procede con la eliminación del producto
+        $category_id = $producto->category_id;
+        $producto->delete();
+    
+        // Redirige a la página de índice de productos con el category_id
         return redirect()->route('productos.index', ['category_id' => $category_id]);
     }
 }

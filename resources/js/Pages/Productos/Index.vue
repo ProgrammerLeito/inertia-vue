@@ -3,20 +3,28 @@ export default {
     name: 'ProductosIndex',
     data() {
         return {
-        searchQuery: '',
+            searchQuery: '',
+            modalOpen: false, // Estado del modal
+            modalImageUrl: '' // URL de la imagen para mostrar en el modal
         };
     },
     computed: {
         filteredProductos() {
-        // Filtrar categorías según searchQuery
-        // Considere usar una expresión regular para un filtrado de nombres y números más sólido
-        return this.productos.data.filter(producto => {
-            const normalizedQuery = this.searchQuery.toLowerCase();
-            return producto.insumo.toLowerCase().includes(normalizedQuery) ||
-                producto.producto_id.toString().includes(normalizedQuery); // Suponiendo que 'id' es un número
-        });
+            // Filtrar productos según la búsqueda
+            return this.productos.data.filter(producto => {
+                const normalizedQuery = this.searchQuery.toLowerCase();
+                return producto.insumo.toLowerCase().includes(normalizedQuery) ||
+                    producto.producto_id.toString().includes(normalizedQuery); // Suponiendo que 'id' es un número
+            });
         },
     },
+    methods: {
+        // Método para abrir el modal con la imagen seleccionada
+        openModal(imageUrl) {
+            this.modalImageUrl = imageUrl; // Establece la URL de la imagen
+            this.modalOpen = true; // Abre el modal
+        }
+    }
 }
 </script>
 
@@ -24,7 +32,6 @@ export default {
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
 import DangerButton from '@/Components/DangerButton.vue';
-import ButtonEdit from '@/Components/ButtonEdit.vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
 import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
@@ -55,6 +62,7 @@ const deleteProducto = (id, insumo) => {
     const alerta = Swal.mixin({
         buttonsStyling:true
     });
+
     alerta.fire({
         title: '¿Estás seguro de eliminar ' +insumo+ '?',
         icon: 'question',
@@ -63,11 +71,17 @@ const deleteProducto = (id, insumo) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('productos.destroy', id),{
-                onSuccess: () => {ok('Producto eliminado')}
+            form.delete(route('productos.destroy', id), {
+                onSuccess: () => {
+                    alerta.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Producto eliminado exitosamente'
+                    });
+                }
             });
         }
-    })
+    });
 }
 
 </script>
@@ -92,6 +106,7 @@ const deleteProducto = (id, insumo) => {
                             Listar Salidas
                         </Link> -->
                     </div>
+                    <div class="font-semibold text-center">Categoria || {{ filteredProductos.length > 0 ? filteredProductos[0].name : 'Sin categoría' }}</div>
                     <div class="mt-4 overflow-auto">
                         <div class="pb-4 bg-white dark:bg-gray-800">
                             <label for="table-search" class="sr-only">Buscar</label>
@@ -127,9 +142,9 @@ const deleteProducto = (id, insumo) => {
                                 <tbody>
                                     <tr class="bg-white text-black dark:bg-gray-700 dark:text-white border-b" v-for="producto in filteredProductos">
                                         <td class="px-6 py-4 text-center">{{ producto.producto_id }}</td>
-                                        <td class="px-6 py-4 text-center"><img :src="'/img/productos/' + producto.imagen_producto" alt="Foto del Producto" class="px-6 py- object-cover"></td>
+                                        <img @click="openModal('/img/productos/' + producto.imagen_producto)" :src="'/img/productos/' + producto.imagen_producto" alt="Foto del Producto" style="max-width: 100px; cursor: pointer" class="rounded-md py-1">
                                         <td class="px-6 py-4 font-semibold text-left">{{ producto.insumo }}</td>
-                                        <td class="px-6 py-4 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) - parseInt(producto.total_salidas) }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) + parseInt(producto.total_devolucion) - parseInt(producto.total_salidas) }}</td>
                                         <!-- <td class="px-6 py-4 text-left">{{ producto?.name }}</td> -->
                                         <td class="px-6 py-4 text-center">{{ producto.marca }}</td>
                                         <td class="px-6 py-4 text-center">{{ producto.modelo }}</td>
@@ -143,9 +158,9 @@ const deleteProducto = (id, insumo) => {
                                             <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.producto_id })"><i class="bi bi-eye"></i></Link>
                                             <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.producto_id)"><i class="bi bi-pencil-square"></i></Link>
                                             <!-- <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.producto_id)"><i class="bi bi-trash3"></i></Link> -->
-                                            <ButtonDelete @click="$event => deleteProducto(producto.id,producto.insumo)" class="ml-1">
+                                            <ButtonDelete @click="$event => deleteProducto(producto.producto_id,producto.insumo)" class="ml-1">
                                                 <i class="bi bi-trash3 ml-2 text-red-500"></i>
-                                            </ButtonDelete>
+                                            </ButtonDelete>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -164,6 +179,35 @@ const deleteProducto = (id, insumo) => {
                             Next
                         </Link>
                         <div v-else></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="fixed inset-0 overflow-y-auto" v-if="modalOpen">
+            <div class="flex items-center justify-center min-h-screen pt-1 px-1 pb-20 text-center sm:block w-full sm:p-0">
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                </div>
+
+                <!-- Contenedor del modal -->
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+                    <!-- Contenido del modal -->
+                    <div class="bg-white px-1 pb-1 sm:p-1 sm:pb-1">
+                        <div class="sm:flex sm:items-start">
+                            <!-- Imagen -->
+                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-100 w-100 rounded-lg bg-green-100 sm:mx-0 sm:h-100 sm:w-full">
+                                <!-- Aquí se mostrará la imagen -->
+                                <img :src="modalImageUrl" alt="Imagen ampliada" class="h-auto w-full">
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Botón de cierre del modal -->
+                    <div class="bg-gray-50 px-1 w-full py-1 sm:px-1 sm:flex sm:flex-row-reverse">
+                        <button @click="modalOpen = false" type="button" class="w-full justify-center rounded-md border border-transparent shadow-sm px-14 py-0 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:text-sm">
+                            Cerrar
+                        </button>
                     </div>
                 </div>
             </div>

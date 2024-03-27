@@ -89,19 +89,19 @@ defineEmits(['submit'])
 
                 <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
                     <div class="sm:col-span-1">
-                        <InputLabel for="marca" value="Marca"/>
+                        <InputLabel for="marca" value="Marca de producto"/>
                         <TextInput id="marca" v-model="form.marca" type="text" autocomplete="marca" class="mt-1 block w-full"/>
                         <InputError :message="$page.props.errors.marca" class="mt-2"/>
                     </div>
                     <div class="sm:col-span-1">
-                        <InputLabel for="modelo" value="Modelo"/>
+                        <InputLabel for="modelo" value="Modelo de producto"/>
                         <TextInput id="modelo" v-model="form.modelo" type="text" autocomplete="modelo" class="mt-1 block w-full"/>
                         <InputError :message="$page.props.errors.modelo" class="mt-2"/>
                     </div>
                 </div>
 
                 <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
-                    <div class="sm:col-span-1">
+                    <div class="sm:col-span-1" v-if="!updating">
                         <InputLabel for="cantidad" value="Cantidad"/>
                         <TextInput id="cantidad" v-model="form.cantidad" type="text" autocomplete="cantidad" class="mt-1 block w-full"/>
                         <InputError :message="$page.props.errors.cantidad" class="mt-2"/>
@@ -148,13 +148,15 @@ defineEmits(['submit'])
                 <textarea id="comentario" v-model="form.comentario" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba una descripcion para el producto"></textarea>
                 <InputError :message="$page.props.errors.comentario" class="mt-2"/>
                 
-                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Seleccionar Imagen</label>
-                <input @change="obtenerImagen" :v-model="form.imagen_producto" class="p-2 block w-full text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
-                <InputError :message="$page.props.errors.imagen_producto" class="mt-2"/>
-                
-                <figure class="mt-4 ml-14" v-if="imagenMiniatura !== ''">
-                    <img width="200" height="200" :src="imagenMiniatura" alt="Foto del Producto">
-                </figure>
+                <div v-if="!updating">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Seleccionar Imagen</label>
+                    <input @change="obtenerImagen" :v-model="form.imagen_producto" class="p-2 block w-full text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
+                    <InputError :message="$page.props.errors.imagen_producto" class="mt-2"/>
+                    
+                    <figure class="mt-4 ml-14" v-if="imagenMiniatura !== ''">
+                        <img width="200" height="200" :src="imagenMiniatura" alt="Foto del Producto">
+                    </figure>
+                </div>
 
             </div>
         </template>

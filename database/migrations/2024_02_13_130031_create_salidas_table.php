@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('tecnico', 250);
             $table->date('fecha');
             $table->string('devolucion', 2)->nullable();
+            $table->string('unidad_devolucion', 100)->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('producto_id');

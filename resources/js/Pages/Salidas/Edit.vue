@@ -34,7 +34,9 @@ const form = useForm({
     comentario_salida: props.salidas.comentario_salida,
     tecnico: props.salidas.tecnico,
     fecha: props.salidas.fecha,
-    producto_id: props.salidas.producto_id
+    producto_id: props.salidas.producto_id,
+    devolucion: props.salidas.devolucion,
+    unidad_devolucion: props.salidas.unidad_devolucion
 })
 
 // Funcion validateform para ver si al crear la salida estan los campos rellenados

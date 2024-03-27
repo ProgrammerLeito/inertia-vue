@@ -90,11 +90,13 @@ const deleteSalidas = id => {
                                         <th scope="col" class="px-6 py-3">Comentario</th>
                                         <th scope="col" class="px-6 py-3">Tecnico</th>
                                         <th scope="col" class="px-6 py-3">Fecha</th>
-                                        <th scope="col" class="px-6 py-3">Devolucion</th>
+                                        <th scope="col" class="px-6 py-3">Cantidad de Devolucion</th>
+                                        <th scope="col" class="hidden px-6 py-3">Devolucion</th>
                                         <th scope="col" class="text-center px-6 py-3">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <!-- <tr class="bg-white text-black border-b dark:bg-gray-700 dark:border-gray-400 dark:text-white" v-for="salida in filteredSalidas" :class="{ 'bg-gray-300 dark:bg-amber-400': salida.devolucion == 1 }"> -->
                                     <tr class="bg-white text-black border-b dark:bg-gray-700 dark:border-gray-400 dark:text-white" v-for="salida in filteredSalidas">
                                         <td class="px-6 py-4 font-semibold">{{ salida.empresa }}</td>
                                         <td class="px-6 py-4">{{ salida.insumo }}</td>
@@ -102,7 +104,13 @@ const deleteSalidas = id => {
                                         <td class="px-6 py-4">{{ salida.comentario_salida }}</td>
                                         <td class="px-6 py-4">{{ salida.name }}</td>
                                         <td class="px-6 py-4">{{ salida.fecha }}</td>
-                                        <td class="px-6 py-4">{{ salida.devolucion }}</td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                {{ salida.devolucion != 1 ? 'Sin Devolucion' : (salida.unidad_devolucion === null ? 'Esperando devolución' : salida.unidad_devolucion) }}
+                                                <img v-if="salida.devolucion == 1 && salida.unidad_devolucion === null" src="img/advertencia.png" class="pulsoAdvertencia ml-5 h-6 drop-shadow-[0_0_5px_rgba(255,255,255,0.80)]" alt="Advertencia">
+                                            </div>
+                                        </td>
+                                        <td class="hidden px-6 py-4">{{ salida.devolucion }}</td>
                                         <td class="p-3 border-b text-center dark:border-gray-400">
                                             <Link class="py-2 px-4 text-green-500" :href="route('salidas.edit', salida.id)"><i class="bi bi-pencil-square"></i></Link>
                                             <Link class="py-2 px-4 text-red-500" @click="deleteSalidas(salida.id)"><i class="bi bi-trash3"></i></Link>

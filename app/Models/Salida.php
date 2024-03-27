@@ -28,5 +28,7 @@ class Salida extends Model
         'tecnico',
         'fecha',
         'producto_id',
+        'devolucion',
+        'unidad_devolucion',
     ];
 }

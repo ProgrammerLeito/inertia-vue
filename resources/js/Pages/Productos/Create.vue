@@ -12,6 +12,7 @@ import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProductosForm from '@/Components/Productos/Form.vue';
 import { onMounted } from 'vue';
+import Swal from 'sweetalert2';
 
 defineProps({
     categories: {
@@ -39,6 +40,36 @@ const form = useForm ({
     category_id: '',
     imagen_producto: '',
 })
+const handleSubmit = async () => {
+    if (!form.insumo || !form.marca || !form.modelo || !form.cantidad || !form.unidad_medida || !form.fecha || !form.comprador || !form.comentario || !form.stock || !form.ultima_entrada || !form.precio || !form.category_id || !form.imagen_producto) {
+        await Swal.fire({
+            title: 'Campos Incompletos',
+            text: 'Por favor, completa todos los campos antes de guardar el producto.',
+            icon: 'error',
+        });
+        return; 
+    }
+    const { value } = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: '¡Estás a punto de guardar este producto!',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, guardar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (value) {
+        form.post(route('productos.store'));
+        Swal.fire({
+            title: '¡Producto guardado!',
+            text: 'El producto se ha guardado exitosamente.',
+            icon: 'success',
+            timer: 3000, 
+            showConfirmButton: false
+        });
+    }
+};
+
 
 // Importante para duplicar
 watch(
@@ -67,7 +98,7 @@ onMounted(() => {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                         <div class="p-6 bg-white border-gray-200 dark:bg-gray-800">
-                            <ProductosForm :form="form" :categories="categories" :productos="productos" @submit="form.post(route('productos.store'))"/>
+                            <ProductosForm :form="form" :categories="categories" :productos="productos" @submit="handleSubmit"/>
                         </div>
                     </div>
                 </div>

@@ -38,6 +38,7 @@ class SalidasController extends Controller
                             'users.name',
                             'salidas.fecha',
                             'productos.insumo',
+                            'salidas.unidad_devolucion',
                             'salidas.devolucion'
                         )
                         ->where('salidas.producto_id', '=', $productoId)
@@ -97,6 +98,8 @@ class SalidasController extends Controller
             'tecnico' => 'required',
             'fecha' => 'required',
             'producto_id' => 'required',
+            'devolucion' => 'nullable',
+            'unidad_devolucion' => 'nullable',
         ]);
 
         // Encuentra el producto asociado a la salida
@@ -141,6 +144,8 @@ class SalidasController extends Controller
             'tecnico' => 'required|integer',
             'fecha' => 'required',
             'producto_id' => 'required',
+            'devolucion' => 'nullable',
+            'unidad_devolucion'=>'nullable',
         ]);
 
         // Inicia una transacción para asegurar la integridad de los datos

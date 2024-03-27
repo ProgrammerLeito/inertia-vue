@@ -1,14 +1,9 @@
-<script>
-export default {
-    name: 'ProductosEdit'
-}
-
-</script>
-
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProductosForm from '@/Components/Productos/Form.vue';
+import Swal from 'sweetalert2';
+import { ref } from 'vue'; // Importa ref de vue
 
 const props = defineProps({
     productos: {
@@ -19,6 +14,10 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    imagenProducto: {
+        type: Object, // Si es necesario, ajusta el tipo según la estructura del elemento de archivo
+        required: true
+    }
 })
 
 const form = useForm({
@@ -37,6 +36,34 @@ const form = useForm({
     imagen_producto: props.productos.imagen_producto
 })
 
+
+
+// Define una referencia para almacenar el valor del elemento de entrada de archivo
+const imagenProducto = ref(null);
+const handleSubmit = async () => {
+    try {
+        // Accede al valor del elemento de entrada de archivo usando la referencia
+        if (imagenProducto.value && imagenProducto.value.files.length > 0) {
+            form.imagen_producto = imagenProducto.value.files[0];
+        }
+        await form.put(route('productos.update', props.productos.id)); // Acceder a props.productos en lugar de productos
+        Swal.fire({
+            icon: 'success',
+            title: '¡Producto actualizado!',
+            text: 'El producto se ha actualizado exitosamente.',
+            timer: 3000, 
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error al actualizar el producto:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al actualizar el producto. Por favor, inténtalo de nuevo.'
+        });
+    }
+};
+
 </script>
 
 <template>
@@ -49,7 +76,9 @@ const form = useForm({
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg"></div>
                 <div class="p-6 bg-white border-gray-200 dark:bg-gray-800">
-                    <ProductosForm :updating="true" :form="form" :categories="categories" :productos="productos" @submit="form.put(route('productos.update', productos.id))"/>
+                    <!-- Pasa la referencia al componente de formulario -->
+                    <ProductosForm :updating="true" :form="form" :categories="categories" :productos="productos" :imagenProducto="imagenProducto" @submit="handleSubmit"/>
+
                 </div>
             </div>
         </div>

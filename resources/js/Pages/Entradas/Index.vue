@@ -4,6 +4,10 @@ export default {
     data() {
         return {
         searchQuery: '',
+        modal: false,
+        title: '',
+        operation: 1,
+        id: '',
         };
     },
     computed: {
@@ -104,20 +108,20 @@ const ok = (msj) =>{
     Swal.fire({title:msj,icon:'success'});
 }
 
-const deleteEntrada = (id, cantidad) => {
+const deleteEntrada = (id, insumo) => {
     const alerta = Swal.mixin({
-        buttonsStyling:true
+        buttonsStyling: true
     });
     alerta.fire({
-        title: '¿Estás seguro de eliminar ' +cantidad+ '?',
+        title: `¿Estás seguro de eliminar ${insumo}?`, // Usar comillas para incluir el nombre del insumo
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('entradas.destroy', id),{
-                onSuccess: () => {ok('entrada eiminado')}
+            form.delete(route('entradas.destroy', id), {
+                onSuccess: () => { ok('entrada eliminada') }
             });
         }
     })
@@ -185,7 +189,7 @@ onMounted(() => {
                                             <ButtonEdit @click="$event => openModal(2,entrada.cantidad,entrada.fecha,entrada.producto_id,entrada.id)">
                                                 <i class="bi bi-pencil-square text-green-500"></i>
                                             </ButtonEdit>
-                                            <ButtonDelete @click="$event => deleteEntrada(entrada.id,entrada.cantidad)" class="ml-1">
+                                            <ButtonDelete @click="$event => deleteEntrada(entrada.id, entrada.producto?.insumo)" class="ml-1">
                                                 <i class="bi bi-trash3 ml-2 text-red-500"></i>
                                             </ButtonDelete>
                                         </td>
@@ -227,7 +231,7 @@ onMounted(() => {
                 </div>
                 <div class="p-1 flex justify-center">
                     <PrimaryButton :disabled="form.processing" @click="save">
-                        <i class="fa-solid fa-save mx-1"></i>Registrar
+                        <i class="fa-solid fa-save mx-1"></i>{{ operation == 1 ? 'Registrar Entrada' : 'Actualizar' }}
                     </PrimaryButton>
                     <DangerButton class="ml-3" :disabled="form.processing"
                     @click="closeModal">
