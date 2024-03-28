@@ -29,6 +29,7 @@ const logout = () => {
 <template>
         <div class="min-h-[calc(100vh-50px)] bg-gray-800" id="side-bar" :class="dataOpenSideBar==true?'side-bar-visible':'side-bar-close'">
             <div class="bg-gray-700 text-white dark:text-white h-[60px] flex justify-center items-center">
+                <!-- <link href='https://webbeta.balinsa.com/font/alphamalemodern.ttf' rel="stylesheet" type="text/css"> -->
                 <link href='http://127.0.0.1:8000/font/alphamalemodern.ttf' rel="stylesheet" type="text/css">
                 <span v-show="dataOpenSideBar" class="gap-1 self-center text-2xl font-semibold whitespace-nowrap dark:text-white flex justify-center items-center">
                     <div class="border-dashed border-4 w-12 h-12 p-2 flex justify-center items-center rounded-full border-white">

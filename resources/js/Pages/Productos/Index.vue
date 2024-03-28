@@ -106,7 +106,7 @@ const deleteProducto = (id, insumo) => {
                             Listar Salidas
                         </Link> -->
                     </div>
-                    <div class="font-semibold text-center">Categoria || {{ filteredProductos.length > 0 ? filteredProductos[0].name : 'Sin categoría' }}</div>
+                    <div class="font-semibold text-center dark:text-white">Categoria || {{ filteredProductos.length > 0 ? filteredProductos[0].name : 'Sin Productos' }}</div>
                     <div class="mt-4 overflow-auto">
                         <div class="pb-4 bg-white dark:bg-gray-800">
                             <label for="table-search" class="sr-only">Buscar</label>
@@ -154,12 +154,12 @@ const deleteProducto = (id, insumo) => {
                                         <td class="px-6 py-4 text-center">{{ producto.comprador }}</td>
                                         <td class="px-6 py-4 text-center">S/. {{ parseFloat(producto.precio).toFixed(2) }}</td>
                                         <!-- <td class="px-6 py-4 text-left">{{ producto.comentario }}</td> -->
-                                        <td class="p-3 text-center">
-                                            <Link class="py-2 px-4 text-yellow-500" :href="route('salidas.index', { producto_id: producto.producto_id })"><i class="bi bi-eye"></i></Link>
+                                        <td class="p-3 text-center whitespace-nowrap">
+                                            <Link class="py-1.5 px-3.5 text-black font-semibold bg-yellow-400 rounded-lg border-solid border-2 hover:bg-yellow-500" :href="route('salidas.index', { producto_id: producto.producto_id })"><i class="bi bi-eye"><label class="ml-2">Salidas</label></i></Link>
                                             <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.producto_id)"><i class="bi bi-pencil-square"></i></Link>
                                             <!-- <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.producto_id)"><i class="bi bi-trash3"></i></Link> -->
-                                            <ButtonDelete @click="$event => deleteProducto(producto.producto_id,producto.insumo)" class="ml-1">
-                                                <i class="bi bi-trash3 ml-2 text-red-500"></i>
+                                            <ButtonDelete @click="$event => deleteProducto(producto.producto_id,producto.insumo)">
+                                                <i class="bi bi-trash3 text-red-500"></i>
                                             </ButtonDelete>
                                         </td>
                                     </tr>

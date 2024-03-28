@@ -163,8 +163,8 @@ const deleteEmployee = (id, name) => {
                                             <ButtonEdit @click="$event => openModal(2,category.name,category.id)">
                                                 <i class="bi bi-pencil-square text-green-500"></i>
                                             </ButtonEdit>
-                                            <ButtonDelete @click="$event => deleteEmployee(category.id,category.name)" class="ml-1">
-                                                <i class="bi bi-trash3 ml-2 text-red-500"></i>
+                                            <ButtonDelete @click="$event => deleteEmployee(category.id,category.name)">
+                                                <i class="bi bi-trash3 text-red-500"></i>
                                             </ButtonDelete>
                                         </td>
                                     </tr>

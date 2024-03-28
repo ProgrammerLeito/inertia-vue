@@ -25,6 +25,8 @@ export default {
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/vue3'
 import { Inertia } from '@inertiajs/inertia'
+import { useForm } from '@inertiajs/vue3';
+import Swal from 'sweetalert2';
 
 defineProps({
     salidas: {
@@ -37,16 +39,40 @@ defineProps({
     }
 });
 
-const deleteSalidas = id => {
-    if (confirm('¿Estás seguro?')){
-        Inertia.delete(route('salidas.destroy', id)).then(() => {
-            // Actualizar página después de eliminar la salida
-            this.$inertia.reload({ preserveState: false });
-        }).catch(error => {
-            console.error('Error al eliminar la salida:', error);
-            // Manejar errores aquí si es necesario
-        });
-    }
+const form = useForm ({
+    empresa: '',
+    unidad_salida: '',
+    comentario_salida: '',
+    tecnico: '',
+    fecha: '',
+    producto_id: '',
+    devolucion: '0',
+})
+
+const deleteSalidas = (id, empresa) => {
+    const alerta = Swal.mixin({
+        buttonsStyling:true
+    });
+
+    alerta.fire({
+        title: '¿Estás seguro de eliminar la salida de productos para la empresa ' +empresa+ '?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('salidas.destroy', id), {
+                onSuccess: () => {
+                    alerta.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Salida de productos eliminado exitosamente'
+                    });
+                }
+            });
+        }
+    });
 }
 
 </script>
@@ -68,6 +94,7 @@ const deleteSalidas = id => {
                             Ingresar Salida
                         </Link>
                     </div>
+                    <div class="font-semibold text-center dark:text-white">Producto || {{ filteredSalidas.length > 0 ? filteredSalidas[0].insumo : 'Sin salidas' }}</div>
                     <div class="mt-4">
                         <div class="pb-4 bg-white dark:bg-gray-800">
                             <label for="table-search" class="sr-only">Buscar</label>
@@ -85,7 +112,7 @@ const deleteSalidas = id => {
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3">Empresa</th>
-                                        <th scope="col" class="px-6 py-3">Producto</th>
+                                        <!-- <th scope="col" class="px-6 py-3">Producto</th> -->
                                         <th scope="col" class="px-6 py-3">Unidad de Salida</th>
                                         <th scope="col" class="px-6 py-3">Comentario</th>
                                         <th scope="col" class="px-6 py-3">Tecnico</th>
@@ -99,7 +126,7 @@ const deleteSalidas = id => {
                                     <!-- <tr class="bg-white text-black border-b dark:bg-gray-700 dark:border-gray-400 dark:text-white" v-for="salida in filteredSalidas" :class="{ 'bg-gray-300 dark:bg-amber-400': salida.devolucion == 1 }"> -->
                                     <tr class="bg-white text-black border-b dark:bg-gray-700 dark:border-gray-400 dark:text-white" v-for="salida in filteredSalidas">
                                         <td class="px-6 py-4 font-semibold">{{ salida.empresa }}</td>
-                                        <td class="px-6 py-4">{{ salida.insumo }}</td>
+                                        <!-- <td class="px-6 py-4">{{ salida.insumo }}</td> -->
                                         <td class="px-6 py-4">{{ salida.unidad_salida }}</td>
                                         <td class="px-6 py-4">{{ salida.comentario_salida }}</td>
                                         <td class="px-6 py-4">{{ salida.name }}</td>
@@ -113,7 +140,9 @@ const deleteSalidas = id => {
                                         <td class="hidden px-6 py-4">{{ salida.devolucion }}</td>
                                         <td class="p-3 border-b text-center dark:border-gray-400">
                                             <Link class="py-2 px-4 text-green-500" :href="route('salidas.edit', salida.id)"><i class="bi bi-pencil-square"></i></Link>
-                                            <Link class="py-2 px-4 text-red-500" @click="deleteSalidas(salida.id)"><i class="bi bi-trash3"></i></Link>
+                                            <ButtonDelete @click="$event => deleteSalidas(salida.id,salida.empresa)" class="ml-1">
+                                                <i class="bi bi-trash3 ml-2 text-red-500"></i>
+                                            </ButtonDelete>
                                         </td>
                                     </tr>
                                 </tbody>
