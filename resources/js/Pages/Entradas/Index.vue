@@ -35,7 +35,7 @@ import ButtonEdit from '@/Components/ButtonEdit.vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
 import ButtonRegister from '@/Components/ButtonRegister.vue';
 import DangerButton from '@/Components/DangerButton.vue';
-import Modal from '@/Components/Modal.vue';
+import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
@@ -204,7 +204,7 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <Modal :show="modal" @close="closeModal">
+        <ModalResponsive :show="modal" @close="closeModal">
             <div class="p-4">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-white text-center uppercase mb-4">{{ title }}</h2>
                 <div class="p-1">
@@ -239,6 +239,6 @@ onMounted(() => {
                     </DangerButton>
                 </div>
             </div>
-        </Modal>
+        </ModalResponsive>
     </AppLayout>
 </template>
