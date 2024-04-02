@@ -86,7 +86,7 @@ const logout = () => {
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-gear'><span v-show="dataOpenSideBar" class="ml-2">Configuraciones</span></span></summary>
-                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Usuarios</span></Link>
+                            <Link :href="route('users.index')" :active="route().current('users.*')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Usuarios</span></Link>
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-inboxes'><span v-show="dataOpenSideBar" class="ml-2">Recursos</span></span></summary>

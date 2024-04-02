@@ -142,7 +142,7 @@ const deleteProducto = (id, insumo) => {
                                 <tbody>
                                     <tr class="bg-white text-black dark:bg-gray-700 dark:text-white border-b" v-for="producto in filteredProductos">
                                         <td class="px-6 py-4 text-center">{{ producto.producto_id }}</td>
-                                        <img @click="openModal('/img/productos/' + producto.imagen_producto)" :src="'/img/productos/' + producto.imagen_producto" alt="Foto del Producto" style="max-width: 100px; cursor: pointer" class="rounded-md py-1">
+                                        <img @click="openModal('/img/productos/' + producto.imagen_producto)" :src="'/img/productos/' + producto.imagen_producto" alt="Foto del Producto" style="width: 100px; height: 100px; cursor: pointer; object-fit: cover;" class="rounded-md py-1">
                                         <td class="px-6 py-4 font-semibold text-left">{{ producto.insumo }}</td>
                                         <td class="px-6 py-4 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) + parseInt(producto.total_devolucion) - parseInt(producto.total_salidas) }}</td>
                                         <!-- <td class="px-6 py-4 text-left">{{ producto?.name }}</td> -->
@@ -183,32 +183,16 @@ const deleteProducto = (id, insumo) => {
                 </div>
             </div>
         </div>
-        <div class="fixed inset-0 overflow-y-auto" v-if="modalOpen">
-            <div class="flex items-center justify-center min-h-screen pt-1 px-1 pb-20 text-center sm:block w-full sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        <div class="fixed right-0 top-[110px] bottom-[-60px] left-[50px] overflow-y-auto z-[10000] bg-gray-200/40" v-if="modalOpen">
+            <div class="flex justify-center items-center flex-col h-full max-h-[90%] py-10 m-auto rounded-lg" @click="modalOpen = false">
+                <div class="w-full max-w-sm max-h-[90%] h-full bg-gray-50 rounded-t-lg">
+                    <img :src="modalImageUrl" alt="Imagen ampliada" class="max-w-sm w-full h-full object-contain">
                 </div>
-
-                <!-- Contenedor del modal -->
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-                    <!-- Contenido del modal -->
-                    <div class="bg-white px-1 pb-1 sm:p-1 sm:pb-1">
-                        <div class="sm:flex sm:items-start">
-                            <!-- Imagen -->
-                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-100 w-100 rounded-lg bg-green-100 sm:mx-0 sm:h-100 sm:w-full">
-                                <!-- Aquí se mostrará la imagen -->
-                                <img :src="modalImageUrl" alt="Imagen ampliada" class="h-auto w-full">
-                            </div>
-
-                        </div>
-                    </div>
-                    <!-- Botón de cierre del modal -->
-                    <div class="bg-gray-50 px-1 w-full py-1 sm:px-1 sm:flex sm:flex-row-reverse">
-                        <button @click="modalOpen = false" type="button" class="w-full justify-center rounded-md border border-transparent shadow-sm px-14 py-0 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:text-sm">
-                            Cerrar
-                        </button>
-                    </div>
+                <!-- Botón de cierre del modal -->
+                <div class="bg-gray-50 p-2 w-full max-w-sm flex justify-end rounded-b-lg">
+                    <button @click="modalOpen = false" type="button" class="w-full justify-center rounded-md border border-transparent shadow-sm px-14 py-0 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:text-sm">
+                        Cerrar
+                    </button>
                 </div>
             </div>
         </div>

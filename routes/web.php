@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\SalidasController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\UserController;
 
 //Rutas no autenticadas
 Route::redirect('/', '/login');
@@ -24,5 +25,6 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     Route::post('/comprobarSalida', [SalidasController::class , 'comprobarSalida']);
     Route::post('/salidas.store', [SalidasController::class , 'store']);
     Route::put('/salidas.update', [SalidasController::class , 'update']);
+    Route::resource('/users', UserController::class);
 });
 

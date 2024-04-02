@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             SalidaSeeder::class,
             EntradaSeeder::class,
             ClienteSeeder::class,
+            MenusTableSeeder::class,
+            SubmenusTableSeeder::class,
         ]);
     }
 }
