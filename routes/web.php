@@ -8,6 +8,10 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\SalidasController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\TbcategoriaController;
+use App\Http\Controllers\TbmarcaController;
+use App\Http\Controllers\TbproductoController;
+use App\Http\Controllers\TbsubcategoriaController;
 use App\Http\Controllers\UserController;
 
 //Rutas no autenticadas
@@ -26,5 +30,9 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     Route::post('/salidas.store', [SalidasController::class , 'store']);
     Route::put('/salidas.update', [SalidasController::class , 'update']);
     Route::resource('/users', UserController::class);
+    Route::resource('/tbproductos', TbproductoController::class);
+    Route::resource('/tbmarcas', TbmarcaController::class);
+    Route::resource('/tbcategorias', TbcategoriaController::class);
+    Route::resource('/tbsubcategorias', TbsubcategoriaController::class);
 });
 
