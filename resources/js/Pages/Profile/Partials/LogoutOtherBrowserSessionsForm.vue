@@ -104,7 +104,9 @@ const closeModal = () => {
                 </template>
 
                 <template #content>
+                    <div class="text-white">
                     Ingrese su contraseña para confirmar que desea cerrar sesión en sus otras sesiones de navegador en todos sus dispositivos.
+                    </div>
 
                     <div class="mt-4">
                         <TextInput

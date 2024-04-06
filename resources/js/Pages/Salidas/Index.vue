@@ -152,15 +152,19 @@ const deleteSalidas = (id, empresa) => {
                             </div>
                         </div>
                     </div>
-                    <div class="flex justify-between mt-2">
-                        <Link v-if="salidas.current_page > 1" :href="salidas.prev_page_url" class="py-2 px-4 rounded">
-                            Prev
+                    <div class="flex justify-between mt-4">
+                        <Link v-if="salidas.current_page > 1" :href="salidas.prev_page_url" class="flex items-center justify-center px-3 h-8 me-3 text-sm font-medium text-white bg-blue-600 border rounded-lg hover:text-white hover:bg-blue-700">
+                            <svg class="w-3.5 h-3.5 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
+                            </svg>
+                            Anterior
                         </Link>
-                        <div v-else></div>
-                        <Link v-if="salidas.current_page < salidas.last_page" :href="salidas.next_page_url" class="py-2 px-4 rounded">
-                            Next
+                        <Link v-if="salidas.current_page < salidas.last_page" :href="salidas.next_page_url" class="flex items-center justify-center px-3 h-8 me-3 text-sm font-medium text-white bg-blue-600 border rounded-lg hover:text-white hover:bg-blue-700">
+                            Siguiente
+                            <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                            </svg>
                         </Link>
-                        <div v-else></div>
                     </div>
                 </div>
             </div>

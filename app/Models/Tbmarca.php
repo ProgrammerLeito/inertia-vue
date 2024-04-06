@@ -9,7 +9,10 @@ class Tbmarca extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['nombre','tbcategoria_id'];
+    protected $fillable = [
+        'nombre',
+        'tbcategoria_id'
+    ];
  
     public function tbcategoria()
     {

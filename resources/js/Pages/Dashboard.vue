@@ -15,6 +15,9 @@ import Welcome from '@/Components/Welcome.vue';
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                     <Welcome />
+                    <div>
+                        <p>Has madrugado mucho {{ $page.props.auth.user.name }}</p>
+                    </div>
                 </div>
             </div>
         </div>

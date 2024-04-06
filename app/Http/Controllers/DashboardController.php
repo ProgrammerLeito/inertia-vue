@@ -18,9 +18,20 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        return Inertia::render('Dashboard');
+        if (!auth()->check()) {
+            // Redirect to login or handle unauthorized access appropriately
+            return redirect()->route('login');
+        }
+    
+        $user = auth()->user(); // Get authenticated user object
+    
+        // dd($user);
+
+        return inertia('Dashboard', [
+            'user' => $user
+        ]);
     }
 
 }

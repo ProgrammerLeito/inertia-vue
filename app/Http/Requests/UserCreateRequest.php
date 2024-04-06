@@ -26,6 +26,9 @@ class UserCreateRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'string', 'max:255', Rule::unique('users')],
             'password' => ['nullable', 'string', 'min:8'],
+            'sexo' => ['required', 'string', 'max:255'],
+            'celular' => ['required', 'string', 'max:255'],
+            'tipo_usu' => ['required', 'string', 'max:255'],
         ];
     }
 }

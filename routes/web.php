@@ -13,6 +13,9 @@ use App\Http\Controllers\TbmarcaController;
 use App\Http\Controllers\TbproductoController;
 use App\Http\Controllers\TbsubcategoriaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SidebarController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 //Rutas no autenticadas
 Route::redirect('/', '/login');
@@ -34,5 +37,19 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     Route::resource('/tbmarcas', TbmarcaController::class);
     Route::resource('/tbcategorias', TbcategoriaController::class);
     Route::resource('/tbsubcategorias', TbsubcategoriaController::class);
+    Route::resource('/sidebar', SidebarController::class);
+    //Consulta para consumir la api de sunat
+    Route::get('/consultar-reniec', function (Request $request) {
+        $numeroDocumento = $request->query('numero');
+        $token = 'apis-token-7907.K0qLm91OLHYP07iBLCqF4INtKqqtu0H6';
+   
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token
+        ])->get('https://api.apis.net.pe/v2/sunat/ruc', [
+            'numero' => $numeroDocumento
+        ]);
+   
+        return $response->json();
+    });
 });
 

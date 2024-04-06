@@ -9,7 +9,22 @@ class Tbproducto extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['tbcategoria_id', 'tbsubcategoria_id', 'tbmarca_id', 'modelo', 'medida', 'moneda', 'precio', 'descuento', 'stock', 'codigo', 'estado', 'capacidades', 'especificaciones', 'foto'];
+    protected $fillable = [
+        'tbcategoria_id',
+        'tbsubcategoria_id',
+        'tbmarca_id',
+        'modelo',
+        'medida',
+        'moneda',
+        'precio',
+        'descuento',
+        'stock',
+        'codigo',
+        'estado',
+        'capacidades',
+        'especificaciones',
+        'foto'
+    ];
  
     public function tbcategoria()
     {

@@ -65,7 +65,9 @@ const closeModal = () => {
                 </template>
 
                 <template #content>
-                    ¿Estás seguro de que quieres eliminar tu cuenta? Una vez que se elimine su cuenta, todos sus recursos y datos se eliminarán permanentemente. Ingrese su contraseña para confirmar que desea eliminar permanentemente su cuenta.
+                    <div class="dark:text-white">
+                        ¿Estás seguro de que quieres eliminar tu cuenta? Una vez que se elimine su cuenta, todos sus recursos y datos se eliminarán permanentemente. Ingrese su contraseña para confirmar que desea eliminar permanentemente su cuenta.
+                    </div>
 
                     <div class="mt-4">
                         <TextInput
@@ -84,7 +86,7 @@ const closeModal = () => {
 
                 <template #footer>
                     <SecondaryButton @click="closeModal">
-                        Cancel
+                        Cancelar
                     </SecondaryButton>
 
                     <DangerButton
@@ -93,7 +95,7 @@ const closeModal = () => {
                         :disabled="form.processing"
                         @click="deleteUser"
                     >
-                        Delete Account
+                        BORRAR CUENTA
                     </DangerButton>
                 </template>
             </DialogModal>

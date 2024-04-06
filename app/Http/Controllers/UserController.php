@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Models\User;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserUpdateRequest;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -33,8 +34,16 @@ class UserController extends Controller
      */
     public function store(UserCreateRequest $request)
     {
-        User::create($request->validated());
-        $request->user()->save();
+        // Obtener los datos validados del formulario
+        $userData = $request->validated();
+
+        // Hashear la contraseña si se proporciona
+        if (isset($userData['password'])) {
+            $userData['password'] = Hash::make($userData['password']);
+        }
+
+        // Crear el usuario en la base de datos
+        User::create($userData);
  
         return Redirect()->back();
     }
@@ -61,16 +70,25 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, User $user)
     {
         $validatedData = $request->validated();
- 
+
+        // Verificar si se cambió el correo electrónico
         if ($validatedData['email'] !== $user->email) {
+            // Si el correo electrónico cambiado ya está en uso, redirige con un mensaje de error
             if (User::where('email', $validatedData['email'])->exists()) {
                 return redirect()->back()->with('error', 'La dirección de correo electrónico ya está en uso.');
             }
         }
-   
+
+        // Si se proporcionó una nueva contraseña, hashearla antes de actualizar
+        if (isset($validatedData['password'])) {
+            $validatedData['password'] = Hash::make($validatedData['password']);
+        }
+
+        // Actualizar los datos del usuario con los datos validados
         $user->fill($validatedData);
         $user->save();
-   
+
+        // Redireccionar de vuelta con un mensaje de éxito
         return redirect()->back()->with('success', 'Usuario actualizado correctamente.');
     }
 

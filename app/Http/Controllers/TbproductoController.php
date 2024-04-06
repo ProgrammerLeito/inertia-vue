@@ -76,12 +76,53 @@ class TbproductoController extends Controller
  
     public function edit(Tbproducto $tbproducto)
     {
-        //
+        $tbmarcas = Tbmarca::all();
+        $tbcategorias = Tbcategoria::all();
+        $tbsubcategorias = Tbsubcategoria::all();
+       
+        return Inertia::render('Catalogo/Edit', [
+            'tbproducto' => $tbproducto,
+            'tbmarcas' => $tbmarcas,
+            'tbcategorias' => $tbcategorias,
+            'tbsubcategorias' => $tbsubcategorias
+        ]);
     }
+   
  
-    public function update(Request $request, Tbproducto $tbproducto)
+    public function update(Request $request, $id)
     {
+        $validatedData = $request->validate([
+            'tbcategoria_id' => 'required',
+            'tbsubcategoria_id' => 'required',
+            'tbmarca_id' => 'required',
+            'modelo' => 'required',
+            'medida' => 'required',
+            'moneda' => 'required',
+            'precio' => 'required|numeric|min:0',
+            'descuento' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'codigo' => 'required|string|max:255|unique:tbproductos,codigo,'.$id, // Asegúrate de excluir el registro actual del chequeo único
+            'estado' => 'required',
+            'capacidades' => 'required',
+            'especificaciones' => 'required',
+            'foto' => 'nullable', // La foto no es requerida en la edición
+        ]);
  
+        $tbproducto = Tbproducto::findOrFail($id); // Buscar el producto por su ID
+ 
+        // Actualizar los datos del producto
+        $tbproducto->update($validatedData);
+ 
+        // Manejar la subida de la foto si se ha enviado
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $nombreArchivo = hash('sha256', time() . '_' . $file->getClientOriginalName()) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path().'/img/catalogo', $nombreArchivo);
+            $tbproducto->foto = $nombreArchivo;
+            $tbproducto->save();
+        }
+ 
+        return redirect()->route('tbproductos.index')->with('success', 'Producto actualizado exitosamente.');
     }
     public function destroy($id)
     {

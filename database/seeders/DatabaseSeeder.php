@@ -16,10 +16,6 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             CategorySeeder::class,
-            ProductosSeeder::class,
-            SalidaSeeder::class,
-            EntradaSeeder::class,
-            ClienteSeeder::class,
             MenusTableSeeder::class,
             SubmenusTableSeeder::class,
         ]);

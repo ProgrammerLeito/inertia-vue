@@ -42,7 +42,7 @@ const logout = () => {
                     <div :class="{'profile flex justify-center items-center text-center p-5': dataOpenSideBar, 'flex justify-center items-center text-center': !dataOpenSideBar }">
                         <div class="text-center text-white" v-show="dataOpenSideBar">
                             <img src="/img/hombre.png" class="p-1 w-24 h-24 rounded-full ring-2 ring-gray-300 dark:ring-gray-500 mb-4" alt="">
-                            <h5 class="text-xl font-medium leading-tight mb-2">Leonardo</h5>
+                            <Link :href="route('profile.show')"><h5 class="text-xl font-medium leading-tight mb-2">{{ $page.props.auth.user.name }}</h5></Link>
                             <p class="text-gray-500">Admin</p>
                         </div>
                     </div>

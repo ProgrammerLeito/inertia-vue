@@ -70,13 +70,6 @@ class ProductoController extends Controller
     public function store(ProductoRequest $request)
     {
         $producto = Producto::create($request->validated());
-
-        // if ($request->hasFile('imagen_producto')) {
-        //     $file = $request->file('imagen_producto');
-        //     $nombreArchivo = hash('sha256', time() . '_' . $file->getClientOriginalName()) . '.' . $file->getClientOriginalExtension();
-        //     $file->move(public_path().'/img/productos', $nombreArchivo);
-        //     $producto->imagen_producto = $nombreArchivo;
-        // }
         if ($request->hasFile('imagen_producto')) {
             $file = $request->file('imagen_producto');
             $fileName = uniqid('productos') . '.' . $file->getClientOriginalExtension();
@@ -120,20 +113,6 @@ class ProductoController extends Controller
      */
     public function destroy($id)
     {
-        // // Verificar si hay entradas relacionadas con este producto
-        // $tieneEntradas = DB::table('entradas')->where('producto_id', $producto->id)->exists();
-
-        // if ($tieneEntradas) {
-        //     // Si hay entradas relacionadas, simplemente redirige de vuelta a la página anterior
-        //     return redirect()->back();
-        // }
-    
-        // // No hay entradas relacionadas, procede con la eliminación del producto
-        // $category_id = $producto->category_id;
-        // $producto->delete();
-    
-        // // Redirige a la página de índice de productos con el category_id
-        // return redirect()->route('productos.index', ['category_id' => $category_id]);
         $producto = Producto::find($id);
         unlink(public_path('img/productos/'.$producto->imagen_producto));
         $producto->delete();

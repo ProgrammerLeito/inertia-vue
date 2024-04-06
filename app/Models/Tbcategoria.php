@@ -9,7 +9,9 @@ class Tbcategoria extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre'];
+    protected $fillable = [
+        'nombre'
+    ];
  
     public function tbsubcategorias()
     {

@@ -245,11 +245,11 @@ const ok4 = (msj) =>{
                                 <!-- Categoría -->
                                 <div class="flex items-center">
                                     <select id="tbcategoria" v-model="form.tbcategoria_id" required
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="">Seleccione una categoría</option>
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                        <option value="" disabled selected>Seleccione una categoría</option>
                                         <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
                                     </select>
-                                    <Button @click="() => openModal4(1)" class="ml-2 bg-green-600 rounded py-1">
+                                    <Button @click="() => openModal4(1)" class="bg-green-600 text-white mt-1 py-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                         <i class="fas fa-plus mx-2"></i>
                                     </Button>
                                 </div>
@@ -258,23 +258,23 @@ const ok4 = (msj) =>{
                                 <div class="flex items-center">
                                     <!-- <label for="tbsubcategoria" >Subcategoría</label> -->
                                     <select id="tbsubcategoria" v-model="form.tbsubcategoria_id"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="">Seleccione una subcategoría</option>
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                        <option value="" disabled selected>Seleccione una subcategoría</option>
                                         <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
                                     </select>
-                                    <Button  @click="() => openModal2(1)" class="ml-2 bg-green-600 rounded py-1">
+                                    <Button  @click="() => openModal2(1)" class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                         <i class="fas fa-plus mx-2"></i>
                                     </Button>
                                 </div>
                                 <!-- Marca -->
                                 <div class="flex items-center">
                                     <select id="tbmarca" v-model="form.tbmarca_id" required
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="">Seleccione una marca</option>
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                        <option value="" disabled selected>Seleccione una marca</option>
                                         <!-- Iterar sobre las marcas -->
                                         <option v-for="tbmarca in tbmarcas" :key="tbmarca.id" :value="tbmarca.id">{{ tbmarca.nombre }}</option>
                                     </select>
-                                    <Button @click="() => openModal3(1)" class="ml-2 bg-green-600 rounded py-1">
+                                    <Button @click="() => openModal3(1)" class="bg-green-600 py-1 text-white mt-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                         <i class="fas fa-plus mx-2"></i>
                                     </Button>
                                 </div>
@@ -283,14 +283,14 @@ const ok4 = (msj) =>{
                                 <!-- Modelo -->
                                 <div>
                                     <InputLabel for="modelo" class="block text-md font-medium text-gray-700">Modelo</InputLabel>
-                                    <TextInput type="text" id="modelo" v-model="form.modelo" required placeholder="escribe un modelo"
+                                    <TextInput type="text" id="modelo" v-model="form.modelo" required placeholder="Escribe un modelo"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.modelo" class="mt-2"/>
                                 </div>
                                 <!-- Medida -->
                                 <div>
                                     <InputLabel for="medida" class="block text-sm font-medium text-gray-700">Medida</InputLabel>
-                                    <TextInput type="text" id="medida" v-model="form.medida" required placeholder=" solo numeros"
+                                    <TextInput type="text" id="medida" v-model="form.medida" required placeholder="Escribe la medida"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.medida" class="mt-2"/>
                                 </div>
@@ -299,7 +299,7 @@ const ok4 = (msj) =>{
                                     <InputLabel for="moneda" class="block text-sm font-medium text-gray-700">Moneda</InputLabel>
                                     <select id="moneda" v-model="form.moneda" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="">Selecciona una moneda</option>
+                                        <option value="" disabled selected >Selecciona una moneda</option>
                                         <option value="sol">Sol</option>
                                         <option value="dolares">Dólares</option>
                                     </select>
@@ -329,7 +329,7 @@ const ok4 = (msj) =>{
                                 <!-- Código -->
                                 <div>
                                     <InputLabel for="codigo" class="block text-sm font-medium text-gray-700">Código</InputLabel>
-                                    <TextInput type="text" id="codigo" v-model="form.codigo" required placeholder="escibe solo numeros "
+                                    <TextInput type="text" id="codigo" v-model="form.codigo" required placeholder="Ingrese el codigo del producto"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.codigo" class="mt-2"/>
                                 </div>
@@ -338,7 +338,7 @@ const ok4 = (msj) =>{
                                     <InputLabel for="estado" class="block text-sm font-medium text-gray-700">Estado</InputLabel>
                                     <select id="estado" v-model="form.estado" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="">Selecciona un estado</option>
+                                        <option value="" disabled selected >Selecciona un estado</option>
                                         <option value="activado">Activado</option>
                                         <option value="suspendido">Suspendido</option>
                                     </select>
@@ -349,14 +349,14 @@ const ok4 = (msj) =>{
                                 <!-- Capacidades -->
                                 <div>
                                     <InputLabel for="capacidades" class="block text-sm font-medium text-gray-700">Capacidades</InputLabel>
-                                    <textarea id="capacidades" v-model="form.capacidades" rows="5" placeholder="escribe las capacicdades..."
+                                    <textarea id="capacidades" v-model="form.capacidades" rows="5" placeholder="Escribe las capacidades..."
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
                                     <InputError :message="$page.props.errors.capacidades" class="mt-2"/>
                                 </div>
                                 <!-- Especificaciones -->
                                 <div>
                                     <InputLabel for="especificaciones" class="block text-sm font-medium text-gray-700">Especificaciones</InputLabel>
-                                    <textarea id="especificaciones" v-model="form.especificaciones" rows="5" placeholder="escribe las especificaciones..."
+                                    <textarea id="especificaciones" v-model="form.especificaciones" rows="5" placeholder="Escribe las especificaciones..."
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
                                     <InputError :message="$page.props.errors.especificaciones" class="mt-2"/>
                                 </div>
@@ -366,10 +366,10 @@ const ok4 = (msj) =>{
                                     <input @change="onFileChange" :v-model="form.foto" id="file_input" type="file"
                                     class="p-2 block w-full text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
                                     <InputError :message="$page.props.errors.foto" class="mt-2"/>
-                                    <div  v-if="form.foto" class="mt-2 shadow-lg">
-                                        <img :src="form.fotoPreview"  alt="Foto actual " style="max-width: 200px; max-height: 300px;">
+                                    <div  v-if="form.foto" class="flex justify-center mt-2">
+                                        <img :src="form.fotoPreview"  alt="Foto actual " style="max-width: 150px; max-height: 150px;">
                                     </div>
-                                    <div v-else class="mt-3">
+                                    <div v-else class="mt-3 dark:text-white">
                                         <p>no hay foto seleccionada</p>
                                     </div>
                                 </div>
@@ -382,7 +382,6 @@ const ok4 = (msj) =>{
                                 <Link :href="route('tbproductos.index')" class="ml-5 inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
                                     Cancelar
                                 </Link>
- 
                             </div>
                         </form>
                     </div>

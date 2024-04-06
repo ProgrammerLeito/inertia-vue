@@ -86,7 +86,7 @@ watchEffect(() => {
 </script>
  
 <template>
-    <AppLayout title="Categorias">
+    <AppLayout title="Catalago Productos">
         <template #header>
             <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Catalago de Productos</h1>
         </template>
@@ -119,12 +119,14 @@ watchEffect(() => {
                                     </div>
                                     <div class="flex flex-col">
                                         <InputLabel for="table-search" class="block text-md font-medium text-gray-700">Buscar</InputLabel>
-                                        <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                                            <!-- <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                                            </svg> -->
+                                        <div class="relative mt-1">
+                                            <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                                <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                                </svg>
+                                            </div>
+                                            <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
                                         </div>
-                                        <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
                                     </div>
                                 </div>
                             </div>
@@ -155,9 +157,9 @@ watchEffect(() => {
                                             <td class="px-6 py-4 text-center">{{ tbproducto.precio }}</td>
                                             <td class="px-6 py-4 text-center">{{ tbproducto.codigo }}</td>
                                             <td class="p-3 text-center">
-                                                <ButtonEdit >
+                                                <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })">
                                                     <i class="bi bi-pencil-square text-green-500"></i>
-                                                </ButtonEdit>
+                                                </Link>
                                                 <ButtonDelete @click="$event => deleteTbproducto(tbproducto.id,tbproducto.modelo)" class="ml-1">
                                                     <i class="bi bi-trash3 text-red-500"></i>
                                                 </ButtonDelete>

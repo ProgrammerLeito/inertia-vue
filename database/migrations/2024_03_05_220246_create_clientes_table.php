@@ -12,15 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('clientes', function (Blueprint $table) {
-            $table->id('idCliente');
-            $table->string('cli_razonSocial', 250);
-            $table->string('cli_ruc', 250);
-            $table->string('cli_ciudad', 250);
-            $table->string('cli_direccionlegal', 250);
-            $table->string('cli_direccion1', 250);
+            $table->id('id');
+            $table->string('numeroDocumento');
+            $table->string('razonSocial', 250);
+            $table->string('direccion', 250);
+            $table->string('distrito', 250);
+            $table->string('provincia', 250);
+            $table->string('departamento', 250);
+            $table->string('estado');
             $table->string('cli_direccion2', 250);
             $table->string('cli_observacion', 250);
-            $table->string('estado', 2)->nullable()->default(1);
             $table->timestamps();
         });
     }

@@ -86,34 +86,38 @@ function warn(event) {
             confirmButtonText: "Confirmar",
             showLoaderOnConfirm: true,
             cancelButtonText: "Cancelar",
-            allowOutsideClick: () => !Swal.isLoading()
+            allowOutsideClick: () => !Swal.isLoading(),
+            preConfirm: (password) => {
+                // Aquí puedes realizar cualquier validación adicional o acciones necesarias antes de enviar la solicitud
+                return axios.post('/comprobarSalida', { id: id, passwordconfirmacion: password })
+                    .then(response => {
+                        if (response.data.siexisteusuario === true) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: "Salida Exitosa",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            return true; // Esto confirma el diálogo si la validación es exitosa
+                        } else if (response.data.siexisteusuario === false) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: "Contraseña Incorrecta",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            return false; // Esto impide que el diálogo se cierre si la validación falla
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al enviar la solicitud:', error);
+                        return false; // Esto impide que el diálogo se cierre si hay un error
+                    });
+            }
         }).then((result) => {
+            // Aquí puedes realizar cualquier acción adicional después de que se complete la operación
             if (result.isConfirmed) {
-                let passwordconfirmacion = result.value;
-    
-                // Enviar solicitud al backend usando axios
-                axios.post('/comprobarSalida', { id: id, passwordconfirmacion: passwordconfirmacion })
-                .then(response => {
-                    if (response.data.siexisteusuario === true){
-                        Swal.fire({
-                            icon: 'success',
-                            title: "Salida Exitosa",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                        submit();
-                    }else if (response.data.siexisteusuario === false){
-                        Swal.fire({
-                            icon: 'error',
-                            title: "Contraseña Incorrecta",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al enviar la solicitud:', error);
-                });
+                submit();
             }
         });
     }

@@ -15,11 +15,11 @@ defineProps({
     },
     content: {
         type: String,
-        default: 'For your security, please confirm your password to continue.',
+        default: 'Por su seguridad, confirme su contraseña para continuar.',
     },
     button: {
         type: String,
-        default: 'Confirm',
+        default: 'Confirmar',
     },
 });
 
@@ -82,7 +82,7 @@ const closeModal = () => {
             </template>
 
             <template #content>
-                {{ content }}
+                <div class="dark:text-white">{{ content }}</div>
 
                 <div class="mt-4">
                     <TextInput
@@ -101,7 +101,7 @@ const closeModal = () => {
 
             <template #footer>
                 <SecondaryButton @click="closeModal">
-                    Cancel
+                    Cancelar
                 </SecondaryButton>
 
                 <PrimaryButton
