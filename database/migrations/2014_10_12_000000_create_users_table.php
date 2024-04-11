@@ -17,12 +17,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('sexo');
             $table->string('celular');
-            $table->string('tipo_usu');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
+            $table->softDeletes('deleted_at', precision: 0);
             $table->timestamps();
         });
     }

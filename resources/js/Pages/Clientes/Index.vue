@@ -16,6 +16,10 @@ const props = defineProps({
     clientes: {
         type : Object,
         // required: true
+    },
+    tbprovincias: {
+        type : Object,
+        // required: true
     }
 });
 
@@ -29,6 +33,7 @@ const form = useForm({
   estado:'',
   cli_direccion2:'',
   cli_observacion:'',
+  prov_clientes: '',
   // Agregar otros campos según sea necesario
 });
  
@@ -48,7 +53,7 @@ const filteredClients = computed(() => {
             return cliente.numeroDocumento.toLowerCase().includes(normalizedQuery) ||
                    cliente.razonSocial.toLowerCase().includes(normalizedQuery) ||
                    cliente.direccion.toLowerCase().includes(normalizedQuery) ||
-                   cliente.provincia.toLowerCase().includes(normalizedQuery);
+                   cliente.prov_cliente.toLowerCase().includes(normalizedQuery);
         });
     }
 });
@@ -68,16 +73,28 @@ const filteredClients = computed(() => {
                             Registrar Empresa
                         </Link>
                     </div>
-                    <div class="mt-4 overflow-auto">
-                        <div class="pb-4 bg-white dark:bg-gray-800">
-                            <label for="table-search" class="sr-only">Buscar</label>
-                            <div class="relative mt-1">
-                                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                                    <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                                    </svg>
+                    <div class="mt-2 overflow-auto">
+                        <div class="py-1">
+                            <!-- grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-2 mb-3 -->
+                            <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-3 sm:gap-x-2 mb-1">
+                                <div class="flex flex-col">
+                                    <InputLabel for="table-search" class="block text-md font-medium text-gray-700 dark:text-white">Buscar</InputLabel>
+                                    <div class="relative mt-1">
+                                        <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                            <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                            </svg>
+                                        </div>
+                                        <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar cliente">
+                                    </div>
                                 </div>
-                                <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar Clientes">
+                                <div class="flex flex-col">
+                                    <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Ciudad</InputLabel>
+                                    <select class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full h-10 shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="" selected disabled>Seleccione una Ciudad</option>
+                                        <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id" :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-200 dark:shadow-gray-500 mt-2">
@@ -98,11 +115,9 @@ const filteredClients = computed(() => {
                                         <td class="px-6 py-4 text-center">{{ cliente.numeroDocumento }}</td>
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.direccion }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cliente.provincia }}</td>
+                                        <td class="px-6 py-4 text-center">{{ cliente.prov_cliente }}</td>
                                         <td class="p-3 text-center">
-                                            <ButtonEdit @click="$event => openModal(2,category.name,category.id)">
-                                                <i class="bi bi-pencil-square text-green-500"></i>
-                                            </ButtonEdit>
+                                            <Link class="py-2 px-4 text-green-500" :href="route('clientes.edit', { cliente: cliente.id })"><i class="bi bi-pencil-square"></i></Link>
                                             <ButtonDelete>
                                                 <i class="bi bi-trash3 text-red-500"></i>
                                             </ButtonDelete>

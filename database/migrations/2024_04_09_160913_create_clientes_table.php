@@ -23,6 +23,9 @@ return new class extends Migration
             $table->string('cli_direccion2', 250);
             $table->string('cli_observacion', 250);
             $table->timestamps();
+
+            $table->unsignedBigInteger('prov_clientes');
+            $table->foreign('prov_clientes')->references('id')->on('tbprovincias');
         });
     }
 

@@ -1,73 +1,54 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue'
+import { Link, useForm } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import TextRuc from '@/Components/TextRuc.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import InputError from '@/Components/InputError.vue';
-import { Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import TextInput from '@/Components/TextInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import Modal from '@/Components/Modal.vue';
 import Swal from 'sweetalert2';
+import { defineProps } from 'vue';
  
-defineProps({
+// Define los props esperados
+const props = defineProps({
+    cliente: {
+        type : Object,
+        // required: true
+    },
     tbprovincias: {
         type : Object,
-        required: true
+        // required: true
     }
+});
+ 
+// Lógica del componente
+const form = useForm({
+    numeroDocumento: props.cliente.numeroDocumento,
+    razonSocial: props.cliente.razonSocial,
+    direccion: props.cliente.direccion,
+    distrito: props.cliente.distrito,
+    provincia: props.cliente.provincia,
+    departamento: props.cliente.departamento,
+    estado: props.cliente.estado,
+    cli_direccion2: props.cliente.cli_direccion2,
+    cli_observacion: props.cliente.cli_observacion,
+    prov_clientes: props.cliente.prov_clientes,
 });
 
-const form = useForm({
-  numeroDocumento: '',
-  razonSocial: '',
-  direccion: '',
-  distrito: '',
-  provincia: '',
-  departamento:'',
-  estado:'',
-  cli_direccion2:'',
-  cli_observacion:'',
-  prov_clientes: '',
-});
  
-const errors = ref({
-  numeroDocumento: '',
-});
  
-const consultarReniec = async () => {
-  try {
-    const response = await fetch(`/consultar-reniec?numero=${form.numeroDocumento}`);
- 
-    if (response.ok) {
-      const empresa = await response.json();
-      form.razonSocial = empresa.razonSocial;
-      form.direccion = empresa.direccion;
-      form.distrito = empresa.distrito;
-      form.provincia = empresa.provincia;
-      form.departamento = empresa.departamento;
-      form.estado = empresa.estado;
-      errors.value.numeroDocumento = ''; // Limpiar errores si la consulta es exitosa
-    } else if (response.status === 404) {
-      errors.value.numeroDocumento = 'No se encontró información para el DNI ingresado.';
-    } else {
-      throw new Error('Error en la consulta a la API de Reniec.');
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
- 
-// const submitForm = () => {
- 
-// };
- 
-const submitForm = () => {
-    form.post(route('clientes.store'), {
+// Función para enviar el formulario
+const submitForm = (id) => {
+    form.put(route('clientes.update',{ id }), {
         onSuccess: () => {
             Swal.fire({
                 icon: 'success',
                 title: 'Éxito',
-                text: 'El cliente se ha registrado correctamente.'
+                text: 'El cliente se ha actualizado correctamente.',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
             });
         },
         onError: (errors) => {
@@ -76,7 +57,10 @@ const submitForm = () => {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Ha ocurrido un error al registrar el producto. Por favor, inténtalo de nuevo.'
+                    text: 'Ha ocurrido un error al actualzar el cliente. Por favor, inténtalo de nuevo.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
                 });
                 console.error('Error HTTP:', errors.response.status);
             } else {
@@ -90,29 +74,27 @@ const submitForm = () => {
             }
         }
     });
-}
- 
+};
 </script>
  
 <template>
-    <AppLayout title="Registrar Cliente">
+    <AppLayout title="Actualizar Producto">
+        <!-- Encabezado -->
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Registrar Cliente</h1>
+            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Actualizar Cliente</h1>
         </template>
  
+        <!-- Contenido del formulario -->
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
-            <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
-                    <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-                        <form @submit.prevent="submitForm">
+            <div class="h-full mx-auto px-4  sm:px-6 lg:px-8">
+                <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] dark:bg-gray-800 overflow-auto uppercase text-sm shadow-2xl bg-white rounded-lg">
+                    <div class="h-full mx-auto px-4 sm:px-6 lg:px-8 ">
+                        <!-- Formulario de edición -->
+                        <form @submit.prevent="submitForm($props.cliente.id)">
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
-                                    <InputLabel for="numeroDocumento" value="Número de RUC" />
-                                    <div class="w-full flex justify-end items-end">
-                                        <TextRuc v-model="form.numeroDocumento" type="text" id="numeroDocumento" placeholder="Ingrese y consulte el RUC" class="mt-2 w-full"/>
-                                        <button @click="consultarReniec" type="button" class="bg-blue-600 w-12 h-[42px] rounded-r-lg hover:bg-blue-700"><i class='bx bx-search-alt text-white dark:text-black font-medium text-xl'></i></button>
-                                    </div>
-                                    <InputError :message="errors.numeroDocumento" />
+                                    <InputLabel value="razon Social" />
+                                    <TextInput v-model="form.numeroDocumento" type="text" placeholder="Ingrese Razon Social" class="mt-2 w-full"/>
                                 </div>     
                                 <div>
                                     <InputLabel value="razon Social" />
@@ -160,15 +142,10 @@ const submitForm = () => {
                                     <textarea id="cli_observacion" v-model="form.cli_observacion" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las observaciones..."></textarea>
                                 <InputError :message="$page.props.errors.cli_observacion" class=""/>
                             </div>
-                            <div class="d-flex mt-4">
-                                <div class="flex flex-wrap gap-2 justify-end">
-                                    <ButtonResponsive type="submit" class="md:w-min whitespace-nowrap w-full text-center font-bold">
-                                        GUARDAR
-                                    </ButtonResponsive>
-                                    <Link :href="route('clientes.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
-                                        Cancelar
-                                    </Link>
-                                </div>
+                              <!-- Botones de acción -->
+                            <div class="mt-6">
+                                <PrimaryButton>Actualizar</PrimaryButton>
+                                <Link :href="route('clientes.index')" class="ml-5 inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">Cancelar</Link>
                             </div>
                         </form>
                     </div>
@@ -177,3 +154,4 @@ const submitForm = () => {
         </div>
     </AppLayout>
 </template>
+ 

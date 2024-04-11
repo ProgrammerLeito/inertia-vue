@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\SalidasController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\TbcategoriaController;
 use App\Http\Controllers\TbmarcaController;
 use App\Http\Controllers\TbproductoController;
@@ -38,6 +39,11 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     Route::resource('/tbcategorias', TbcategoriaController::class);
     Route::resource('/tbsubcategorias', TbsubcategoriaController::class);
     Route::resource('/sidebar', SidebarController::class);
+    Route::get('trashed_users',[UserController::class,'trashed_users'])->name('users.trashed');
+    Route::get('restore_users/{id}',[UserController::class,'restore'])->name('users.restore');
+    Route::delete('delete_users_deletePermanently/{id}',[UserController::class,'deletePermanently'])->name('users.deletePermanently');
+    Route::resource('roles', RoleController::class);
+    Route::resource('permisos', PermisoController::class);
     //Consulta para consumir la api de sunat
     Route::get('/consultar-reniec', function (Request $request) {
         $numeroDocumento = $request->query('numero');

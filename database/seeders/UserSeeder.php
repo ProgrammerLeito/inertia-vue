@@ -20,7 +20,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('Leonardo150724#.'),
             'sexo' => 'Masculino',
             'celular' => 931311244,
-            'tipo_usu' => 'Administrador',
         ]);
 
         $admin->assignRole('admin');
@@ -31,7 +30,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('ingri2024#.'),
             'sexo' => 'Femenino',
             'celular' => 99999999,
-            'tipo_usu' => 'Ventas',
         ]);
 
         $editor->assignRole('editor');
@@ -42,7 +40,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('prueba2024'),
             'sexo' => 'Masculino',
             'celular' => 999999999,
-            'tipo_usu' => 'Administrador',
         ]);
 
         $editor->assignRole('editor');

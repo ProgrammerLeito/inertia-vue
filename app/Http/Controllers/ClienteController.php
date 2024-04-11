@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
  
 use App\Models\Cliente;
+use App\Models\Tbprovincias;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -12,19 +13,28 @@ class ClienteController extends Controller
     const Numero_de_items_pagina =25;
     public function index()
     {
+        $tbprovincias = Tbprovincias::all();
         $clientes = DB::table('clientes')
-                        ->select('id', 'numeroDocumento', 'razonSocial', 'direccion', 'provincia') // Selecciona los campos que desees
+                        ->join('tbprovincias', 'clientes.prov_clientes', '=', 'tbprovincias.id')
+                        ->select(
+                            'clientes.id',
+                            'clientes.numeroDocumento',
+                            'clientes.razonSocial',
+                            'clientes.direccion',
+                            'tbprovincias.prov_nombre as prov_cliente'
+                        )
                         ->paginate(self::Numero_de_items_pagina);
 
         return Inertia::render('Clientes/Index', [
-            'clientes' => Cliente::paginate(10)
+            'clientes' => $clientes,
+            'tbprovincias' => $tbprovincias
         ]);
     }
  
     public function create()
     {
- 
-        return inertia::render('Clientes/Create');
+        $tbprovincias = Tbprovincias::all();
+        return inertia::render('Clientes/Create', ['tbprovincias' => $tbprovincias]);
     }
    
  
@@ -40,6 +50,7 @@ class ClienteController extends Controller
             'estado' => 'required|string',
             'cli_direccion2' => 'required',
             'cli_observacion' => 'required|string',
+            'prov_clientes' => 'required',
         ]);
    
         $token = 'apis-token-7907.K0qLm91OLHYP07iBLCqF4INtKqqtu0H6'; // Reemplaza con tu token
@@ -81,6 +92,7 @@ class ClienteController extends Controller
             'estado' => $empresa->estado,
             'cli_direccion2' => $request->input('cli_direccion2'),
             'cli_observacion' => $request->input('cli_observacion'),
+            'prov_clientes' => $request->input('prov_clientes'),
         ]);
    
         // Redireccionar a alguna vista después de crear la inscripción
@@ -97,8 +109,9 @@ class ClienteController extends Controller
    
     public function edit(string $id)
     {
+        $tbprovincias = Tbprovincias::all();
         $cliente = Cliente::findOrFail($id);
-        return inertia('Clientes/Edit', ['cliente' => $cliente]);
+        return inertia('Clientes/Edit', ['cliente' => $cliente, 'tbprovincias' => $tbprovincias]);
     }
  
  
@@ -106,19 +119,25 @@ class ClienteController extends Controller
     {
         // Validar los datos del formulario de edición
         $validatedData = $request->validate([
-            'cli_razonSocial' => 'required',
-            'cli_ruc' => 'required',
-            'cli_ciudad' => 'required',
-            'cli_direccionlegal' => 'required',
-            'cli_direccion1' => 'required',
+            'numeroDocumento' => 'required',
+            'razonSocial' => 'required',
+            'direccion' => 'required',
+            'distrito' => 'required',
+            'provincia' => 'required',
+            'departamento' => 'required',
+            'estado' => 'required',
             'cli_direccion2' => 'required',
-            'cli_observacion' => 'required'
+            'cli_observacion' => 'required',
+            'prov_clientes' => 'required',
         ]);
- 
+
+        // Buscar el cliente en la base de datos
         $cliente = Cliente::findOrFail($id);
- 
+
+        // Actualizar los datos del cliente con los datos validados del formulario
         $cliente->update($validatedData);
- 
+
+        // Redireccionar a la vista de la lista de clientes con un mensaje de éxito
         return redirect()->route('clientes.index')->with('success', 'Cliente actualizado correctamente.');
     }
  

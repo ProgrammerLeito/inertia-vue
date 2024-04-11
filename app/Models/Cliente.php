@@ -23,6 +23,12 @@ class Cliente extends Model
         'estado',
         'cli_direccion2',
         'cli_observacion',
+        'prov_clientes'
         // Agrega aquí los demás campos que quieras que sean asignables en masa
     ];
+
+    public function tbprovincias()
+    {
+        return $this->belongsTo(Tbprovincias::class);
+    }
 }

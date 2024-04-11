@@ -114,7 +114,7 @@ const submitForm = (id) => {
         <!-- Contenido del formulario -->
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4  sm:px-6 lg:px-8">
-                <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] dark:bg-gray-800  overflow-auto uppercase text-sm shadow-2xl shadow-gray-800 dark:shadow-gray-800  rounded-lg">
+                <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] dark:bg-gray-800 overflow-auto uppercase text-sm shadow-2xl bg-white rounded-lg">
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8 ">
                         <!-- Formulario de edición -->
                         <form @submit.prevent="submitForm($props.tbproducto.id)">

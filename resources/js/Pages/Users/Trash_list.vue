@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
 import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
 import {nextTick, ref } from 'vue';
- 
+import { usePage } from '@inertiajs/vue3';
  
 const props = defineProps({
     users: {
@@ -30,32 +30,39 @@ const formPage = useForm({});
 const onPageClick = (event)=>{
     formPage.get(route('users.index',{page:event}));
 }
-const deleteUser = (id, name) => {
-    const alerta = Swal.mixin({
-        buttonsStyling:true
-    });
-    alerta.fire({
-        title: '¿Estás seguro de eliminar ' +name+ '?',
-        icon: 'question',
+ 
+ 
+const deleteUser = async (userId) => {
+    const confirmed = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Estás a punto de eliminar permanentemente este usuario. Esta acción no se puede deshacer.',
+        icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.delete(route('users.destroy', id),{
-                onSuccess: () => {ok('usuario Eiminada')}
-            });
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    });
+ 
+    if (confirmed.isConfirmed) {
+        try {
+            // Realiza una solicitud HTTP DELETE para eliminar permanentemente el usuario
+            await form.delete(`/delete_users_deletePermanently/${userId}`);
+       
+            Swal.fire('Usuario eliminado', 'El usuario ha sido eliminado permanentemente.', 'success');
+            location.reload();
+        } catch (error) {
+            console.error('Error al eliminar el usuario:', error);
+            Swal.fire('Error', 'Hubo un error al eliminar el usuario.', 'error');
         }
-    })
-}
- 
- 
+    }
+};
 </script>
 <template>
     <AppLayout title="Usuarios" >
         <template #header>
             <h2 class="font-semibold text-md text-gray-800 leading-tight">
-               LISTA DE USUARIOS
+               HISTORIAL DE USUARIOS ELIMINADOS
             </h2><br><hr>
         </template>
  
@@ -64,18 +71,10 @@ const deleteUser = (id, name) => {
                 <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="p-6 bg-white border-gray-100 shadow-2xl rounded-lg">
                         <div class="flex flex-wrap gap-2 justify-between">
-                            <Link :href="route('users.create')" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <i class="fa fa-plus-circle"> R.usuario</i>
+                            <Link :href="route('users.index')" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                regresar
                             </Link>
-                            <Link :href="route('users.trashed')" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                users eliminados
-                            </Link>
-                            <Link :href="route('roles.index')" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                 rol
-                            </Link>
-                            <Link :href="route('permisos.index')" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                Permisos
-                            </Link>
+                         
                         </div>
                         <div class="mt-4 overflow-auto">
                             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -110,12 +109,13 @@ const deleteUser = (id, name) => {
                                         </td>
  
                                         <td class="border border-gray-400 px-2 py-2">
-                                            <Link :href="route('users.edit', { user: user.id })" >
-                                                <i class="fa-solid fa-edit fa-sm"></i>
+                                            <Link :href="route('users.restore', { id: user.id })" class="text-xs hover:bg-yellow-500 bg-yellow-300 rounded-full py-1 mx-2  hover:text-green-500">
+                                                <i class="fa-solid fa-edit fa-sm">restaurar </i>
                                             </Link>
-                                            <DangerButton @click="$event => deleteUser(user.id,user.name)" class="ml-3">
-                                            <i class="fa-solid fa-trash mr-1 fa-sm"></i>
-                                            </DangerButton>
+                                            <Link @click="deleteUser(user.id)" >
+                                                <i class="fa-solid fa-trash mr-1 fa-sm"></i>
+                                            </Link>                                        
+                                   
                                         </td>
                                         </tr>
                                     </tbody>

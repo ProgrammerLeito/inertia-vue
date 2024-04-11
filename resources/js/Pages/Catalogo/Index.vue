@@ -104,16 +104,16 @@ watchEffect(() => {
                                 <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                     <div class="flex flex-col ">
                                         <InputLabel class="block text-md font-medium text-gray-700">Categoría</InputLabel>
-                                        <select v-model="selectedtbcategoria" @change="filtertbsubcategorias" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="">Seleccione una Categoría</option>
+                                        <select @change="filtertbsubcategorias" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            <option value="" disabled selected >Seleccione una Categoría</option>
                                             <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
                                         </select>
                                     </div>
     
                                     <div class="flex flex-col ">
                                         <InputLabel class="block text-md font-medium text-gray-700">Subcategoría</InputLabel>
-                                        <select v-model="selectedtbsubcategoria" @change="filtertbproductos"  class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="">Seleccione una Subcategoría</option>
+                                        <select @change="filtertbproductos" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            <option value="" disabled selected >Seleccione una Subcategoría</option>
                                             <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
                                         </select>
                                     </div>
