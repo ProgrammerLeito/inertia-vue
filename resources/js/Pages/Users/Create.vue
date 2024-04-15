@@ -7,6 +7,7 @@ import InputError from '@/Components/InputError.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import Swal from 'sweetalert2';
+
 defineProps({
     roles: {
         type: Array,
@@ -67,59 +68,67 @@ const submitForm = () => {
  
 </script>
 <template>
-    <AppLayout title="Registrar-rol">
+    <AppLayout title="Registrar Usuario ">
         <template #header>
-            <h2 class="font-semibold uppercase text-md text-gray-800 leading-tight">
-              Registra usuario
-            </h2><br><hr>
+            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Registrar Usuario</h1>
         </template>
  
-        <div class="flex justify-center">
-           <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto container items-center">
-                <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="p-6 bg-white border-gray-100 shadow-2xl dark:shadow-gray-500  rounded-lg">
+        <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
+            <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
+                    <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                        
                         <form @submit.prevent="submitForm">
-                            <div>
-                                <InputLabel for="name" value="nombre" class="text-xs"/>
-                                <TextInput v-model="form.name" type="text" id="name" placeholder="escribe un usuario"  class="w-full text-xs"/>
+                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                                <div>
+                                    <InputLabel for="name" value="nombre" class="block text-md font-medium text-gray-700"/>
+                                    <TextInput v-model="form.name" type="text" id="name" placeholder="Escribe un usuario" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                    <InputError :message="form.errors.name" class="mt-2"></InputError>
+                                </div>
+                                <div>
+                                    <InputLabel for="email" value="Email" class="block text-md font-medium text-gray-700"/>
+                                    <TextInput v-model="form.email" type="email" id="email" placeholder="Escribe un correo electrónico" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                    <InputError :message="form.errors.email" class="mt-2"></InputError>
+                                </div>
+                                <div>
+                                    <InputLabel for="sexo" class="block text-sm font-medium text-gray-700">Sexo</InputLabel>
+                                    <select id="sexo" v-model="form.sexo" required
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="" disabled selected>Selecciona el sexo</option>
+                                        <option value="Masculino">Masculino</option>
+                                        <option value="Femenino">Femenino</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                                <div>
+                                    <InputLabel for="celular" value="Celular" class="block text-md font-medium text-gray-700"/>
+                                    <TextInput v-model="form.celular" type="text" id="celular" placeholder="Escribe un telefono" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                    <InputError :message="form.errors.celular" class="mt-2"></InputError>
+                                </div>
+                                <div>
+                                    <InputLabel for="password" value="Contraseña" class="block text-md font-medium text-gray-700"/>
+                                    <TextInput v-model="form.password" type="password" id="password" placeholder="Escribe una contraseña" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                    <InputError :message="form.errors.password" class="mt-2"></InputError>
+                                </div>
+                                <div>
+                                    <InputLabel for="password_confirmation" value="Confirmar Contraseña" class="block text-md font-medium text-gray-700"/>
+                                    <TextInput v-model="form.password_confirmation" type="password" id="password_confirmation" placeholder="Confirma tu contraseña" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                    <InputError v-if="form.errors.password_confirmation" :message="form.errors.password_confirmation" class="mt-2"/>
+                                </div>
                             </div>
                             <div>
-                                <InputLabel for="email" value="Email" class="text-xs"/>
-                                <TextInput v-model="form.email" type="email" id="email" placeholder="Escribe un correo electrónico" class="w-full text-xs"/>
-                                <InputError :message="form.errors.email" class="mt-2"></InputError>
-                            </div>
-                            <div>
-                                <InputLabel for="sexo" value="Sexo" class="text-xs"/>
-                                <TextInput v-model="form.sexo" type="sexo" id="sexo" placeholder="Escribe el sexo" class="w-full text-xs"/>
-                                <InputError :message="form.errors.sexo" class="mt-2"></InputError>
-                            </div>
-                            <div>
-                                <InputLabel for="celular" value="Celular" class="text-xs"/>
-                                <TextInput v-model="form.celular" type="celular" id="celular" placeholder="Escribe un telefono" class="w-full text-xs"/>
-                                <InputError :message="form.errors.celular" class="mt-2"></InputError>
-                            </div>
-                            <div>
-                                <InputLabel for="password" value="Contraseña" class="text-xs"/>
-                                <TextInput v-model="form.password" type="password" id="password" placeholder="Escribe una contraseña" class="w-full text-xs"/>
-                                <InputError :message="form.errors.password" class="mt-2"></InputError>
-                            </div>
-                            <div>
-                                <InputLabel for="password_confirmation" value="Confirmar Contraseña" class="text-xs"/>
-                                <TextInput v-model="form.password_confirmation" type="password" id="password_confirmation" placeholder="Confirma tu contraseña" class="w-full text-xs"/>
-                                  <!-- Manejo de errores de confirmación de contraseña -->
-                                <InputError v-if="form.errors.password_confirmation" :message="form.errors.password_confirmation" class="mt-2"/>
-                            </div>
-                            <div>
-                                <InputLabel for="roles" value="Roles" class="text-xs"/>
-                                <select v-model="form.roles" id="roles" multiple class="w-full text-xs" required>
-                                    <option v-for="(role, index) in roles" :key="index" :value="role">{{ role }}</option>
-                                </select>
+                                <InputLabel for="roles" value="Asignar Roles" class="block text-md font-medium text-gray-700"/>
+                                <div class="w-full text-md p-2 gap-4">
+                                    <div v-for="(roleOption, index) in roles" :key="index" class="flex items-center mt-2">
+                                        <input type="checkbox" :id="`role-${index}`" :value="roleOption" v-model="form.roles" class="w-4 h-4 text-blue-600 bg-blue-100 border-blue-900 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label class="ml-3 dark:text-white" :for="`role-${index}`">{{ roleOption }}</label>
+                                    </div>
+                                </div>
                                 <InputError :message="form.errors.roles" class="mt-2"></InputError>
                             </div>
- 
-                            <div class="flex justify-end mt-2">
-                                <PrimaryButton :disabled="form.processing">Guardar</PrimaryButton>
+                            <div class="flex justify-end mt-6">
+                                <PrimaryButton :disabled="form.processing">Registrar</PrimaryButton>
                                 <Link :href="route('users.index')" class="ml-5 uppercase text-sm inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
                                     Cancelar
                                 </Link>

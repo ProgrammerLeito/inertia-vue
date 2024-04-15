@@ -53,57 +53,45 @@ const deletePermiso = (id, name) => {
 <template>
     <AppLayout title="Permisos" >
         <template #header>
-            <h2 class="font-semibold text-md text-gray-800 leading-tight">
-               LISTA DE PERMISOS
-            </h2><br><hr>
+            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Listar Permisos</h1>
         </template>
  
-        <div class="flex justify-center  ">
-            <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto container items-center">
-                <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="p-6 bg-white border-gray-100 shadow-2xl rounded-lg">
-                        <div class="flex flex-wrap gap-2 justify-between">
-                            <Link :href="route('permisos.create')" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <i class="fa fa-plus-circle">registra Permiso</i>
-                            </Link>
-                            <Link :href="route('users.index')" class="inline-flex items-center px-4 py-2 bg-red-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <i class="fa fa-plus-circle">usuarios</i>
-                            </Link>
-                        </div>
-                        <div class="mt-4 overflow-auto">
-                            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                                <table class="w-full text-sm text-left rtl:text-right text-gray-400 dark:text-gray-900">
-                                    <thead class="text-xs text-white text-center uppercase bg-green-600 dark:bg-green-600">
-                                        <tr>
-                                        <th scope="col" class="px-6 py-2">#</th>
-                                        <th scope="col" class="px-6 py-2">nombre</th>
-                                        <th scope="col" class="px-6 py-2">acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="text-center text-xs">
-                                        <tr v-for="(permiso, i) in permisos.data" :key="permiso.id">
-                                        <td class="border  border-gray-400 px-2 py-2">{{ i + 1 }}</td>
-                                        <td class="border border-gray-400 px-2 py-2"> {{ permiso.name }}</td>
-                                        <td class="border border-gray-400 px-2 py-2">
-                                            <Link :href="route('permisos.edit', { permiso: permiso.id })">
-                                                    <i class="fa-solid fa-edit fa-sm"></i>
+        <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
+            <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
+                    <div class="flex flex-wrap gap-2 justify-between">
+                        <Link :href="route('permisos.create')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                            Registrar Permiso
+                        </Link>
+                        <Link :href="route('users.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                            Regresar
+                        </Link>
+                    </div>
+                    <div class="mt-4">
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-200 dark:shadow-gray-500">
+                            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-white uppercase bg-green-600">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-center">N°</th>
+                                        <th scope="col" class="px-6 py-3 text-left">Nombre</th>
+                                        <th scope="col" class="text-center px-6 py-3">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-white text-black dark:bg-gray-700 dark:text-white" v-for="(permiso, i) in permisos.data" :key="permiso.id">
+                                        <td class="px-6 py-4 font-semibold text-center">{{ i + 1 }}</td>
+                                        <td class="px-6 py-4 font-semibold text-left">{{ permiso.name }}</td>
+                                        <td class="p-3 text-center">
+                                            <Link class="py-2 px-4 text-green-500" :href="route('permisos.edit', { permiso: permiso.id })">
+                                                <i class="bi bi-pencil-square"></i>
                                             </Link>
- 
-                                            <DangerButton @click="$event => deletePermiso(permiso.id,permiso.name)" class="ml-1">
-                                                    <i class="fa-solid fa-trash mr-1 fa-sm"></i>
-                                            </DangerButton>
+                                            <ButtonDelete @click="$event => deletePermiso(permiso.id,permiso.name)">
+                                                <i class="bi bi-trash3 text-red-500"></i>
+                                            </ButtonDelete>
                                         </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="bg-white grid v-screen place-items-center mt-4">
-                                    <vueTailwindPaginationUmd
-                                        :current="permisos.currentPage" :total="permisos.total"
-                                        :per-page="permisos.perPage"
-                                        @page-changed="$event => onPageClick($event)"
-                                    ></vueTailwindPaginationUmd>
-                                    </div>
-                            </div>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

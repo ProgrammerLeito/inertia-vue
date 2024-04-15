@@ -61,43 +61,39 @@ const deleteUser = async (userId) => {
 <template>
     <AppLayout title="Usuarios" >
         <template #header>
-            <h2 class="font-semibold text-md text-gray-800 leading-tight">
-               HISTORIAL DE USUARIOS ELIMINADOS
-            </h2><br><hr>
+            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Historial De Usuarios</h1>
         </template>
  
-        <div class="flex justify-center  ">
-            <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto container items-center">
-                <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="p-6 bg-white border-gray-100 shadow-2xl rounded-lg">
-                        <div class="flex flex-wrap gap-2 justify-between">
-                            <Link :href="route('users.index')" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                regresar
-                            </Link>
-                         
-                        </div>
-                        <div class="mt-4 overflow-auto">
-                            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                                <table class="w-full text-sm text-left rtl:text-right text-gray-400 dark:text-gray-900">
-                                    <thead class="text-xs text-white text-center uppercase bg-green-600 dark:bg-green-600">
-                                        <tr>
-                                        <th scope="col" class="px-6 py-2">#</th>
-                                        <th scope="col" class="px-6 py-2">nombre</th>
-                                        <th scope="col" class="px-6 py-2">email</th>
-                                        <th scope="col" class="px-6 py-2">sexo</th>
-                                        <th scope="col" class="px-6 py-2">celular</th>
-                                        <th scope="col" class="px-6 py-2">rol</th>
-                                        <th scope="col" class="px-6 py-2">acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="text-center text-xs">
-                                        <tr v-for="(user, i) in users.data" :key="user.id">
-                                        <td class="border  border-gray-400 px-2 py-2">{{ i + 1 }}</td>
-                                        <td class="border border-gray-400 px-2 py-2"> {{ user.name }}</td>
-                                        <td class="border border-gray-400 px-2 py-2"> {{ user.email }}</td>
-                                        <td class="border border-gray-400 px-2 py-2"> {{ user.sexo }}</td>
-                                        <td class="border border-gray-400 px-2 py-2"> {{ user.celular }}</td>
-                                        <td class="border border-gray-400 px-2 py-2">
+        <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
+            <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
+                    <div class="flex flex-wrap gap-2 justify-between">
+                        <Link :href="route('users.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                            Regresar
+                        </Link>
+                    </div>
+                    <div class="mt-4">
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-200 dark:shadow-gray-500">
+                            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-white uppercase bg-green-600">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-center">N°</th>
+                                        <th scope="col" class="px-6 py-3 text-left">Nombre</th>
+                                        <th scope="col" class="px-6 py-3 text-center">Email</th>
+                                        <th scope="col" class="px-6 py-3 text-center">Sexo</th>
+                                        <th scope="col" class="px-6 py-3 text-center">Celular</th>
+                                        <th scope="col" class="px-6 py-3 text-center">Rol</th>
+                                        <th scope="col" class="text-center px-6 py-3">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-white text-black dark:bg-gray-700 dark:text-white" v-for="(user, i) in users.data" :key="user.id">
+                                        <td class="px-6 py-4 font-semibold text-center">{{ i + 1 }}</td>
+                                        <td class="px-6 py-4 font-semibold text-left">{{ user.name }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center">{{ user.email }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center">{{ user.sexo }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center">{{ user.celular }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center">
                                             <div v-if="user.roles && user.roles.length > 0">
                                                 <span v-for="(role, index) in user.roles" :key="index" class="badge badge-success">
                                                     {{ role.name }}
@@ -107,27 +103,17 @@ const deleteUser = async (userId) => {
                                                 Sin rol
                                             </div>
                                         </td>
- 
-                                        <td class="border border-gray-400 px-2 py-2">
-                                            <Link :href="route('users.restore', { id: user.id })" class="text-xs hover:bg-yellow-500 bg-yellow-300 rounded-full py-1 mx-2  hover:text-green-500">
-                                                <i class="fa-solid fa-edit fa-sm">restaurar </i>
+                                        <td class="p-3 text-center">
+                                            <Link class="py-0.5 px-2.5 text-xs text-black font-semibold bg-yellow-300 rounded-lg border-solid border-2 hover:bg-yellow-400" :href="route('users.restore', { id: user.id })">
+                                                <i class='bx bxs-share'><label class="ml-2">Restaurar</label></i>
                                             </Link>
-                                            <Link @click="deleteUser(user.id)" >
-                                                <i class="fa-solid fa-trash mr-1 fa-sm"></i>
-                                            </Link>                                        
-                                   
+                                            <Link @click="deleteUser(user.id)" class="ml-4">
+                                                <i class="bi bi-trash3 text-red-500"></i>
+                                            </Link> 
                                         </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="bg-white grid v-screen place-items-center mt-4">
-                                    <vueTailwindPaginationUmd
-                                        :current="users.currentPage" :total="users.total"
-                                        :per-page="users.perPage"
-                                        @page-changed="$event => onPageClick($event)"
-                                    ></vueTailwindPaginationUmd>
-                                    </div>
-                            </div>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
