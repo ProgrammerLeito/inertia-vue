@@ -32,7 +32,6 @@ defineProps({
         required: true
     }
 });
- 
 const form = useForm ({
     tbcategoria_id: '',
     tbsubcategoria_id: '',
@@ -50,35 +49,31 @@ const form = useForm ({
     foto: '',
 });
  
-const deleteTbproducto = (id, modelo) => {
-    const alerta = Swal.mixin({
-        buttonsStyling:true
-    });
- 
-    alerta.fire({
-        title: '¿Estás seguro de eliminar ' +modelo+ '?',
-        icon: 'question',
+const deleteUser = async (tbproductoId) => {
+    const confirmed = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Estás a punto de eliminar permanentemente este producto. Esta acción no se puede deshacer.',
+        icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.delete(route('tbproductos.destroy', id), {
-                onSuccess: () => {
-                    alerta.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Producto eliminado exitosamente',
-                        timer: 1000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
-                    });
-                }
-            });
-        }
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
     });
-}
  
+    if (confirmed.isConfirmed) {
+        try {
+            // Realiza una solicitud HTTP DELETE para eliminar permanentemente el usuario
+            await form.delete(`/delete_tbproducto_deletePermanently/${tbproductoId}`);
+       
+            Swal.fire('producto eliminado', 'El producto ha sido eliminado permanentemente.', 'success');
+            location.reload();
+        } catch (error) {
+            console.error('Error al eliminar el usuario:', error);
+            Swal.fire('Error', 'Hubo un error al eliminar el producto.', 'error');
+        }
+    }
+};
  
 watchEffect(() => {
   filteredTbproductos.value = props.tbproductos.data.filter(tbproducto => {
@@ -93,57 +88,22 @@ watchEffect(() => {
 <template>
     <AppLayout title="Catalago Productos">
         <template #header>
-            <h1 class="font-bold text-gray-800 text-xl leading-tight dark:text-white"><b>Catalago de Productos</b></h1>
+            <h1 class="font-semibold text-gray-800 text-xl leading-tight dark:text-white">Historial de Productos eliminados</h1>
         </template>
         <div>
             <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
                 <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
-                        <div class="flex flex-wrap gap-2 justify-between">
-                            <Link :href="route('tbproductos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                                <i class="fa fa-plus-circle mx-1"></i>Registrar Producto
-                            </Link>
-                            <Link :href="route('tbproductos.trashed')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                                <i class="fas fa-trash-alt mx-1"></i>Productos eliminados
+                        <div class="flex flex-wrap gap-2 py-2 justify-between">
+                            <Link :href="route('tbproductos.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                <i class="fas fa-arrow-left mx-1"></i> Regresar Producto
                             </Link>
                         </div>
                         <div>
-                            <div class="py-2 uppercase">
-                                <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
-                                    <div class="flex flex-col ">
-                                        <InputLabel class="block text-md font-medium text-gray-700">Categoría</InputLabel>
-                                        <select @change="filtertbsubcategorias" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="" disabled selected >Seleccione una Categoría</option>
-                                            <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
-                                        </select>
-                                    </div>
-   
-                                    <div class="flex flex-col ">
-                                        <InputLabel class="block text-md font-medium text-gray-700">Subcategoría</InputLabel>
-                                        <select @change="filtertbproductos" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="" disabled selected >Seleccione una Subcategoría</option>
-                                            <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
-                                        </select>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <InputLabel for="table-search" class="block text-md font-medium text-gray-700">Buscar</InputLabel>
-                                        <div class="relative mt-1">
-                                            <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                                                <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                                                </svg>
-                                            </div>
-                                            <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
- 
                             <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500">
                                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                                     <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                         <tr>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Codigo</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N°</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Modelo</th>
@@ -151,26 +111,27 @@ watchEffect(() => {
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Codigo</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr  v-for="(tbproducto, i) in filteredTbproductos" :key="tbproducto.id"  class="bg-white text-black dark:bg-gray-700 dark:text-white">
-                                            <td class="px-6 py-4 text-center">{{ tbproducto.codigo }}</td>
+                                        <tr v-for="(tbproducto, i) in filteredTbproductos" :key="tbproducto.id"  class="bg-white text-black dark:bg-gray-700 dark:text-white">
                                             <td class="px-6 py-4 text-center"><b>{{ i + 1 }}</b></td>
                                             <img @click="openModal('/img/catalogo/' + tbproducto.foto)" :src="'/img/catalogo/' + tbproducto.foto" alt="Foto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1">
-                                            <td class="px-6 py-4 text-center"><b>{{ tbproducto.modelo }}</b></td>
+                                            <td class="px-6 py-4 text-center">{{ tbproducto.modelo }}</td>
                                             <td class="px-6 py-4 text-center">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
                                             <td class="px-6 py-4 text-center">{{ tbproducto.capacidades }}</td>
                                             <td class="px-6 py-4 text-center">{{ tbproducto.especificaciones }}</td>
                                             <td class="px-6 py-4 text-center">{{ tbproducto.precio }}</td>
+                                            <td class="px-6 py-4 text-center">{{ tbproducto.codigo }}</td>
                                             <td class="p-3 text-center">
-                                                <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })">
-                                                    <i class="bi bi-pencil-square text-green-500"></i>
+                                                <Link :href="route('tbproductos.restore', { id: tbproducto.id })" class="text-xs hover:bg-yellow-500 bg-yellow-300 rounded-full py-1 mx-2  hover:text-green-500">
+                                                    <i class="fa-solid fa-edit fa-sm">restaurar </i>
                                                 </Link>
-                                                <ButtonDelete @click="$event => deleteTbproducto(tbproducto.id,tbproducto.modelo)" class="ml-1">
-                                                    <i class="bi bi-trash3 text-red-500"></i>
-                                                </ButtonDelete>
+                                                <Link @click="deleteUser(tbproducto.id)" >
+                                                    <i class="fa-solid fa-trash mr-1 fa-sm"></i>
+                                                </Link>  
                                             </td>
                                         </tr>
                                     </tbody>

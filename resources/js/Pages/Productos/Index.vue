@@ -106,7 +106,9 @@ const deleteProducto = (id, insumo) => {
                             Listar Salidas
                         </Link> -->
                     </div>
-                    <div class="font-semibold text-center dark:text-white">Categoria || {{ filteredProductos.length > 0 ? filteredProductos[0].name : 'Sin Productos' }}</div>
+                    <div class="md:mt-0 mt-4">
+                        <div class="font-semibold text-center dark:text-white">Categoria || {{ filteredProductos.length > 0 ? filteredProductos[0].name : 'Sin Productos' }}</div>
+                    </div>
                     <div class="mt-4 overflow-auto">
                         <div class="pb-4 bg-white dark:bg-gray-800">
                             <label for="table-search" class="sr-only">Buscar</label>

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('clientes', function (Blueprint $table) {
             $table->id('id');
+            $table->softDeletes('deleted_at', precision: 0);
             $table->string('numeroDocumento');
             $table->string('razonSocial', 250);
             $table->string('direccion', 250);
@@ -20,12 +21,10 @@ return new class extends Migration
             $table->string('provincia', 250);
             $table->string('departamento', 250);
             $table->string('estado');
-            $table->string('cli_direccion2', 250);
-            $table->string('cli_observacion', 250);
+            $table->string('cli_direccion2', 250)->nullable();
+            $table->string('cli_observacion', 250)->nullable();
+            $table->foreignId('tbprovincia_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-
-            $table->unsignedBigInteger('prov_clientes');
-            $table->foreign('prov_clientes')->references('id')->on('tbprovincias');
         });
     }
 

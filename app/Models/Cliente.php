@@ -4,10 +4,11 @@ namespace App\Models;
  
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
- 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Cliente extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
  
     protected $guarded = [];
  
@@ -23,12 +24,17 @@ class Cliente extends Model
         'estado',
         'cli_direccion2',
         'cli_observacion',
-        'prov_clientes'
-        // Agrega aquí los demás campos que quieras que sean asignables en masa
+        'tbprovincia_id',
     ];
-
-    public function tbprovincias()
+ 
+ 
+ 
+    public function tbprovincia()
     {
         return $this->belongsTo(Tbprovincias::class);
+    }
+    public function datos()
+    {
+        return $this->hasMany(Dato::class);
     }
 }

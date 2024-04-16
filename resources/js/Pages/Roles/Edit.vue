@@ -9,7 +9,7 @@
                     <InputLabel for="roles" value="Asignar Roles" class="block text-md font-medium text-gray-700"/>
                     <h2 class="dark:text-white"><b>Rol para editar  : {{ role.name }}</b></h2>
                     <form @submit.prevent="submitForm">
-                        <div class="w-full text-md p-2 gap-4">
+                        <div class="w-full text-md p-2 gap-4 grid grid-cols-1 gap-y-3 sm:grid-cols-4 sm:gap-x-6 mb-3">
                             <div v-for="(permiso, id) in permisos" :key="id" class="flex items-center mt-2">
                                 <input type="checkbox" :id="'permiso_' + id" :value="id" v-model="form.permisos" class="w-4 h-4 text-blue-600 bg-blue-100 border-blue-900 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                 <label class="ml-4 dark:text-white" :for="'permiso_' + id">{{ permiso }}</label>
@@ -17,7 +17,7 @@
                         </div>
                         <InputError :message="form.errors.roles" class="mt-2"></InputError>
                         <div class="flex justify-end mt-6">
-                            <PrimaryButton >Asignar permisos </PrimaryButton>
+                            <PrimaryButton>Asignar permisos</PrimaryButton>
                             <Link class="ml-5 uppercase text-sm inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700" :href="route('roles.index')">Regresar</Link>
                         </div>
                     </form>

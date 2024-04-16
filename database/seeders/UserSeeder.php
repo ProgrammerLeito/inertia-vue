@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::create([
+        User::create([
             'name' => 'Leonardo',
             'email' => 'leonardo@balinsa.net',
             'password' => Hash::make('Leonardo150724#.'),
@@ -22,9 +22,7 @@ class UserSeeder extends Seeder
             'celular' => 931311244,
         ]);
 
-        $admin->assignRole('admin');
-
-        $editor = User::create([
+        User::create([
             'name' => 'Ingri',
             'email' => 'ingri@balinsa.net',
             'password' => Hash::make('ingri2024#.'),
@@ -32,16 +30,13 @@ class UserSeeder extends Seeder
             'celular' => 99999999,
         ]);
 
-        $editor->assignRole('editor');
 
-        $editor = User::create([
+        User::create([
             'name' => 'prueba',
             'email' => 'prueba@balinsa.net',
             'password' => Hash::make('prueba2024'),
             'sexo' => 'Masculino',
             'celular' => 999999999,
         ]);
-
-        $editor->assignRole('editor');
     }
 }

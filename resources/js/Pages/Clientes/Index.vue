@@ -1,28 +1,26 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import DangerButton from '@/Components/DangerButton.vue';
+import { Link } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
-import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
 import { ref } from 'vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
 import ButtonEdit from '@/Components/ButtonEdit.vue';
 import { computed } from 'vue';
-
+ 
 const searchQuery = ref('');
-
+ 
 const props = defineProps({
     clientes: {
         type : Object,
-        // required: true
+        required: true
     },
     tbprovincias: {
         type : Object,
-        // required: true
+        required: true
     }
 });
-
+ 
 const form = useForm({
   numeroDocumento: '',
   razonSocial: '',
@@ -33,8 +31,8 @@ const form = useForm({
   estado:'',
   cli_direccion2:'',
   cli_observacion:'',
-  prov_clientes: '',
-  // Agregar otros campos según sea necesario
+  tbprovincia_id: '',
+ 
 });
  
 const formPage = useForm({});
@@ -42,7 +40,7 @@ const formPage = useForm({});
 const onPageClick = (event) => {
     formPage.get(route('clientes.index', { page: event }));
 };
-
+ 
 //Constante para filtrar clientes por diferentes campos
 const filteredClients = computed(() => {
     const normalizedQuery = searchQuery.value.toLowerCase().trim();
@@ -53,30 +51,63 @@ const filteredClients = computed(() => {
             return cliente.numeroDocumento.toLowerCase().includes(normalizedQuery) ||
                    cliente.razonSocial.toLowerCase().includes(normalizedQuery) ||
                    cliente.direccion.toLowerCase().includes(normalizedQuery) ||
-                   cliente.prov_cliente.toLowerCase().includes(normalizedQuery);
+                   cliente.tbprovincia_id.toLowerCase().includes(normalizedQuery);
         });
     }
 });
+ 
+ 
+const deleteCliente = (id, razonSocial) => {
+    const alerta = Swal.mixin({
+        buttonsStyling:true
+    });
+ 
+    alerta.fire({
+        title: '¿Estás seguro de eliminar ' +razonSocial+ '?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('clientes.destroy', id), {
+                onSuccess: () => {
+                    alerta.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Cliente eliminado exitosamente',
+                        timer: 1000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+    });
+}
 </script>
  
 <template>
     <AppLayout title="Clientes">
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Listar Clientes</h1>
+            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Lista de Clientes</h1>
         </template>
  
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
+                <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
                         <Link :href="route('clientes.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            Registrar Empresa
+                            <i class="fa fa-plus-circle mx-1"></i> Registrar Empresa
+                        </Link>
+                        <Link :href="route('clientes.trashed')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                            <i class="fas fa-trash-alt mx-1"></i> Clientes Eliminados
                         </Link>
                     </div>
-                    <div class="mt-2 overflow-auto">
+                    <div>
                         <div class="py-1">
                             <!-- grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-2 mb-3 -->
-                            <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-3 sm:gap-x-2 mb-1">
+                            <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-2 mb-1">
                                 <div class="flex flex-col">
                                     <InputLabel for="table-search" class="block text-md font-medium text-gray-700 dark:text-white">Buscar</InputLabel>
                                     <div class="relative mt-1">
@@ -97,8 +128,8 @@ const filteredClients = computed(() => {
                                 </div>
                             </div>
                         </div>
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-200 dark:shadow-gray-500 mt-2">
-                            <table class="w-full text-sm text-left rtl:text-right text-gray-900 dark:text-white">
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2">
+                            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N°</th>
@@ -110,15 +141,19 @@ const filteredClients = computed(() => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(cliente, i) in filteredClients" :key="cliente.id">
-                                        <td class="px-6 py-4 text-center">{{ i + 1 }}</td>
+                                    <tr v-for="(cliente, i) in filteredClients" :key="cliente.id"  class="bg-white text-black dark:bg-gray-700 dark:text-white">
+                                        <td class="px-6 py-4 text-center"><b>{{ i + 1 }}</b></td>
                                         <td class="px-6 py-4 text-center">{{ cliente.numeroDocumento }}</td>
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cliente.direccion }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cliente.prov_cliente }}</td>
-                                        <td class="p-3 text-center">
+                                        <td class="px-6 py-4 text-center"><b>{{ cliente.direccion }}</b></td>
+                                        <td class="px-6 py-4 text-center">{{ cliente.tbprovincia ? cliente.tbprovincia.prov_nombre : 'Sin ciudad' }}</td>
+ 
+                                        <td class="p-3 text-center whitespace-nowrap">
+                                            <Link class="py-0.5 px-2.5 text-xs text-black font-semibold bg-yellow-300 rounded-lg border-solid border-2 hover:bg-yellow-400" :href="route('datos.index', { cliente_id: cliente.id })">
+                                                <i class='bi bi-eye'><label class="ml-2">Cartera</label></i>
+                                            </Link>
                                             <Link class="py-2 px-4 text-green-500" :href="route('clientes.edit', { cliente: cliente.id })"><i class="bi bi-pencil-square"></i></Link>
-                                            <ButtonDelete>
+                                            <ButtonDelete  @click="$event => deleteCliente(cliente.id,cliente.razonSocial)" class="ml-1">
                                                 <i class="bi bi-trash3 text-red-500"></i>
                                             </ButtonDelete>
                                         </td>

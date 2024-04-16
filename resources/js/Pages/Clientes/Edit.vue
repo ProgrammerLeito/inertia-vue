@@ -33,9 +33,9 @@ const form = useForm({
     estado: props.cliente.estado,
     cli_direccion2: props.cliente.cli_direccion2,
     cli_observacion: props.cliente.cli_observacion,
-    prov_clientes: props.cliente.prov_clientes,
+    tbprovincia_id: props.cliente.tbprovincia_id,
 });
-
+ 
  
  
 // Función para enviar el formulario
@@ -46,7 +46,7 @@ const submitForm = (id) => {
                 icon: 'success',
                 title: 'Éxito',
                 text: 'El cliente se ha actualizado correctamente.',
-                timer: 2000,
+                timer: 1000,
                 timerProgressBar: true,
                 showConfirmButton: false
             });
@@ -58,7 +58,7 @@ const submitForm = (id) => {
                     icon: 'error',
                     title: 'Error',
                     text: 'Ha ocurrido un error al actualzar el cliente. Por favor, inténtalo de nuevo.',
-                    timer: 2000,
+                    timer: 1000,
                     timerProgressBar: true,
                     showConfirmButton: false
                 });
@@ -95,7 +95,7 @@ const submitForm = (id) => {
                                 <div>
                                     <InputLabel value="razon Social" />
                                     <TextInput v-model="form.numeroDocumento" type="text" placeholder="Ingrese Razon Social" class="mt-2 w-full"/>
-                                </div>     
+                                </div>    
                                 <div>
                                     <InputLabel value="razon Social" />
                                     <TextInput v-model="form.razonSocial" type="text" placeholder="Ingrese Razon Social" class="mt-2 w-full"/>
@@ -121,15 +121,13 @@ const submitForm = (id) => {
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
-                                    <InputLabel for="prov_clientes" value="Ciudad" class="ml-1"/>
-                                    <select v-model="form.prov_clientes" name="prov_clientes" id="prov_clientes" class="bg-white border mt-1 border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <InputLabel for="tbprovincia_id" value="Ciudad" class="ml-1"/>
+                                    <select v-model="form.tbprovincia_id" name="tbprovincia_id" id="tbprovincia_id" class="bg-white border mt-1 border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <option value="" disabled="" selected="selected">Selecciona una Ciudad</option>
                                         <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id" :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
                                     </select>
                                     <InputError :message="$page.props.errors.prov_clientes" class="mt-2"/>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-1 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel value="direccion legal" />
                                     <TextInput v-model="form.direccion" type="text" placeholder="Ingrese Direccion Legal" class="mt-2 w-full"/>
@@ -138,10 +136,11 @@ const submitForm = (id) => {
                                     <InputLabel for="cli_direccion2" value="direccion anexa 1"/>
                                     <TextInput v-model="form.cli_direccion2" type="text" id="cli_direccion2" placeholder="Ingrese Direccion Anexa 1" class="mt-2 w-full uppercase"/>
                                 </div>
-                                <InputLabel for="cli_observacion" value="Observaciones"/>
-                                    <textarea id="cli_observacion" v-model="form.cli_observacion" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las observaciones..."></textarea>
-                                <InputError :message="$page.props.errors.cli_observacion" class=""/>
                             </div>
+                                <InputLabel for="cli_observacion" value="Observaciones"/>
+                                    <textarea id="cli_observacion" v-model="form.cli_observacion" rows="2" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las observaciones..."></textarea>
+                                <InputError :message="$page.props.errors.cli_observacion" class=""/>
+                           
                               <!-- Botones de acción -->
                             <div class="mt-6">
                                 <PrimaryButton>Actualizar</PrimaryButton>
@@ -154,4 +153,3 @@ const submitForm = (id) => {
         </div>
     </AppLayout>
 </template>
- 

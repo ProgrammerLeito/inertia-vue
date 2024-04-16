@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('tbproductos', function (Blueprint $table) {
             $table->id();
+            $table->softDeletes('deleted_at', precision: 0);
             $table->foreignId('tbcategoria_id')->constrained()->onDelete('cascade');
             $table->foreignId('tbsubcategoria_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('tbmarca_id')->constrained()->onDelete('cascade');

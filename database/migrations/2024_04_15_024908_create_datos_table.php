@@ -11,10 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbprovincias', function (Blueprint $table) {
+        Schema::create('datos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
+            $table->string('nombre');
+            $table->string('cargo');
+            $table->string('telefono');
+            $table->string('correo');
+            $table->string('tarjeta')->nullable();
             $table->softDeletes('deleted_at', precision: 0);
-            $table->string('prov_nombre');
             $table->timestamps();
         });
     }
@@ -24,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbprovincias');
+        Schema::dropIfExists('datos');
     }
 };

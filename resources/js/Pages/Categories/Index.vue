@@ -125,7 +125,7 @@ const deleteEmployee = (id, name) => {
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
-                    <div class="flex flex-wrap gap-2 justify-between" v-if="$page.props.user.permissions.includes('create categories')">
+                    <div class="flex flex-wrap gap-2 justify-between">
                         <!-- <Link @click="$event => openModal(1)" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('create categories')">
                             Registrar Categoria
                         </Link> -->

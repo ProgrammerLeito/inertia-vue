@@ -10,26 +10,51 @@ use Inertia\Inertia;
  
 class ClienteController extends Controller
 {
-    const Numero_de_items_pagina =25;
-    public function index()
+ 
+        public function index()
+        {
+            $clientes = Cliente::with('tbprovincia')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id')->paginate(10);
+            $tbprovincias = Tbprovincias::all();
+       
+            return Inertia::render('Clientes/Index', [
+                'clientes' => $clientes,
+                'tbprovincias' => $tbprovincias
+            ]);
+        }
+   
+ 
+ 
+   
+ 
+    public function trashed_cliente(Request $request)
     {
+       
+        $clientes = Cliente::onlyTrashed()->with('tbprovincia')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id')->paginate(10);
         $tbprovincias = Tbprovincias::all();
-        $clientes = DB::table('clientes')
-                        ->join('tbprovincias', 'clientes.prov_clientes', '=', 'tbprovincias.id')
-                        ->select(
-                            'clientes.id',
-                            'clientes.numeroDocumento',
-                            'clientes.razonSocial',
-                            'clientes.direccion',
-                            'tbprovincias.prov_nombre as prov_cliente'
-                        )
-                        ->paginate(self::Numero_de_items_pagina);
-
-        return Inertia::render('Clientes/Index', [
+ 
+        return Inertia::render('Clientes/Trash_list', [
             'clientes' => $clientes,
             'tbprovincias' => $tbprovincias
         ]);
     }
+ 
+    public function restore($id){
+        $cliente= Cliente::withTrashed()->findOrFail($id);
+        if(!empty($cliente)){
+            $cliente->restore();
+        }
+        return redirect()->back();
+    }
+ 
+    public function deletePermanently($id){
+        $cliente= Cliente::withTrashed()->findOrFail($id);
+ 
+        if(!empty($cliente)){
+            $cliente->forceDelete();
+        }
+        return redirect()->back();
+    }
+ 
  
     public function create()
     {
@@ -50,7 +75,7 @@ class ClienteController extends Controller
             'estado' => 'required|string',
             'cli_direccion2' => 'required',
             'cli_observacion' => 'required|string',
-            'prov_clientes' => 'required',
+            'tbprovincia_id' => 'required',
         ]);
    
         $token = 'apis-token-7907.K0qLm91OLHYP07iBLCqF4INtKqqtu0H6'; // Reemplaza con tu token
@@ -92,18 +117,10 @@ class ClienteController extends Controller
             'estado' => $empresa->estado,
             'cli_direccion2' => $request->input('cli_direccion2'),
             'cli_observacion' => $request->input('cli_observacion'),
-            'prov_clientes' => $request->input('prov_clientes'),
+            'tbprovincia_id' => $request->input('tbprovincia_id'),
         ]);
    
-        // Redireccionar a alguna vista después de crear la inscripción
         return redirect()->route('clientes.index')->with('success', 'clientes creada exitosamente.');
-    }
- 
- 
-   
-    public function show(string $id)
-    {
-        //
     }
  
    
@@ -117,7 +134,6 @@ class ClienteController extends Controller
  
     public function update(Request $request, string $id)
     {
-        // Validar los datos del formulario de edición
         $validatedData = $request->validate([
             'numeroDocumento' => 'required',
             'razonSocial' => 'required',
@@ -128,29 +144,21 @@ class ClienteController extends Controller
             'estado' => 'required',
             'cli_direccion2' => 'required',
             'cli_observacion' => 'required',
-            'prov_clientes' => 'required',
+            'tbprovincia_id' => 'required',
         ]);
-
-        // Buscar el cliente en la base de datos
+ 
         $cliente = Cliente::findOrFail($id);
-
-        // Actualizar los datos del cliente con los datos validados del formulario
+ 
         $cliente->update($validatedData);
-
-        // Redireccionar a la vista de la lista de clientes con un mensaje de éxito
         return redirect()->route('clientes.index')->with('success', 'Cliente actualizado correctamente.');
     }
  
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        DB::table('clientes')
-        ->where('idCliente', $id)
-        ->update(['estado' => 0]);
- 
-        return redirect()->route('clientes.index')->with('success', 'Estado del cliente actualizado correctamente.');
+        $cliente = Cliente::find($id);
+        $cliente->delete();
+        return redirect()->back();
+        //
     }
    
 }

@@ -43,7 +43,7 @@ const logout = () => {
                         <div class="text-center text-white" v-show="dataOpenSideBar">
                             <img src="/img/hombre.png" class="p-1 w-24 h-24 rounded-full ring-2 ring-gray-300 dark:ring-gray-500 mb-4" alt="">
                             <Link :href="route('profile.show')"><h5 class="text-xl font-medium leading-tight mb-2">{{ $page.props.auth.user.name }}</h5></Link>
-                            <p class="text-gray-500">Admin</p>
+                            <p class="text-gray-500">{{ $page.props.auth.user.roles[0]?.name }}</p>
                         </div>
                     </div>
                     <!-- Scrool para sidebar -->

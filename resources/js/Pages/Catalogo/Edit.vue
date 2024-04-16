@@ -260,10 +260,10 @@ const submitForm = (id) => {
                                     </div> -->
                                     <InputLabel for="foto" class="block text-sm font-medium text-gray-700">Foto</InputLabel>
                                     <input @change="onFileChange" type="file" id="foto" accept="image/*"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:text-white"/>
                                     <InputError :message="$page.props.errors.foto" class="mt-2"/>
                                     <div v-if="form.fotoPreview" class="mt-2 shadow-lg">
-                                        <img :src="form.fotoPreview" alt="Vista previa de la foto" style="max-width: 200px; max-height: 300px;">
+                                        <img :src="form.fotoPreview" class="dark:text-white" alt="Vista previa de la foto" style="max-width: 200px; max-height: 300px;">
                                     </div>
                                     <div v-else class="mt-3">
                                         <p>No hay foto seleccionada</p>

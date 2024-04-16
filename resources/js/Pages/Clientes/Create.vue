@@ -2,13 +2,21 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 import TextRuc from '@/Components/TextRuc.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import InputError from '@/Components/InputError.vue';
-import { Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import {Link , useForm} from '@inertiajs/vue3';
+import { nextTick, ref } from 'vue';
 import Swal from 'sweetalert2';
+import ModalResponsive from '@/Components/ModalResponsive.vue';
+ 
+const nameInput4 = ref(null);
+const modal4 = ref(false);
+const title4 = ref('');
+const operation4 = ref(1);
+const id4 = ref('');
  
 defineProps({
     tbprovincias: {
@@ -16,7 +24,10 @@ defineProps({
         required: true
     }
 });
-
+const form4 = useForm ({
+    prov_nombre: '',
+ 
+});
 const form = useForm({
   numeroDocumento: '',
   razonSocial: '',
@@ -27,7 +38,7 @@ const form = useForm({
   estado:'',
   cli_direccion2:'',
   cli_observacion:'',
-  prov_clientes: '',
+  tbprovincia_id: '',
 });
  
 const errors = ref({
@@ -67,7 +78,10 @@ const submitForm = () => {
             Swal.fire({
                 icon: 'success',
                 title: 'Éxito',
-                text: 'El cliente se ha registrado correctamente.'
+                text: 'El cliente se ha registrado correctamente.',
+                timer: 1000,
+                timerProgressBar: true,
+                showConfirmButton: false
             });
         },
         onError: (errors) => {
@@ -92,6 +106,43 @@ const submitForm = () => {
     });
 }
  
+ 
+const openModal4 = (op,prov_nombre,tbprovincia)=>{
+    modal4.value = true;
+    nextTick( () => nameInput4.value.focus());
+    operation4.value = op;
+    id4.value = tbprovincia;
+    if(op ===1){
+        title4.value = 'Registrar ciudad';
+    }
+    else{
+        title4.value = 'Actualizar ciudad';
+        form4.prov_nombre=prov_nombre;
+    }
+}
+ 
+const closeModal4 = () =>{
+    modal4.value = false;
+    form4.reset();
+}
+ 
+const save4 = () => {
+    if (operation4.value == 1) {
+        form4.post(route('tbprovincias.store'), {
+            onSuccess: () => { ok4('ciudad registrada') }
+        });
+    } else {
+        form4.put(route('tbprovincias.update', id4.value), {
+            onSuccess: () => { ok4('ciudad actualizado') }
+        });
+    }
+}
+ 
+const ok4 = (msj) =>{
+    form4.reset();
+    closeModal4();
+    Swal.fire({title:msj,icon:'success'});
+}
 </script>
  
 <template>
@@ -109,14 +160,15 @@ const submitForm = () => {
                                 <div>
                                     <InputLabel for="numeroDocumento" value="Número de RUC" />
                                     <div class="w-full flex justify-end items-end">
-                                        <TextRuc v-model="form.numeroDocumento" type="text" id="numeroDocumento" placeholder="Ingrese y consulte el RUC" class="mt-2 w-full"/>
-                                        <button @click="consultarReniec" type="button" class="bg-blue-600 w-12 h-[42px] rounded-r-lg hover:bg-blue-700"><i class='bx bx-search-alt text-white dark:text-black font-medium text-xl'></i></button>
+                                        <TextRuc v-model="form.numeroDocumento" type="text" id="numeroDocumento" placeholder="Ingrese y consulte el RUC"
+                                         class="mt-2 w-full"/>
+                                        <button @click="consultarReniec" type="button" class="bg-blue-600 w-12 h-[42px] rounded-r-lg hover:bg-blue-700"><i class='bx bx-search-alt text-white font-medium text-xl'></i></button>
                                     </div>
                                     <InputError :message="errors.numeroDocumento" />
-                                </div>     
+                                </div>    
                                 <div>
                                     <InputLabel value="razon Social" />
-                                    <TextInput v-model="form.razonSocial" type="text" placeholder="Ingrese Razon Social" class="mt-2 w-full"/>
+                                    <TextInput v-model="form.razonSocial" type="text" placeholder="" class="mt-2 w-full"/>
                                 </div>
                                 <div>
                                     <InputLabel value="estado" />
@@ -138,33 +190,39 @@ const submitForm = () => {
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
-                                <div>
+                                <div class="flex flex-col items-start">
                                     <InputLabel for="prov_clientes" value="Ciudad" class="ml-1"/>
-                                    <select v-model="form.prov_clientes" name="prov_clientes" id="prov_clientes" class="bg-white border mt-1 border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <option value="" disabled="" selected="selected">Selecciona una Ciudad</option>
-                                        <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id" :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
-                                    </select>
-                                    <InputError :message="$page.props.errors.prov_clientes" class="mt-2"/>
+                                    <div class="flex w-full mt-1">
+                                        <select v-model="form.tbprovincia_id" name="tbprovincia_id" id="tbprovincia_id"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg h-[41.6px]">
+                                            <option value="" disabled=""  selected="selected">Selecciona una Ciudad</option>
+                                            <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id" :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
+                                        </select>
+                                        <Button @click.prevent="() => openModal4(1)" class="bg-green-600 text-white mt-1 py-1 w-10 h-[42px] sm:h-[42px] rounded-r-lg">
+                                            <i class="fas fa-plus mx-2"></i>
+                                        </Button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-1 sm:gap-x-6 mb-3">
+                         
                                 <div>
                                     <InputLabel value="direccion legal" />
-                                    <TextInput v-model="form.direccion" type="text" placeholder="Ingrese Direccion Legal" class="mt-2 w-full"/>
+                                    <TextInput v-model="form.direccion" type="text" required placeholder="" class="mt-2 w-full"/>
                                 </div>
                                 <div>
                                     <InputLabel for="cli_direccion2" value="direccion anexa 1"/>
-                                    <TextInput v-model="form.cli_direccion2" type="text" id="cli_direccion2" placeholder="Ingrese Direccion Anexa 1" class="mt-2 w-full uppercase"/>
+                                    <TextInput v-model="form.cli_direccion2" type="text" id="cli_direccion2" placeholder="Ingrese Direccion Anexa 1" class="mt-2 w-full"/>
                                 </div>
+                            </div>
+                            <div>
                                 <InputLabel for="cli_observacion" value="Observaciones"/>
                                     <textarea id="cli_observacion" v-model="form.cli_observacion" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las observaciones..."></textarea>
                                 <InputError :message="$page.props.errors.cli_observacion" class=""/>
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
-                                    <ButtonResponsive type="submit" class="md:w-min whitespace-nowrap w-full text-center font-bold">
+                                    <PrimaryButton >
                                         GUARDAR
-                                    </ButtonResponsive>
+                                    </PrimaryButton>
                                     <Link :href="route('clientes.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
                                         Cancelar
                                     </Link>
@@ -175,5 +233,27 @@ const submitForm = () => {
                 </div>
             </div>
         </div>
+        <ModalResponsive :show="modal4" @close="closeModal4">
+            <div class="p-4 uppercase">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white text-center uppercase mb-4">{{ title4 }}</h2>
+                <div class="p-1">
+                    <div class="w-full">
+                        <InputLabel for="prov_nombre" value="ciudad:" class="mb-2"></InputLabel>
+                        <TextInput id="prov_nombre" ref="nameInput4" v-model="form4.prov_nombre" type="text" class="w-full"
+                                placeholder="Ingrese el nombre de la ciudad"></TextInput>
+                        <InputError :message="form4.errors.prov_nombre" class="mt-2"></InputError>
+                    </div>
+                </div>
+                <div class="p-1 flex justify-center">
+                    <PrimaryButton :disabled="form4.processing" @click="save4">
+                        <i class="fa-solid fa-save mx-1"></i>{{ operation4 == 1 ? 'Registrar' : 'Actualizar' }}
+                    </PrimaryButton>
+                    <DangerButton class="ml-3" :disabled="form4.processing"
+                            @click="closeModal4">
+                            Cancelar
+                    </DangerButton>
+                </div>
+            </div>
+        </ModalResponsive>
     </AppLayout>
 </template>

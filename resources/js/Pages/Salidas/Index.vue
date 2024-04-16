@@ -94,7 +94,9 @@ const deleteSalidas = (id, empresa) => {
                             Ingresar Salida
                         </Link>
                     </div>
-                    <div class="font-semibold text-center dark:text-white">Producto || {{ filteredSalidas.length > 0 ? filteredSalidas[0].insumo : 'Sin salidas' }}</div>
+                    <div class="md:mt-0 mt-4">
+                        <div class="font-semibold text-center dark:text-white">Producto || {{ filteredSalidas.length > 0 ? filteredSalidas[0].insumo : 'Sin salidas' }}</div>
+                    </div>
                     <div class="mt-4">
                         <div class="pb-4 bg-white dark:bg-gray-800">
                             <label for="table-search" class="sr-only">Buscar</label>
