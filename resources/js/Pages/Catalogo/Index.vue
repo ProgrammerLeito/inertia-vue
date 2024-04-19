@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect } from 'vue';
+import { ref, watchEffect, watch } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -13,6 +13,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 const filteredTbproductos = ref([]);
 const { props } = usePage();
 const searchQuery = ref('');
+const selectedCategoria = ref('');
+const selectedSubcategoria = ref('');
  
 defineProps({
     tbproductos: {
@@ -81,13 +83,23 @@ const deleteTbproducto = (id, modelo) => {
  
  
 watchEffect(() => {
-  filteredTbproductos.value = props.tbproductos.data.filter(tbproducto => {
-    return tbproducto.modelo.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-           tbproducto.id.toString().includes(searchQuery.value.toLowerCase());
-  });
+    filteredTbproductos.value = props.tbproductos.data.filter(tbproducto => {
+        return (tbproducto.modelo.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                tbproducto.id.toString().includes(searchQuery.value.toLowerCase())) &&
+                (selectedCategoria.value === '' || tbproducto.tbcategoria_id === selectedCategoria.value) &&
+                (selectedSubcategoria.value === '' || tbproducto.tbsubcategoria_id === selectedSubcategoria.value);
+    });
 });
- 
-// console.log(props.tbproductos)
+
+// Método para sincronizar automáticamente la subcategoría seleccionada con la categoría seleccionada
+watchEffect(() => {
+    // Buscar la primera subcategoría relacionada con la categoría seleccionada, si existe
+    const categoriaSeleccionada = props.tbcategorias.find(categoria => categoria.id === selectedCategoria.value);
+    if (categoriaSeleccionada) {
+        selectedSubcategoria.value = categoriaSeleccionada.tbsubcategorias.length > 0 ? categoriaSeleccionada.tbsubcategorias[0].id : '';
+    }
+});
+
 </script>
  
 <template>
@@ -110,19 +122,18 @@ watchEffect(() => {
                         <div>
                             <div class="py-2 uppercase">
                                 <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
-                                    <div class="flex flex-col ">
+                                    <div class="flex flex-col">
                                         <InputLabel class="block text-md font-medium text-gray-700">Categoría</InputLabel>
-                                        <select @change="filtertbsubcategorias" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <select v-model="selectedCategoria" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                             <option value="" disabled selected >Seleccione una Categoría</option>
                                             <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
                                         </select>
                                     </div>
-   
-                                    <div class="flex flex-col ">
+                                    <div class="flex flex-col">
                                         <InputLabel class="block text-md font-medium text-gray-700">Subcategoría</InputLabel>
-                                        <select @change="filtertbproductos" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <select v-model="selectedSubcategoria" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                             <option value="" disabled selected >Seleccione una Subcategoría</option>
-                                            <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
+                                            <option v-for="tbsubcategoria in tbsubcategorias.filter(subcategoria => subcategoria.tbcategoria_id === selectedCategoria)" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
                                         </select>
                                     </div>
                                     <div class="flex flex-col">

@@ -9,6 +9,7 @@ import ButtonEdit from '@/Components/ButtonEdit.vue';
 import { computed } from 'vue';
  
 const searchQuery = ref('');
+const statusesFilter = ref(new Set());
  
 const props = defineProps({
     clientes: {
@@ -42,21 +43,18 @@ const onPageClick = (event) => {
 };
  
 //Constante para filtrar clientes por diferentes campos
+const selectedProvincia = ref(''); // Para almacenar el ID de la provincia seleccionada
+
 const filteredClients = computed(() => {
-    const normalizedQuery = searchQuery.value.toLowerCase().trim();
-    if (!normalizedQuery) {
-        return props.clientes.data;
-    } else {
-        return props.clientes.data.filter(cliente => {
-            return cliente.numeroDocumento.toLowerCase().includes(normalizedQuery) ||
-                   cliente.razonSocial.toLowerCase().includes(normalizedQuery) ||
-                   cliente.direccion.toLowerCase().includes(normalizedQuery) ||
-                   cliente.tbprovincia_id.toLowerCase().includes(normalizedQuery);
-        });
-    }
+  const normalizedQuery = searchQuery.value.toLowerCase().trim();
+  return props.clientes.data.filter(cliente => {
+    return (!normalizedQuery || cliente.numeroDocumento.toLowerCase().includes(normalizedQuery) ||
+            cliente.razonSocial.toLowerCase().includes(normalizedQuery) ||
+            cliente.direccion.toLowerCase().includes(normalizedQuery)) &&
+           (selectedProvincia.value === '' || cliente.tbprovincia_id === selectedProvincia.value);
+  });
 });
- 
- 
+
 const deleteCliente = (id, razonSocial) => {
     const alerta = Swal.mixin({
         buttonsStyling:true
@@ -121,8 +119,8 @@ const deleteCliente = (id, razonSocial) => {
                                 </div>
                                 <div class="flex flex-col">
                                     <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Ciudad</InputLabel>
-                                    <select class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full h-10 shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="" selected disabled>Seleccione una Ciudad</option>
+                                    <select v-model="selectedProvincia" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full h-10 shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="">Seleccione una Ciudad</option>
                                         <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id" :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
                                     </select>
                                 </div>

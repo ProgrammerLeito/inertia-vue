@@ -35,15 +35,17 @@ const logout = () => {
                     <div class="border-dashed border-4 w-12 h-12 p-2 flex justify-center items-center rounded-full border-white">
                 <span class="text-4xl flex justify-center items-center" id="B_logo">B</span></div><span id="nombre_Logo">ALINSA</span>
                 </span>
-                <img src="/img/hombre.png" v-show="!dataOpenSideBar" class="p-1 w-8 h-8 rounded-full ring-2 ring-gray-100 dark:ring-gray-500" alt="">
+                <img src="/img/hombre.png" v-show="!dataOpenSideBar" class="p-1 w-8 h-8 rounded-full ring-2 ring-gray-100" alt="">
             </div>
             <div class="flex flex-col justify-between h-[cal(100vh-3rem)] bg-gray-800">
                 <div class="menu-man text-left px-2 whitespace-nowrap">
                     <div :class="{'profile flex justify-center items-center text-center p-5': dataOpenSideBar, 'flex justify-center items-center text-center': !dataOpenSideBar }">
-                        <div class="text-center text-white" v-show="dataOpenSideBar">
-                            <img src="/img/hombre.png" class="p-1 w-24 h-24 rounded-full ring-2 ring-gray-300 dark:ring-gray-500 mb-4" alt="">
-                            <Link :href="route('profile.show')"><h5 class="text-xl font-medium leading-tight mb-2">{{ $page.props.auth.user.name }}</h5></Link>
-                            <p class="text-gray-500">{{ $page.props.auth.user.roles[0]?.name }}</p>
+                        <div class="flex flex-col justify-center items-center gap-4 text-white" v-show="dataOpenSideBar">
+                            <img src="/img/hombre.png" class="p-1 w-24 h-24 rounded-full ring-2 ring-gray-300" alt="">
+                            <div>
+                                <Link :href="route('profile.show')"><h5 class="text-xl font-medium leading-tight">{{ $page.props.auth.user.name }}</h5></Link>
+                                <p class="text-gray-500">{{ $page.props.auth.user.roles[0]?.name }}</p>
+                            </div>
                         </div>
                     </div>
                     <!-- Scrool para sidebar -->
