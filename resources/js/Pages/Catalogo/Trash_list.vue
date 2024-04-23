@@ -11,10 +11,9 @@ import { Link } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
  
 const filteredTbproductos = ref([]);
-const { props } = usePage();
 const searchQuery = ref('');
  
-defineProps({
+const props = defineProps({
     tbproductos: {
         type : Object,
         required: true
@@ -33,20 +32,7 @@ defineProps({
     }
 });
 const form = useForm ({
-    tbcategoria_id: '',
-    tbsubcategoria_id: '',
-    tbmarca_id: '',
-    modelo: '',
-    medida: '',
-    moneda: '',
-    precio: 0,
-    descuento: 0,
-    stock: 0,
-    codigo: '',
-    estado: '',
-    capacidades: '',
-    especificaciones: '',
-    foto: '',
+    id : ''
 });
  
 const deleteUser = async (tbproductoId) => {
@@ -126,12 +112,12 @@ watchEffect(() => {
                                             <td class="px-6 py-4 text-center">{{ tbproducto.precio }}</td>
                                             <td class="px-6 py-4 text-center">{{ tbproducto.codigo }}</td>
                                             <td class="p-3 text-center">
-                                                <Link :href="route('tbproductos.restore', { id: tbproducto.id })" class="text-xs hover:bg-yellow-500 bg-yellow-300 rounded-full py-1 mx-2  hover:text-green-500">
-                                                    <i class="fa-solid fa-edit fa-sm">restaurar </i>
+                                                <Link class="py-0.5 px-2.5 text-xs text-black font-semibold bg-yellow-300 rounded-lg border-solid border-2 hover:bg-yellow-400" :href="route('tbproductos.restore', { id: tbproducto.id })">
+                                                    <i class='bx bxs-share'><label class="ml-2">Restaurar</label></i>
                                                 </Link>
-                                                <Link @click="deleteUser(tbproducto.id)" >
-                                                    <i class="fa-solid fa-trash mr-1 fa-sm"></i>
-                                                </Link>  
+                                                <Link @click="deleteUser(tbproducto.id)" class="ml-4">
+                                                    <i class="bi bi-trash3 text-red-500"></i>
+                                                </Link>
                                             </td>
                                         </tr>
                                     </tbody>

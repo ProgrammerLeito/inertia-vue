@@ -249,7 +249,7 @@ const ok4 = (msj) =>{
                                         <option value="" disabled selected>Seleccione una categoría</option>
                                         <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
                                     </select>
-                                    <Button @click="() => openModal4(1)" class="bg-green-600 text-white mt-1 py-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
+                                    <Button @click.prevent="() => openModal4(1)" class="bg-green-600 text-white mt-1 py-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                         <i class="fas fa-plus mx-2"></i>
                                     </Button>
                                 </div>
@@ -262,7 +262,7 @@ const ok4 = (msj) =>{
                                         <option value="" disabled selected>Seleccione una subcategoría</option>
                                         <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
                                     </select>
-                                    <Button  @click="() => openModal2(1)" class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
+                                    <Button  @click.prevent="() => openModal2(1)" class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                         <i class="fas fa-plus mx-2"></i>
                                     </Button>
                                 </div>
@@ -274,7 +274,7 @@ const ok4 = (msj) =>{
                                         <!-- Iterar sobre las marcas -->
                                         <option v-for="tbmarca in tbmarcas" :key="tbmarca.id" :value="tbmarca.id">{{ tbmarca.nombre }}</option>
                                     </select>
-                                    <Button @click="() => openModal3(1)" class="bg-green-600 py-1 text-white mt-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
+                                    <Button @click.prevent="() => openModal3(1)" class="bg-green-600 py-1 text-white mt-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                         <i class="fas fa-plus mx-2"></i>
                                     </Button>
                                 </div>

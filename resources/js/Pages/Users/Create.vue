@@ -8,6 +8,8 @@ import { Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import Swal from 'sweetalert2';
 
+const selectedRole = ref(null);
+
 defineProps({
     roles: {
         type: Array,
@@ -18,6 +20,8 @@ defineProps({
 const form = useForm({
     // Inicializa los campos del formulario
     name: '',
+    apellidopat: '',
+    apellidomat: '',
     email: '',
     password: '',
     sexo: '',
@@ -65,7 +69,17 @@ const submitForm = () => {
         }
     });
 }
- 
+
+
+const handleRoleSelection = (role) => {
+    if (selectedRole.value === role) {
+        selectedRole.value = null;  // Des-seleccionar si es el mismo
+    } else {
+        selectedRole.value = role;  // Seleccionar nuevo rol
+    }
+    form.roles = selectedRole.value ? [selectedRole.value] : [];
+};
+
 </script>
 <template>
     <AppLayout title="Registrar Usuario ">
@@ -86,6 +100,18 @@ const submitForm = () => {
                                     <InputError :message="form.errors.name" class="mt-2"></InputError>
                                 </div>
                                 <div>
+                                    <InputLabel for="apellidopat" value="Apellido Paterno" class="block text-md font-medium text-gray-700"/>
+                                    <TextInput v-model="form.apellidopat" type="text" id="apellidopat" placeholder="Escribe Apellido Paterno" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                    <InputError :message="form.errors.apellidopat" class="mt-2"></InputError>
+                                </div>
+                                <div>
+                                    <InputLabel for="apellidomat" value="Apellido Materno" class="block text-md font-medium text-gray-700"/>
+                                    <TextInput v-model="form.apellidomat" type="text" id="apellidomat" placeholder="Escribe Apellido Materno" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                    <InputError :message="form.errors.apellidomat" class="mt-2"></InputError>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                                <div>
                                     <InputLabel for="email" value="Email" class="block text-md font-medium text-gray-700"/>
                                     <TextInput v-model="form.email" type="email" id="email" placeholder="Escribe un correo electrónico" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="form.errors.email" class="mt-2"></InputError>
@@ -99,13 +125,13 @@ const submitForm = () => {
                                         <option value="Femenino">Femenino</option>
                                     </select>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <div>
                                     <InputLabel for="celular" value="Celular" class="block text-md font-medium text-gray-700"/>
                                     <TextInput v-model="form.celular" type="text" id="celular" placeholder="Escribe un telefono" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="form.errors.celular" class="mt-2"></InputError>
                                 </div>
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <div>
                                     <InputLabel for="password" value="Contraseña" class="block text-md font-medium text-gray-700"/>
                                     <TextInput v-model="form.password" type="password" id="password" placeholder="Escribe una contraseña" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
@@ -121,7 +147,14 @@ const submitForm = () => {
                                 <InputLabel for="roles" value="Asignar Roles" class="block text-md font-medium text-gray-700"/>
                                 <div class="w-full text-md p-2 gap-4">
                                     <div v-for="(roleOption, index) in roles" :key="index" class="flex items-center mt-2">
-                                        <input type="checkbox" :id="`role-${index}`" :value="roleOption" v-model="form.roles" class="w-4 h-4 text-blue-600 bg-blue-100 border-blue-900 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <input 
+                                            type="checkbox" 
+                                            :id="`role-${index}`" 
+                                            :value="roleOption" 
+                                            :checked="selectedRole === roleOption" 
+                                            @change="handleRoleSelection(roleOption)" 
+                                            :disabled="selectedRole !== null && selectedRole !== roleOption"
+                                            class="w-4 h-4 text-blue-600 bg-blue-100 border-blue-900 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label class="ml-3 dark:text-white" :for="`role-${index}`">{{ roleOption }}</label>
                                     </div>
                                 </div>

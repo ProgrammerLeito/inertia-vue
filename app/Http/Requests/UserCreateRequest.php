@@ -24,6 +24,8 @@ class UserCreateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'apellidopat' => ['required', 'string', 'max:255'],
+            'apellidomat' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'string', 'max:255', Rule::unique('users')],
             'password' => ['nullable', 'string', 'min:8'],
             'sexo' => ['required', 'string', 'max:255'],

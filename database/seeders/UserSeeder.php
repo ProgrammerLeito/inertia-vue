@@ -16,6 +16,8 @@ class UserSeeder extends Seeder
     {
         User::create([
             'name' => 'Leonardo',
+            'apellidopat' => 'Garcia',
+            'apellidomat' => 'Jimenez',
             'email' => 'leonardo@balinsa.net',
             'password' => Hash::make('Leonardo150724#.'),
             'sexo' => 'Masculino',
@@ -24,6 +26,8 @@ class UserSeeder extends Seeder
 
         User::create([
             'name' => 'Ingri',
+            'apellidopat' => 'Siguenza',
+            'apellidomat' => '--',
             'email' => 'ingri@balinsa.net',
             'password' => Hash::make('ingri2024#.'),
             'sexo' => 'Femenino',
@@ -33,6 +37,8 @@ class UserSeeder extends Seeder
 
         User::create([
             'name' => 'prueba',
+            'apellidopat' => 'prueba01',
+            'apellidomat' => 'prueba02',
             'email' => 'prueba@balinsa.net',
             'password' => Hash::make('prueba2024'),
             'sexo' => 'Masculino',

@@ -70,7 +70,7 @@ const logout = () => {
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-graph-up-arrow'><span v-show="dataOpenSideBar" class="ml-2">Cotizaciones</span></span></summary>
-                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Cotizacion por Venta</span></Link>
+                            <Link  :href="route('cotizas.index')" :active="route().current('cotizas.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Cotizacion por Venta</span></Link>
                             <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Cotizacion por Servicio</span></Link>
                             <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Cotizaciones</span></Link>
                         </details>

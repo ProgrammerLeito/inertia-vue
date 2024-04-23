@@ -62,6 +62,8 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'apellidopat' => 'required',
+            'apellidomat' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|confirmed',
             'sexo' => 'required',
@@ -101,6 +103,8 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'apellidopat' => 'required',
+            'apellidomat' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|confirmed',
             'sexo' => 'required',

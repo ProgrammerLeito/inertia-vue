@@ -129,7 +129,7 @@ const deleteEmployee = (id, name) => {
                         <!-- <Link @click="$event => openModal(1)" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('create categories')">
                             Registrar Categoria
                         </Link> -->
-                        <ButtonRegister @click="$event => openModal(1)">
+                        <ButtonRegister @click.prevent="$event => openModal(1)">
                             Registrar Categoria
                         </ButtonRegister>
                     </div>

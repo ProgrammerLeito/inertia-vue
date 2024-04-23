@@ -23,17 +23,7 @@ const props = defineProps({
 });
  
 const form = useForm({
-  numeroDocumento: '',
-  razonSocial: '',
-  direccion: '',
-  distrito: '',
-  provincia: '',
-  departamento:'',
-  estado:'',
-  cli_direccion2:'',
-  cli_observacion:'',
-  tbprovincia_id: '',
- 
+  id : ''
 });
  
 const formPage = useForm({});

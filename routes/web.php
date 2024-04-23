@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\SalidasController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\CventaController;
 use App\Http\Controllers\DatoController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\TbcategoriaController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\TbsubcategoriaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SidebarController;
 use App\Http\Controllers\TbprovinciaController;
+use App\Http\Controllers\TenorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -68,6 +70,8 @@ Route::middleware(['auth:web'])->group(function () {
     });
     Route::resource('datos', DatoController::class);
     Route::resource('/tbprovincias', TbprovinciaController::class);
+    Route::resource('tenors', TenorController::class);
+    Route::resource('/cotizas', CventaController::class);
 });
 
 Route::middleware(['auth:web'])->group(function () {

@@ -11,12 +11,11 @@ import { Link } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
  
 const filteredTbproductos = ref([]);
-const { props } = usePage();
 const searchQuery = ref('');
 const selectedCategoria = ref('');
 const selectedSubcategoria = ref('');
  
-defineProps({
+const props = defineProps({
     tbproductos: {
         type : Object,
         required: true
@@ -36,20 +35,7 @@ defineProps({
 });
  
 const form = useForm ({
-    tbcategoria_id: '',
-    tbsubcategoria_id: '',
-    tbmarca_id: '',
-    modelo: '',
-    medida: '',
-    moneda: '',
-    precio: 0,
-    descuento: 0,
-    stock: 0,
-    codigo: '',
-    estado: '',
-    capacidades: '',
-    especificaciones: '',
-    foto: '',
+    id : '',
 });
  
 const deleteTbproducto = (id, modelo) => {

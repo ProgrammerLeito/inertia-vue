@@ -3,7 +3,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import {useForm} from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, Link } from '@inertiajs/vue3';
- 
+import { computed } from 'vue';
+
 export default {
     props: {
         user: Object,
@@ -19,12 +20,18 @@ export default {
     setup(props) {
         const form = useForm({
             name: props.user.name,
+            apellidopat: props.user.apellidopat,
+            apellidomat: props.user.apellidomat,
             email: props.user.email,
             password: props.user.password,
             sexo: props.user.sexo,
             celular: props.user.celular,
             password_confirmation: props.user.password_confirmation,
             roles: props.userRoles
+        });
+
+        const isRoleSelected = computed(() => {
+            return form.roles.length > 0;
         });
  
         const submitForm = () => {
@@ -33,7 +40,8 @@ export default {
  
         return {
             form,
-            submitForm
+            submitForm,
+            isRoleSelected
         };
     }
 };
@@ -57,6 +65,18 @@ export default {
                                     <InputError :errors="form.errors.name" class="mt-2" />
                                 </div>
                                 <div>
+                                    <label for="apellidopat" class="block text-sm font-medium text-gray-700 dark:text-white">Apellido Paterno</label>
+                                    <input v-model="form.apellidopat" type="text" name="apellidopat" id="apellidopat" class="h-[37.6px] text-sm mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <InputError :errors="form.errors.apellidopat" class="mt-2" />
+                                </div>
+                                <div>
+                                    <label for="apellidomat" class="block text-sm font-medium text-gray-700 dark:text-white">Apellido Materno</label>
+                                    <input v-model="form.apellidomat" type="text" name="apellidomat" id="apellidomat" class="h-[37.6px] text-sm mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <InputError :errors="form.errors.apellidomat" class="mt-2" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                                <div>
                                     <label for="email" class="block text-sm font-medium text-gray-700 dark:text-white">Correo</label>
                                     <input v-model="form.email" type="email" name="email" id="email" class="h-[37.6px] text-sm mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <InputError :errors="form.errors.email" class="mt-2" />
@@ -70,13 +90,13 @@ export default {
                                         <option value="Femenino">Femenino</option>
                                     </select>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <div>
                                     <label for="celular" class="block text-sm font-medium text-gray-700 dark:text-white">Celular</label>
                                     <input v-model="form.celular" type="text" name="celular" id="celular" class="text-sm h-[37.6px] mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <InputError :errors="form.errors.celular" class="mt-2" />
                                 </div>
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <div>
                                     <label for="password" class="block text-sm font-medium text-gray-700 dark:text-white">Contraseña</label>
                                     <input v-model="form.password" type="password" name="password" id="password" class="text-sm h-[37.6px] mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -92,9 +112,15 @@ export default {
                                 <label class="block text-sm font-medium text-gray-700 dark:text-white">Roles</label>
                                 <div class="w-full text-md p-2 gap-4">
                                     <div v-for="(roleOption, index) in roles" :key="index" class="flex items-center mt-2 text-sm">
-                                        <input type="checkbox" :id="`role-${index}`" :value="roleOption" v-model="form.roles" class="w-4 h-4 text-blue-600 bg-blue-100 border-blue-900 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <input type="checkbox" 
+                                            :id="`role-${index}`" 
+                                            :value="roleOption" 
+                                            v-model="form.roles"
+                                            :disabled="isRoleSelected && form.roles.indexOf(roleOption) === -1"
+                                            class="w-4 h-4 text-blue-600 bg-blue-100 border-blue-900 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label class="ml-3 dark:text-white" :for="`role-${index}`">{{ roleOption }}</label>
                                     </div>
+
                                 </div>
                                 <InputError :errors="form.errors.roles" class="mt-2" />
                             </div>
