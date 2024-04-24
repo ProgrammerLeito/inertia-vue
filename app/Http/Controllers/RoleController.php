@@ -20,14 +20,13 @@ class RoleController extends Controller
         ]);
     }
  
-   
- 
     public function create(){
         $permission = Permission::get();
         return Inertia::render('Roles/Create',[
             'permission'=>$permission
         ]);
     }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -45,18 +44,7 @@ class RoleController extends Controller
             return redirect()->back()->with('error', 'No autorizado para crear roles');
         }
     }
- 
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|unique:roles,name',
-    //     ]);
- 
-    //     $role = Role::create(['name'=>$request->input('name')]);
- 
-    //     return redirect()->route('roles.index');
-    // }
- 
+
     public function edit($id)
     {
         $role = Role::findOrFail($id);
@@ -80,12 +68,6 @@ class RoleController extends Controller
    
         return redirect()->route('roles.edit', $id);
     }
-   
-    // public function update(Request $request, Role $role){
-    //     $role->permissions()->sync($request->input('permisos'));
-    //     return redirect()->route('roles.edit', ['role' => $role]);
-    // }
-   
  
     public function destroy($id){
         DB::table("roles")->where('id',$id)->delete();

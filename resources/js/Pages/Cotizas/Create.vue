@@ -6,29 +6,29 @@ import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
-import Modal from '@/Components/Modal.vue';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 import { onMounted , watch , computed} from 'vue';
 import { Inertia } from '@inertiajs/inertia';
-import { usePage } from '@inertiajs/vue3';
-
+ 
+import jsPDF from 'jspdf';
+ 
 const nameInput2 = ref(null);
 const modal2 = ref(false);
 const title2 = ref('');
 const operation2 = ref(1);
 const id2 = ref('');
-
-const modal3 = ref(false); 
+ 
+const modal3 = ref(false);
 const tbproductosAgregados = ref([]);
-
-
+ 
+ 
 const toggleModal3 = () => {
-    modal3.value = !modal3.value; 
+    modal3.value = !modal3.value;
 };
-
+ 
 defineProps({
     clientes: {
         type : Object,
@@ -46,7 +46,7 @@ defineProps({
     }
  
 });
-
+ 
 const form2 = useForm({
     name: '',
 });
@@ -63,15 +63,15 @@ const form = useForm ({
     total: 0,
     igvEnabled: false,
 });
-
-
+ 
+ 
 // llenan automaticamente cuando se agregan productos y se activa o desactiva el igv
 const agregarProducto = (producto) => {
     producto.cantidad = 1;
     tbproductosAgregados.value.push(producto);
     form.subtotal = tbproductosAgregados.value.reduce((acc, curr) => acc + (curr.precio * curr.cantidad), 0);
-    form.igv = form.subtotal * 0.18; 
-    form.total = form.subtotal + form.igv; 
+    form.igv = form.subtotal * 0.18;
+    form.total = form.subtotal + form.igv;
     toggleModal3();
     Swal.fire({
         title: 'Producto agregado',
@@ -81,17 +81,17 @@ const agregarProducto = (producto) => {
         showConfirmButton: false
     });
 };
-
-
+ 
+ 
 const quitarProducto = (index) => {
     tbproductosAgregados.value.splice(index, 1);
     form.subtotal = tbproductosAgregados.value.reduce((acc, curr) => acc + (curr.precio * curr.cantidad), 0);
-    form.igv = form.subtotal * 0.18; 
+    form.igv = form.subtotal * 0.18;
     form.total = form.subtotal + form.igv;
 };
-
+ 
 const igvEnabled = ref(false);
-
+ 
 // Watcher para actualizar el total cuando se cambia el estado del IGV
 watch(igvEnabled, (newValue) => {
     if (newValue) {
@@ -101,37 +101,37 @@ watch(igvEnabled, (newValue) => {
     }
     form.total = form.subtotal + form.igv;
 });
-
+ 
 // Watcher para actualizar el subtotal, el IGV y el total cuando se cambia la cantidad de productos
 watch(tbproductosAgregados, (newProductos) => {
     form.subtotal = newProductos.reduce((acc, curr) => acc + (curr.precio * curr.cantidad), 0);
     form.igv = igvEnabled.value ? form.subtotal * 0.18 : 0;
     form.total = form.subtotal + form.igv;
 }, { deep: true });
-
+ 
 // Computed para deshabilitar el campo de IGV si no hay productos agregados
 const igvDisabled = computed(() => tbproductosAgregados.value.length === 0);
-
+ 
 const calcularTotal = () => {
-    if (form.moneda === 'dolares') {
+    if (form.moneda === 'dolares $') {
         form.total = (form.subtotal + form.igv) * form.tipoCambio;
     } else {
         form.total = form.subtotal + form.igv;
     }
 };
-
+ 
 //modal para ve la imagen
 const modalOpen = ref(false);
 const modalImageUrl = ref('');
-
+ 
 const openModal = (imageUrl) => {
-    modalImageUrl.value = imageUrl; 
-    modalOpen.value = true; 
+    modalImageUrl.value = imageUrl;
+    modalOpen.value = true;
 };
-
-
+ 
+ 
 watch(() => form.moneda, (newValue) => {
-    if (newValue === 'dolares') {
+    if (newValue === 'dolares $') {
         Swal.fire({
             title: 'Tipo de Cambio',
             input: 'number',
@@ -152,21 +152,21 @@ watch(() => form.moneda, (newValue) => {
                 form.total = parseFloat((form.total / tipoCambio).toFixed(2));
                 form.tipoCambio = tipoCambio;
             } else {
-                form.moneda = ''; 
+                form.moneda = '';
             }
         });
-    } else if (newValue === 'sol' && form.tipoCambio) {
+    } else if (newValue === 'soles s/' && form.tipoCambio) {
         form.subtotal = form.subtotal * form.tipoCambio;
         form.igv = form.igv * form.tipoCambio;
         form.total = form.total * form.tipoCambio;
         form.tipoCambio = null;
     }
 });
-
-
-
-
-
+ 
+ 
+ 
+ 
+ 
 //modal para crear el tenor
 const openModal2 = (op, name, tenor) => {
     modal2.value = true;
@@ -197,25 +197,37 @@ const save2 = () => {
         });
     }
 };
- 
 const ok2 = (msj) => {
     form2.reset();
     closeModal2();
-    Swal.fire({title: msj, icon: 'success'});
+    Swal.fire({
+        title: msj,
+        icon: 'success',
+        timer: 1000,
+        showConfirmButton: false
+    });
 };
  
-
+ 
+// const ok2 = (msj) => {
+//     form2.reset();
+//     closeModal2();
+//     Swal.fire({title: msj, icon: 'success'});
+//     setTimeout(() => {
+//         Swal.close();
+//     }, 1000);
+// };
+ 
+ 
 onMounted(() => {
-    const today = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual y la formatea como yyyy-mm-dd
-    form.fecha = today; 
+    const today = new Date().toISOString().split('T')[0];
+    form.fecha = today;
 });
-
+ 
 const submitForm = () => {
-    form.post(route('cotizas.store'), {
-        onSuccess: () => { 
-            // Restablecer el formulario después de un envío exitoso
+    form.post(route('cventas.store'), {
+        onSuccess: () => {
             form.reset();
-            // Mostrar un mensaje de éxito
             Swal.fire({
                 title: 'Cotización guardada',
                 text: 'La cotización se ha guardado exitosamente.',
@@ -223,17 +235,83 @@ const submitForm = () => {
                 timer: 1500,
                 showConfirmButton: false
             });
-            // Redirigir a la página de índice de cotizaciones
-            Inertia.visit(route('cotizas.index'));
+            Inertia.visit(route('cventas.index'));
         },
         onError: (errors) => {
-            // Manejar errores de validación u otros errores del servidor
             console.error(errors);
         }
     });
 };
-
-
+ 
+ 
+ 
+const previewPDF = () => {
+    const doc = new jsPDF();
+   
+    const headerText = 'INDUSTRIAS BALINZA E,I.R.L';
+    const headerTextWidth = doc.getTextWidth(headerText);
+ 
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const xPosition = (pageWidth - headerTextWidth) / 2;
+ 
+    doc.text(headerText, xPosition, 10);
+    doc.setTextColor(0, 0, 0); // Restaurar el color de texto a negro
+   
+ 
+    doc.text(20, 20, 'Cotización por Venta');
+    doc.text(20, 30, `Cliente: ${form.cliente_id}`);
+    doc.text(20, 40, `Tenor: ${form.tenor_id}`);
+    doc.text(20, 50, `Fecha: ${form.fecha}`);
+    doc.text(20, 60, `Moneda: ${form.moneda}`);
+    doc.text(20, 70, `Garantía: ${form.garantia}`);
+    doc.text(20, 80, `Forma de pago: ${form.forma_pago}`);
+    doc.text(20, 90, `Días de entrega: ${form.dias_entrega}`);
+    doc.text(20, 100, `Subtotal: ${form.subtotal}`);
+    doc.text(20, 110, `IGV: ${form.igv}`);
+    doc.text(20, 120, `Total: ${form.total}`);
+ 
+    let yPos = 130;
+ 
+    const addProductData = (producto, index, nextPageCallback) => {
+        doc.text(20, yPos, `Producto ${index + 1}:`);
+        doc.text(30, yPos + 10, `Modelo: ${producto.modelo}`);
+        doc.text(30, yPos + 20, `Especificaciones: ${producto.especificaciones}`);
+        doc.text(30, yPos + 30, `Marca: ${producto.tbmarca ? producto.tbmarca.nombre : 'Sin marca'}`);
+        doc.text(30, yPos + 40, `Capacidades: ${producto.capacidades}`);
+        doc.text(30, yPos + 50, `Precio: S/ ${producto.precio}`);
+        doc.text(30, yPos + 60, `Cantidad: ${producto.cantidad}`);
+        doc.text(30, yPos + 70, `Importe: S/ ${producto.precio * producto.cantidad}`);
+ 
+       
+        const img = new Image();
+        img.src = `/img/catalogo/${producto.foto}`;
+        img.onload = () => {
+            doc.addImage(img, 'JPEG', 20, yPos + 80, 50, 50);
+            yPos += 150;
+            if (yPos + 150 > doc.internal.pageSize.height) {
+                doc.addPage();
+                yPos = 20;
+                nextPageCallback();
+            }
+        };
+    };
+    const addAllProducts = (productos, index) => {
+        if (index >= productos.length) {
+            doc.output('dataurlnewwindow');
+            return;
+        }
+        addProductData(productos[index], index, () => {
+            addAllProducts(productos, index + 1);
+        });
+    };
+ 
+    addAllProducts(tbproductosAgregados.value, 0);
+};
+ 
+ 
+ 
+ 
+ 
 </script>
  
 <template>
@@ -258,7 +336,6 @@ const submitForm = () => {
                                         <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{ cliente.razonSocial }}</option>
                                     </select>
                                 </div>
-
                                 <!-- tenor -->
                                 <div class="flex flex-col items-start">
                                     <InputLabel for="tenor_id" class="block text-xs font-medium text-gray-700">Descripcion</InputLabel>
@@ -286,7 +363,7 @@ const submitForm = () => {
                                 <!-- Botón para abrir el tercer modal -->
                                 <button class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" @click.prevent="toggleModal3">Agregar Producto</button>
                             </div>
-                           <div class="py-5">
+                            <div class="py-5">
                                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2  max-h-80 overflow-y-auto">
                                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                                         <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
@@ -308,22 +385,25 @@ const submitForm = () => {
                                                 <td class="px-6 py-3 text-center">
                                                     <img @click="openModal('/img/catalogo/' + tbproducto.foto)" :src="'/img/catalogo/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
                                                 </td>
-                                                <td class="px-3 py-3 text-center">{{ tbproducto.especificaciones }}</td>
+                                                <td class="text-md px-6">
+                                                    <div class="max-h-[70px] overflow-y-auto">
+                                                        <td class="px-6 py-4 text-center">{{ tbproducto.especificaciones }}</td>
+                                                    </div>
+                                                </td>
                                                 <td class="px-3 py-3 text-center">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
                                                 <td class="px-3 py-3 text-center">{{ tbproducto.capacidades }}</td>
                                                 <td class="px-3 py-3 text-center">s/{{ tbproducto.precio }}</td>
                                                 <td class="px-3 py-3 text-blue-500 text-center"><input type="number" v-model="tbproducto.cantidad"></td>
                                                 <td class="px-3 py-3  text-center">s/{{ tbproducto.precio * tbproducto.cantidad }}</td>
-                                                <td class="px-3 py-3 text-center "><button @click="quitarProducto(index)">Quitar</button></td>
+                                                <td class="px-3 py-3 text-center"><button @click.prevent="quitarProducto(index)"><i class="bi bi-trash3 text-red-500"></i></button></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                           </div>
-                            
+                            </div>
                             <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-8">
                                
-                                <!-- Medida -->
+                                <!-- garantia -->
                                 <div>
                                     <InputLabel for="garantia" class="block text-xs font-medium text-gray-700">Garantia</InputLabel>
                                     <select id="garantia" v-model="form.garantia" required
@@ -342,8 +422,8 @@ const submitForm = () => {
                                         <select id="moneda" v-model="form.moneda" required
                                                 class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                             <option value="" disabled selected>Selecciona una moneda</option>
-                                            <option value="sol">Sol</option>
-                                            <option value="dolares">Dólares</option>
+                                            <option value="soles s/">Soles</option>
+                                            <option value="dolares $">Dólares</option>
                                         </select>
                                     </div>
                                 </div>
@@ -372,7 +452,7 @@ const submitForm = () => {
                             </div>
                             <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 py-2 card sm:gap-x-8">
                                 <div>
-                                    <InputLabel class="text-xs" for="subtotal" :value="'Subtotal (' + (form.moneda === 'sol' ? 'S/' : '$') + '):'"></InputLabel>
+                                    <InputLabel class="text-xs" for="subtotal" :value="'Subtotal (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
                                     <TextInput v-model="form.subtotal" type="number" class="mt-2 w-full uppercase" disabled></TextInput>
                                 </div>
                                 <div>
@@ -380,26 +460,24 @@ const submitForm = () => {
                                         <input type="checkbox" id="igvCheckbox" v-model="igvEnabled">
                                         <label for="igvCheckbox" class="ml-2 text-blue-700">Aplicar IGV (18%)</label>
                                     </div>
-                                    <InputLabel for="igv" :value="'IGV (18%) (' + (form.moneda === 'sol' ? 'S/' : '$') + '):'" v-if="igvEnabled"></InputLabel>
+                                    <InputLabel for="igv" :value="'IGV (18%) (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'" v-if="igvEnabled"></InputLabel>
                                     <TextInput v-model="form.igv" type="number" class="mt-2 w-full uppercase" disabled></TextInput>
                                 </div>
                                 <div>
-                                    <InputLabel class="text-xs" for="total" :value="'Total (' + (form.moneda === 'sol' ? 'S/' : '$') + '):'"></InputLabel>
+                                    <InputLabel class="text-xs" for="total" :value="'Total (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
                                     <TextInput v-model="form.total" type="number" class="mt-2 w-full bg-green-400 uppercase" disabled></TextInput>
                                 </div>
-
                             </div>
-
-                            <div class="mt-6 flex flex-wrap">
-                                <Link  class="text-white uppercase ml-1 bg-green-700 hover:bg-green-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                                    vista previa pdf
-                                </Link>
-                                <PrimaryButton class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                                    Generar Cotizacion
-                                </PrimaryButton>
-                                <Link :href="route('cotizas.index')" class="text-white uppercase ml-1 bg-red-700 hover:bg-red-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                                    Cancelar
-                                </Link>
+                            <div class="d-flex mt-4">
+                                <div class="flex flex-wrap gap-2 justify-end">
+                                    <button class="text-white uppercase ml-1 bg-green-700 hover:bg-green-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" @click.prevent="previewPDF">Previsualizar PDF</button>
+                                    <PrimaryButton class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                        Generar Cotizacion
+                                    </PrimaryButton>
+                                    <Link :href="route('cventas.index')" class="text-white uppercase ml-1 bg-red-700 hover:bg-red-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                        Cancelar
+                                    </Link>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -428,7 +506,7 @@ const submitForm = () => {
                 </div>
             </div>
         </ModalResponsive>
-
+ 
         <div v-if="modal3" class="fixed inset-0 overflow-y-auto z-50 bg-gray-200/40 flex justify-center items-center">
             <div class="modal-content bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-2xl max-w-7xl w-full sm:max-w-4xl md:max-w-3xl lg:max-w-4xl xl:max-w-6xl">
                 <button @click="toggleModal3" class="close absolute top-0.5 right-0.5 p-2 text-gray-500 hover:text-gray-700">
@@ -459,7 +537,11 @@ const submitForm = () => {
                                     <td class="px-6 py-3 text-center">
                                         <img @click="openModal('/img/catalogo/' + tbproducto.foto)" :src="'/img/catalogo/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
                                     </td>
-                                    <td class="px-6 py-3 text-center">{{ tbproducto.especificaciones }}</td>
+                                    <td class="text-md px-6">
+                                        <div class="max-h-[70px] overflow-y-auto">
+                                            <td class="px-6 py-4 text-center">{{ tbproducto.especificaciones }}</td>
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-3 text-center">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
                                     <td class="px-6 py-3 text-center">{{ tbproducto.capacidades }}</td>
                                     <td class="px-6 py-3 text-center">s/{{ tbproducto.precio }}</td>
@@ -475,7 +557,7 @@ const submitForm = () => {
                 </div>
             </div>
         </div>
-
+ 
         <div class="fixed inset-0 overflow-y-auto z-50 bg-gray-200/40" v-if="modalOpen">
             <div class="flex justify-center  items-center h-full">
                 <div class="bg-white dark:bg-gray-700 rounded-lg w-full max-w-lg mx-4 sm:mx-auto">
@@ -491,6 +573,6 @@ const submitForm = () => {
                 </div>
             </div>
         </div>
-
+ 
     </AppLayout>
 </template>

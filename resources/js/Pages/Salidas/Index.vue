@@ -24,7 +24,6 @@ export default {
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/vue3'
-import { Inertia } from '@inertiajs/inertia'
 import { useForm } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 
@@ -88,10 +87,10 @@ const deleteSalidas = (id, empresa) => {
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
                         <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            Regresar
+                            <i class="bi bi-arrow-left-short mx-1"></i>Regresar
                         </Link>
                         <Link :href="route('salidas.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            Ingresar Salida
+                            <i class="bi bi-clipboard-x mx-1"></i>Ingresar Salida
                         </Link>
                     </div>
                     <div class="md:mt-0 mt-4">

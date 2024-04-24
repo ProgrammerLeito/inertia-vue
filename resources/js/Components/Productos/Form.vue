@@ -102,18 +102,18 @@ defineEmits(['submit'])
                 <InputError :message="$page.props.errors.category_id" class="mt-2"/>
 
                 <InputLabel for="insumo" value="Producto" class="ml-1 mt-1"/>
-                <TextInput id="insumo" v-model="form.insumo" type="text" autocomplete="insumo" class="mt-1 block w-full"/>
+                <TextInput id="insumo" v-model="form.insumo" type="text" autocomplete="insumo" class="mt-1 block w-full" placeholder="Ingrese el nombre del producto"/>
                 <InputError :message="$page.props.errors.insumo" class="mt-2"/>
 
                 <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
                     <div class="sm:col-span-1">
                         <InputLabel for="marca" value="Marca de producto" class="ml-1"/>
-                        <TextInput id="marca" v-model="form.marca" type="text" autocomplete="marca" class="mt-1 block w-full"/>
+                        <TextInput id="marca" v-model="form.marca" type="text" autocomplete="marca" class="mt-1 block w-full" placeholder="Ingrese la marca"/>
                         <InputError :message="$page.props.errors.marca" class="mt-2"/>
                     </div>
                     <div class="sm:col-span-1">
                         <InputLabel for="modelo" value="Modelo de producto" class="ml-1"/>
-                        <TextInput id="modelo" v-model="form.modelo" type="text" autocomplete="modelo" class="mt-1 block w-full"/>
+                        <TextInput id="modelo" v-model="form.modelo" type="text" autocomplete="modelo" class="mt-1 block w-full" placeholder="Ingrese el modelo"/>
                         <InputError :message="$page.props.errors.modelo" class="mt-2"/>
                     </div>
                 </div>
@@ -121,12 +121,12 @@ defineEmits(['submit'])
                 <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
                     <div class="sm:col-span-1">
                         <InputLabel for="cantidad" value="Cantidad" class="ml-1"/>
-                        <TextInput id="cantidad" v-model="form.cantidad" type="text" autocomplete="cantidad" class="validarSoloNumerosDosDecimales mt-1 block w-full" :disabled="updating"/>
+                        <TextInput id="cantidad" v-model="form.cantidad" type="text" autocomplete="cantidad" class="validarSoloNumerosDosDecimales mt-1 block w-full" :disabled="updating" placeholder="0"/>
                         <InputError :message="$page.props.errors.cantidad" class="mt-2"/>
                     </div>
                     <div class="sm:col-span-1">
                         <InputLabel for="unidad_medida" value="Unidad de Medida" class="ml-1"/>
-                        <TextInput id="unidad_medida" v-model="form.unidad_medida" type="text" autocomplete="unidad_medida" class="mt-1 block w-full"/>
+                        <TextInput id="unidad_medida" v-model="form.unidad_medida" type="text" autocomplete="unidad_medida" class="mt-1 block w-full" placeholder="Ingrese la medida"/>
                         <InputError :message="$page.props.errors.unidad_medida" class="mt-2"/>
                     </div>
                 </div>
@@ -153,13 +153,13 @@ defineEmits(['submit'])
                     </div>
                     <div class="sm:col-span-1">
                         <InputLabel for="comprador" value="Comprador" class="ml-1"/>
-                        <TextInput id="comprador" v-model="form.comprador" type="text" autocomplete="comprador" class="mt-1 block w-full"/>
+                        <TextInput id="comprador" v-model="form.comprador" type="text" autocomplete="comprador" class="mt-1 block w-full" placeholder="Ingrese el comprador"/>
                         <InputError :message="$page.props.errors.comprador" class="mt-2"/>
                     </div>
                 </div>
                 
                 <InputLabel for="precio" value="Precio Aproximado" class="ml-1 mt-2"/>
-                <TextInput id="precio" v-model="form.precio" type="text" autocomplete="precio" class="validarSoloNumerosDosDecimales mt-1 block w-full"/>
+                <TextInput id="precio" v-model="form.precio" type="text" autocomplete="precio" class="validarSoloNumerosDosDecimales mt-1 block w-full" placeholder="0.00"/>
                 <InputError :message="$page.props.errors.precio" class="mt-2"/>
 
                 <InputLabel for="comentario" value="Comentario" class="ml-1 mt-1"/>

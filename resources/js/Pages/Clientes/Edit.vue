@@ -4,9 +4,7 @@ import { Link, useForm } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import Modal from '@/Components/Modal.vue';
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import Swal from 'sweetalert2';
 import { defineProps } from 'vue';
  
@@ -142,9 +140,11 @@ const submitForm = (id) => {
                                 <InputError :message="$page.props.errors.cli_observacion" class=""/>
                            
                               <!-- Botones de acción -->
-                            <div class="mt-6">
-                                <PrimaryButton>Actualizar</PrimaryButton>
-                                <Link :href="route('clientes.index')" class="ml-5 inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">Cancelar</Link>
+                            <div class="d-flex mt-4">
+                                <div class="flex flex-wrap gap-2 justify-end">
+                                    <ButtonResponsive class="font-bold">ACTUALIZAR</ButtonResponsive>
+                                    <Link :href="route('clientes.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">Cancelar</Link>
+                                </div>
                             </div>
                         </form>
                     </div>

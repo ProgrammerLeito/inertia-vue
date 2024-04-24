@@ -1,14 +1,11 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import Modal from '@/Components/Modal.vue';
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import Swal from 'sweetalert2';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, Link } from '@inertiajs/vue3';
 import { defineProps } from 'vue';
  
 // Define los props esperados
@@ -248,16 +245,6 @@ const submitForm = (id) => {
  
                                 <!-- Foto -->
                                 <div>
-                                    <!-- <InputLabel for="foto" class="block text-sm font-medium text-gray-700">Foto</InputLabel>
-                                    <input @change="onFileChange" type="file" id="foto" accept="image/*"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
-                                    <InputError :message="$page.props.errors.foto" class="mt-2"/>
-                                    <div v-if="form.fotoPreview" class="mt-2 shadow-lg">
-                                        <img :src="form.fotoPreview" alt="Vista previa de la foto" style="max-width: 200px; max-height: 300px;">
-                                    </div>
-                                    <div v-else class="mt-3">
-                                        <p>No hay foto seleccionada</p>
-                                    </div> -->
                                     <InputLabel for="foto" class="block text-sm font-medium text-gray-700">Foto</InputLabel>
                                     <input @change="onFileChange" type="file" id="foto" accept="image/*"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:text-white"/>
@@ -271,9 +258,11 @@ const submitForm = (id) => {
                                 </div>
                             </div>
                               <!-- Botones de acción -->
-                            <div class="mt-6">
-                                <PrimaryButton>Actualizar</PrimaryButton>
-                                <Link :href="route('tbproductos.index')" class="ml-5 inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">Cancelar</Link>
+                            <div class="d-flex mt-4">
+                                <div class="flex flex-wrap gap-2 justify-end">
+                                    <ButtonResponsive>ACTUALIZAR</ButtonResponsive>
+                                    <Link :href="route('tbproductos.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">Cancelar</Link>
+                                </div>
                             </div>
                         </form>
  

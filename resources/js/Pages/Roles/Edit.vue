@@ -28,12 +28,9 @@
 </template>
  
 <script>
- import AppLayout from '@/Layouts/AppLayout.vue';
-import {useForm} from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { usePage } from '@inertiajs/vue3';
-import { ref , onMounted } from 'vue';
+import { Link, useForm } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';

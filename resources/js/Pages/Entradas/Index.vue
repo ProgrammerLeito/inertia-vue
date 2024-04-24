@@ -26,7 +26,7 @@ export default {
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -37,9 +37,7 @@ import ButtonRegister from '@/Components/ButtonRegister.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
-import {useForm} from '@inertiajs/vue3';
-import { nextTick, ref } from 'vue';
-import { onMounted } from 'vue';
+import { nextTick, ref, onMounted } from 'vue';
  
 const nameInput = ref(null);
 const modal = ref(false);
@@ -105,7 +103,12 @@ const save = () => {
 const ok = (msj) =>{
     form.reset();
     closeModal();
-    Swal.fire({title:msj,icon:'success'});
+    Swal.fire({
+        title: msj,
+        icon:'success',
+        timer: 1000,
+        showConfirmButton: false
+    });
 }
 
 const deleteEntrada = (id, insumo) => {
@@ -150,10 +153,10 @@ onMounted(() => {
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
                         <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            Regresar
+                            <i class="bi bi-arrow-left-short mx-1"></i>Regresar
                         </Link>
                         <ButtonRegister @click="$event => openModal(1)">
-                            Ingresar Entrada
+                            <i class="bi bi-clipboard-check mx-1"></i>Ingresar Entrada
                         </ButtonRegister>
                     </div>
                     <div class="mt-4">
@@ -211,7 +214,7 @@ onMounted(() => {
         <ModalResponsive :show="modal" @close="closeModal">
             <div class="p-4">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-white text-center uppercase mb-4">{{ title }}</h2>
-                <div class="p-1">
+                <div class="p-1 mx-2">
                     <label for="producto_id" class="block text-sm font-medium text-black dark:text-white">Productos:</label>
                     <select id="producto_id" v-model="form.producto_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
                         <option value="">Seleccionar una Producto</option>

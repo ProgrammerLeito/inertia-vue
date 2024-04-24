@@ -1,17 +1,19 @@
 <?php
  
 namespace App\Http\Controllers;
- 
+
+use App\Http\Requests\CreateTbproductoRequest;
+use App\Http\Requests\UpdateTbproductoRequest;
 use App\Models\Tbcategoria;
 use App\Models\Tbmarca;
 use App\Models\Tbproducto;
 use App\Models\Tbsubcategoria;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
  
 class TbproductoController extends Controller
 {
-   
     public function index()
     {
         $tbproductos=Tbproducto::with('tbcategoria','tbsubcategoria','tbmarca')->paginate(8);
@@ -26,8 +28,7 @@ class TbproductoController extends Controller
             'tbmarcas'=>$tbmarcas
         ]);
     }
-   
- 
+
     public function trashed_tbproducto(Request $request)
     {
         $tbcategorias=Tbcategoria::with('tbsubcategorias')->get();
@@ -64,8 +65,7 @@ class TbproductoController extends Controller
         }
         return redirect()->back();
     }
- 
-   
+
     public function create()
     {
         $tbcategorias = Tbcategoria::all();
@@ -79,35 +79,18 @@ class TbproductoController extends Controller
         ]);
     }
  
-    public function store(Request $request)
+    public function store(CreateTbproductoRequest $request)
     {
-        // dd($request->all());
-        $validatedData = $request->validate([
-            'tbcategoria_id' => 'required',
-            'tbsubcategoria_id' => 'required',
-            'tbmarca_id' => 'required',
-            'modelo' => 'required',
-            'medida' => 'required',
-            'moneda' => 'required',
-            'precio' => 'required|numeric|min:0',
-            'descuento' => 'nullable|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'codigo' => 'required|string|max:255|unique:tbproductos',
-            'estado' => 'required',
-            'capacidades' => 'required',
-            'especificaciones' => 'required',
-            'foto' => 'required',
-        ]);
-        $tbproducto =Tbproducto::create($validatedData);
+        $validatedData = $request->validated();
+        $tbproducto = Tbproducto::create($validatedData);
  
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $nombreArchivo = hash('sha256', time() . '_' . $file->getClientOriginalName()) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path().'/img/catalogo', $nombreArchivo);
-            $tbproducto->foto = $nombreArchivo;
+        if($request->hasFile('foto')){
+            $file = $request->foto;
+            $file->move(public_path(). '/img/catalogo', $file->getClientOriginalName());
+            $tbproducto->foto = $file->getClientOriginalName();
         }
         $tbproducto->save();
-        return redirect()->route('tbproductos.index')->with('success', 'Producto creado exitosamente.');
+        return redirect()->route('tbproductos.index');
     }
  
     public function edit(Tbproducto $tbproducto)
@@ -123,41 +106,28 @@ class TbproductoController extends Controller
             'tbsubcategorias' => $tbsubcategorias
         ]);
     }
-   
  
-    public function update(Request $request, $id)
+    public function update(UpdateTbproductoRequest $request, $id)
     {
-        $validatedData = $request->validate([
-            'tbcategoria_id' => 'required',
-            'tbsubcategoria_id' => 'required',
-            'tbmarca_id' => 'required',
-            'modelo' => 'required',
-            'medida' => 'required',
-            'moneda' => 'required',
-            'precio' => 'required|numeric|min:0',
-            'descuento' => 'nullable|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'codigo' => 'required|string|max:255|unique:tbproductos,codigo,'.$id,
-            'estado' => 'required',
-            'capacidades' => 'required',
-            'especificaciones' => 'required',
-            'foto' => 'nullable',
-        ]);
- 
-        $tbproducto = Tbproducto::findOrFail($id);
- 
-        $tbproducto->update($validatedData);
- 
+        // dd($request->all());
+        $validatedData = $request->validated();
+   
+        $tbproducto = Tbproducto::find($id);
+   
         if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $nombreArchivo = hash('sha256', time() . '_' . $file->getClientOriginalName()) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path().'/img/catalogo', $nombreArchivo);
-            $tbproducto->foto = $nombreArchivo;
-            $tbproducto->save();
+            if ($tbproducto->foto) {
+                Storage::delete('/img/catalogo/' . $tbproducto->foto);
+            }
+   
+            $fileName = $request->file('foto')->getClientOriginalName();
+            $request->file('foto')->storeAs('/img/catalogo', $fileName);
+            $tbproducto->foto = $fileName;
         }
- 
-        return redirect()->route('tbproductos.index')->with('success', 'Producto actualizado exitosamente.');
+        $tbproducto->update($validatedData);
+   
+        return redirect()->route('tbproductos.index');
     }
+    
     public function destroy($id)
     {
         $tbproducto = Tbproducto::find($id);

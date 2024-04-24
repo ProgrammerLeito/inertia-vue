@@ -1,16 +1,24 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Link } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
-import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { useForm, Link } from '@inertiajs/vue3';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
-import ButtonEdit from '@/Components/ButtonEdit.vue';
-import { computed } from 'vue';
- 
+import { computed, ref } from 'vue';
+
 const searchQuery = ref('');
-const statusesFilter = ref(new Set());
+const isDropdownOpen = ref(false);
  
+
+const toggleDropdown = () => {
+    isDropdownOpen.value = !isDropdownOpen.value;
+};
+
+// Función para seleccionar una provincia
+const selectProvincia = (id) => {
+    selectedProvincia.value = id;
+    toggleDropdown(); // Cierra el dropdown después de seleccionar una provincia
+};
+
 const props = defineProps({
     clientes: {
         type : Object,
@@ -86,37 +94,41 @@ const deleteCliente = (id, razonSocial) => {
                 <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
                         <Link :href="route('clientes.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            <i class="fa fa-plus-circle mx-1"></i> Registrar Empresa
+                            <i class="bi bi-person-plus mx-1"></i> Registrar Cliente
                         </Link>
                         <Link :href="route('clientes.trashed')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="fas fa-trash-alt mx-1"></i> Clientes Eliminados
                         </Link>
                     </div>
                     <div>
-                        <div class="py-1">
-                            <!-- grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-2 mb-3 -->
-                            <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-2 mb-1">
-                                <div class="flex flex-col">
-                                    <InputLabel for="table-search" class="block text-md font-medium text-gray-700 dark:text-white">Buscar</InputLabel>
-                                    <div class="relative mt-1">
-                                        <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                                            </svg>
-                                        </div>
-                                        <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar cliente">
+                        <div class="py-2 sm:py-2">
+                            <div class="md:max-w-lg">
+                                <div class="flex">
+                                    <div class="relative w-full">
+                                        <input v-model="searchQuery" type="text" id="table-search" class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-l-lg border-s-gray-200 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-s-gray-700 dark:border-gray-600 placeholder-gray-700 dark:text-black dark:focus:border-blue-500" placeholder="Buscar cliente" required />
                                     </div>
-                                </div>
-                                <div class="flex flex-col">
-                                    <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Ciudad</InputLabel>
-                                    <select v-model="selectedProvincia" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full h-10 shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="">Seleccione una Ciudad</option>
-                                        <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id" :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
-                                    </select>
+                                    <div class="relative">
+                                        <button id="dropdown-button" data-dropdown-toggle="dropdown" @click="toggleDropdown" class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-r-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600" type="button">
+                                            {{ selectedProvincia ? tbprovincias.find(p => p.id === selectedProvincia).prov_nombre : 'Ciudades' }}
+                                            <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                            </svg>
+                                        </button>
+                                        <div id="dropdown" :class="{ 'hidden': !isDropdownOpen }" class="z-20 absolute right-0 mt-2 w-44 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 font-bold">
+                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button">
+                                                <li>
+                                                    <button @click="selectProvincia('')" type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white font-bold">Todas</button>
+                                                </li>
+                                                <li v-for="tbprovincia in tbprovincias" :key="tbprovincia.id">
+                                                    <button @click="selectProvincia(tbprovincia.id)" type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white font-bold">{{ tbprovincia.prov_nombre }}</button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2">
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
@@ -140,7 +152,7 @@ const deleteCliente = (id, razonSocial) => {
                                             <Link class="py-0.5 px-2.5 text-xs text-black font-semibold bg-yellow-300 rounded-lg border-solid border-2 hover:bg-yellow-400" :href="route('datos.index', { cliente_id: cliente.id })">
                                                 <i class='bi bi-eye'><label class="ml-2">Cartera</label></i>
                                             </Link>
-                                            <Link class="py-2 px-4 text-green-500" :href="route('clientes.edit', { cliente: cliente.id })"><i class="bi bi-pencil-square"></i></Link>
+                                            <Link class="py-2 px-4 text-green-500 hover:text-green-600" :href="route('clientes.edit', { cliente: cliente.id })"><i class="bi bi-pencil-square"></i></Link>
                                             <ButtonDelete  @click="$event => deleteCliente(cliente.id,cliente.razonSocial)" class="ml-1">
                                                 <i class="bi bi-trash3 text-red-500"></i>
                                             </ButtonDelete>

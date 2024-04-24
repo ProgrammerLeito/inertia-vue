@@ -3,10 +3,9 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import InputError from '@/Components/InputError.vue';
 import { Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import Swal from 'sweetalert2';
+
 defineProps({
     permisos: {
         type : Object,

@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\DB;
 class EntradaController extends Controller
 {
     const Numero_de_items_pagina =25;
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $productos = Producto::all();
@@ -33,9 +30,6 @@ class EntradaController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $entradas = Entrada::all();
@@ -43,9 +37,6 @@ class EntradaController extends Controller
         return inertia('Entradas/Create', ['entradas' => $entradas, 'productos' => $productos]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -64,26 +55,12 @@ class EntradaController extends Controller
                          ->with('success', 'Entrada creada exitosamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Entrada $entrada)
     {
         $producto = Producto::all();
         return inertia('Entradas/Edit', ['entradas' => $entrada, 'productos' => $producto]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $request->validate([
@@ -117,9 +94,6 @@ class EntradaController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         // Encuentra la entrada a eliminar

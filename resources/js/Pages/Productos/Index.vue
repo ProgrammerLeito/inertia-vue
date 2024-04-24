@@ -31,7 +31,6 @@ export default {
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
-import DangerButton from '@/Components/DangerButton.vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
 import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
@@ -97,10 +96,10 @@ const deleteProducto = (id, insumo) => {
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
                         <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            Registrar Producto
+                            <i class="bi bi-clipboard-plus mx-1"></i>Registrar Producto
                         </Link>
                         <Link :href="route('entradas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            Listar Entradas
+                            <i class="bi bi-list-check mx-1"></i>Listar Entradas
                         </Link>
                         <!-- <Link :href="route('salidas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Listar Salidas
@@ -189,8 +188,8 @@ const deleteProducto = (id, insumo) => {
                 </div>
             </div>
         </div>
-        <div class="fixed right-0 top-[110px] bottom-[-60px] left-[50px] overflow-y-auto z-[10000] bg-gray-200/40" v-if="modalOpen">
-            <div class="flex justify-center items-center flex-col h-full max-h-[90%] py-10 m-auto rounded-lg" @click="modalOpen = false">
+        <div class="fixed right-0 top-[110px] bottom-[-60px] md:left-[50px] left-[-2px] overflow-y-auto z-[10000] bg-gray-200/40" v-if="modalOpen">
+            <div class="flex justify-center items-center flex-col h-full max-h-[90%] py-10 m-auto rounded-lg" style="backdrop-filter: blur(5px);" @click="modalOpen = false">
                 <div class="w-full max-w-sm max-h-[90%] h-full bg-gray-50 rounded-t-lg">
                     <img :src="modalImageUrl" alt="Imagen ampliada" class="max-w-sm w-full h-full object-contain">
                 </div>

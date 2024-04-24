@@ -14,9 +14,6 @@ use Inertia\Inertia;
 class SalidasController extends Controller
 {
     const Numero_de_items_pagina =25;
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $productoId = $request->query('producto_id');
@@ -52,10 +49,6 @@ class SalidasController extends Controller
         ]);
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $salidas = Salida::all();
@@ -86,9 +79,6 @@ class SalidasController extends Controller
         return response()->json(['siexisteusuario' => $contraseñaCorrecta]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedData  = $request->validate([
@@ -109,17 +99,6 @@ class SalidasController extends Controller
         return redirect()->route('salidas.index', ['producto_id' => $producto->id]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Salida $salida)
     {
         $producto = Producto::all();
@@ -131,9 +110,6 @@ class SalidasController extends Controller
         return inertia('Salidas/Edit', ['salidas' => $salida, 'productos' => $producto, 'tecnico_salidas' => $tecnico_salidas]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Salida $salida)
     {
         // Valida los datos recibidos en la solicitud
@@ -169,10 +145,7 @@ class SalidasController extends Controller
             return redirect()->route('salidas.edit', $salida)->withErrors('Error al actualizar la salida: ' . $e->getMessage());
         }
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(Salida $salida)
     {
         // Inicia una transacción para asegurar la integridad de los datos

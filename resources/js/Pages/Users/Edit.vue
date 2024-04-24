@@ -1,8 +1,7 @@
 <script>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import {useForm} from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 export default {

@@ -1,13 +1,9 @@
 <script setup>
-import { ref, watchEffect, watch } from 'vue';
+import { ref, watchEffect } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { usePage } from '@inertiajs/vue3';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
-import ButtonEdit from '@/Components/ButtonEdit.vue';
 import Swal from 'sweetalert2';
-import {useForm} from '@inertiajs/vue3';
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
  
 const filteredTbproductos = ref([]);
@@ -99,10 +95,10 @@ watchEffect(() => {
                     <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
                         <div class="flex flex-wrap gap-2 justify-between">
                             <Link :href="route('tbproductos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                                <i class="fa fa-plus-circle mx-1"></i>Registrar Producto
+                                <i class="bi bi-clipboard-plus mx-1"></i>Registrar Producto
                             </Link>
                             <Link :href="route('tbproductos.trashed')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                                <i class="fas fa-trash-alt mx-1"></i>Productos eliminados
+                                <i class="fas fa-trash-alt mx-1"></i>Productos Eliminados
                             </Link>
                         </div>
                         <div>
@@ -141,9 +137,8 @@ watchEffect(() => {
                                     <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                         <tr>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Codigo</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N°</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Modelo</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Marca</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
@@ -154,9 +149,8 @@ watchEffect(() => {
                                     <tbody>
                                         <tr  v-for="(tbproducto, i) in filteredTbproductos" :key="tbproducto.id"  class="bg-white text-black dark:bg-gray-700 dark:text-white">
                                             <td class="px-6 py-4 text-center">{{ tbproducto.codigo }}</td>
-                                            <td class="px-6 py-4 text-center"><b>{{ i + 1 }}</b></td>
-                                            <img @click="openModal('/img/catalogo/' + tbproducto.foto)" :src="'/img/catalogo/' + tbproducto.foto" alt="Foto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1">
                                             <td class="px-6 py-4 text-center"><b>{{ tbproducto.modelo }}</b></td>
+                                            <img @click="openModal('/img/catalogo/' + tbproducto.foto)" :src="'/img/catalogo/' + tbproducto.foto" alt="Foto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1">
                                             <td class="px-6 py-4 text-center">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
                                             <td class="px-6 py-4 text-center">{{ tbproducto.capacidades }}</td>
                                             <td class="px-6 py-4 text-center">{{ tbproducto.especificaciones }}</td>
@@ -181,8 +175,8 @@ watchEffect(() => {
                 </div>
             </div>
         </div>
-        <div class="fixed right-0 top-[110px] bottom-[-60px] left-[50px] overflow-y-auto z-[10000] bg-gray-200/40" v-if="modalOpen">
-            <div class="flex justify-center items-center flex-col h-full max-h-[90%] py-10 m-auto rounded-lg" @click="modalOpen = false">
+        <div class="fixed right-0 top-[110px] bottom-[-60px] md:left-[50px] left-[-2px] overflow-y-auto z-[10000] bg-gray-200/40" v-if="modalOpen">
+            <div class="flex justify-center items-center flex-col h-full max-h-[90%] py-10 m-auto rounded-lg" style="backdrop-filter: blur(5px);" @click="modalOpen = false">
                 <div class="w-full max-w-sm max-h-[90%] h-full bg-gray-50 rounded-t-lg">
                     <img :src="modalImageUrl" alt="Imagen ampliada" class="max-w-sm w-full h-full object-contain">
                 </div>

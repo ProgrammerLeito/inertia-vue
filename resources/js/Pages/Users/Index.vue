@@ -1,16 +1,8 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import ModalResponsive from '@/Components/Modal.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
+import { Link } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
-import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
-import {nextTick, ref } from 'vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
  
  

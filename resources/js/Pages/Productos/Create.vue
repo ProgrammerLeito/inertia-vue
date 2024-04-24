@@ -6,12 +6,10 @@
 
 <script setup>
 
-import { watch } from 'vue'
-
 import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProductosForm from '@/Components/Productos/Form.vue';
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import Swal from 'sweetalert2';
 
 defineProps({

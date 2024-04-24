@@ -1,8 +1,8 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import Swal from 'sweetalert2';
-import {nextTick , ref , defineProps } from 'vue';
-import { Head, Link , useForm} from '@inertiajs/vue3';
+import { defineProps } from 'vue';
+import { Link, useForm} from '@inertiajs/vue3';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
  
 defineProps({

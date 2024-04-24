@@ -1,40 +1,22 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import DangerButton from '@/Components/DangerButton.vue';
+import { Link, useForm } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
-import { useForm } from '@inertiajs/vue3';
-import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
-import { ref } from 'vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
-import ButtonEdit from '@/Components/ButtonEdit.vue';
-import { computed } from 'vue';
-
-defineProps({
+ 
+const props=defineProps({
     cventas: {
         type : Object,
         required: true
     },
     clientes:{
-        type:Object
+        type:Object,
+        required:true
     }
 });
-
-const form = useForm ({
-    cliente_id: '',
-    tenor_id:'',
-    fecha:'',
-    moneda:'',
-    garantia:'',
-    forma_pago:'',
-    dias_entrega:'',
-    subtotal: 0,
-    igv: 0,
-    total: 0,
-    igvEnabled: false,
-});
- 
-
+const form = useForm({
+    id:''
+})
  
 const deleteCotizacion = (id, cliente_id) => {
     const alerta = Swal.mixin({
@@ -49,7 +31,7 @@ const deleteCotizacion = (id, cliente_id) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('cotizas.destroy', id), {
+            form.delete(route('cventas.destroy', id), {
                 onSuccess: () => {
                     alerta.fire({
                         icon: 'success',
@@ -67,7 +49,7 @@ const deleteCotizacion = (id, cliente_id) => {
 </script>
  
 <template>
-    <AppLayout title="Clientes">
+    <AppLayout title="Cotizaciones">
         <template #header>
             <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Lista de Cotizaciones</h1>
         </template>
@@ -76,14 +58,12 @@ const deleteCotizacion = (id, cliente_id) => {
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
-                        <Link :href="route('cotizas.create')" class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <Link :href="route('cventas.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="fa fa-plus-circle fa-beat mx-2"></i> Registrar cotizacion
                         </Link>
-
                     </div>
                     <div>
                         <div class="py-1">
-                            <!-- grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-2 mb-3 -->
                             <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-4 sm:gap-x-2 mb-1">
                                 <div class="flex flex-col">
                                     <InputLabel for="table-search" class="block text-md font-medium text-gray-700 dark:text-white">Buscar</InputLabel>
@@ -118,29 +98,24 @@ const deleteCotizacion = (id, cliente_id) => {
                                 </thead>
                                 <tbody>
                                     <tr v-for="(cventa, index) in cventas" :key="cventa.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
-                                        <td class="px-6 py-4 text-center">{{ index + 1 }}</td>
-                                        <td class="text-xs px-2 py-2">
-                                            <div class="max-h-[50px] overflow-y-auto">
+                                        <td class="px-1 py-4 text-center">{{ index + 1 }}</td>
+                                        <td class="text-xs px-6">
+                                            <div class="max-h-[70px] overflow-y-auto">
                                                 <td class="px-6 py-4 text-center">{{ cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente' }}</td>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 text-center">{{ cventa.fecha }}</td>
                                         <td class="px-6 py-4 text-center">{{ cventa.moneda }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.garantia }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.forma_pago }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.dias_entrega }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.subtotal }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.igv }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.total }}</td>
+                                        <td class="px-2 py-4 text-center">{{ cventa.garantia }}</td>
+                                        <td class="px-2 py-4 text-center">{{ cventa.forma_pago }}</td>
+                                        <td class="px-2 py-4 text-center">{{ cventa.dias_entrega }}-dias</td>
+                                        <td class="px-3 py-4 text-center">{{ cventa.subtotal }}</td>
+                                        <td class="px-2 py-4 text-center">{{ cventa.igv }}</td>
+                                        <td class="px-3 py-4 text-center">{{ cventa.total }}</td>
                                         <td class="p-3 text-center flex flex-wrap items-center justify-center">
-                                            <!-- Aquí coloca los enlaces para las acciones de editar y eliminar -->
-                                            <Link :href="route('cotizas.edit', { cotiza: cventa.id })">
-                                                <i class="bi bi-pencil-square text-green-500"></i>
-                                            </Link>
                                             <ButtonDelete @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id)" class="ml-1 text-red-500">
                                                 <i class="bi bi-trash3"></i>
                                             </ButtonDelete>
-
                                         </td>
                                     </tr>
                                 </tbody>

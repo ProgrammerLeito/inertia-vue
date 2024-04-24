@@ -1,7 +1,8 @@
 <?php
  
 namespace App\Http\Controllers;
- 
+
+use App\Http\Requests\CreateCventaRequest;
 use App\Models\Cliente;
 use App\Models\Cventa;
 use App\Models\Tbmarca;
@@ -38,42 +39,15 @@ class CventaController extends Controller
             'tbmarcas' => $tbmarcas,
         ]);
     }
- 
-   
-    public function store(Request $request)
+
+    public function store(CreateCventaRequest $request)
     {
-       
-        $validatedData = $request->validate([
-            'cliente_id' => 'required',
-            'tenor_id' => 'required',
-            'fecha' => 'required|date',
-            'moneda' => 'required',
-            'garantia' => 'required',
-            'forma_pago' => 'required',
-            'dias_entrega' => 'required',
-            'subtotal' => 'required|numeric',
-            'igv' => 'required|numeric',
-            'total' => 'required|numeric',
-        ]);
- 
-       
-        $cventa = new Cventa();
-        $cventa->cliente_id = $request->cliente_id;
-        $cventa->tenor_id = $request->tenor_id;
-        $cventa->fecha = $request->fecha;
-        $cventa->moneda = $request->moneda;
-        $cventa->garantia = $request->garantia;
-        $cventa->forma_pago = $request->forma_pago;
-        $cventa->dias_entrega = $request->dias_entrega;
-        $cventa->subtotal = $request->subtotal;
-        $cventa->igv = $request->igv;
-        $cventa->total = $request->total;
-        $cventa->save();
- 
+        $validatedData = $request->validated();
+        $cventa = Cventa::create($validatedData);
+        $cventa -> save ();
         return redirect()->route('cotizas.index')->with('success', 'Cotización guardada exitosamente.');
     }
- 
- 
+
     public function edit(Cventa $cventa)
     {
         $clientes = Cliente::all();
@@ -93,40 +67,12 @@ class CventaController extends Controller
             'productosAgregados' => $productosAgregados,
         ]);
     }
-   
- 
+
     public function update(Request $request, Cventa $cventa)
     {
-        $validatedData = $request->validate([
-            'cliente_id' => 'required',
-            'tenor_id' => 'required',
-            'fecha' => 'required|date',
-            'moneda' => 'required',
-            'garantia' => 'required',
-            'forma_pago' => 'required',
-            'dias_entrega' => 'required',
-            'subtotal' => 'required|numeric',
-            'igv' => 'required|numeric',
-            'total' => 'required|numeric',
-        ]);
-       
- 
-        $cventa->update([
-            'cliente_id' => $request->cliente_id,
-            'tenor_id' => $request->tenor_id,
-            'fecha' => $request->fecha,
-            'moneda' => $request->moneda,
-            'garantia' => $request->garantia,
-            'forma_pago' => $request->forma_pago,
-            'dias_entrega' => $request->dias_entrega,
-            'subtotal' => $request->subtotal,
-            'igv' => $request->igv,
-            'total' => $request->total,
-        ]);
- 
-        return redirect()->route('cotizas.index')->with('success', 'Cotización actualizada exitosamente.');
+        $cventa->update($request->all());
+        return redirect()->route('cventa.index')->with('success', 'Cotización actualizada exitosamente.');
     }
- 
  
     public function destroy($id)
     {
@@ -134,7 +80,4 @@ class CventaController extends Controller
         $cventa->delete();
         return redirect()->back();
     }
- 
-   
-   
 }

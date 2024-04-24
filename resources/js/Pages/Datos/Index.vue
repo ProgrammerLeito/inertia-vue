@@ -1,18 +1,12 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { useForm, Link } from '@inertiajs/vue3';
 import DangerButton from '@/Components/DangerButton.vue';
-import { useForm } from '@inertiajs/vue3';
-import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
-import ButtonDelete from '@/Components/ButtonDelete.vue';
 import ButtonEdit from '@/Components/ButtonEdit.vue';
-import { computed } from 'vue';
- 
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import Modal from '@/Components/Modal.vue';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
 import { nextTick, ref } from 'vue';
@@ -82,7 +76,12 @@ const save = () => {
 const ok = (msj) =>{
     form.reset();
     closeModal();
-    Swal.fire({title:msj,icon:'success'});
+    Swal.fire({
+        title: msj,
+        icon:'success',
+        timer: 1000,
+        showConfirmButton: false
+    });
 }
  
  

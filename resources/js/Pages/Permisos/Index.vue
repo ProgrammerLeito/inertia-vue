@@ -1,19 +1,9 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import ModalResponsive from '@/Components/Modal.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
 import Swal from 'sweetalert2';
-import {useForm} from '@inertiajs/vue3';
-import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
-import {nextTick, ref } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import { defineProps } from 'vue';
- 
- 
+
 const props = defineProps({
     permisos: {
         type: Object
@@ -25,9 +15,11 @@ const formPage = useForm({});
 const onPageClick = (event) => {
     formPage.get(route('permisos.index', { page: event }));
 };
+
 const form = useForm({
     name:''
 });
+
 const deletePermiso = (id, name) => {
     const alerta = Swal.mixin({
         buttonsStyling:true
@@ -46,9 +38,6 @@ const deletePermiso = (id, name) => {
         }
     })
 }
- 
- 
- 
 </script>
 <template>
     <AppLayout title="Permisos" >

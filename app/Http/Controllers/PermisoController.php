@@ -11,13 +11,12 @@ class PermisoController extends Controller
 {
     public function index()
     {
-        $permisos = Permission::select('id', 'name')->paginate(8);
+        $permisos = Permission::select('id', 'name')->paginate(2);
        
         return Inertia::render('Permisos/Index', [
             'permisos' => $permisos
         ]);
     }
- 
  
     public function create (){
         return Inertia::render('Permisos/Create');
@@ -48,7 +47,7 @@ class PermisoController extends Controller
             ]
         ]);
     }
- 
+
     public function update(Request $request, $id)
     {
         // $this->validate($request, [

@@ -12,9 +12,6 @@ use Illuminate\Support\Facades\DB;
 class ProductoController extends Controller
 {
     const Numero_de_items_pagina =25;
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $categoryId = $request->query('category_id');
@@ -54,9 +51,6 @@ class ProductoController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $categories = Category::all();
@@ -64,9 +58,6 @@ class ProductoController extends Controller
         return inertia('Productos/Create', ['categories' => $categories, 'productos' => $productos]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(ProductoRequest $request)
     {
         $producto = Producto::create($request->validated());
@@ -81,26 +72,12 @@ class ProductoController extends Controller
         return redirect()->route('productos.index', ['category_id' => $producto->category_id]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Producto $producto)
     {
         $category = Category::all();
         return inertia('Productos/Edit', ['productos' => $producto, 'categories' => $category]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Producto $producto)
     {
         $producto->update($request->all());
@@ -108,9 +85,6 @@ class ProductoController extends Controller
         return redirect()->route('productos.index', ['category_id' => $request->category_id]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $producto = Producto::find($id);

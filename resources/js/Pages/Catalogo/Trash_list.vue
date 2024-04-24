@@ -1,14 +1,8 @@
 <script setup>
 import { ref, watchEffect } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { usePage } from '@inertiajs/vue3';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import ButtonDelete from '@/Components/ButtonDelete.vue';
-import ButtonEdit from '@/Components/ButtonEdit.vue';
 import Swal from 'sweetalert2';
-import {useForm} from '@inertiajs/vue3';
-import { Link } from '@inertiajs/vue3'
-import InputLabel from '@/Components/InputLabel.vue';
+import { Link, useForm } from '@inertiajs/vue3'
  
 const filteredTbproductos = ref([]);
 const searchQuery = ref('');
@@ -131,8 +125,8 @@ watchEffect(() => {
                 </div>
             </div>
         </div>
-        <div class="fixed right-0 top-[110px] bottom-[-60px] left-[50px] overflow-y-auto z-[10000] bg-gray-200/40" v-if="modalOpen">
-            <div class="flex justify-center items-center flex-col h-full max-h-[90%] py-10 m-auto rounded-lg" @click="modalOpen = false">
+        <div class="fixed right-0 top-[110px] bottom-[-60px] md:left-[50px] left-[-2px] overflow-y-auto z-[10000] bg-gray-200/40" v-if="modalOpen">
+            <div class="flex justify-center items-center flex-col h-full max-h-[90%] py-10 m-auto rounded-lg" style="backdrop-filter: blur(5px);" @click="modalOpen = false">
                 <div class="w-full max-w-sm max-h-[90%] h-full bg-gray-50 rounded-t-lg">
                     <img :src="modalImageUrl" alt="Imagen ampliada" class="max-w-sm w-full h-full object-contain">
                 </div>

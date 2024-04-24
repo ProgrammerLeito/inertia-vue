@@ -1,15 +1,14 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
-import Modal from '@/Components/Modal.vue';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import Swal from 'sweetalert2';
-import {useForm} from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
  
 const nameInput4 = ref(null);
@@ -65,9 +64,9 @@ const form = useForm ({
     modelo: '',
     medida: '',
     moneda: '',
-    precio: 0,
-    descuento: 0,
-    stock: 0,
+    precio: '',
+    descuento: '',
+    stock: '',
     codigo: '',
     estado: '',
     capacidades: '',
@@ -148,7 +147,12 @@ const save3 = () => {
 const ok3 = (msj) =>{
     form3.reset();
     closeModal3();
-    Swal.fire({title:msj,icon:'success'});
+    Swal.fire({
+        title: msj,
+        icon:'success',
+        timer: 1000,
+        showConfirmButton: false
+    });
 }
  
  
@@ -186,7 +190,12 @@ const save2 = () => {
 const ok2 = (msj) => {
     form2.reset();
     closeModal2();
-    Swal.fire({title: msj, icon: 'success'});
+    Swal.fire({
+        title: msj,
+        icon:'success',
+        timer: 1000,
+        showConfirmButton: false
+    });
 };
  
  
@@ -224,7 +233,12 @@ const save4 = () => {
 const ok4 = (msj) =>{
     form4.reset();
     closeModal4();
-    Swal.fire({title:msj,icon:'success'});
+    Swal.fire({
+        title: msj,
+        icon:'success',
+        timer: 1000,
+        showConfirmButton: false
+    });
 }
  
 </script>
@@ -308,21 +322,21 @@ const ok4 = (msj) =>{
                                 <!-- Precio -->
                                 <div>
                                     <InputLabel for="precio" class="block text-sm font-medium text-gray-700">Precio</InputLabel>
-                                    <TextInput type="text" id="precio" v-model="form.precio" required placeholder="escribe solo numeros"
+                                    <TextInput type="text" id="precio" v-model="form.precio" required placeholder="0.00"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.precio" class="mt-2"/>
                                 </div>
                                 <!-- Descuento -->
                                 <div>
                                     <InputLabel for="descuento" class="block text-sm font-medium text-gray-700">Descuento(%)</InputLabel>
-                                    <TextInput type="text" id="descuento" v-model="form.descuento" placeholder="escribe solo numeros"
+                                    <TextInput type="text" id="descuento" v-model="form.descuento" placeholder="0.00"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.descuento" class="mt-2"/>
                                 </div>
                                 <!-- Stock -->
                                 <div>
                                     <InputLabel for="stock" class="block text-sm font-medium text-gray-700">Stock</InputLabel>
-                                    <TextInput type="number" id="stock" v-model="form.stock" required placeholder="escribe solo numeros"
+                                    <TextInput type="number" id="stock" v-model="form.stock" required placeholder="0"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.stock" class="mt-2"/>
                                 </div>
@@ -375,13 +389,15 @@ const ok4 = (msj) =>{
                                 </div>
                             </div>
  
-                            <div class="mt-6">
-                                <PrimaryButton>
-                                    registrar
-                                </PrimaryButton>
-                                <Link :href="route('tbproductos.index')" class="ml-5 inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
-                                    Cancelar
-                                </Link>
+                            <div class="d-flex mt-4">
+                                <div class="flex flex-wrap gap-2 justify-end">
+                                    <ButtonResponsive>
+                                        REGISTRAR
+                                    </ButtonResponsive>
+                                    <Link :href="route('tbproductos.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
+                                        Cancelar
+                                    </Link>
+                                </div>
                             </div>
                         </form>
                     </div>

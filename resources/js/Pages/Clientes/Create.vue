@@ -141,7 +141,12 @@ const save4 = () => {
 const ok4 = (msj) =>{
     form4.reset();
     closeModal4();
-    Swal.fire({title:msj,icon:'success'});
+    Swal.fire({
+        title: msj,
+        icon:'success',
+        timer: 1000,
+        showConfirmButton: false
+    });
 }
 </script>
  
@@ -194,7 +199,7 @@ const ok4 = (msj) =>{
                                     <InputLabel for="prov_clientes" value="Ciudad" class="ml-1"/>
                                     <div class="flex w-full mt-1">
                                         <select v-model="form.tbprovincia_id" name="tbprovincia_id" id="tbprovincia_id"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg h-[41.6px]">
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm text-base sm:text-base border-gray-300 rounded-l-lg h-[41.6px]">
                                             <option value="" disabled=""  selected="selected">Selecciona una Ciudad</option>
                                             <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id" :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
                                         </select>
@@ -220,9 +225,9 @@ const ok4 = (msj) =>{
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
-                                    <PrimaryButton >
+                                    <ButtonResponsive>
                                         GUARDAR
-                                    </PrimaryButton>
+                                    </ButtonResponsive>
                                     <Link :href="route('clientes.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
                                         Cancelar
                                     </Link>

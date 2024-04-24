@@ -100,13 +100,13 @@ defineEmits(['submit'])
                 </div>
                 
                 <InputLabel for="empresa" value="Empresa" class="ml-1 mt-1"/>
-                <TextInput id="empresa" v-model="form.empresa" type="text" autocomplete="empresa" class="mt-1 block w-full"/>
+                <TextInput id="empresa" v-model="form.empresa" type="text" autocomplete="empresa" class="mt-1 block w-full" placeholder="Ingrese el nombre de la empresa"/>
                 <InputError :message="$page.props.errors.empresa" class="mt-2"/>
 
                 <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
                     <div class="sm:col-span-1">
                         <InputLabel for="unidad_salida" value="Unidad de Salida" class="ml-1 mt-1"/>
-                        <TextInput id="unidad_salida" v-model="form.unidad_salida" type="text" autocomplete="unidad_salida" class="validarSoloNumerosDosDecimales mt-1 block w-full"/>
+                        <TextInput id="unidad_salida" v-model="form.unidad_salida" type="text" autocomplete="unidad_salida" class="validarSoloNumerosDosDecimales mt-1 block w-full" placeholder="0"/>
                         <InputError :message="$page.props.errors.unidad_salida" class="mt-2"/>
                     </div>
                     <div class="sm:col-span-1">

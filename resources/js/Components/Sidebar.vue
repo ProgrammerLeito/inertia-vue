@@ -35,13 +35,25 @@ const logout = () => {
                     <div class="border-dashed border-4 w-12 h-12 p-2 flex justify-center items-center rounded-full border-white">
                 <span class="text-4xl flex justify-center items-center" id="B_logo">B</span></div><span id="nombre_Logo">ALINSA</span>
                 </span>
-                <img src="/img/hombre.png" v-show="!dataOpenSideBar" class="p-1 w-8 h-8 rounded-full ring-2 ring-gray-100" alt="">
+                <div v-if="$page.props.auth.user.profile_photo_url">
+                    <img v-show="!dataOpenSideBar" class="p-1 w-8 h-8 rounded-full ring-2 ring-gray-100" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name">
+                </div>
+                <div v-else>
+                    <img src="/img/hombre.png" v-show="!dataOpenSideBar" class="p-1 w-8 h-8 rounded-full ring-2 ring-gray-100" alt="">
+                </div>
             </div>
             <div class="flex flex-col justify-between h-[cal(100vh-3rem)] bg-gray-800">
                 <div class="menu-man text-left px-2 whitespace-nowrap">
                     <div :class="{'profile flex justify-center items-center text-center p-5': dataOpenSideBar, 'flex justify-center items-center text-center': !dataOpenSideBar }">
                         <div class="flex flex-col justify-center items-center gap-4 text-white" v-show="dataOpenSideBar">
-                            <img src="/img/hombre.png" class="p-1 w-24 h-24 rounded-full ring-2 ring-gray-300" alt="">
+                            <!-- Verifica si hay una imagen de perfil subida -->
+                            <div v-if="$page.props.auth.user.profile_photo_url" class="shrink-0 me-3">
+                                <img class="p-1 w-24 h-24 rounded-full ring-2 ring-gray-300" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name">
+                            </div>
+                            <!-- Si no hay imagen subida, muestra la imagen predeterminada -->
+                            <div v-else>
+                                <img src="/img/hombre.png" class="p-1 w-24 h-24 rounded-full ring-2 ring-gray-300" alt="">
+                            </div>
                             <div>
                                 <Link :href="route('profile.show')"><h5 class="text-xl font-medium leading-tight">{{ $page.props.auth.user.name }}</h5></Link>
                                 <p class="text-gray-500">{{ $page.props.auth.user.roles[0]?.name }}</p>
@@ -70,7 +82,7 @@ const logout = () => {
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-graph-up-arrow'><span v-show="dataOpenSideBar" class="ml-2">Cotizaciones</span></span></summary>
-                            <Link  :href="route('cotizas.index')" :active="route().current('cotizas.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Cotizacion por Venta</span></Link>
+                            <Link  :href="route('cventas.index')" :active="route().current('cventas.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Cotizacion por Venta</span></Link>
                             <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Cotizacion por Servicio</span></Link>
                             <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Cotizaciones</span></Link>
                         </details>

@@ -71,7 +71,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('datos', DatoController::class);
     Route::resource('/tbprovincias', TbprovinciaController::class);
     Route::resource('tenors', TenorController::class);
-    Route::resource('/cotizas', CventaController::class);
+    Route::resource('/cventas', CventaController::class);
 });
 
 Route::middleware(['auth:web'])->group(function () {

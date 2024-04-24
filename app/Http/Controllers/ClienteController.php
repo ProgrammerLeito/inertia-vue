@@ -1,7 +1,8 @@
 <?php
  
 namespace App\Http\Controllers;
- 
+
+use App\Http\Requests\CreateClientesRequest;
 use App\Models\Cliente;
 use App\Models\Tbprovincias;
 use Illuminate\Http\Request;
@@ -11,21 +12,17 @@ use Inertia\Inertia;
 class ClienteController extends Controller
 {
  
-        public function index()
-        {
-            $clientes = Cliente::with('tbprovincia')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id')->paginate(10);
-            $tbprovincias = Tbprovincias::all();
-       
-            return Inertia::render('Clientes/Index', [
-                'clientes' => $clientes,
-                'tbprovincias' => $tbprovincias
-            ]);
-        }
-   
- 
- 
-   
- 
+    public function index()
+    {
+        $clientes = Cliente::with('tbprovincia')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id')->paginate(10);
+        $tbprovincias = Tbprovincias::all();
+    
+        return Inertia::render('Clientes/Index', [
+            'clientes' => $clientes,
+            'tbprovincias' => $tbprovincias
+        ]);
+    }
+
     public function trashed_cliente(Request $request)
     {
        
@@ -37,7 +34,7 @@ class ClienteController extends Controller
             'tbprovincias' => $tbprovincias
         ]);
     }
- 
+
     public function restore($id){
         $cliente= Cliente::withTrashed()->findOrFail($id);
         if(!empty($cliente)){
@@ -45,7 +42,7 @@ class ClienteController extends Controller
         }
         return redirect()->back();
     }
- 
+
     public function deletePermanently($id){
         $cliente= Cliente::withTrashed()->findOrFail($id);
  
@@ -54,30 +51,15 @@ class ClienteController extends Controller
         }
         return redirect()->back();
     }
- 
- 
+
     public function create()
     {
         $tbprovincias = Tbprovincias::all();
         return inertia::render('Clientes/Create', ['tbprovincias' => $tbprovincias]);
     }
-   
- 
-    public function store(Request $request)
+
+    public function store(CreateClientesRequest $request)
     {
-        $request->validate([
-            'numeroDocumento' => 'required|string',
-            'razonSocial' => 'required|string',
-            'direccion' => 'required|string',
-            'distrito' => 'required|string',
-            'provincia' => 'required|string',
-            'departamento' => 'required|string',
-            'estado' => 'required|string',
-            'cli_direccion2' => 'required',
-            'cli_observacion' => 'required|string',
-            'tbprovincia_id' => 'required',
-        ]);
-   
         $token = 'apis-token-7907.K0qLm91OLHYP07iBLCqF4INtKqqtu0H6'; // Reemplaza con tu token
         $ruc = $request->input('numeroDocumento');
    
@@ -122,34 +104,16 @@ class ClienteController extends Controller
    
         return redirect()->route('clientes.index')->with('success', 'clientes creada exitosamente.');
     }
- 
    
-    public function edit(string $id)
+    public function edit(Cliente $cliente)
     {
         $tbprovincias = Tbprovincias::all();
-        $cliente = Cliente::findOrFail($id);
         return inertia('Clientes/Edit', ['cliente' => $cliente, 'tbprovincias' => $tbprovincias]);
     }
  
- 
-    public function update(Request $request, string $id)
+    public function update(Request $request, Cliente $cliente)
     {
-        $validatedData = $request->validate([
-            'numeroDocumento' => 'required',
-            'razonSocial' => 'required',
-            'direccion' => 'required',
-            'distrito' => 'required',
-            'provincia' => 'required',
-            'departamento' => 'required',
-            'estado' => 'required',
-            'cli_direccion2' => 'required',
-            'cli_observacion' => 'required',
-            'tbprovincia_id' => 'required',
-        ]);
- 
-        $cliente = Cliente::findOrFail($id);
- 
-        $cliente->update($validatedData);
+        $cliente->update($request->all());
         return redirect()->route('clientes.index')->with('success', 'Cliente actualizado correctamente.');
     }
  
@@ -158,7 +122,6 @@ class ClienteController extends Controller
         $cliente = Cliente::find($id);
         $cliente->delete();
         return redirect()->back();
-        //
     }
    
 }

@@ -26,7 +26,7 @@ export default {
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -37,7 +37,6 @@ import ButtonDelete from '@/Components/ButtonDelete.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
-import {useForm} from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
  
 const nameInput = ref(null);
@@ -90,9 +89,13 @@ const save = () => {
  
 const ok = (msj) =>{
     form.reset();
-    // closeModal(); se puede comentar para que el modal se mantenga abierto y hacie seguir creando
     closeModal();
-    Swal.fire({title:msj,icon:'success'});
+    Swal.fire({
+        title: msj,
+        icon:'success',
+        timer: 1000,
+        showConfirmButton: false
+    });
 }
  
 const deleteEmployee = (id, name) => {
@@ -130,7 +133,7 @@ const deleteEmployee = (id, name) => {
                             Registrar Categoria
                         </Link> -->
                         <ButtonRegister @click.prevent="$event => openModal(1)">
-                            Registrar Categoria
+                            <i class="bi bi-plus-circle mx-1"></i>Registrar Categoria
                         </ButtonRegister>
                     </div>
                     <div class="mt-4">
