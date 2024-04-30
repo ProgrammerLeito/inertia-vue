@@ -152,12 +152,12 @@ onMounted(() => {
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
+                        <ButtonRegister @click="$event => openModal(1)" v-if="$page.props.user.permissions.includes('Ingresar Entrada')">
+                            <i class="bi bi-clipboard-check mx-1"></i>Ingresar Entrada
+                        </ButtonRegister>
                         <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="bi bi-arrow-left-short mx-1"></i>Regresar
                         </Link>
-                        <ButtonRegister @click="$event => openModal(1)">
-                            <i class="bi bi-clipboard-check mx-1"></i>Ingresar Entrada
-                        </ButtonRegister>
                     </div>
                     <div class="mt-4">
                         
@@ -168,7 +168,7 @@ onMounted(() => {
                                         <th scope="col" class="px-6 py-3">Producto</th>
                                         <th scope="col" class="px-6 py-3">Cantidad</th>
                                         <th scope="col" class="px-6 py-3">fecha</th>
-                                        <th scope="col" class="px-6 py-3 text-center">Acciones</th>
+                                        <th scope="col" class="px-6 py-3 text-center" v-if="$page.props.user.permissions.includes('Acciones Entradas')">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -176,9 +176,7 @@ onMounted(() => {
                                         <td class="px-6 py-4 font-semibold">{{ entrada.producto?.insumo }}</td>
                                         <td class="px-6 py-4">{{ entrada.cantidad }}</td>
                                         <td class="px-6 py-4">{{ entrada.fecha }}</td>
-                                        <td class="p-3 text-center">
-                                            <!-- <Link class="py-2 px-4 text-green-500" :href="route('entradas.edit', entrada.id)"><i class="bi bi-pencil-square"></i></Link>
-                                            <Link class="py-2 px-4 text-red-500" @click="deleteEntradas(entrada.id)"><i class="bi bi-trash3"></i></Link> -->
+                                        <td class="p-3 text-center" v-if="$page.props.user.permissions.includes('Acciones Entradas')">
                                             <ButtonEdit @click="$event => openModal(2,entrada.cantidad,entrada.fecha,entrada.producto_id,entrada.id)">
                                                 <i class="bi bi-pencil-square text-green-500"></i>
                                             </ButtonEdit>

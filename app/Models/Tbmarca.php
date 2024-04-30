@@ -11,11 +11,11 @@ class Tbmarca extends Model
     
     protected $fillable = [
         'nombre',
-        'tbcategoria_id'
+        'tbsubcategoria_id'
     ];
  
     public function tbcategoria()
     {
-        return $this->belongsTo(Tbcategoria::class);
+        return $this->belongsTo(Tbsubcategoria::class);
     }
 }

@@ -17,7 +17,7 @@ class CategoryController extends Controller
                         ->select('id', 'name') // Selecciona los campos que desees
                         ->paginate(self::Numero_de_items_pagina);
 
-        return inertia('Categories/Index', ['categories' => $categories]);
+        return inertia('Categories/Index', compact('categories'));
     }
 
     public function create()
@@ -33,7 +33,7 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
-        return inertia('Categories/Edit', ['category' => $category]);
+        return inertia('Categories/Edit', compact('category'));
     }
 
     public function update(CategoryRequest $request, Category $category)

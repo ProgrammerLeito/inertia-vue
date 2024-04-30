@@ -11,7 +11,7 @@ class PermisoController extends Controller
 {
     public function index()
     {
-        $permisos = Permission::select('id', 'name')->paginate(2);
+        $permisos = Permission::select('id', 'name')->paginate(8);
        
         return Inertia::render('Permisos/Index', [
             'permisos' => $permisos

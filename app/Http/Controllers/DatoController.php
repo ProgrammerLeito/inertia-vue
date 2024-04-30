@@ -20,10 +20,7 @@ class DatoController extends Controller
    
         $clientes = Cliente::all();
    
-        return Inertia::render('Datos/Index', [
-            'datos' => $datos,
-            'clientes' => $clientes
-        ]);
+        return Inertia::render('Datos/Index', compact('datos', 'clientes'));
     }
 
     public function store(CreateDatoRequest $request)

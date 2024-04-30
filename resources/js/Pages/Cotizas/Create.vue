@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -8,12 +8,11 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
-import {useForm} from '@inertiajs/vue3';
-import { nextTick, ref } from 'vue';
-import { onMounted , watch , computed} from 'vue';
+import { onMounted , watch , computed , ref , nextTick } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
  
 import jsPDF from 'jspdf';
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
  
 const nameInput2 = ref(null);
 const modal2 = ref(false);
@@ -208,17 +207,6 @@ const ok2 = (msj) => {
     });
 };
  
- 
-// const ok2 = (msj) => {
-//     form2.reset();
-//     closeModal2();
-//     Swal.fire({title: msj, icon: 'success'});
-//     setTimeout(() => {
-//         Swal.close();
-//     }, 1000);
-// };
- 
- 
 onMounted(() => {
     const today = new Date().toISOString().split('T')[0];
     form.fecha = today;
@@ -242,33 +230,45 @@ const submitForm = () => {
         }
     });
 };
- 
- 
- 
+
 const previewPDF = () => {
     const doc = new jsPDF();
    
-    const headerText = 'INDUSTRIAS BALINZA E,I.R.L';
-    const headerTextWidth = doc.getTextWidth(headerText);
+    // const headerText = 'INDUSTRIAS BALINZA E,I.R.L';
+    // const headerTextWidth = doc.getTextWidth(headerText);
  
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const xPosition = (pageWidth - headerTextWidth) / 2;
+    // const pageWidth = doc.internal.pageSize.getWidth();
+    // const xPosition = (pageWidth - headerTextWidth) / 2;
  
-    doc.text(headerText, xPosition, 10);
-    doc.setTextColor(0, 0, 0); // Restaurar el color de texto a negro
+    // doc.text(headerText, xPosition, 10);
+    // doc.setTextColor(0, 0, 0); // Restaurar el color de texto a negro
    
+    const cliente = document.getElementById("cliente_id").options[document.getElementById("cliente_id").selectedIndex].text;
+    const descripcion = document.getElementById("tenor_id").options[document.getElementById("tenor_id").selectedIndex].text;
+    const fecha = document.getElementById("fecha").value;
+    const moneda = document.getElementById("moneda").options[document.getElementById("moneda").selectedIndex].text;
+    const garantia = document.getElementById("garantia").options[document.getElementById("garantia").selectedIndex].text;
+    const forma_pago = document.getElementById("forma_pago").options[document.getElementById("forma_pago").selectedIndex].text;
+    const dias_entrega = document.getElementById("dias_entrega").value;
+    const subtotal = document.getElementById("subtotal").value;
+    const igv = document.getElementById("igv").value;
+    const total = document.getElementById("total").value;
  
+    doc.setTextColor(255,0,0);//Color de texto
+	doc.setFontSize(10);//Tamaño de texto
     doc.text(20, 20, 'Cotización por Venta');
-    doc.text(20, 30, `Cliente: ${form.cliente_id}`);
-    doc.text(20, 40, `Tenor: ${form.tenor_id}`);
-    doc.text(20, 50, `Fecha: ${form.fecha}`);
-    doc.text(20, 60, `Moneda: ${form.moneda}`);
-    doc.text(20, 70, `Garantía: ${form.garantia}`);
-    doc.text(20, 80, `Forma de pago: ${form.forma_pago}`);
-    doc.text(20, 90, `Días de entrega: ${form.dias_entrega}`);
-    doc.text(20, 100, `Subtotal: ${form.subtotal}`);
-    doc.text(20, 110, `IGV: ${form.igv}`);
-    doc.text(20, 120, `Total: ${form.total}`);
+    doc.setTextColor(0,0,0);//Color de texto
+    doc.setFontSize(15);//Tamaño de texto
+    doc.text(20, 30, `Cliente: ${cliente}`);
+    doc.text(20, 40, `Tenor: ${descripcion}`);
+    doc.text(20, 50, `Fecha: ${fecha}`);
+    doc.text(20, 60, `Moneda: ${moneda}`);
+    doc.text(20, 70, `Garantía: ${garantia}`);
+    doc.text(20, 80, `Forma de pago: ${forma_pago}`);
+    doc.text(20, 90, `Días de entrega: ${dias_entrega}`);
+    doc.text(20, 100, `Subtotal: ${subtotal}`);
+    doc.text(20, 110, `IGV: ${igv}`);
+    doc.text(20, 120, `Total: ${total}`);
  
     let yPos = 130;
  
@@ -286,7 +286,7 @@ const previewPDF = () => {
         const img = new Image();
         img.src = `/img/catalogo/${producto.foto}`;
         img.onload = () => {
-            doc.addImage(img, 'JPEG', 20, yPos + 80, 50, 50);
+            doc.addImage(img, 'JPEG', 110, yPos + 10, 50, 50);
             yPos += 150;
             if (yPos + 150 > doc.internal.pageSize.height) {
                 doc.addPage();
@@ -307,11 +307,7 @@ const previewPDF = () => {
  
     addAllProducts(tbproductosAgregados.value, 0);
 };
- 
- 
- 
- 
- 
+
 </script>
  
 <template>
@@ -326,7 +322,7 @@ const previewPDF = () => {
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                
                         <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-3 sm:gap-x-8 mb-3 sm:py-0 py-2">
                                 <!-- cliente -->
                                 <div class="w-full">
                                     <InputLabel for="cliente_id" class="text-xs">Cliente</InputLabel>
@@ -363,7 +359,7 @@ const previewPDF = () => {
                                 <!-- Botón para abrir el tercer modal -->
                                 <button class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" @click.prevent="toggleModal3">Agregar Producto</button>
                             </div>
-                            <div class="py-5">
+                            <div class="sm:py-5 py-2">
                                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2  max-h-80 overflow-y-auto">
                                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                                         <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
@@ -401,8 +397,7 @@ const previewPDF = () => {
                                     </table>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-8">
-                               
+                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
                                 <!-- garantia -->
                                 <div>
                                     <InputLabel for="garantia" class="block text-xs font-medium text-gray-700">Garantia</InputLabel>
@@ -453,30 +448,31 @@ const previewPDF = () => {
                             <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 py-2 card sm:gap-x-8">
                                 <div>
                                     <InputLabel class="text-xs" for="subtotal" :value="'Subtotal (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
-                                    <TextInput v-model="form.subtotal" type="number" class="mt-2 w-full uppercase" disabled></TextInput>
+                                    <TextInput id="subtotal" v-model="form.subtotal" type="number" class="mt-2 w-full uppercase" disabled></TextInput>
                                 </div>
                                 <div>
                                     <div class="flex items-center">
-                                        <input type="checkbox" id="igvCheckbox" v-model="igvEnabled">
-                                        <label for="igvCheckbox" class="ml-2 text-blue-700">Aplicar IGV (18%)</label>
+                                        <input type="checkbox" id="igvCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="igvEnabled">
+                                        <label for="igvCheckbox" class="ms-2 text-xs font-medium text-black dark:text-white">Aplicar IGV (18%)</label>
                                     </div>
-                                    <InputLabel for="igv" :value="'IGV (18%) (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'" v-if="igvEnabled"></InputLabel>
-                                    <TextInput v-model="form.igv" type="number" class="mt-2 w-full uppercase" disabled></TextInput>
+                                    <InputLabel class="ml-6 py-1 hidden" for="igv" :value="'IGV (18%) (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'" v-if="igvEnabled"></InputLabel>
+                                    <TextInput id="igv" v-model="form.igv" type="number" class="mt-2 w-full uppercase" disabled></TextInput>
                                 </div>
                                 <div>
                                     <InputLabel class="text-xs" for="total" :value="'Total (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
-                                    <TextInput v-model="form.total" type="number" class="mt-2 w-full bg-green-400 uppercase" disabled></TextInput>
+                                    <TextInput id="total" v-model="form.total" type="number" class="mt-2 w-full bg-green-400 uppercase" disabled></TextInput>
                                 </div>
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
-                                    <button class="text-white uppercase ml-1 bg-green-700 hover:bg-green-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" @click.prevent="previewPDF">Previsualizar PDF</button>
-                                    <PrimaryButton class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                    <button class="inline-block bg-green-700 text-white font-bold py-2 px-4 rounded hover:bg-green-800 md:w-min whitespace-nowrap w-full text-center" @click.prevent="previewPDF">PREVISUALIZAR PDF</button>
+                                    <ButtonResponsive class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                                         Generar Cotizacion
-                                    </PrimaryButton>
-                                    <Link :href="route('cventas.index')" class="text-white uppercase ml-1 bg-red-700 hover:bg-red-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                    </ButtonResponsive>
+                                    <Link :href="route('cventas.index')" class="inline-block bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
                                         Cancelar
                                     </Link>
+                                    <!--  -->
                                 </div>
                             </div>
                         </form>
@@ -507,13 +503,13 @@ const previewPDF = () => {
             </div>
         </ModalResponsive>
  
-        <div v-if="modal3" class="fixed inset-0 overflow-y-auto z-50 bg-gray-200/40 flex justify-center items-center">
+        <div v-if="modal3" class="fixed inset-0 overflow-y-auto z-50 bg-gray-200/40 flex justify-center items-center" @click.self="toggleModal3">
             <div class="modal-content bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-2xl max-w-7xl w-full sm:max-w-4xl md:max-w-3xl lg:max-w-4xl xl:max-w-6xl">
                 <button @click="toggleModal3" class="close absolute top-0.5 right-0.5 p-2 text-gray-500 hover:text-gray-700">
                     &times;
                 </button>
                 <div class="px-2 py-2 dark:text-white">
-                    <h1 class="uppercase text-lg font-bold ">Catálogo de productos</h1>
+                    <h1 class="uppercase text-lg font-bold">Catálogo de productos</h1>
                     <p class="text-sm">Seleccione los productos a cotizar</p>
                     <hr class="my-1">
                 </div>
@@ -564,7 +560,6 @@ const previewPDF = () => {
                     <div class="py-1 px-1 sm:px-1">
                         <img :src="modalImageUrl" alt="Imagen ampliada" class="w-full max-h-80 object-contain">
                     </div>
-                 
                     <div class="bg-white dark:bg-gray-700 p-2 sm:px-6 flex justify-end rounded-b-lg">
                         <button @click="modalOpen = false" type="button" class="w-full sm:w-auto justify-center rounded-md border border-transparent shadow-sm px-2 py-1 bg-indigo-600 text-xs uppercase text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Cerrar
@@ -573,6 +568,5 @@ const previewPDF = () => {
                 </div>
             </div>
         </div>
- 
     </AppLayout>
 </template>

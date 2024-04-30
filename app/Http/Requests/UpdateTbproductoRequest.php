@@ -35,7 +35,7 @@ class UpdateTbproductoRequest extends FormRequest
             'estado' => 'required',
             'capacidades' => 'required',
             'especificaciones' => 'required',
-            'foto' => 'required',
+            'foto' => 'nullable',
         ];
     }
 }

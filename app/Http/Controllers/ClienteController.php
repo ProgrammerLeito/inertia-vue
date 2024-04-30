@@ -17,10 +17,7 @@ class ClienteController extends Controller
         $clientes = Cliente::with('tbprovincia')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id')->paginate(10);
         $tbprovincias = Tbprovincias::all();
     
-        return Inertia::render('Clientes/Index', [
-            'clientes' => $clientes,
-            'tbprovincias' => $tbprovincias
-        ]);
+        return Inertia::render('Clientes/Index', compact('clientes', 'tbprovincias'));
     }
 
     public function trashed_cliente(Request $request)
@@ -29,10 +26,7 @@ class ClienteController extends Controller
         $clientes = Cliente::onlyTrashed()->with('tbprovincia')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id')->paginate(10);
         $tbprovincias = Tbprovincias::all();
  
-        return Inertia::render('Clientes/Trash_list', [
-            'clientes' => $clientes,
-            'tbprovincias' => $tbprovincias
-        ]);
+        return Inertia::render('Clientes/Trash_list', compact('clientes', 'tbprovincias'));
     }
 
     public function restore($id){
@@ -55,7 +49,7 @@ class ClienteController extends Controller
     public function create()
     {
         $tbprovincias = Tbprovincias::all();
-        return inertia::render('Clientes/Create', ['tbprovincias' => $tbprovincias]);
+        return inertia::render('Clientes/Create', compact('tbprovincias'));
     }
 
     public function store(CreateClientesRequest $request)
@@ -102,19 +96,19 @@ class ClienteController extends Controller
             'tbprovincia_id' => $request->input('tbprovincia_id'),
         ]);
    
-        return redirect()->route('clientes.index')->with('success', 'clientes creada exitosamente.');
+        return redirect()->route('clientes.index');
     }
    
     public function edit(Cliente $cliente)
     {
         $tbprovincias = Tbprovincias::all();
-        return inertia('Clientes/Edit', ['cliente' => $cliente, 'tbprovincias' => $tbprovincias]);
+        return inertia('Clientes/Edit', compact('cliente', 'tbprovincias'));
     }
  
     public function update(Request $request, Cliente $cliente)
     {
         $cliente->update($request->all());
-        return redirect()->route('clientes.index')->with('success', 'Cliente actualizado correctamente.');
+        return redirect()->route('clientes.index');
     }
  
     public function destroy($id)

@@ -95,15 +95,12 @@ const deleteProducto = (id, insumo) => {
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
-                        <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('Crear Producto')">
                             <i class="bi bi-clipboard-plus mx-1"></i>Registrar Producto
                         </Link>
                         <Link :href="route('entradas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="bi bi-list-check mx-1"></i>Listar Entradas
                         </Link>
-                        <!-- <Link :href="route('salidas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            Listar Salidas
-                        </Link> -->
                     </div>
                     <div class="md:mt-0 mt-4">
                         <div class="font-semibold text-center dark:text-white">Categoria || {{ filteredProductos.length > 0 ? filteredProductos[0].name : 'Sin Productos' }}</div>
@@ -143,9 +140,9 @@ const deleteProducto = (id, insumo) => {
                                 <tbody>
                                     <tr class="bg-white text-black dark:bg-gray-700 dark:text-white border-b" v-for="producto in filteredProductos">
                                         <td class="px-6 py-4 text-center">{{ producto.producto_id }}</td>
-                                        <img @click="openModal('/img/productos/' + producto.imagen_producto)" :src="'/img/productos/' + producto.imagen_producto" alt="Foto del Producto" style="width: 100px; height: 100px; cursor: pointer; object-fit: cover;" class="rounded-md py-1">
+                                        <img @click="openModal('/img/productos/' + producto.imagen_producto)" :src="'/img/productos/' + producto.imagen_producto" alt="Foto del Producto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
                                         <td class="px-6 py-4 font-semibold text-left">{{ producto.insumo }}</td>
-                                        <td class="px-6 py-4 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) + parseInt(producto.total_devolucion) - parseInt(producto.total_salidas) }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) + parseInt(producto.total_devolucion) - parseInt(producto.total_salidas) }}    {{ producto.unidad_medida }}</td>
                                         <!-- <td class="px-6 py-4 text-left">{{ producto?.name }}</td> -->
                                         <td class="px-6 py-4 text-center">{{ producto.marca }}</td>
                                         <td class="px-6 py-4 text-center">{{ producto.modelo }}</td>
@@ -157,9 +154,8 @@ const deleteProducto = (id, insumo) => {
                                         <!-- <td class="px-6 py-4 text-left">{{ producto.comentario }}</td> -->
                                         <td class="p-3 text-center whitespace-nowrap">
                                             <Link class="py-1.5 px-3.5 text-black font-semibold bg-yellow-400 rounded-lg border-solid border-2 hover:bg-yellow-500" :href="route('salidas.index', { producto_id: producto.producto_id })"><i class="bi bi-eye"><label class="ml-2">Salidas</label></i></Link>
-                                            <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.producto_id)"><i class="bi bi-pencil-square"></i></Link>
-                                            <!-- <Link class="py-2 px-4 text-red-500" @click="deleteProducto(producto.producto_id)"><i class="bi bi-trash3"></i></Link> -->
-                                            <ButtonDelete @click="$event => deleteProducto(producto.producto_id,producto.insumo)">
+                                            <Link class="py-2 px-4 text-green-500" :href="route('productos.edit', producto.producto_id)" v-if="$page.props.user.permissions.includes('Acciones Productos')"><i class="bi bi-pencil-square"></i></Link>
+                                            <ButtonDelete @click="$event => deleteProducto(producto.producto_id,producto.insumo)" v-if="$page.props.user.permissions.includes('Acciones Productos')">
                                                 <i class="bi bi-trash3 text-red-500"></i>
                                             </ButtonDelete>
                                         </td>

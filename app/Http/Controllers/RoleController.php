@@ -15,16 +15,12 @@ class RoleController extends Controller
     {
         $roles = Role::select('id', 'name')->get();
        
-        return Inertia::render('Roles/Index', [
-            'roles' => $roles
-        ]);
+        return Inertia::render('Roles/Index', compact('roles'));
     }
  
     public function create(){
         $permission = Permission::get();
-        return Inertia::render('Roles/Create',[
-            'permission'=>$permission
-        ]);
+        return Inertia::render('Roles/Create', compact('permission'));
     }
 
     public function store(Request $request)
@@ -52,11 +48,7 @@ class RoleController extends Controller
    
         $rolePermisos = $role->permissions->pluck('id')->toArray();
    
-        return Inertia::render('Roles/Edit', [
-            'role' => $role,
-            'permisos' => $permisos,
-            'rolePermisos' => $rolePermisos
-        ]);
+        return Inertia::render('Roles/Edit', compact('role', 'permisos', 'rolePermisos'));
     }
  
     public function update(Request $request, $id)

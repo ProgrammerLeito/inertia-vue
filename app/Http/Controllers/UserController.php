@@ -18,9 +18,7 @@ class UserController extends Controller
     {
         $users = User::with('roles')->orderBy('id', 'DESC')->paginate(6);
  
-        return Inertia::render('Users/Index', [
-            'users' => $users
-        ]);
+        return Inertia::render('Users/Index', compact('users'));
     }
  
  
@@ -28,9 +26,7 @@ class UserController extends Controller
     {
         $users = User::onlyTrashed()->with('roles')->orderBy('id', 'DESC')->paginate(6);
  
-        return Inertia::render('Users/Trash_list', [
-            'users'=>$users
-        ]);
+        return Inertia::render('Users/Trash_list', compact('users'));
     }
  
     public function restore($id){
@@ -52,9 +48,7 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::pluck('name', 'name')->all();
-        return Inertia::render('Users/Create', [
-            'roles'=>$roles
-        ]);
+        return Inertia::render('Users/Create', compact('roles'));
     }
  
  
@@ -92,11 +86,7 @@ class UserController extends Controller
         $roles = Role::pluck('name', 'name')->all();
         $userRoles = $user->roles->pluck('name')->toArray();
  
-        return Inertia::render('Users/Edit',[
-            'user'=>$user,
-            'roles'=>$roles,
-            'userRoles'=>$userRoles
-        ]);
+        return Inertia::render('Users/Edit', compact('user', 'roles', 'userRoles'));
     }
  
     public function update(Request $request, $id)

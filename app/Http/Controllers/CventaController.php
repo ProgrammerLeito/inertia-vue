@@ -19,9 +19,7 @@ class CventaController extends Controller
 {
     public function index(){
         $cventas = Cventa::with('cliente', 'tenor')->get();
-        return Inertia::render('Cotizas/Index',[
-            'cventas'=>$cventas
-        ]);
+        return Inertia::render('Cotizas/Index',compact('cventas'));
     }
  
     public function create(){
@@ -32,12 +30,7 @@ class CventaController extends Controller
        
         $tbmarcas = Tbmarca::all();
        
-        return Inertia::render('Cotizas/Create',[
-            'clientes' => $clientes,
-            'tenors' => $tenors,
-            'tbproductos' => $tbproductos,
-            'tbmarcas' => $tbmarcas,
-        ]);
+        return Inertia::render('Cotizas/Create',compact('clientes', 'tenors', 'tbproductos', 'tbmarcas'));
     }
 
     public function store(CreateCventaRequest $request)
@@ -45,7 +38,7 @@ class CventaController extends Controller
         $validatedData = $request->validated();
         $cventa = Cventa::create($validatedData);
         $cventa -> save ();
-        return redirect()->route('cotizas.index')->with('success', 'Cotización guardada exitosamente.');
+        return redirect()->route('cotizas.index');
     }
 
     public function edit(Cventa $cventa)
@@ -58,20 +51,13 @@ class CventaController extends Controller
         // Aquí obtén los productos agregados y pásalos a la vista
         $productosAgregados = [];
    
-        return Inertia::render('Cotizas/Edit', [
-            'cventa' => $cventa,
-            'clientes' => $clientes,
-            'tenors' => $tenors,
-            'tbproductos' => $tbproductos,
-            'tbmarcas' => $tbmarcas,
-            'productosAgregados' => $productosAgregados,
-        ]);
+        return Inertia::render('Cotizas/Edit', compact('cventa', 'clientes', 'tenors', 'tbproductos', 'tbmarcas', 'productosAgregados'));
     }
 
     public function update(Request $request, Cventa $cventa)
     {
         $cventa->update($request->all());
-        return redirect()->route('cventa.index')->with('success', 'Cotización actualizada exitosamente.');
+        return redirect()->route('cventa.index');
     }
  
     public function destroy($id)

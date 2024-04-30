@@ -5,7 +5,7 @@ import ButtonDelete from '@/Components/ButtonDelete.vue';
 import Swal from 'sweetalert2';
 import { Link, useForm } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
- 
+
 const filteredTbproductos = ref([]);
 const searchQuery = ref('');
 const selectedCategoria = ref('');
@@ -103,7 +103,7 @@ watchEffect(() => {
                         </div>
                         <div>
                             <div class="py-2 uppercase">
-                                <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                                <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                     <div class="flex flex-col">
                                         <InputLabel class="block text-md font-medium text-gray-700">Categoría</InputLabel>
                                         <select v-model="selectedCategoria" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
@@ -126,7 +126,7 @@ watchEffect(() => {
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                                                 </svg>
                                             </div>
-                                            <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
+                                            <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
                                         </div>
                                     </div>
                                 </div>
@@ -150,7 +150,7 @@ watchEffect(() => {
                                         <tr  v-for="(tbproducto, i) in filteredTbproductos" :key="tbproducto.id"  class="bg-white text-black dark:bg-gray-700 dark:text-white">
                                             <td class="px-6 py-4 text-center">{{ tbproducto.codigo }}</td>
                                             <td class="px-6 py-4 text-center"><b>{{ tbproducto.modelo }}</b></td>
-                                            <img @click="openModal('/img/catalogo/' + tbproducto.foto)" :src="'/img/catalogo/' + tbproducto.foto" alt="Foto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1">
+                                            <img @click="openModal('/storage/' + tbproducto.foto)" :src="'/storage/' + tbproducto.foto" alt="Foto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
                                             <td class="px-6 py-4 text-center">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
                                             <td class="px-6 py-4 text-center">{{ tbproducto.capacidades }}</td>
                                             <td class="px-6 py-4 text-center">{{ tbproducto.especificaciones }}</td>

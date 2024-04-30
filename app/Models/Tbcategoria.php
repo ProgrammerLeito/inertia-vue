@@ -18,8 +18,8 @@ class Tbcategoria extends Model
         return $this->hasMany(Tbsubcategoria::class);
     }
     
-    public function tbmarcas()
-    {
-        return $this->hasMany(Tbmarca::class, 'tbcategoria_id');
-    }
+    // public function tbmarcas()
+    // {
+    //     return $this->hasMany(Tbmarca::class, 'tbcategoria_id');
+    // }
 }

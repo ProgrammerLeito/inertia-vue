@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tbmarcas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 100);
-            $table->foreignId('tbcategoria_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tbsubcategoria_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

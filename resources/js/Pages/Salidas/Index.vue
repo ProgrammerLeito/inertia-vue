@@ -89,7 +89,7 @@ const deleteSalidas = (id, empresa) => {
                         <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="bi bi-arrow-left-short mx-1"></i>Regresar
                         </Link>
-                        <Link :href="route('salidas.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <Link :href="route('salidas.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('Ingresar Salida')">
                             <i class="bi bi-clipboard-x mx-1"></i>Ingresar Salida
                         </Link>
                     </div>
@@ -120,7 +120,7 @@ const deleteSalidas = (id, empresa) => {
                                         <th scope="col" class="px-6 py-3">Fecha</th>
                                         <th scope="col" class="px-6 py-3">Cantidad de Devolucion</th>
                                         <th scope="col" class="hidden px-6 py-3">Devolucion</th>
-                                        <th scope="col" class="text-center px-6 py-3">Acciones</th>
+                                        <th scope="col" class="text-center px-6 py-3" v-if="$page.props.user.permissions.includes('Acciones Salidas')">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -139,11 +139,11 @@ const deleteSalidas = (id, empresa) => {
                                             </div>
                                         </td>
                                         <td class="hidden px-6 py-4">{{ salida.devolucion }}</td>
-                                        <td class="p-3 border-b text-center dark:border-gray-400">
+                                        <td class="p-3 border-b text-center dark:border-gray-400" v-if="$page.props.user.permissions.includes('Acciones Salidas')">
                                             <Link class="py-2 px-4 text-green-500" :href="route('salidas.edit', salida.id)"><i class="bi bi-pencil-square"></i></Link>
                                             <ButtonDelete @click="$event => deleteSalidas(salida.id,salida.empresa)" class="ml-1">
                                                 <i class="bi bi-trash3 ml-2 text-red-500"></i>
-                                            </ButtonDelete>
+                                            </ButtonDelete>
                                         </td>
                                     </tr>
                                 </tbody>

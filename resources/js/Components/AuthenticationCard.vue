@@ -3,7 +3,7 @@
         <div class="z-50 w-full flex flex-col justify-center items-center drop-shadow-[0_15px_15px_rgba(50,50,50,0.40)]">
             <div class="z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm w-full sm:max-w-md flex flex-col justify-center items-center py-4 rounded-t-lg">
                 <!-- <link href='https://webbeta.balinsa.com/font/alphamalemodern.ttf' rel="stylesheet" type="text/css"> -->
-                <link href='http://127.0.0.1:8000/font/Poppins-Bold.ttf' rel="stylesheet" type="text/css">
+                <!-- <link href='http://127.0.0.1:8000/font/Poppins-Bold.ttf' rel="stylesheet" type="text/css"> -->
                 <h1 id="textoIniciarSesion" class="text-gray-700 dark:text-gray-200 font-bold text-2xl my-4 tracking-wider">INICIAR SESIÓN</h1>
                 <slot name="logo" />
             </div>

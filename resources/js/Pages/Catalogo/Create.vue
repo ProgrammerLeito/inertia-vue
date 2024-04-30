@@ -1,28 +1,31 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link, useForm } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
-import ModalResponsive from '@/Components/ModalResponsive.vue';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
+import Modal from '@/Components/Modal.vue';
+import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
+import { useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
- 
+import FileInput from '@/Components/FileInput.vue';
+
 const nameInput4 = ref(null);
 const modal4 = ref(false);
 const title4 = ref('');
 const operation4 = ref(1);
 const id4 = ref('');
- 
+
 const nameInput2 = ref(null);
 const modal2 = ref(false);
 const title2 = ref('');
 const operation2 = ref(1);
 const id2 = ref('');
- 
+
 const nameInput3 = ref(null);
 const modal3 = ref(false);
 const title3 = ref('');
@@ -31,61 +34,73 @@ const id3 = ref('');
 
 defineProps({
     tbcategorias: {
-        type : Object,
+        type: Object,
         required: true
     },
     tbsubcategorias: {
-        type : Object,
+        type: Object,
         required: true
     },
     tbmarcas: {
-        type : Object,
+        type: Object,
         required: true
     }
- 
+
 });
-const form4 = useForm ({
+const form4 = useForm({
     nombre: '',
- 
+
 });
-const form3 = useForm ({
+const form3 = useForm({
     nombre: '',
-    tbcategoria_id: ''
+    tbsubcategoria_id: ''
 });
 const form2 = useForm({
     nombre: '',
     tbcategoria_id: ''
 });
- 
-const form = useForm ({
+
+const initialvalues = {
     tbcategoria_id: '',
     tbsubcategoria_id: '',
     tbmarca_id: '',
     modelo: '',
     medida: '',
     moneda: '',
-    precio: '',
-    descuento: '',
-    stock: '',
+    precio: 0,
+    descuento: 0,
+    stock: 0,
     codigo: '',
     estado: '',
     capacidades: '',
     especificaciones: '',
-    foto: '',
-});
- 
+    foto: null,
+};
+
+ const form = useForm(initialvalues)
+
+const onSelectFoto= (e) =>{
+    const files = e.target.files;
+    if(files.length){
+        form.foto= files[0]
+    }
+}
+
 const submitForm = () => {
     form.post(route('tbproductos.store'), {
         onSuccess: () => {
             Swal.fire({
                 icon: 'success',
                 title: 'Éxito',
-                text: 'El producto se ha registrado correctamente.'
+                text: 'El producto se ha registrado correctamente.',
+                timer: 1000,
+                timerProgressBar: true,
+                showConfirmButton: false
+
             });
         },
         onError: (errors) => {
-            if(errors.response && errors.response.status) {
-                // Si hay un error de respuesta HTTP, manejarlo aquí
+            if (errors.response && errors.response.status) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -93,7 +108,6 @@ const submitForm = () => {
                 });
                 console.error('Error HTTP:', errors.response.status);
             } else {
-                // Si el error no tiene una propiedad de respuesta o de estado, manejarlo aquí
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -104,34 +118,34 @@ const submitForm = () => {
         }
     });
 }
- 
- 
-const onFileChange = (event)=>{
-    const file= event.target.files[0];
-    form.foto=file;
-    form.fotoPreview=URL.createObjectURL(file);
-}
- 
-const openModal3 = (op,nombre,tbcategoria,tbmarca)=>{
+
+
+// const onFileChange = (event) => {
+//     const file = event.target.files[0];
+//     form.foto = file;
+//     form.fotoPreview = URL.createObjectURL(file);
+// }
+
+const openModal3 = (op, nombre, tbsubcategoria, tbmarca) => {
     modal3.value = true;
-    nextTick( () => nameInput3.value.focus());
+    nextTick(() => nameInput3.value.focus());
     operation3.value = op;
     id3.value = tbmarca;
-    if(op ===1){
+    if (op === 1) {
         title3.value = 'Registrar marca';
     }
-    else{
+    else {
         title3.value = 'Actualizar marca';
-        form3.nombre=nombre;
-        form3.tbcategoria_id=tbcategoria;
+        form3.nombre = nombre;
+        form3.tbsubcategoria_id = tbsubcategoria;
     }
 }
- 
-const closeModal3 = () =>{
+
+const closeModal3 = () => {
     modal3.value = false;
     form3.reset();
 }
- 
+
 const save3 = () => {
     if (operation3.value == 1) {
         form3.post(route('tbmarcas.store'), {
@@ -143,19 +157,18 @@ const save3 = () => {
         });
     }
 }
- 
-const ok3 = (msj) =>{
+
+const ok3 = (msj) => {
     form3.reset();
     closeModal3();
     Swal.fire({
         title: msj,
-        icon:'success',
+        icon: 'success',
         timer: 1000,
         showConfirmButton: false
     });
-}
- 
- 
+};
+
 const openModal2 = (op, nombre, tbcategoria, tbsubcategoria) => {
     modal2.value = true;
     nextTick(() => nameInput2.value.focus());
@@ -169,12 +182,12 @@ const openModal2 = (op, nombre, tbcategoria, tbsubcategoria) => {
         form2.tbcategoria_id = tbcategoria;
     }
 };
- 
+
 const closeModal2 = () => {
     modal2.value = false;
     form2.reset();
 };
- 
+
 const save2 = () => {
     if (operation2.value === 1) {
         form2.post(route('tbsubcategorias.store'), {
@@ -186,38 +199,36 @@ const save2 = () => {
         });
     }
 };
- 
 const ok2 = (msj) => {
     form2.reset();
     closeModal2();
     Swal.fire({
         title: msj,
-        icon:'success',
+        icon: 'success',
         timer: 1000,
         showConfirmButton: false
     });
 };
- 
- 
-const openModal4 = (op,nombre,tbcategoria)=>{
+
+const openModal4 = (op, nombre, tbcategoria) => {
     modal4.value = true;
-    nextTick( () => nameInput4.value.focus());
+    nextTick(() => nameInput4.value.focus());
     operation4.value = op;
     id4.value = tbcategoria;
-    if(op ===1){
+    if (op === 1) {
         title4.value = 'Registrar categoria';
     }
-    else{
+    else {
         title4.value = 'Actualizar categoria';
-        form4.nombre=nombre;
+        form4.nombre = nombre;
     }
 }
- 
-const closeModal4 = () =>{
+
+const closeModal4 = () => {
     modal4.value = false;
     form4.reset();
 }
- 
+
 const save4 = () => {
     if (operation4.value == 1) {
         form4.post(route('tbcategorias.store'), {
@@ -229,18 +240,18 @@ const save4 = () => {
         });
     }
 }
- 
-const ok4 = (msj) =>{
+
+const ok4 = (msj) => {
     form4.reset();
     closeModal4();
     Swal.fire({
         title: msj,
-        icon:'success',
+        icon: 'success',
         timer: 1000,
         showConfirmButton: false
     });
-}
- 
+};
+
 </script>
  
 <template>
@@ -257,40 +268,49 @@ const ok4 = (msj) =>{
                         <form @submit.prevent="submitForm">
                             <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <!-- Categoría -->
-                                <div class="flex items-center">
-                                    <select id="tbcategoria" v-model="form.tbcategoria_id" required
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
-                                        <option value="" disabled selected>Seleccione una categoría</option>
-                                        <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
-                                    </select>
-                                    <Button @click.prevent="() => openModal4(1)" class="bg-green-600 text-white mt-1 py-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
-                                        <i class="fas fa-plus mx-2"></i>
-                                    </Button>
+                                <div class="flex flex-col items-start">
+                                    <InputLabel for="tbcategoria" value="Categoria" class="ml-1"/>
+                                    <div class="flex w-full">
+                                        <select id="tbcategoria" v-model="form.tbcategoria_id" required
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                            <option value="" disabled selected>Seleccione una categoría</option>
+                                            <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
+                                        </select>
+                                        <Button @click.prevent="() => openModal4(1)" class="bg-green-600 text-white mt-1 py-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
+                                            <i class="fas fa-plus mx-2"></i>
+                                        </Button>
+                                    </div>
                                 </div>
  
                                 <!-- Subcategoría -->
-                                <div class="flex items-center">
-                                    <!-- <label for="tbsubcategoria" >Subcategoría</label> -->
-                                    <select id="tbsubcategoria" v-model="form.tbsubcategoria_id"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
-                                        <option value="" disabled selected>Seleccione una subcategoría</option>
-                                        <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
-                                    </select>
-                                    <Button  @click.prevent="() => openModal2(1)" class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
-                                        <i class="fas fa-plus mx-2"></i>
-                                    </Button>
+                                <div class="flex flex-col items-start">
+                                    <InputLabel for="tbsubcategoria" value="Sub Categoria" class="ml-1"/>
+                                    <div class="flex w-full">
+                                        <!-- <label for="tbsubcategoria" >Subcategoría</label> -->
+                                        <select id="tbsubcategoria" v-model="form.tbsubcategoria_id"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                            <option value="" disabled selected>Seleccione una subcategoría</option>
+                                            <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
+                                        </select>
+                                        <Button  @click.prevent="() => openModal2(1)" class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
+                                            <i class="fas fa-plus mx-2"></i>
+                                        </Button>
+                                    </div>
                                 </div>
                                 <!-- Marca -->
-                                <div class="flex items-center">
-                                    <select id="tbmarca" v-model="form.tbmarca_id" required
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
-                                        <option value="" disabled selected>Seleccione una marca</option>
-                                        <!-- Iterar sobre las marcas -->
-                                        <option v-for="tbmarca in tbmarcas" :key="tbmarca.id" :value="tbmarca.id">{{ tbmarca.nombre }}</option>
-                                    </select>
-                                    <Button @click.prevent="() => openModal3(1)" class="bg-green-600 py-1 text-white mt-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
-                                        <i class="fas fa-plus mx-2"></i>
-                                    </Button>
+                                <div class="flex flex-col items-start">
+                                    <InputLabel for="tbmarca" value="Marca" class="ml-1"/>
+                                    <div class="flex w-full">
+                                        <select id="tbmarca" v-model="form.tbmarca_id" required
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                            <option value="" disabled selected>Seleccione una marca</option>
+                                            <!-- Iterar sobre las marcas -->
+                                            <option v-for="tbmarca in tbmarcas" :key="tbmarca.id" :value="tbmarca.id">{{ tbmarca.nombre }}</option>
+                                        </select>
+                                        <Button @click.prevent="() => openModal3(1)" class="bg-green-600 py-1 text-white mt-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
+                                            <i class="fas fa-plus mx-2"></i>
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-8">
@@ -376,16 +396,9 @@ const ok4 = (msj) =>{
                                 </div>
                                 <!-- Foto -->
                                 <div>
-                                    <InputLabel for="foto" class="block text-sm font-medium text-gray-700">Foto</InputLabel>
-                                    <input @change="onFileChange" :v-model="form.foto" id="file_input" type="file"
-                                    class="p-2 block w-full text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
-                                    <InputError :message="$page.props.errors.foto" class="mt-2"/>
-                                    <div  v-if="form.foto" class="flex justify-center mt-2">
-                                        <img :src="form.fotoPreview"  alt="Foto actual " style="max-width: 150px; max-height: 150px;">
-                                    </div>
-                                    <div v-else class="mt-3 dark:text-white">
-                                        <p>no hay foto seleccionada</p>
-                                    </div>
+                                    <InputLabel for="foto" value="Foto" class="block text-xs font-medium text-gray-700"/>
+                                    <FileInput name="foto" @change="onSelectFoto"/>
+                                    <InputError :message="$page.props.errors.foto" class="mt-2" />
                                 </div>
                             </div>
  
@@ -467,11 +480,11 @@ const ok4 = (msj) =>{
                         <InputError :message="form3.errors.nombre" class="mt-2"></InputError>
                     </div>
                     <div class="w-full mt-4">
-                        <InputLabel for="tbcategoria_id" value="Categoría ID:" class="mb-2"></InputLabel>
-                        <select id="tbcategoria_id" v-model="form3.tbcategoria_id" required
+                        <InputLabel for="tbsubcategoria_id" value="Categoría ID:" class="mb-2"></InputLabel>
+                        <select id="tbsubcategoria_id" v-model="form3.tbsubcategoria_id" required
                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                             <option value="">Seleccione una categoría</option>
-                            <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
+                            <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
                         </select>
                     </div>
                 </div>

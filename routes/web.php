@@ -43,6 +43,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/salidas.store', [SalidasController::class , 'store']);
     Route::put('/salidas.update', [SalidasController::class , 'update']);
     
+    Route::post('/tbproductos/{tbproducto}', [TbproductoController::class, 'update'])->name('tbproductos.update');
     Route::resource('/tbproductos', TbproductoController::class);
     Route::get('trashed_tbproducto',[TbproductoController::class,'trashed_tbproducto'])->name('tbproductos.trashed');
     Route::get('restore_tbproducto/{id}',[TbproductoController::class,'restore'])->name('tbproductos.restore');

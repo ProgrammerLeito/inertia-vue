@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: 'Alpha Male Modern';
+    src: url('/font/AlphaMaleModern.ttf') format('truetype');
+}
+
 [x-cloak] {
     display: none;
 }

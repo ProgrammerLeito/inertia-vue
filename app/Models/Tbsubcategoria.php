@@ -18,4 +18,9 @@ class Tbsubcategoria extends Model
     {
         return $this->belongsTo(Tbcategoria::class);
     }
+
+    public function tbmarcas()
+    {
+        return $this->hasMany(Tbmarca::class, 'tbsubcategoria_id');
+    }
 }

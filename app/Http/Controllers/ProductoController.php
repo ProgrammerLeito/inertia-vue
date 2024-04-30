@@ -40,7 +40,7 @@ class ProductoController extends Controller
                             DB::raw('(SELECT COALESCE(SUM(unidad_devolucion), 0) FROM salidas WHERE salidas.producto_id = productos.id) as total_devolucion'),
                             DB::raw('(SELECT COALESCE((SELECT cantidad FROM entradas WHERE entradas.producto_id = productos.id ORDER BY id DESC LIMIT 1), 0)) as ultima_cantidad_entrada')
                         )
-                        ->where('categories.id', '=', $categoryId)
+                        ->where('categories.id', '=', $categoryId)->orderBy('id', 'DESC')
                         ->paginate(self::Numero_de_items_pagina);
 
         $productos->appends(['category_id' => $categoryId]);

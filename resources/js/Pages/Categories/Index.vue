@@ -129,10 +129,7 @@ const deleteEmployee = (id, name) => {
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
-                        <!-- <Link @click="$event => openModal(1)" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('create categories')">
-                            Registrar Categoria
-                        </Link> -->
-                        <ButtonRegister @click.prevent="$event => openModal(1)">
+                        <ButtonRegister @click.prevent="$event => openModal(1)" v-if="$page.props.user.permissions.includes('Crear Categoria')">
                             <i class="bi bi-plus-circle mx-1"></i>Registrar Categoria
                         </ButtonRegister>
                     </div>
@@ -163,10 +160,10 @@ const deleteEmployee = (id, name) => {
                                             <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link>
                                             <!-- <Link class="py-2 px-4 text-green-500" @click="$event => openModal(2,category.name,category.id)" v-if="$page.props.user.permissions.includes('update categories')"><i class="bi bi-pencil-square"></i></Link>
                                             <Link class="py-2 px-4 text-red-500" @click="$event => deleteEmployee(category.id,category.name)" v-if="$page.props.user.permissions.includes('delete categories')"><i class="bi bi-trash3"></i></Link> -->
-                                            <ButtonEdit @click="$event => openModal(2,category.name,category.id)">
+                                            <ButtonEdit @click="$event => openModal(2,category.name,category.id)" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
                                                 <i class="bi bi-pencil-square text-green-500"></i>
                                             </ButtonEdit>
-                                            <ButtonDelete @click="$event => deleteEmployee(category.id,category.name)">
+                                            <ButtonDelete @click="$event => deleteEmployee(category.id,category.name)" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
                                                 <i class="bi bi-trash3 text-red-500"></i>
                                             </ButtonDelete>
                                         </td>

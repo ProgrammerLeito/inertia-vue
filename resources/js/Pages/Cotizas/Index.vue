@@ -59,12 +59,30 @@ const deleteCotizacion = (id, cliente_id) => {
                 <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
                         <Link :href="route('cventas.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            <i class="fa fa-plus-circle fa-beat mx-2"></i> Registrar cotizacion
+                            <i class="bi bi-folder-plus mx-1"></i> Registrar cotizacion
                         </Link>
+                    </div>
+                    <div class="flex flex-nowrap justify-normal py-1">
+                        <div class="flex items-center me-4">
+                            <input checked id="red-checkbox" type="checkbox" value="" class="w-4 h-4 text-cyan-600 bg-gray-100 border-gray-300 rounded focus:ring-cyan-500 dark:focus:ring-cyan-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-red-600 dark:border-gray-600">
+                            <label for="red-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Por enviar</label>
+                        </div>
+                        <div class="flex items-center me-4">
+                            <input checked id="green-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-green-600 dark:border-gray-600">
+                            <label for="green-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Enviado</label>
+                        </div>
+                        <div class="flex items-center me-4">
+                            <input checked id="yellow-checkbox" type="checkbox" value="" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-600 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-yellow-500 dark:border-gray-600">
+                            <label for="yellow-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Aceptado</label>
+                        </div>
+                        <div class="flex items-center me-4">
+                            <input checked id="orange-checkbox" type="checkbox" value="" class="w-4 h-4 text-red-500 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-orange-500 dark:border-gray-600">
+                            <label for="orange-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Rechazado</label>
+                        </div>
                     </div>
                     <div>
                         <div class="py-1">
-                            <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-4 sm:gap-x-2 mb-1">
+                            <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-1 sm:gap-x-2 mb-1">
                                 <div class="flex flex-col">
                                     <InputLabel for="table-search" class="block text-md font-medium text-gray-700 dark:text-white">Buscar</InputLabel>
                                     <div class="relative mt-1">
