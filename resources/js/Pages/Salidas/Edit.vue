@@ -58,6 +58,20 @@ function warn(event) {
     if (event) {
         event.preventDefault()
     }
+
+    let unidad_salida = form.unidad_salida;
+    let unidad_devolucion = form.unidad_devolucion;
+
+    if (unidad_devolucion > unidad_salida ){
+        Swal.fire({
+            icon: 'error',
+            title: 'La unidad de devolucion no puede ser mayor a la unidad de salida',
+            showConfirmButton: false,
+            timer: 2000
+        })
+        return;
+    }
+
     if (!validateForm()) {
         return;
     }

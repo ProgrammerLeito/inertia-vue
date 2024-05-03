@@ -40,6 +40,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('/salidas', SalidasController::class);
     Route::resource('/entradas', EntradaController::class);
     Route::post('/comprobarSalida', [SalidasController::class , 'comprobarSalida']);
+    Route::post('/validarstock', [SalidasController::class , 'validarstock']);
     Route::post('/salidas.store', [SalidasController::class , 'store']);
     Route::put('/salidas.update', [SalidasController::class , 'update']);
     

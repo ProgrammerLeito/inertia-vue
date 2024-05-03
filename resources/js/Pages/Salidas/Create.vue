@@ -1,6 +1,4 @@
 <script>
-// import bcrypt from 'bcryptjs';
-// import Route from 'vendor/tightenco/ziggy/src/js/Route';
     export default {
         name: 'ProductosCreate'
     }
@@ -82,64 +80,102 @@ function warn(event) {
     if (event) {
         event.preventDefault()
     }
-    // llamar a la funcion validateform para ver si al crear la salida estan los campos rellenados
-    if (!validateForm()) {
-        return;
-    }
-    let id = document.getElementById('tecnico').value;
-    if (id == 0 || id == "") {
+
+    let producto_id = form.producto_id;
+    let cantidad = form.unidad_salida;
+    // console.log(form.producto_id);
+    axios.post('/validarstock', {
+        producto_id: producto_id
+    })
+    .then(response => {
+        // Verifica la respuesta de la validación de stock
+        // console.log(response.data[0].id);
+        response = response.data[0]
+        // {{ parseInt(producto.stock) + parseInt(producto.total_entradas) + parseInt(producto.total_devolucion) - parseInt(producto.total_salidas) }}    {{ producto.unidad_medida }}
+        let stock = parseInt(response.stock) + parseInt(response.total_entradas) + parseInt(response.total_devolucion) - parseInt(response.total_salidas)
+        console.log(stock,cantidad);
+        if (stock < parseInt(cantidad)) {
+            // Si hay un error de stock insuficiente, muestra una alerta
+            Swal.fire({
+                icon: 'error',
+                title: 'Stock no disponible',
+                showConfirmButton: false,
+                timer: 1500
+            });
+            return;
+        } else if (stock >= parseInt(cantidad)) {
+            // llamar a la funcion validateform para ver si al crear la salida estan los campos rellenados
+            if (!validateForm()) {
+                return;
+            }
+            
+            let id = document.getElementById('tecnico').value;
+            if (id == 0 || id == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Debe seleccionar un tecnico',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            }else{
+                Swal.fire({
+                    title: "Ingrese su Contraseña para confirmar su salida",
+                    input: "password",
+                    inputAttributes: {
+                        autocapitalize: "off"
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: "Confirmar",
+                    showLoaderOnConfirm: true,
+                    cancelButtonText: "Cancelar",
+                    allowOutsideClick: () => !Swal.isLoading(),
+                    preConfirm: (password) => {
+                        // Aquí puedes realizar cualquier validación adicional o acciones necesarias antes de enviar la solicitud
+                        return axios.post('/comprobarSalida', { id: id, passwordconfirmacion: password })
+                            .then(response => {
+                                if (response.data.siexisteusuario === true) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: "Salida Exitosa",
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                    return true; // Esto confirma el diálogo si la validación es exitosa
+                                } else if (response.data.siexisteusuario === false) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: "Contraseña Incorrecta",
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                    return false; // Esto impide que el diálogo se cierre si la validación falla
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error al enviar la solicitud:', error);
+                                return false; // Esto impide que el diálogo se cierre si hay un error
+                            });
+                    }
+                }).then((result) => {
+                    // Aquí puedes realizar cualquier acción adicional después de que se complete la operación
+                    if (result.isConfirmed) {
+                        submit();
+                    }
+                });
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error al validar el stock:', error);
+        // Maneja cualquier error que pueda ocurrir durante la solicitud de validación de stock
         Swal.fire({
             icon: 'error',
-            title: 'Debe seleccionar un tecnico',
+            title: 'Error al validar el stock',
             showConfirmButton: false,
-            timer: 1500
-        })
-    }else{
-        Swal.fire({
-            title: "Ingrese su Contraseña para confirmar su salida",
-            input: "password",
-            inputAttributes: {
-                autocapitalize: "off"
-            },
-            showCancelButton: true,
-            confirmButtonText: "Confirmar",
-            showLoaderOnConfirm: true,
-            cancelButtonText: "Cancelar",
-            allowOutsideClick: () => !Swal.isLoading(),
-            preConfirm: (password) => {
-                // Aquí puedes realizar cualquier validación adicional o acciones necesarias antes de enviar la solicitud
-                return axios.post('/comprobarSalida', { id: id, passwordconfirmacion: password })
-                    .then(response => {
-                        if (response.data.siexisteusuario === true) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: "Salida Exitosa",
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                            return true; // Esto confirma el diálogo si la validación es exitosa
-                        } else if (response.data.siexisteusuario === false) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: "Contraseña Incorrecta",
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                            return false; // Esto impide que el diálogo se cierre si la validación falla
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al enviar la solicitud:', error);
-                        return false; // Esto impide que el diálogo se cierre si hay un error
-                    });
-            }
-        }).then((result) => {
-            // Aquí puedes realizar cualquier acción adicional después de que se complete la operación
-            if (result.isConfirmed) {
-                submit();
-            }
+            timer: 2500
         });
-    }
+        return;
+    });
 }
 
 function submit(){

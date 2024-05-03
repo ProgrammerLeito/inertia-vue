@@ -76,7 +76,7 @@ const deleteSalidas = (id, empresa) => {
 }
 
 const formatDate = (dateString) => {
-    const options = { month: 'short', day: '2-digit', year: 'numeric' };
+    const options = { month: 'long', day: '2-digit'};
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', options);
 };
@@ -142,7 +142,7 @@ const formatTime = (timeString) => {
                                         <td class="px-6 py-4">{{ salida.unidad_salida }}</td>
                                         <td class="px-6 py-4">{{ salida.comentario_salida }}</td>
                                         <td class="px-6 py-4">{{ salida.name }}</td>
-                                        <td class="px-6 py-4">{{ formatDate(salida.fecha) }} a las {{ formatTime(salida.hora_salida) }}</td>
+                                        <td class="px-6 py-4 text-center">{{ formatDate(salida.fecha) }} a las {{ formatTime(salida.hora_salida) }}</td>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center">
                                                 {{ salida.devolucion != 1 ? 'Sin Devolucion' : (salida.unidad_devolucion === null ? 'Esperando devolución' : salida.unidad_devolucion) }}

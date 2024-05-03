@@ -121,7 +121,7 @@ defineEmits(['submit'])
                 <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
                     <div class="sm:col-span-1">
                         <InputLabel for="cantidad" value="Cantidad" class="ml-1"/>
-                        <TextInput id="cantidad" v-model="form.cantidad" type="text" autocomplete="cantidad" class="validarSoloNumerosDosDecimales mt-1 block w-full" :disabled="updating" placeholder="0"/>
+                        <TextInput id="cantidad" v-model="form.cantidad" type="text" autocomplete="cantidad" class="validarSoloNumerosDosDecimales mt-1 block w-full" :disabled="!updating || !$page.props.user.permissions.includes('Acciones Administrador')" placeholder="0"/>
                         <InputError :message="$page.props.errors.cantidad" class="mt-2"/>
                     </div>
                     <div class="sm:col-span-1">

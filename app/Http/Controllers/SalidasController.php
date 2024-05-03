@@ -98,6 +98,35 @@ class SalidasController extends Controller
         return response()->json(['siexisteusuario' => $contraseñaCorrecta]);
     }
 
+    public function validarstock(Request $request)
+    {
+        $producto_id = $request->input('producto_id');
+        
+        $productos = DB::table('productos')
+                            ->select(
+                                'productos.id',
+                                'productos.insumo',
+                                'productos.marca',
+                                'productos.modelo',
+                                'productos.cantidad',
+                                'productos.unidad_medida',
+                                'productos.fecha',
+                                'productos.comprador',
+                                'productos.comentario',
+                                'productos.stock',
+                                'productos.precio',
+                                'productos.ultima_entrada',
+                                DB::raw('(SELECT COALESCE(SUM(cantidad), 0) FROM entradas WHERE entradas.producto_id = productos.id) as total_entradas'),
+                                DB::raw('(SELECT COALESCE(SUM(unidad_salida), 0) FROM salidas WHERE salidas.producto_id = productos.id) as total_salidas'),
+                                DB::raw('(SELECT COALESCE(SUM(unidad_devolucion), 0) FROM salidas WHERE salidas.producto_id = productos.id) as total_devolucion'),
+                                DB::raw('(SELECT COALESCE((SELECT cantidad FROM entradas WHERE entradas.producto_id = productos.id ORDER BY id DESC LIMIT 1), 0)) as ultima_cantidad_entrada')
+                            )
+                            ->where('productos.id', '=', $producto_id)->orderBy('id', 'DESC')
+                            ->get();
+
+        return response()->json($productos);
+    }
+
     public function store(Request $request)
     {
         $validatedData  = $request->validate([

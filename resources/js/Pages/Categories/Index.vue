@@ -25,14 +25,11 @@ export default {
         guardarCategoriaId(categoryId) {
             // Guardar el ID de la categoría en localStorage
             localStorage.setItem('category_id', categoryId);
-            console.log(localStorage.getItem('category_id'));
         },
         redirectToDetails(categoryId) {
             // Redirigir a la página de detalles usando el mismo enlace que el botón de visualización
             window.location.href = this.route('productos.index', { category_id: categoryId });
         }
-        // Resto de tus métodos
-        // constante para manejar la seleccion automatica del producto
     }
 };
 </script>
