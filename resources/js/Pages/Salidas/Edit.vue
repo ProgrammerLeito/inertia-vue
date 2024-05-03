@@ -34,6 +34,7 @@ const form = useForm({
     comentario_salida: props.salidas.comentario_salida,
     tecnico: props.salidas.tecnico,
     fecha: props.salidas.fecha,
+    hora_salida: props.salidas.hora_salida,
     producto_id: props.salidas.producto_id,
     devolucion: props.salidas.devolucion,
     unidad_devolucion: props.salidas.unidad_devolucion

@@ -20,26 +20,45 @@ class SalidasController extends Controller
 
         $query = Salida::query()->with('producto');
 
-        if ($productoId) {
-            $query->where('producto_id', $productoId);
+        // Si no hay un ID de producto especificado, muestra todas las salidas
+        if (!$productoId) {
+            $salidas = DB::table('salidas')
+                            ->join('users', 'users.id', '=', 'salidas.tecnico')
+                            ->join('productos', 'productos.id', '=', 'salidas.producto_id')
+                            ->select(
+                                'salidas.id',
+                                'salidas.empresa',
+                                'salidas.unidad_salida',
+                                'salidas.comentario_salida',
+                                'users.name',
+                                'salidas.fecha',
+                                'productos.insumo',
+                                'salidas.unidad_devolucion',
+                                'salidas.devolucion',
+                                'salidas.hora_salida'
+                            )
+                            ->whereNull('salidas.unidad_devolucion')
+                            ->paginate(self::Numero_de_items_pagina);
+        } else {
+            // Si hay un ID de producto especificado, filtra por ese producto
+            $salidas = DB::table('salidas')
+                            ->join('users', 'users.id', '=', 'salidas.tecnico')
+                            ->join('productos', 'productos.id', '=', 'salidas.producto_id')
+                            ->select(
+                                'salidas.id',
+                                'salidas.empresa',
+                                'salidas.unidad_salida',
+                                'salidas.comentario_salida',
+                                'users.name',
+                                'salidas.fecha',
+                                'productos.insumo',
+                                'salidas.unidad_devolucion',
+                                'salidas.devolucion',
+                                'salidas.hora_salida',
+                            )
+                            ->where('salidas.producto_id', '=', $productoId)
+                            ->paginate(self::Numero_de_items_pagina);
         }
-
-        $salidas = DB::table('salidas')
-                        ->join('users', 'users.id', '=', 'salidas.tecnico')
-                        ->join('productos', 'productos.id', '=', 'salidas.producto_id')
-                        ->select(
-                            'salidas.id',
-                            'salidas.empresa',
-                            'salidas.unidad_salida',
-                            'salidas.comentario_salida',
-                            'users.name',
-                            'salidas.fecha',
-                            'productos.insumo',
-                            'salidas.unidad_devolucion',
-                            'salidas.devolucion'
-                        )
-                        ->where('salidas.producto_id', '=', $productoId)
-                        ->paginate(self::Numero_de_items_pagina);
 
         $salidas->appends(['producto_id' => $productoId]);
 
@@ -87,6 +106,7 @@ class SalidasController extends Controller
             'comentario_salida' => 'required',
             'tecnico' => 'required',
             'fecha' => 'required',
+            'hora_salida' => 'required',
             'producto_id' => 'required',
             'devolucion' => 'nullable',
             'unidad_devolucion' => 'nullable',
@@ -119,6 +139,7 @@ class SalidasController extends Controller
             'comentario_salida' => 'required|string',
             'tecnico' => 'required|integer',
             'fecha' => 'required',
+            'hora_salida' => 'required',
             'producto_id' => 'required',
             'devolucion' => 'nullable',
             'unidad_devolucion'=>'nullable',

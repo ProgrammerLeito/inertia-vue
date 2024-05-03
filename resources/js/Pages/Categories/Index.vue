@@ -21,6 +21,19 @@ export default {
         });
         },
     },
+    methods: {
+        guardarCategoriaId(categoryId) {
+            // Guardar el ID de la categoría en localStorage
+            localStorage.setItem('category_id', categoryId);
+            console.log(localStorage.getItem('category_id'));
+        },
+        redirectToDetails(categoryId) {
+            // Redirigir a la página de detalles usando el mismo enlace que el botón de visualización
+            window.location.href = this.route('productos.index', { category_id: categoryId });
+        }
+        // Resto de tus métodos
+        // constante para manejar la seleccion automatica del producto
+    }
 };
 </script>
 
@@ -154,17 +167,15 @@ const deleteEmployee = (id, name) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="bg-white text-black dark:bg-gray-700 dark:text-white" v-for="category in filteredCategories">
+                                    <tr class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-800 hover:bg-gray-200 cursor-pointer" @dblclick="guardarCategoriaId(category.id); redirectToDetails(category.id)" v-for="category in filteredCategories" :key="category.id">
                                         <td class="px-6 py-4 font-semibold">{{ category.name }}</td>
-                                        <td class="p-3 text-center">
-                                            <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link>
-                                            <!-- <Link class="py-2 px-4 text-green-500" @click="$event => openModal(2,category.name,category.id)" v-if="$page.props.user.permissions.includes('update categories')"><i class="bi bi-pencil-square"></i></Link>
-                                            <Link class="py-2 px-4 text-red-500" @click="$event => deleteEmployee(category.id,category.name)" v-if="$page.props.user.permissions.includes('delete categories')"><i class="bi bi-trash3"></i></Link> -->
-                                            <ButtonEdit @click="$event => openModal(2,category.name,category.id)" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
-                                                <i class="bi bi-pencil-square text-green-500"></i>
+                                        <td class="p-3 text-center whitespace-nowrap">
+                                            <!-- <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link> -->
+                                            <ButtonEdit @click="$event => openModal(2, category.name, category.id)" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
+                                            <i class="bi bi-pencil-square py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700"></i>
                                             </ButtonEdit>
-                                            <ButtonDelete @click="$event => deleteEmployee(category.id,category.name)" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
-                                                <i class="bi bi-trash3 text-red-500"></i>
+                                            <ButtonDelete @click="$event => deleteEmployee(category.id, category.name)" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
+                                            <i class="bi bi-trash3 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
                                             </ButtonDelete>
                                         </td>
                                     </tr>

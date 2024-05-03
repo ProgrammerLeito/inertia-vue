@@ -178,10 +178,10 @@ onMounted(() => {
                                         <td class="px-6 py-4">{{ entrada.fecha }}</td>
                                         <td class="p-3 text-center" v-if="$page.props.user.permissions.includes('Acciones Entradas')">
                                             <ButtonEdit @click="$event => openModal(2,entrada.cantidad,entrada.fecha,entrada.producto_id,entrada.id)">
-                                                <i class="bi bi-pencil-square text-green-500"></i>
+                                                <i class="bi bi-pencil-square py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700"></i>
                                             </ButtonEdit>
                                             <ButtonDelete @click="$event => deleteEntrada(entrada.id, entrada.producto?.insumo)">
-                                                <i class="bi bi-trash3 text-red-500"></i>
+                                                <i class="bi bi-trash3 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
                                             </ButtonDelete>
                                         </td>
                                     </tr>

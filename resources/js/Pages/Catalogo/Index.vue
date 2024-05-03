@@ -139,23 +139,41 @@ watchEffect(() => {
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Codigo</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Modelo</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Marca</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr  v-for="(tbproducto, i) in filteredTbproductos" :key="tbproducto.id"  class="bg-white text-black dark:bg-gray-700 dark:text-white">
-                                            <td class="px-6 py-4 text-center">{{ tbproducto.codigo }}</td>
-                                            <td class="px-6 py-4 text-center"><b>{{ tbproducto.modelo }}</b></td>
-                                            <img @click="openModal('/storage/' + tbproducto.foto)" :src="'/storage/' + tbproducto.foto" alt="Foto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
-                                            <td class="px-6 py-4 text-center">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
-                                            <td class="px-6 py-4 text-center">{{ tbproducto.capacidades }}</td>
-                                            <td class="px-6 py-4 text-center">{{ tbproducto.especificaciones }}</td>
-                                            <td class="px-6 py-4 text-center">{{ tbproducto.precio }}</td>
-                                            <td class="p-3 text-center">
+                                        <tr v-for="(tbproducto, i) in filteredTbproductos" :key="tbproducto.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
+                                            <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.codigo }}</td>
+                                            <td class="px-6 py-4 text-center border-r border-b"><b>{{ tbproducto.modelo }}</b></td>
+                                            <td class="px-6 py-4 text-center border-r border-b"><img @click="openModal('/storage/' + tbproducto.foto)" :src="'/storage/' + tbproducto.foto" alt="Foto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto"></td>
+                                            <td class="px-6 py-4 text-center border-r border-b whitespace-nowrap">
+                                                <div class="accordions">
+                                                    <dl>
+                                                        <dt @click="toggleAccordion(i)" class="cursor-pointer text-white">
+                                                            Especificaciones
+                                                            <i :class="{'fa-solid fa-arrow-up-long ml-2': activeAccordion === i, 'fa-solid fa-arrow-down-long ml-2': activeAccordion !== i}"></i>
+                                                        </dt>
+                                                        <dd v-if="activeAccordion === i" class="ml-4 text-white">
+                                                            <ul class="list-disc px-6 py-4 text-left">
+                                                                <li v-for="(item, index) in tbproducto.especificaciones.split('\n')" :key="index">{{ item }}</li>
+                                                            </ul>
+                                                        </dd>
+                                                    </dl>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
+                                            <td class="px-6 py-4 text-center border-r border-b whitespace-nowrap">
+                                                <ul class="list-disc px-6 py-4 text-left -translate-y-1">
+                                                    <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
+                                                </ul>
+                                            </td>
+                                            <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.precio }}</td>
+                                            <td class="p-3 text-center border-b">
                                                 <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })">
                                                     <i class="bi bi-pencil-square text-green-500"></i>
                                                 </Link>
@@ -192,11 +210,14 @@ watchEffect(() => {
 </template>
  
 <script>
+import Nl2br from 'vue3-nl2br'
+
 export default {
     data() {
         return {
             modalOpen: false, // Estado del modal
-            modalImageUrl: '' // URL de la imagen para mostrar en el modal
+            modalImageUrl: '', // URL de la imagen para mostrar en el modal
+            activeAccordion: null
         };
     },
     methods: {
@@ -204,7 +225,13 @@ export default {
         openModal(imageUrl) {
             this.modalImageUrl = imageUrl; // Establece la URL de la imagen
             this.modalOpen = true; // Abre el modal
+        },
+        toggleAccordion(index) {
+            this.activeAccordion = this.activeAccordion === index ? null : index;
         }
+    },
+    components: {
+        Nl2br,
     }
 }
 </script>

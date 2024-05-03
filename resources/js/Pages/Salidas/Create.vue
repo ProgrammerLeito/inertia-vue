@@ -36,13 +36,32 @@ const form = useForm ({
     comentario_salida: '',
     tecnico: '',
     fecha: '',
+    hora_salida:'',
     producto_id: '',
     devolucion: '0',
 })
+ 
+const setCurrentTime = () => {
+    const now = new Date();
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    form.hora_salida = `${hour}:${minute}`;
+}
+onMounted(() => {
+    setCurrentTime();
+});
 
 onMounted(() => {
     const today = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual y la formatea como yyyy-mm-dd
     form.fecha = today; // Asigna la fecha actual al modelo de datos del formulario
+});
+
+// constante para manejar la seleccion automatica del producto
+onMounted(() => {
+    const producto_id = localStorage.getItem('producto_id');
+    if (producto_id) {
+        form.producto_id = producto_id; // Asigna el producto_id al modelo de datos del formulario
+    }
 });
 
 // Funcion validateform para ver si al crear la salida estan los campos rellenados

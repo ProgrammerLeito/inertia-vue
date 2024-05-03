@@ -27,6 +27,7 @@ class Salida extends Model
         'comentario_salida',
         'tecnico',
         'fecha',
+        'hora_salida',
         'producto_id',
         'devolucion',
         'unidad_devolucion',

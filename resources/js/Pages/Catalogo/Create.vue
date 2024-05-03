@@ -262,7 +262,7 @@ const ok4 = (msj) => {
  
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
+                <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm shadow-lg bg-white dark:bg-gray-800 rounded-lg">
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                
                         <form @submit.prevent="submitForm">
@@ -399,6 +399,7 @@ const ok4 = (msj) => {
                                     <InputLabel for="foto" value="Foto" class="block text-xs font-medium text-gray-700"/>
                                     <FileInput name="foto" @change="onSelectFoto"/>
                                     <InputError :message="$page.props.errors.foto" class="mt-2" />
+                                    <div class="py-1 dark:text-white normal-case">De preferencia Subir Imagenes Cuadradas</div>
                                 </div>
                             </div>
  

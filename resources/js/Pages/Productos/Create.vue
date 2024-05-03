@@ -79,6 +79,14 @@ watch(
     }
 );
 
+// constante para manejar la seleccion automatica del producto
+onMounted(() => {
+    const category_id = localStorage.getItem('category_id');
+    if (category_id) {
+        form.category_id = category_id; // Asigna el category_id al modelo de datos del formulario
+    }
+});
+
 onMounted(() => {
     const today = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual y la formatea como yyyy-mm-dd
     form.fecha = today; // Asigna la fecha actual al modelo de datos del formulario

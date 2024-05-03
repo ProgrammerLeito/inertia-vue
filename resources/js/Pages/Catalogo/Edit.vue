@@ -5,11 +5,10 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import Modal from '@/Components/Modal.vue';
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
 import FileInput from '@/Components/FileInput.vue';
 
 const page = usePage();
@@ -114,7 +113,7 @@ const submitForm = () => {
                             <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-8 mb-3">
                                 <!-- Modelo -->
                                 <div>
-                                    <InputLabel for="modelo" class="block text-xsfont-medium text-gray-700">Modelo</InputLabel>
+                                    <InputLabel for="modelo" class="block text-sm font-medium text-gray-700">Modelo</InputLabel>
                                     <TextInput type="text" id="modelo" v-model="form.modelo" required placeholder="Ingrese el modelo"
                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.modelo" class="mt-2"/>
@@ -122,7 +121,7 @@ const submitForm = () => {
 
                                 <!-- Medida -->
                                 <div>
-                                    <InputLabel for="medida" class="block text-xs font-medium text-gray-700">Medida</InputLabel>
+                                    <InputLabel for="medida" class="block text-sm font-medium text-gray-700">Medida</InputLabel>
                                     <TextInput type="text" id="medida" v-model="form.medida" required placeholder="Ingrese la medida"
                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.medida" class="mt-2"/>
@@ -130,7 +129,7 @@ const submitForm = () => {
 
                                 <!-- Moneda -->
                                 <div>
-                                    <InputLabel for="moneda" class="block text-xs font-medium text-gray-700">Moneda</InputLabel>
+                                    <InputLabel for="moneda" class="block text-sm font-medium text-gray-700">Moneda</InputLabel>
                                     <select id="moneda" v-model="form.moneda" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Selecciona una moneda</option>
@@ -142,7 +141,7 @@ const submitForm = () => {
 
                                 <!-- Precio -->
                                 <div>
-                                    <InputLabel for="precio" class="block text-xs font-medium text-gray-700">Precio</InputLabel>
+                                    <InputLabel for="precio" class="block text-sm font-medium text-gray-700">Precio</InputLabel>
                                     <TextInput type="number" id="precio" v-model="form.precio" required placeholder="Ingrese el precio"
                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.precio" class="mt-2"/>
@@ -150,7 +149,7 @@ const submitForm = () => {
 
                                 <!-- Descuento -->
                                 <div>
-                                    <InputLabel for="descuento" class="block text-xs font-medium text-gray-700">Descuento (%)</InputLabel>
+                                    <InputLabel for="descuento" class="block text-sm font-medium text-gray-700">Descuento (%)</InputLabel>
                                     <TextInput type="number" id="descuento" v-model="form.descuento" placeholder="Ingrese el descuento"
                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.descuento" class="mt-2"/>
@@ -158,7 +157,7 @@ const submitForm = () => {
 
                                 <!-- Stock -->
                                 <div>
-                                    <InputLabel for="stock" class="block text-xs font-medium text-gray-700">Stock</InputLabel>
+                                    <InputLabel for="stock" class="block text-sm font-medium text-gray-700">Stock</InputLabel>
                                     <TextInput type="number" id="stock" v-model="form.stock"  required placeholder="Ingrese el stock"
                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.stock" class="mt-2"/>
@@ -166,7 +165,7 @@ const submitForm = () => {
 
                                 <!-- Código -->
                                 <div>
-                                    <InputLabel for="codigo" class="block text-xs font-medium text-gray-700">Código</InputLabel>
+                                    <InputLabel for="codigo" class="block text-sm font-medium text-gray-700">Código</InputLabel>
                                     <TextInput type="text" id="codigo" v-model="form.codigo" required placeholder="Ingrese el código"
                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.codigo" class="mt-2"/>
@@ -174,7 +173,7 @@ const submitForm = () => {
 
                                 <!-- Estado -->
                                 <div>
-                                    <InputLabel for="estado" class="block text-xs font-medium text-gray-700">Estado</InputLabel>
+                                    <InputLabel for="estado" class="block text-sm font-medium text-gray-700">Estado</InputLabel>
                                     <select id="estado" v-model="form.estado" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Selecciona un estado</option>
@@ -188,7 +187,7 @@ const submitForm = () => {
                             <!-- Capacidades -->
                             <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8">
                                 <div>
-                                    <InputLabel for="capacidades" class="block text-xs font-medium text-gray-700">Capacidades</InputLabel>
+                                    <InputLabel for="capacidades" class="block text-sm font-medium text-gray-700">Capacidades</InputLabel>
                                     <textarea id="capacidades" v-model="form.capacidades" rows="5" required placeholder="Ingrese las capacidades"
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
                                     <InputError :message="$page.props.errors.capacidades" class="mt-2"/>
@@ -196,24 +195,28 @@ const submitForm = () => {
 
                                 <!-- Especificaciones -->
                                 <div>
-                                    <InputLabel for="especificaciones" class="block text-xs font-medium text-gray-700">Especificaciones</InputLabel>
+                                    <InputLabel for="especificaciones" class="block text-sm font-medium text-gray-700">Especificaciones</InputLabel>
                                     <textarea id="especificaciones" v-model="form.especificaciones" rows="5" required placeholder="Ingrese las especificaciones"
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
                                     <InputError :message="$page.props.errors.especificaciones" class="mt-2"/>
                                 </div>
 
                                 <div>
-                                    <InputLabel for="foto" value="Foto" class="block text-xs font-medium text-gray-700"/>
-                                    <FileInput name="foto" @change="onSelectFoto"/>
+                                    <InputLabel for="foto" value="Foto" class="block text-sm font-medium text-gray-700"/>
+                                    <FileInput name="foto" @change="onSelectFoto" class="text-sm"/>
                                     <InputError :message="$page.props.errors.foto" class="mt-2" />
                                     <img class="h-16 mt-2" :src="'/storage/' + tbproducto.foto" alt="Foto actual" >
-
+                                    <div class="py-1 dark:text-white normal-case text-sm">De preferencia Subir Imagenes Cuadradas</div>
                                 </div>
 
                             </div>
-                            <div class="mt-6">
-                                <PrimaryButton>Actualizar</PrimaryButton>
-                                <Link :href="route('tbproductos.index')" class="ml-5 inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">Cancelar</Link>
+                            <div class="d-flex mt-4">
+                                <div class="flex flex-wrap gap-2 justify-end">
+                                    <ButtonResponsive class="font-bold">ACTUALIZAR</ButtonResponsive>
+                                    <Link :href="route('tbproductos.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
+                                        Cancelar
+                                    </Link>
+                                </div>
                             </div>
                         </form>
 

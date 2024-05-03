@@ -44,6 +44,7 @@ const form = useForm ({
     comentario_salida: '',
     tecnico: '',
     fecha: '',
+    hora_salida: '',
     producto_id: '',
     devolucion: '0',
 })
@@ -74,6 +75,16 @@ const deleteSalidas = (id, empresa) => {
     });
 }
 
+const formatDate = (dateString) => {
+    const options = { month: 'short', day: '2-digit', year: 'numeric' };
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', options);
+};
+const formatTime = (timeString) => {
+    const time = new Date("2000-01-01T" + timeString);
+    return time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+};
+
 </script>
 
 <template>
@@ -93,9 +104,9 @@ const deleteSalidas = (id, empresa) => {
                             <i class="bi bi-clipboard-x mx-1"></i>Ingresar Salida
                         </Link>
                     </div>
-                    <div class="md:mt-0 mt-4">
+                    <!-- <div class="md:mt-0 mt-4">
                         <div class="font-semibold text-center dark:text-white">Producto || {{ filteredSalidas.length > 0 ? filteredSalidas[0].insumo : 'Sin salidas' }}</div>
-                    </div>
+                    </div> -->
                     <div class="mt-4">
                         <div class="pb-4 bg-white dark:bg-gray-800">
                             <label for="table-search" class="sr-only">Buscar</label>
@@ -113,11 +124,11 @@ const deleteSalidas = (id, empresa) => {
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3">Empresa</th>
-                                        <!-- <th scope="col" class="px-6 py-3">Producto</th> -->
+                                        <th scope="col" class="px-6 py-3">Producto</th>
                                         <th scope="col" class="px-6 py-3">Unidad de Salida</th>
                                         <th scope="col" class="px-6 py-3">Comentario</th>
                                         <th scope="col" class="px-6 py-3">Tecnico</th>
-                                        <th scope="col" class="px-6 py-3">Fecha</th>
+                                        <th scope="col" class="px-6 py-3 text-center">Fecha</th>
                                         <th scope="col" class="px-6 py-3">Cantidad de Devolucion</th>
                                         <th scope="col" class="hidden px-6 py-3">Devolucion</th>
                                         <th scope="col" class="text-center px-6 py-3" v-if="$page.props.user.permissions.includes('Acciones Salidas')">Acciones</th>
@@ -127,11 +138,11 @@ const deleteSalidas = (id, empresa) => {
                                     <!-- <tr class="bg-white text-black border-b dark:bg-gray-700 dark:border-gray-400 dark:text-white" v-for="salida in filteredSalidas" :class="{ 'bg-gray-300 dark:bg-amber-400': salida.devolucion == 1 }"> -->
                                     <tr class="bg-white text-black border-b dark:bg-gray-700 dark:border-gray-400 dark:text-white" v-for="salida in filteredSalidas">
                                         <td class="px-6 py-4 font-semibold">{{ salida.empresa }}</td>
-                                        <!-- <td class="px-6 py-4">{{ salida.insumo }}</td> -->
+                                        <td class="px-6 py-4">{{ salida.insumo }}</td>
                                         <td class="px-6 py-4">{{ salida.unidad_salida }}</td>
                                         <td class="px-6 py-4">{{ salida.comentario_salida }}</td>
                                         <td class="px-6 py-4">{{ salida.name }}</td>
-                                        <td class="px-6 py-4">{{ salida.fecha }}</td>
+                                        <td class="px-6 py-4">{{ formatDate(salida.fecha) }} a las {{ formatTime(salida.hora_salida) }}</td>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center">
                                                 {{ salida.devolucion != 1 ? 'Sin Devolucion' : (salida.unidad_devolucion === null ? 'Esperando devolución' : salida.unidad_devolucion) }}
@@ -139,10 +150,10 @@ const deleteSalidas = (id, empresa) => {
                                             </div>
                                         </td>
                                         <td class="hidden px-6 py-4">{{ salida.devolucion }}</td>
-                                        <td class="p-3 border-b text-center dark:border-gray-400" v-if="$page.props.user.permissions.includes('Acciones Salidas')">
-                                            <Link class="py-2 px-4 text-green-500" :href="route('salidas.edit', salida.id)"><i class="bi bi-pencil-square"></i></Link>
+                                        <td class="p-3 border-b whitespace-nowrap text-center dark:border-gray-400" v-if="$page.props.user.permissions.includes('Acciones Salidas')">
+                                            <Link class="py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700" :href="route('salidas.edit', salida.id)"><i class="bi bi-pencil-square"></i></Link>
                                             <ButtonDelete @click="$event => deleteSalidas(salida.id,salida.empresa)" class="ml-1">
-                                                <i class="bi bi-trash3 ml-2 text-red-500"></i>
+                                                <i class="bi bi-trash3 ml-2 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
                                             </ButtonDelete>
                                         </td>
                                     </tr>

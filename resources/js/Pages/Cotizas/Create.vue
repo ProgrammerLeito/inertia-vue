@@ -162,10 +162,6 @@ watch(() => form.moneda, (newValue) => {
     }
 });
  
- 
- 
- 
- 
 //modal para crear el tenor
 const openModal2 = (op, name, tenor) => {
     modal2.value = true;
@@ -173,9 +169,9 @@ const openModal2 = (op, name, tenor) => {
     operation2.value = op;
     id2.value = tenor;
     if (op === 1) {
-        title2.value = 'Registrar tenor';
+        title2.value = 'Registrar Descripcion';
     } else {
-        title2.value = 'Actualizar tenor';
+        title2.value = 'Actualizar Descripcion';
         form2.name = name;
     }
 };
@@ -233,15 +229,10 @@ const submitForm = () => {
 
 const previewPDF = () => {
     const doc = new jsPDF();
-   
-    // const headerText = 'INDUSTRIAS BALINZA E,I.R.L';
-    // const headerTextWidth = doc.getTextWidth(headerText);
- 
-    // const pageWidth = doc.internal.pageSize.getWidth();
-    // const xPosition = (pageWidth - headerTextWidth) / 2;
- 
-    // doc.text(headerText, xPosition, 10);
-    // doc.setTextColor(0, 0, 0); // Restaurar el color de texto a negro
+
+    // let plantilla = 'http://127.0.0.1:8000/storage/fotos/plantillacotizacion.png';
+
+    // doc.addImage(plantilla, 'PNG', 0, 0, 100, 100); // Agregar la imagen en las coordenadas fijas
    
     const cliente = document.getElementById("cliente_id").options[document.getElementById("cliente_id").selectedIndex].text;
     const descripcion = document.getElementById("tenor_id").options[document.getElementById("tenor_id").selectedIndex].text;
@@ -254,52 +245,263 @@ const previewPDF = () => {
     const igv = document.getElementById("igv").value;
     const total = document.getElementById("total").value;
  
-    doc.setTextColor(255,0,0);//Color de texto
-	doc.setFontSize(10);//Tamaño de texto
-    doc.text(20, 20, 'Cotización por Venta');
+    var eje_y = 40
+    var yPos = 0
+
     doc.setTextColor(0,0,0);//Color de texto
-    doc.setFontSize(15);//Tamaño de texto
-    doc.text(20, 30, `Cliente: ${cliente}`);
-    doc.text(20, 40, `Tenor: ${descripcion}`);
-    doc.text(20, 50, `Fecha: ${fecha}`);
-    doc.text(20, 60, `Moneda: ${moneda}`);
-    doc.text(20, 70, `Garantía: ${garantia}`);
-    doc.text(20, 80, `Forma de pago: ${forma_pago}`);
-    doc.text(20, 90, `Días de entrega: ${dias_entrega}`);
-    doc.text(20, 100, `Subtotal: ${subtotal}`);
-    doc.text(20, 110, `IGV: ${igv}`);
-    doc.text(20, 120, `Total: ${total}`);
- 
-    let yPos = 130;
+	doc.setFontSize(10);//Tamaño de texto
+    doc.setFont('Helvetica', 'normal');//estilos de texto
+    doc.text(20, eje_y, 'Señores:');
+    doc.setFont('Helvetica', 'bold');//estilos de texto
+    doc.setFontSize(10.5);//Tamaño de texto
+    eje_y += 5 // vale 15
+    doc.text(20, eje_y, `${cliente}`);
+
+    doc.setTextColor(0,0,0);//Color de texto
+	doc.setFontSize(10);//Tamaño de texto
+    doc.setFont('Helvetica', 'normal');//estilos de texto
+    eje_y += 14 // vale 29
+    doc.text(20, eje_y, 'Estimados Señores:');
+	var splitten = doc.splitTextToSize('En atención a su solicitud nos es grato dirigirnos a Ustedes, para presentarles la mejor propuesta del mercado:', 160);
+	eje_y += 5 // vale 34
+    doc.text(20, eje_y, splitten);
+
+    doc.setTextColor(0,0,0);//Color de texto
+	doc.setFontSize(10.5);//Tamaño de texto
+    doc.setFont('Helvetica', 'bold');//estilos de texto
+    eje_y += 11 // vale 45
+    doc.text(20, eje_y, `${descripcion}`);
+
+    yPos = eje_y
+
+    // doc.setTextColor(0,0,0);//Color de texto
+    // doc.setFontSize(15);//Tamaño de texto
+    // doc.setFont('', '');//estilos de texto
+    // doc.text(20, 30, `Cliente: ${cliente}`);
+    // doc.text(20, 40, `Tenor: ${descripcion}`);
+    // doc.text(20, 50, `Fecha: ${fecha}`);
+    // doc.text(20, 60, `Moneda: ${moneda}`);
+    // doc.text(20, 70, `Garantía: ${garantia}`);
+    // doc.text(20, 80, `Forma de pago: ${forma_pago}`);
+    // doc.text(20, 90, `Días de entrega: ${dias_entrega}`);
+    // doc.text(20, 100, `Subtotal: ${subtotal}`);
+    // doc.text(20, 110, `IGV: ${igv}`);
+    // doc.text(20, 120, `Total: ${total}`);
  
     const addProductData = (producto, index, nextPageCallback) => {
-        doc.text(20, yPos, `Producto ${index + 1}:`);
-        doc.text(30, yPos + 10, `Modelo: ${producto.modelo}`);
-        doc.text(30, yPos + 20, `Especificaciones: ${producto.especificaciones}`);
-        doc.text(30, yPos + 30, `Marca: ${producto.tbmarca ? producto.tbmarca.nombre : 'Sin marca'}`);
-        doc.text(30, yPos + 40, `Capacidades: ${producto.capacidades}`);
-        doc.text(30, yPos + 50, `Precio: S/ ${producto.precio}`);
-        doc.text(30, yPos + 60, `Cantidad: ${producto.cantidad}`);
-        doc.text(30, yPos + 70, `Importe: S/ ${producto.precio * producto.cantidad}`);
- 
-       
+
         const img = new Image();
-        img.src = `/img/catalogo/${producto.foto}`;
+        img.src = `/storage/${producto.foto}`;
+        console.log(img.src);
+
+        // Coordenadas fijas para la posición de la imagen
+        const imgX = 135; // Posición X
+
         img.onload = () => {
-            doc.addImage(img, 'JPEG', 110, yPos + 10, 50, 50);
-            yPos += 150;
+            doc.addImage(img, 'JPEG', imgX, (yPos += 5), 40, 40); // Agregar la imagen en las coordenadas fijas
+            yPos += 150; // Ajustar la posición Y para el siguiente elemento
             if (yPos + 150 > doc.internal.pageSize.height) {
                 doc.addPage();
-                yPos = 20;
+                yPos = 20; // Reiniciar la posición vertical en la nueva página
+                eje_y =20 // Reiniciar la posición vertical para el contenido
                 nextPageCallback();
             }
         };
+
+        // doc.text(20, yPos, `Producto ${index + 1}:`);
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_y += 20 // vale 65
+        doc.text(20, eje_y, 'Marca');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10.5);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        doc.text(55, eje_y, ': ' + `${producto.tbmarca ? producto.tbmarca.nombre : 'Sin marca'}`);
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_y += 5 // vale 70
+        doc.text(20, eje_y, 'Modelo');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10.5);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        doc.text(55, eje_y, ': ' + `${producto.modelo}`);
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_y += 5 // vale 75
+        doc.text(20, eje_y, 'Capacidades');
+
+        // Capacidad técnica
+        var capacidadTecnica = `${producto.capacidades}`;
+        var capacidadesDivididas = doc.splitTextToSize(capacidadTecnica, 70); // Dividir el texto en líneas de máximo 160 unidades de ancho
+
+        // Dibujar cada línea
+        capacidadesDivididas.forEach(function(linea, indice) {
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            var texto = (indice === 0) ? ': ' + linea : '  '+ linea; // Agregar ":" solo a la primera línea
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            doc.text(55, eje_y, texto);
+            eje_y += 5; // Incrementar la posición vertical para la siguiente línea
+        });
+
+        // doc.text(30, yPos + 10, `Marca: ${producto.tbmarca ? producto.tbmarca.nombre : 'Sin marca'}`);
+        // doc.text(30, yPos + 15, `Modelo: ${producto.modelo}`);
+        // doc.text(30, yPos + 20, `Capacidades: ${producto.capacidades}`);
+        // // doc.text(30, yPos + 20, `Especificaciones: ${producto.especificaciones}`);
+        // doc.text(30, yPos + 50, `Precio: S/ ${producto.precio}`);
+        // doc.text(30, yPos + 60, `Cantidad: ${producto.cantidad}`);
+        // doc.text(30, yPos + 70, `Importe: S/ ${producto.precio * producto.cantidad}`);
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_y += 20 // vale 105
+        doc.text(20, eje_y, 'Especificaciones Tecnicas');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(9);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        
+        const especificaciones = producto.especificaciones.split('\n');
+        const viñeta = '\u2022';
+
+        const maxWidth = 160;
+
+        // Itera sobre las especificaciones y agrega cada fragmento al PDF
+        eje_y += 10; // vale 115 Ajusta la posición inicial Y
+        especificaciones.forEach((especificacion) => {
+            const splitten = doc.splitTextToSize(especificacion, maxWidth);
+            splitten.forEach((fragment, index) => {
+                if (eje_y > 240) {
+                    eje_y = 50; // Reinicia la posición Y
+                }
+                // Comprueba si el fragmento es el primer fragmento de la especificación
+                const isFirstFragment = index === 0;
+                // Si es el primer fragmento, muestra la viñeta
+                const prefix = isFirstFragment ? `${viñeta} ` : '   ';
+                doc.text(20, eje_y, `${prefix}${fragment}`);
+                eje_y += 5; // Ajusta la posición Y para el siguiente fragmento
+            });
+        });
+
+        
     };
+    
     const addAllProducts = (productos, index) => {
         if (index >= productos.length) {
+
+            // Establecer el color de la línea
+            doc.setDrawColor(0, 0, 0);
+
+            // Establecer el grosor de la línea (en este caso, 0.5)
+            doc.setLineWidth(0.4);
+
+            // Dibujar una línea debajo del texto
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'bold');//estilos de texto
+            eje_y += 10 // vale 125
+            var texto = 'CONDICIONES GENERALES:';
+            var textWidth = doc.getStringUnitWidth(texto) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+            var textHeight = doc.internal.getLineHeight();
+            var startX = 20;
+            var startY = eje_y + 2; // Ajustar según el tamaño de la fuente
+            doc.text(texto, startX, startY);
+            doc.line(startX, startY + 1, startX + textWidth, startY + 1);
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'bold');//estilos de texto
+            eje_y += 8 // vale 133
+            doc.text(20, eje_y, 'Garantia');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            doc.text(55, eje_y, ': ' + `${garantia}`);
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'bold');//estilos de texto
+            eje_y += 5 // vale 138
+            doc.text(20, eje_y, 'Plazo de Entrega');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            doc.text(55, eje_y, ': ' + `${dias_entrega}` + ' Dias');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'bold');//estilos de texto
+            eje_y += 5 // vale 143
+            doc.text(20, eje_y, 'Forma de Pago');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            doc.text(55, eje_y, ': ' + `${forma_pago}`);
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            eje_y += 5 // vale 148
+            doc.text(20, eje_y, 'Deposito a cuenta de Ahorros');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'bold');//estilos de texto
+            eje_y += 5 // vale 153
+            doc.text(20, eje_y, 'BBVA : ');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            doc.text(33, eje_y, 'S/ 0011 0267 0201320316  /  CCI: 011 267 000201320316 27');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'bold');//estilos de texto
+            eje_y += 5 // vale 158
+            doc.text(20, eje_y, 'BCP : ');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            doc.text(32, eje_y, '$ 475-2156380-1-04  /  S/ 475-2156367-0-62');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            eje_y += 5 // vale 163
+            doc.text(20, eje_y, 'Orden de compra irrevocable');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            eje_y += 5 // vale 168
+            doc.text(20, eje_y, 'Servicio gratuito dentro del tiempo de garantia');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            eje_y += 5 // vale 173
+            doc.text(20, eje_y, 'A la espera de su orden');
+
             doc.output('dataurlnewwindow');
             return;
         }
+        
         addProductData(productos[index], index, () => {
             addAllProducts(productos, index + 1);
         });
@@ -361,7 +563,7 @@ const previewPDF = () => {
                             </div>
                             <div class="sm:py-5 py-2">
                                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2  max-h-80 overflow-y-auto">
-                                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
+                                    <table class="w-full text-sm text-left rtl:text-right text-black dark:text-white">
                                         <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                             <tr>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Modelo</th>
@@ -376,22 +578,37 @@ const previewPDF = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(tbproducto, index) in tbproductosAgregados" :key="index">
-                                                <td class="px-3 py-4 text-center">{{ tbproducto.modelo }}</td>
-                                                <td class="px-6 py-3 text-center">
-                                                    <img @click="openModal('/img/catalogo/' + tbproducto.foto)" :src="'/img/catalogo/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
+                                            <!-- <img src="/storage/fotos/plantillacotizacion.png"> -->
+                                            <tr v-for="(tbproducto, i) in tbproductosAgregados" :key="index">
+                                                <td class="px-3 py-4 text-center border-r border-b">{{ tbproducto.modelo }}</td>
+                                                <td class="px-6 py-3 text-center border-r border-b">
+                                                    <img @click="openModal('/storage/' + tbproducto.foto)" :src="'/storage/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
                                                 </td>
-                                                <td class="text-md px-6">
-                                                    <div class="max-h-[70px] overflow-y-auto">
-                                                        <td class="px-6 py-4 text-center">{{ tbproducto.especificaciones }}</td>
+                                                <td class="px-6 py-3 text-center border-r border-b whitespace-nowrap">
+                                                    <div class="accordions">
+                                                        <dl>
+                                                            <dt @click="toggleAccordion(i)" class="cursor-pointer normal-case">
+                                                                Especificaciones
+                                                                <i :class="{'fa-solid fa-arrow-up-long ml-2': activeAccordion === i, 'fa-solid fa-arrow-down-long ml-2': activeAccordion !== i}"></i>
+                                                            </dt>
+                                                            <dd v-if="activeAccordion === i" class="ml-4">
+                                                                <ul class="list-disc px-6 py-4 text-left">
+                                                                    <li v-for="(item, index) in tbproducto.especificaciones.split('\n')" :key="index">{{ item }}</li>
+                                                                </ul>
+                                                            </dd>
+                                                        </dl>
                                                     </div>
                                                 </td>
-                                                <td class="px-3 py-3 text-center">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
-                                                <td class="px-3 py-3 text-center">{{ tbproducto.capacidades }}</td>
-                                                <td class="px-3 py-3 text-center">s/{{ tbproducto.precio }}</td>
-                                                <td class="px-3 py-3 text-blue-500 text-center"><input type="number" v-model="tbproducto.cantidad"></td>
-                                                <td class="px-3 py-3  text-center">s/{{ tbproducto.precio * tbproducto.cantidad }}</td>
-                                                <td class="px-3 py-3 text-center"><button @click.prevent="quitarProducto(index)"><i class="bi bi-trash3 text-red-500"></i></button></td>
+                                                <td class="px-3 py-3 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
+                                                <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap">
+                                                    <ul class="list-disc px-6 py-4 text-left -translate-y-1">
+                                                        <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
+                                                    </ul>
+                                                </td>
+                                                <td class="px-3 py-3 text-center border-r border-b">s/{{ tbproducto.precio }}</td>
+                                                <td class="px-3 py-3 text-center border-r border-b"><input class="text-center dark:bg-gray-800 bg-white text-black border-white dark:border-gray-800 dark:text-white w-16" type="number" v-model="tbproducto.cantidad"></td>
+                                                <td class="px-3 py-3 text-center border-r border-b">s/{{ tbproducto.precio * tbproducto.cantidad }}</td>
+                                                <td class="px-3 py-3 text-center border-r border-b"><button @click.prevent="quitarProducto(index)"><i class="bi bi-trash3 text-red-500"></i></button></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -503,7 +720,7 @@ const previewPDF = () => {
             </div>
         </ModalResponsive>
  
-        <div v-if="modal3" class="fixed inset-0 overflow-y-auto z-50 bg-gray-200/40 flex justify-center items-center" @click.self="toggleModal3">
+        <div v-if="modal3" class="fixed inset-0 overflow-y-auto z-50 bg-gray-200/40 flex justify-center items-center" style="backdrop-filter: blur(5px);" @click.self="toggleModal3">
             <div class="modal-content bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-2xl max-w-7xl w-full sm:max-w-4xl md:max-w-3xl lg:max-w-4xl xl:max-w-6xl">
                 <button @click="toggleModal3" class="close absolute top-0.5 right-0.5 p-2 text-gray-500 hover:text-gray-700">
                     &times;
@@ -515,7 +732,7 @@ const previewPDF = () => {
                 </div>
                 <div class="py-3 px-2">
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 max-h-80 overflow-y-auto">
-                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
+                        <table class="w-full text-sm text-left rtl:text-right text-black dark:text-white">
                             <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Modelo</th>
@@ -529,19 +746,33 @@ const previewPDF = () => {
                             </thead>
                             <tbody>
                                 <tr v-for="tbproducto in tbproductos" :key="tbproducto.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
-                                    <td class="px-6 py-3 text-center">{{ tbproducto.modelo }}</td>
-                                    <td class="px-6 py-3 text-center">
-                                        <img @click="openModal('/img/catalogo/' + tbproducto.foto)" :src="'/img/catalogo/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
+                                    <td class="px-6 py-3 text-center border-r border-b whitespace-nowrap">{{ tbproducto.modelo }}</td>
+                                    <td class="px-6 py-3 text-center border-r border-b">
+                                        <img @click="openModal('/storage/' + tbproducto.foto)" :src="'/storage/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
                                     </td>
-                                    <td class="text-md px-6">
-                                        <div class="max-h-[70px] overflow-y-auto">
-                                            <td class="px-6 py-4 text-center">{{ tbproducto.especificaciones }}</td>
+                                    <td class="px-6 py-3 text-center border-r border-b whitespace-nowrap">
+                                        <div class="accordions">
+                                            <dl>
+                                                <dt @click="toggleAccordion(tbproducto.id)" class="cursor-pointer">
+                                                    Especificaciones
+                                                    <i :class="{'fa-solid fa-arrow-up-long ml-2': activeAccordion === tbproducto.id, 'fa-solid fa-arrow-down-long ml-2': activeAccordion !== tbproducto.id}"></i>
+                                                </dt>
+                                                <dd v-if="activeAccordion === tbproducto.id" class="ml-4">
+                                                    <ul class="list-disc px-6 py-4 text-left">
+                                                        <li v-for="(item, index) in tbproducto.especificaciones.split('\n')" :key="index">{{ item }}</li>
+                                                    </ul>
+                                                </dd>
+                                            </dl>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-3 text-center">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
-                                    <td class="px-6 py-3 text-center">{{ tbproducto.capacidades }}</td>
-                                    <td class="px-6 py-3 text-center">s/{{ tbproducto.precio }}</td>
-                                    <td class="px-6 py-3 text-center">
+                                    <td class="px-6 py-3 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
+                                    <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap">
+                                        <ul class="list-disc px-6 py-4 text-left -translate-y-1">
+                                            <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
+                                        </ul>
+                                    </td>
+                                    <td class="px-6 py-3 text-center border-r border-b">s/{{ tbproducto.precio }}</td>
+                                    <td class="px-6 py-3 text-center border-r border-b">
                                         <button @click="agregarProducto(tbproducto)" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:bg-green-700">
                                             Agregar
                                         </button>
@@ -570,3 +801,19 @@ const previewPDF = () => {
         </div>
     </AppLayout>
 </template>
+
+<script>
+
+export default {
+    data() {
+        return {
+            activeAccordion: null
+        };
+    },
+    methods: {
+        toggleAccordion(index) {
+            this.activeAccordion = this.activeAccordion === index ? null : index;
+        }
+    }
+}
+</script>
