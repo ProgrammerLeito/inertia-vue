@@ -45,9 +45,9 @@ const deleteUser = (id, name) => {
  
 </script>
 <template>
-    <AppLayout title="Usuarios" >
+    <AppLayout title="Usuarios">
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Lista de Usuarios</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Lista de Usuarios</h1>
         </template>
  
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">

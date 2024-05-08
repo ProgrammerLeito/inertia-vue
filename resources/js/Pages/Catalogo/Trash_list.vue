@@ -68,7 +68,7 @@ watchEffect(() => {
 <template>
     <AppLayout title="Catalago Productos">
         <template #header>
-            <h1 class="font-semibold text-gray-800 text-xl leading-tight dark:text-white">Historial de Productos eliminados</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Historial de Productos eliminados</h1>
         </template>
         <div>
             <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">

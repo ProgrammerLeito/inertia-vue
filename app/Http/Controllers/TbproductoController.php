@@ -86,7 +86,7 @@ class TbproductoController extends Controller
 
         if($request->hasFile('foto')){
             $file= $request->file('foto');
-            $routeName= $file->store('fotos',['disk'=>'public']);
+            $routeName= $file->store('catalago_productos',['disk'=>'public']);
             $data['foto']=$routeName;
         }
         Tbproducto::create($data);
@@ -107,7 +107,7 @@ class TbproductoController extends Controller
 
         if($request->hasFile('foto')){
             $file= $request->file('foto');
-            $routeName= $file->store('fotos',['disk'=>'public']);
+            $routeName= $file->store('catalago_productos',['disk'=>'public']);
             $data['foto']=$routeName;
 
             if($tbproducto->foto){

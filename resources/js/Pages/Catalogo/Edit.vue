@@ -1,13 +1,11 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link, usePage } from '@inertiajs/vue3'
+import { Link, usePage, useForm } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import Swal from 'sweetalert2';
-import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import FileInput from '@/Components/FileInput.vue';
 

@@ -49,9 +49,9 @@ const deleteUser = async (userId) => {
 };
 </script>
 <template>
-    <AppLayout title="Usuarios" >
+    <AppLayout title="Usuarios">
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Historial De Usuarios</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Usuarios Eliminados</h1>
         </template>
  
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">

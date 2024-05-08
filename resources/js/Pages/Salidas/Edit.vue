@@ -10,7 +10,6 @@ import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SalidasForm from '@/Components/Salidas/Form.vue';
 import Swal from 'sweetalert2';
-import { Head, Link, router } from '@inertiajs/vue3';
 import axios from "axios";
 
 const props = defineProps({

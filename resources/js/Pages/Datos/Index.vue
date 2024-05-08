@@ -116,10 +116,11 @@ const deleteDatos = (id, nombre) => {
  
 </script>
 <template>
-    <AppLayout title="datos">
+    <AppLayout title="Datos de Clientes">
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Lista de datos del cliente</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Lista de Datos del Cliente</h1>
         </template>
+        
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">

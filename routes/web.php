@@ -10,7 +10,10 @@ use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CventaController;
 use App\Http\Controllers\DatoController;
+use App\Http\Controllers\HmarcaController;
+use App\Http\Controllers\HservicioController;
 use App\Http\Controllers\PermisoController;
+use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\TbcategoriaController;
 use App\Http\Controllers\TbmarcaController;
 use App\Http\Controllers\TbproductoController;
@@ -74,6 +77,14 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('/tbprovincias', TbprovinciaController::class);
     Route::resource('tenors', TenorController::class);
     Route::resource('/cventas', CventaController::class);
+
+    Route::resource('servicios', ServicioController::class);
+    Route::post('/servicios/cambiar_estado', [ServicioController::class, 'cambiarEstado'])->name('servicios.cambiar_estado');
+ 
+    Route::resource('hservicios',HservicioController::class);
+    Route::post('/hservicios/{hservicio}', [HservicioController::class, 'update'])->name('hservicios.update');
+ 
+    Route::resource('hmarcas',HmarcaController::class);
 });
 
 Route::middleware(['auth:web'])->group(function () {

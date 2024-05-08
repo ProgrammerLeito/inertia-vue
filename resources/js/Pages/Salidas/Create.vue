@@ -5,12 +5,11 @@
 </script>
 
 <script setup>
-import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SalidasForm from '@/Components/Salidas/Form.vue';
 import { onMounted } from 'vue';
 import Swal from 'sweetalert2';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import axios from "axios";
 
 defineProps({

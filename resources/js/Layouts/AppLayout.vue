@@ -54,7 +54,7 @@ export default {
             <div class="w-full relative bg-gray-100 dark:bg-gray-700">
                 <!-- Page Heading -->
                 <header v-if="$slots.header" class="bg-white dark:bg-gray-800 z-[10000] fixed top-[50px] w-full dark:shadow-[0_1px_30px_2px_rgba(0,0,0,0.4)] shadow-[0_1px_30px_2px_rgba(0,0,0,0.2)]">
-                    <div class=" mx-auto py-[17.5px] px-4 sm:px-6 lg:px-8">
+                    <div class="h-[60px] flex items-center mx-auto py-[17.5px] px-4 sm:px-6 lg:px-8">
                         <slot name="header" />
                     </div>
                 </header>

@@ -81,9 +81,9 @@ const deleteCliente = async (clienteId) => {
 </script>
  
 <template>
-    <AppLayout title="Clientes">
+    <AppLayout title="Clientes Eliminados">
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">historial de Clientes eliminados</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Historial de Clientes Eliminados</h1>
         </template>
  
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">

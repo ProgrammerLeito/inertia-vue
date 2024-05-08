@@ -76,7 +76,7 @@ const submitForm = (id) => {
 </script>
  
 <template>
-    <AppLayout title="Actualizar Producto">
+    <AppLayout title="Actualizar Cliente">
         <!-- Encabezado -->
         <template #header>
             <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Actualizar Cliente</h1>

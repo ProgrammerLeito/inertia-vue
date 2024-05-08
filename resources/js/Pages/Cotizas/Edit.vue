@@ -5,8 +5,6 @@ import { Link } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
 import { defineProps , onMounted} from 'vue';
 import {useForm} from '@inertiajs/vue3';
 
