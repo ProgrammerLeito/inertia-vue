@@ -154,11 +154,11 @@ watchEffect(() => {
                                             <td class="px-6 py-4 text-center border-r border-b whitespace-nowrap">
                                                 <div class="accordions">
                                                     <dl>
-                                                        <dt @click="toggleAccordion(i)" class="cursor-pointer text-white">
+                                                        <dt @click="toggleAccordion(i)" class="cursor-pointer">
                                                             Especificaciones
-                                                            <i :class="{'fa-solid fa-arrow-up-long ml-2': activeAccordion === i, 'fa-solid fa-arrow-down-long ml-2': activeAccordion !== i}"></i>
+                                                            <i :class="{'fa-solid fa-arrow-up-long ml-2': activeAccordion.includes(i), 'fa-solid fa-arrow-down-long ml-2': !activeAccordion.includes(i)}"></i>
                                                         </dt>
-                                                        <dd v-if="activeAccordion === i" class="ml-4 text-white">
+                                                        <dd v-if="activeAccordion.includes(i)" class="ml-4">
                                                             <ul class="list-disc px-6 py-4 text-left">
                                                                 <li v-for="(item, index) in tbproducto.especificaciones.split('\n')" :key="index">{{ item }}</li>
                                                             </ul>
@@ -217,7 +217,7 @@ export default {
         return {
             modalOpen: false, // Estado del modal
             modalImageUrl: '', // URL de la imagen para mostrar en el modal
-            activeAccordion: null
+            activeAccordion: []
         };
     },
     methods: {
@@ -227,7 +227,15 @@ export default {
             this.modalOpen = true; // Abre el modal
         },
         toggleAccordion(index) {
-            this.activeAccordion = this.activeAccordion === index ? null : index;
+            // Verifica si el índice está en el array de acordeones activos
+            const indexPosition = this.activeAccordion.indexOf(index);
+            if (indexPosition === -1) {
+                // Si no está, agrégalo
+                this.activeAccordion.push(index);
+            } else {
+                // Si ya está, quítalo
+                this.activeAccordion.splice(indexPosition, 1);
+            }
         }
     },
     components: {

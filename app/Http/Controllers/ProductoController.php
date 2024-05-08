@@ -21,7 +21,7 @@ class ProductoController extends Controller
                         ->select(
                             'categories.id',
                             'categories.name',
-                            'productos.id as producto_id', // Asegúrate de incluir el id del producto si es necesario
+                            'productos.id as producto_id',
                             'productos.insumo',
                             'productos.marca',
                             'productos.modelo',
@@ -35,6 +35,7 @@ class ProductoController extends Controller
                             'productos.ultima_entrada',
                             'productos.imagen_producto',
                             'productos.category_id',
+                            DB::raw('(SELECT MAX(entradas.fecha) FROM entradas WHERE entradas.producto_id = productos.id) as entrada_maxima'),
                             DB::raw('(SELECT COALESCE(SUM(cantidad), 0) FROM entradas WHERE entradas.producto_id = productos.id) as total_entradas'),
                             DB::raw('(SELECT COALESCE(SUM(unidad_salida), 0) FROM salidas WHERE salidas.producto_id = productos.id) as total_salidas'),
                             DB::raw('(SELECT COALESCE(SUM(unidad_devolucion), 0) FROM salidas WHERE salidas.producto_id = productos.id) as total_devolucion'),

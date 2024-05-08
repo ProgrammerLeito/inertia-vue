@@ -37,11 +37,21 @@ defineProps({
         type:Object,
         required:true
     },
-    tbproductos:{
-        type:Object
+    tbproductos: {
+        type : Object,
+        required: true
     },
-    tbmarcas:{
-        type:Object
+    tbsubcategorias: {
+        type : Object,
+        required: true
+    },
+    tbcategorias: {
+        type : Object,
+        required: true
+    },
+    tbmarcas: {
+        type : Object,
+        required: true
     }
  
 });
@@ -230,7 +240,7 @@ const submitForm = () => {
 const previewPDF = () => {
     const doc = new jsPDF();
 
-    // let plantilla = 'http://127.0.0.1:8000/storage/fotos/plantillacotizacion.png';
+    let plantilla = 'public/plantillacotizacion.png';
 
     // doc.addImage(plantilla, 'PNG', 0, 0, 100, 100); // Agregar la imagen en las coordenadas fijas
    
@@ -394,6 +404,16 @@ const previewPDF = () => {
             });
         });
 
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(14);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_y += 10 // vale 70
+        doc.text(60, eje_y, 'Precio Unitario');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(14);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        doc.text(105, eje_y, ': ' + `${producto.precio}`);
         
     };
     
@@ -730,6 +750,37 @@ const previewPDF = () => {
                     <p class="text-sm">Seleccione los productos a cotizar</p>
                     <hr class="my-1">
                 </div>
+                <div class="py-0 px-2">
+                    <div class="py-0">
+                        <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                            <div class="flex flex-col">
+                                <InputLabel class="block text-md font-medium text-gray-700">Categoría</InputLabel>
+                                <select class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <option value="" disabled selected >Seleccione una Categoría</option>
+                                    <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col">
+                                <InputLabel class="block text-md font-medium text-gray-700">Subcategoría</InputLabel>
+                                <select class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <option value="" disabled selected >Seleccione una Subcategoría</option>
+                                    <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col">
+                                <InputLabel for="table-search" class="block text-md font-medium text-gray-700">Buscar</InputLabel>
+                                <div class="relative mt-1">
+                                    <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                        </svg>
+                                    </div>
+                                    <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="py-3 px-2">
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 max-h-80 overflow-y-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-black dark:text-white">
@@ -745,7 +796,7 @@ const previewPDF = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="tbproducto in tbproductos" :key="tbproducto.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
+                                <tr v-for="tbproducto in filteredProductos" :key="tbproducto.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
                                     <td class="px-6 py-3 text-center border-r border-b whitespace-nowrap">{{ tbproducto.modelo }}</td>
                                     <td class="px-6 py-3 text-center border-r border-b">
                                         <img @click="openModal('/storage/' + tbproducto.foto)" :src="'/storage/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
@@ -780,6 +831,9 @@ const previewPDF = () => {
                                 </tr>
                             </tbody>
                         </table>
+                        <div v-if="filteredProductos.length === 0" class="text-center py-2 dark:text-white">
+                            No se encontraron datos.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -803,12 +857,21 @@ const previewPDF = () => {
 </template>
 
 <script>
-
 export default {
     data() {
         return {
-            activeAccordion: null
+            activeAccordion: null,
+            searchQuery: '', // Agregar el data para el search query
         };
+    },
+    computed: {
+        filteredProductos() {
+            // Filtrar productos basados en el search query
+            return this.tbproductos.filter(producto => {
+                // Filtrar por modelo o cualquier otro criterio que desees
+                return producto.modelo.toLowerCase().includes(this.searchQuery.toLowerCase());
+            });
+        }
     },
     methods: {
         toggleAccordion(index) {

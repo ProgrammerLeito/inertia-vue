@@ -105,7 +105,7 @@ defineEmits(['submit'])
                 <TextInput id="insumo" v-model="form.insumo" type="text" autocomplete="insumo" class="mt-1 block w-full" placeholder="Ingrese el nombre del producto"/>
                 <InputError :message="$page.props.errors.insumo" class="mt-2"/>
 
-                <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
+                <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
                     <div class="sm:col-span-1">
                         <InputLabel for="marca" value="Marca de producto" class="ml-1"/>
                         <TextInput id="marca" v-model="form.marca" type="text" autocomplete="marca" class="mt-1 block w-full" placeholder="Ingrese la marca"/>
@@ -118,10 +118,10 @@ defineEmits(['submit'])
                     </div>
                 </div>
 
-                <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
+                <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
                     <div class="sm:col-span-1">
                         <InputLabel for="cantidad" value="Cantidad" class="ml-1"/>
-                        <TextInput id="cantidad" v-model="form.cantidad" type="text" autocomplete="cantidad" class="validarSoloNumerosDosDecimales mt-1 block w-full" :disabled="!updating || !$page.props.user.permissions.includes('Acciones Administrador')" placeholder="0"/>
+                        <TextInput id="cantidad" v-model="form.cantidad" type="text" autocomplete="cantidad" :disabled="updating === true ? updating != $page.props.user.permissions.includes('Acciones Administrador') : false" class="validarSoloNumerosDosDecimales mt-1 block w-full" placeholder="0"/>
                         <InputError :message="$page.props.errors.cantidad" class="mt-2"/>
                     </div>
                     <div class="sm:col-span-1">
@@ -145,7 +145,7 @@ defineEmits(['submit'])
                     </div>
                 </div>
 
-                <div class="mt-2 grid grid-cols-2 lg:grid-cols-20 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
+                <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:gap-x-6 lg:gap-y-8 gap-x-2 gap-y-2">
                     <div class="sm:col-span-1">
                         <InputLabel for="fecha" value="Fecha" class="ml-1"/>
                         <TextInput id="fecha" v-model="form.fecha" type="date" autocomplete="fecha" class="mt-1 block w-full"/>

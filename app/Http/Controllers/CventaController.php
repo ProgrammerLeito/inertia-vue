@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateCventaRequest;
 use App\Models\Cliente;
 use App\Models\Cventa;
+use App\Models\Tbcategoria;
 use App\Models\Tbmarca;
 use App\Models\Tbproducto;
+use App\Models\Tbsubcategoria;
 use App\Models\Tenor;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,6 +25,8 @@ class CventaController extends Controller
     }
  
     public function create(){
+        $tbcategorias = Tbcategoria::all();
+        $tbsubcategorias=Tbsubcategoria::all();
         $clientes = Cliente::all();
         $tenors = Tenor::all();
    
@@ -30,7 +34,7 @@ class CventaController extends Controller
        
         $tbmarcas = Tbmarca::all();
        
-        return Inertia::render('Cotizas/Create',compact('clientes', 'tenors', 'tbproductos', 'tbmarcas'));
+        return Inertia::render('Cotizas/Create',compact('clientes', 'tenors', 'tbproductos', 'tbmarcas', 'tbcategorias', 'tbsubcategorias'));
     }
 
     public function store(CreateCventaRequest $request)

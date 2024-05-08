@@ -141,7 +141,7 @@ const deleteCliente = (id, razonSocial) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(cliente, i) in filteredClients" :key="cliente.id"  class="bg-white text-black dark:bg-gray-700 dark:text-white">
+                                    <tr v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
                                         <td class="px-6 py-4 text-center"><b>{{ i + 1 }}</b></td>
                                         <td class="px-6 py-4 text-center">{{ cliente.numeroDocumento }}</td>
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>

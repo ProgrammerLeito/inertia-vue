@@ -210,7 +210,7 @@ const ok4 = (msj) =>{
                                 </div>
                          
                                 <div>
-                                    <InputLabel value="direccion legal" />
+                                    <InputLabel value="direccion fiscal" />
                                     <TextInput v-model="form.direccion" type="text" required placeholder="" class="mt-2 w-full"/>
                                 </div>
                                 <div>

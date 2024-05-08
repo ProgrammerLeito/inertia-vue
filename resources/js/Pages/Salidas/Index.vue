@@ -46,7 +46,7 @@ const form = useForm ({
     fecha: '',
     hora_salida: '',
     producto_id: '',
-    devolucion: '0',
+    devolucion: 0,
 })
 
 const deleteSalidas = (id, empresa) => {
@@ -76,10 +76,18 @@ const deleteSalidas = (id, empresa) => {
 }
 
 const formatDate = (dateString) => {
-    const options = { month: 'long', day: '2-digit'};
-    const date = new Date(dateString);
+    const options = { month: 'short', day: '2-digit', year: 'numeric' };
+
+    // Obtener la diferencia de zona horaria en minutos
+    const offset = new Date().getTimezoneOffset();
+    // Convertir minutos a milisegundos
+    const offsetMilliseconds = offset * 60 * 1000;
+
+    // Crear el objeto Date en la zona horaria local sumando el offset
+    const date = new Date(new Date(dateString).getTime() + offsetMilliseconds);
     return date.toLocaleDateString('es-ES', options);
 };
+
 const formatTime = (timeString) => {
     const time = new Date("2000-01-01T" + timeString);
     return time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
@@ -136,7 +144,7 @@ const formatTime = (timeString) => {
                                 </thead>
                                 <tbody>
                                     <!-- <tr class="bg-white text-black border-b dark:bg-gray-700 dark:border-gray-400 dark:text-white" v-for="salida in filteredSalidas" :class="{ 'bg-gray-300 dark:bg-amber-400': salida.devolucion == 1 }"> -->
-                                    <tr class="bg-white text-black border-b dark:bg-gray-700 dark:border-gray-400 dark:text-white" v-for="salida in filteredSalidas">
+                                    <tr class="bg-white text-black border-b dark:bg-gray-700 dark:border-gray-400 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300" v-for="salida in filteredSalidas">
                                         <td class="px-6 py-4 font-semibold">{{ salida.empresa }}</td>
                                         <td class="px-6 py-4">{{ salida.insumo }}</td>
                                         <td class="px-6 py-4">{{ salida.unidad_salida }}</td>

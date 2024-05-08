@@ -93,8 +93,15 @@ const deleteProducto = (id, insumo) => {
 }
 
 const formatDate = (dateString) => {
-    const options = { month: 'long', day: '2-digit', year: 'numeric' };
-    const date = new Date(dateString);
+    const options = { month: 'short', day: '2-digit', year: 'numeric' };
+
+    // Obtener la diferencia de zona horaria en minutos
+    const offset = new Date().getTimezoneOffset();
+    // Convertir minutos a milisegundos
+    const offsetMilliseconds = offset * 60 * 1000;
+
+    // Crear el objeto Date en la zona horaria local sumando el offset
+    const date = new Date(new Date(dateString).getTime() + offsetMilliseconds);
     return date.toLocaleDateString('es-ES', options);
 };
 
@@ -156,7 +163,7 @@ const formatDate = (dateString) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="bg-white text-black dark:bg-gray-700 dark:text-white border-b dark:hover:bg-gray-800 hover:bg-gray-200 cursor-pointer" @dblclick="redirectToSalidas(producto.producto_id); guardarProductoId(producto.producto_id)" v-for="producto in filteredProductos">
+                                    <tr class="bg-white text-black dark:bg-gray-700 dark:text-white border-b dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer" @dblclick="redirectToSalidas(producto.producto_id); guardarProductoId(producto.producto_id)" v-for="producto in filteredProductos">
                                         <td class="px-6 py-4 text-center">{{ producto.producto_id }}</td>
                                         <td class="px-0 py-0 font-semibold text-center">
                                             <img @click="openModal('/img/productos/' + producto.imagen_producto)" :src="'/img/productos/' + producto.imagen_producto" alt="Foto del Producto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
@@ -169,7 +176,7 @@ const formatDate = (dateString) => {
                                         <td class="px-6 py-4 text-center">{{ producto.modelo }}</td>
                                         <td class="px-6 py-4 font-semibold text-center">{{ parseInt(producto.stock) + parseInt(producto.total_entradas) + parseInt(producto.total_devolucion) - parseInt(producto.total_salidas) }}    {{ producto.unidad_medida }}</td>
                                         <!-- <td class="px-6 py-4 text-center">{{ producto.ultima_cantidad_entrada == "0" ? producto.ultima_entrada : producto.ultima_cantidad_entrada }}</td> -->
-                                        <td class="px-6 py-4 text-center">{{ formatDate(producto.fecha) }}</td>
+                                        <td class="px-6 py-4 text-center">{{ formatDate(producto.entrada_maxima == null ? producto.fecha : producto.entrada_maxima) }}</td>
                                         <td class="px-6 py-4 text-center">S/. {{ parseFloat(producto.precio).toFixed(2) }}</td>
                                         <!-- <td class="px-6 py-4 text-left">{{ producto.comentario }}</td> -->
                                         <td class="p-3 text-center whitespace-nowrap">

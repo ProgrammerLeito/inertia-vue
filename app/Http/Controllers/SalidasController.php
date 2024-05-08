@@ -37,7 +37,7 @@ class SalidasController extends Controller
                                 'salidas.devolucion',
                                 'salidas.hora_salida'
                             )
-                            ->whereNull('salidas.unidad_devolucion')
+                            ->where('salidas.devolucion', '=','1')
                             ->paginate(self::Numero_de_items_pagina);
         } else {
             // Si hay un ID de producto especificado, filtra por ese producto

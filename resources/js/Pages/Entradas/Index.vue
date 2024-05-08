@@ -172,7 +172,7 @@ onMounted(() => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="bg-white text-black dark:bg-gray-700 dark:text-white" v-for="entrada in filteredEntradas">
+                                    <tr class="bg-white text-black dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300" v-for="entrada in filteredEntradas">
                                         <td class="px-6 py-4 font-semibold">{{ entrada.producto?.insumo }}</td>
                                         <td class="px-6 py-4">{{ entrada.cantidad }}</td>
                                         <td class="px-6 py-4">{{ entrada.fecha }}</td>

@@ -167,7 +167,7 @@ const deleteDatos = (id, nombre) => {
                 <h2 class="text-sm font-medium text-gray-900 dark:text-white text-center uppercase mb-2">{{ title }}</h2>
                 <div class="p-1">
                     <div class="w-full mt-4">
-                        <InputLabel for="cliente_id" value="Cliente ID:" class="mb-2 text-xs"></InputLabel>
+                        <InputLabel for="cliente_id" value="Cliente:" class="mb-2 text-xs"></InputLabel>
                         <select id="cliente_id" v-model="form.cliente_id" required
                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                             <option value="">Seleccione una categoría</option>

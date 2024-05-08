@@ -50,6 +50,10 @@ class EntradaController extends Controller
         $entrada->cantidad = $request->cantidad;
         $entrada->fecha = $request->fecha;
         $entrada->save();
+
+        // $producto = Producto::findOrFail($request->producto_id);
+        // $producto->fecha = $request->fecha;
+        // $producto->save();
     
         return redirect()->route('entradas.index')
                          ->with('success', 'Entrada creada exitosamente.');

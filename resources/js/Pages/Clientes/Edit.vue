@@ -127,7 +127,7 @@ const submitForm = (id) => {
                                     <InputError :message="$page.props.errors.prov_clientes" class="mt-2"/>
                                 </div>
                                 <div>
-                                    <InputLabel value="direccion legal" />
+                                    <InputLabel value="direccion fiscal" />
                                     <TextInput v-model="form.direccion" type="text" placeholder="Ingrese Direccion Legal" class="mt-2 w-full"/>
                                 </div>
                                 <div>
