@@ -23,7 +23,7 @@ class UpdateHservicioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'marca' => 'required|string',
+            'hmarca_id' => 'required',
             'modelo' => 'required|string',
             'serie' => 'required|string',
             'tecnico' => '',

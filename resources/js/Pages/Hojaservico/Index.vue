@@ -4,10 +4,9 @@ import { Head, Link, usePage, useForm } from '@inertiajs/vue3';
 import InputLabel from '@/Components/InputLabel.vue';
 import Swal from 'sweetalert2';
 import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
-import {computed, nextTick, ref, watchEffect } from 'vue';
+import {computed, nextTick, ref, watchEffect, onMounted } from 'vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
 
-const searchQuery = ref('');
 const{servicios,hmarcas}=defineProps({
     hservicios:{
         type : Array,
@@ -58,6 +57,7 @@ const deleteHservicio= (id, marca) => {
         }
     });
 }
+
 //formateo de fecha y hora
 const formatDate = (dateString) => {
     const options = { month: 'short', day: '2-digit', year: 'numeric' };
@@ -67,44 +67,54 @@ const formatDate = (dateString) => {
     return date.toLocaleDateString('es-ES', options);
 };
 
-const  getBadgeClass=(requiere)=> {
-            // Asignar diferentes clases de color según el valor de "requiere"
-            switch (requiere) {
-                case 'REQUIERE MANTENIMIENTO':
-                    return 'bg-blue-400';
-                case 'REQUIERE REPARACION':
-                    return 'bg-red-500';
-                case 'POR REVISAR':
-                    return 'bg-yellow-400';
-                case 'CERTIFICACION':
-                    return 'bg-green-500';
-                case 'GARANTIA':
-                    return 'bg-purple-500';
-                case 'IMPLEMENTACION':
-                    return 'bg-indigo-500';
-                case 'CALIBRACION':
-                    return 'bg-pink-500';
-                default:
-                    return 'bg-gray-500'; // Color predeterminado para otras categorías
-            }
-        }
+const idHojasServicio = ref('');
+
+onMounted(() => {
+    const servicio_id = localStorage.getItem('servicio_id');
+    idHojasServicio.value = servicio_id; // Asigna el valor de servicio_id a idHojasServicio
+});
+
+const getBadgeClass=(requiere)=> {
+    switch (requiere) {
+        case 'REQUIERE MANTENIMIENTO':
+            return 'bg-blue-400';
+        case 'REQUIERE REPARACION':
+            return 'bg-red-500';
+        case 'POR REVISAR':
+            return 'bg-yellow-400';
+        case 'CERTIFICACION':
+            return 'bg-green-500';
+        case 'GARANTIA':
+            return 'bg-purple-500';
+        case 'IMPLEMENTACION':
+            return 'bg-indigo-500';
+        case 'CALIBRACION':
+            return 'bg-pink-500';
+        default:
+            return 'bg-gray-500';
+    }
+}
 </script>
+
 <template>
     <AppLayout title="Requerimientos de Servicio">
         <template #header>
-            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Requerimientos del Servicio</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Lista de Hojas Servicio</h1>
         </template>
 
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 uppercase text-sm justify-between">
-                        <Link :href="route('hservicios.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            <i class="fa fa-plus-circle fa-beat mx-2"></i>Requerimientos-hoja-servicio
+                        <Link @click="guardarRequerimientoId(idHojasServicio)" :href="route('hservicios.create')" class="text-white bg-indigo-700 font-bold hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                            <i class="fa fa-plus-circle mx-2"></i>Requerimientos Servicio
                         </Link>
-                        <Link :href="route('servicios.index')" class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-2 rounded md:w-min whitespace-nowrap w-full text-center">
-                        <i class="fas fa-arrow-left mx-2"></i> servicios
+                        <Link :href="route('servicios.index')" class="text-white bg-indigo-700 font-bold hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <i class="fas fa-arrow-left mx-2"></i>Servicios
                     </Link>
+                    </div>
+                    <div class="md:mt-0 mt-4">
+                        <div class="font-semibold text-center dark:text-white">N° Informe || {{ idHojasServicio }}</div>
                     </div>
                     <div class="flex flex-col">
                         <InputLabel for="table-search" class="block text-md font-medium text-gray-700">Buscar</InputLabel>
@@ -114,18 +124,10 @@ const  getBadgeClass=(requiere)=> {
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                                 </svg>
                             </div>
-                            <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el id o n_informe">
+                            <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el modelo o serie">
                             </div>
                         </div>
                     <div>
-                        <div class="font-semibold text-center dark:text-white my-6">
-                            <template v-if="selectedServicio && selectedServicio.n_informe">
-                            n| informe | {{ selectedServicio.n_informe }}
-                            </template>
-                            <template v-else>
-                            Sin n| informe
-                            </template>
-                        </div>
                         <div class="flex flex-wrap gap-4 my-6">
                             <div class="dark:text-white uppercase text-xs font-bold">
                                 <span class="bg-indigo-800 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-800 dark:text-white">{{ $page.props.totalHservicio }}</span>
@@ -154,7 +156,7 @@ const  getBadgeClass=(requiere)=> {
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
-                                    <tr v-for="hservicio in hservicios" :key="hservicio.id"  class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                                    <tr v-for="hservicio in filteredHservicios" :key="hservicio.id"  class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                         <!-- Mostrar los datos de cada hservicio -->
                                         <td class="px-6 py-4 text-center">{{ hservicio.hmarca ? hservicio.hmarca.nombre : 'Sin marca' }}</td>
                                         <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.modelo }}</td>
@@ -178,7 +180,8 @@ const  getBadgeClass=(requiere)=> {
                                 </tbody>
                             </table>
                         </div>
-                        <div class="bg-white grid v-screen dark:bg-gray-800  dark:text-gray-200 place-items-center mt-4">
+                        <div v-if="filteredHservicios.length === 0" class="text-center py-2 dark:text-white">
+                            No se encontraron datos.
                         </div>
                     </div>
                 </div>
@@ -186,3 +189,30 @@ const  getBadgeClass=(requiere)=> {
         </div>
     </AppLayout>
 </template>
+
+<script>
+export default {
+    name: 'CategoriesIndex',
+    data() {
+        return {
+            searchQuery: '',
+        };
+    },
+    computed: {
+        filteredHservicios() {
+            const query = this.searchQuery.toLowerCase();
+            return this.hservicios.filter(hservicio => {
+                // Filtra por cualquier campo que desees, aquí se filtra por modelo y serie
+                return hservicio.modelo.toLowerCase().includes(query) ||
+                    hservicio.serie.toLowerCase().includes(query);
+            });
+        }
+    },
+    methods: {
+        guardarRequerimientoId(idHojasServicio) {
+            // Guardar el producto_id en localStorage
+            localStorage.setItem('idrequerimiento', idHojasServicio);
+        },
+    }
+};
+</script>

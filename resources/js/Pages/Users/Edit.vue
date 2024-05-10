@@ -48,7 +48,7 @@ export default {
 <template>
     <AppLayout title="Editar Usuario">
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Editar Usuario</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Editar Usuarios</h1>
         </template>
        
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">

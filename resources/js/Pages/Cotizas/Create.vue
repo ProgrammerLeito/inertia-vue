@@ -379,7 +379,7 @@ const previewPDF = () => {
         doc.text(20, eje_y, 'Especificaciones Tecnicas');
 
         doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(9);//Tamaño de texto
+        doc.setFontSize(10);//Tamaño de texto
         doc.setFont('Helvetica', 'normal');//estilos de texto
         
         const especificaciones = producto.especificaciones.split('\n');
@@ -404,16 +404,31 @@ const previewPDF = () => {
             });
         });
 
+        let precioProducto = producto.precio;
+
+        let precioProducto1 = String(precioProducto).toLocaleString('es-ES',{
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+            useGrouping: true});
+
+        let precioProducto2 = precioProducto1.padStart(11);
+
+        console.log(precioProducto2)
+
         doc.setTextColor(0,0,0);//Color de texto
         doc.setFontSize(14);//Tamaño de texto
         doc.setFont('Helvetica', 'bold');//estilos de texto
         eje_y += 10 // vale 70
+        doc.setFillColor(255, 255, 0); // Amarillo
+        doc.rect(54, eje_y - 7.5, 45, 12, 'F');
         doc.text(60, eje_y, 'Precio Unitario');
 
         doc.setTextColor(0,0,0);//Color de texto
         doc.setFontSize(14);//Tamaño de texto
         doc.setFont('Helvetica', 'bold');//estilos de texto
-        doc.text(105, eje_y, ': ' + `${producto.precio}`);
+        doc.setFillColor(255, 255, 0); // Amarillo
+        doc.rect(98, eje_y - 7.5, 45, 12, 'F'); // Dibujar un rectángulo amarillo detrás del texto que viene después del colon
+        doc.text(105, eje_y, ': ' + `${precioProducto2}`);
         
     };
     
@@ -535,7 +550,7 @@ const previewPDF = () => {
 <template>
     <AppLayout title="Cotizar por Venta">
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Crear Cotizacion por venta</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Crear Cotizacion por Venta</h1>
         </template>
  
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">

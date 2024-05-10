@@ -153,7 +153,7 @@ const formatTime = (timeString) => {
                                         <td class="px-6 py-4 text-center">{{ formatDate(salida.fecha) }} a las {{ formatTime(salida.hora_salida) }}</td>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center">
-                                                {{ salida.devolucion != 1 ? 'Sin Devolucion' : (salida.unidad_devolucion === null ? 'Esperando devolución' : salida.unidad_devolucion) }}
+                                                {{ salida.devolucion === 0 ? 'Sin Devolucion' : (salida.devolucion === 2 ? salida.unidad_devolucion : (salida.unidad_devolucion === null ? 'Esperando devolución' : salida.unidad_devolucion)) }}
                                                 <img v-if="salida.devolucion == 1 && salida.unidad_devolucion === null" src="img/advertencia.png" class="pulsoAdvertencia ml-5 h-6 drop-shadow-[0_0_5px_rgba(255,255,255,0.80)]" alt="Advertencia">
                                             </div>
                                         </td>

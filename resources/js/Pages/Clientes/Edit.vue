@@ -79,7 +79,7 @@ const submitForm = (id) => {
     <AppLayout title="Actualizar Cliente">
         <!-- Encabezado -->
         <template #header>
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight dark:text-white">Actualizar Cliente</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Editar Cliente</h1>
         </template>
  
         <!-- Contenido del formulario -->

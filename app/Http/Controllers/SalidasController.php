@@ -174,6 +174,8 @@ class SalidasController extends Controller
             'unidad_devolucion'=>'nullable',
         ]);
 
+        if(isset($validated['unidad_devolucion']) && !empty($validated['unidad_devolucion'])) {$validated['devolucion'] = 2;}
+
         // Inicia una transacción para asegurar la integridad de los datos
         DB::beginTransaction();
         try {

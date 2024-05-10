@@ -3,6 +3,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
+import Create from '@/Pages/Cotizas/Create.vue';
  
 const props=defineProps({
     cventas: {

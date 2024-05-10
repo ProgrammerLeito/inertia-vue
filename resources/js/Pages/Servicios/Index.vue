@@ -106,7 +106,7 @@ const formatTime = (timeString) => {
 <template>
     <AppLayout title="Servicios" >
         <template #header>
-            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Hojas de Servicio</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Lista de Hojas Tecnicas</h1>
         </template>
 
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
@@ -114,7 +114,7 @@ const formatTime = (timeString) => {
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 uppercase text-sm justify-between">
                         <Link :href="route('servicios.create')" class="text-white bg-indigo-700 font-bold hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            <i class="fa fa-plus-circle mx-2"></i>agregar hoja tecnica
+                            <i class="fa fa-plus-circle mx-2"></i>Agregar hoja tecnica
                         </Link>
                     </div>
                     <div class="flex flex-col">
@@ -128,14 +128,14 @@ const formatTime = (timeString) => {
                             </div>
                         </div>
                     <div>
-                        <div class="relative overflow-x-auto shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2">
+                        <div class="relative overflow-x-auto shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-600 mt-2">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Estado</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N° informe</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">cliente</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">descripcion</th>
+                                        <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">cliente</th>
+                                        <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">descripcion</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">fecha</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">R.transporte</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">acciones</th>
@@ -146,7 +146,7 @@ const formatTime = (timeString) => {
                                         <tr class="bg-gray-300 dark:bg-gray-900">
                                             <td colspan="7" class="px-6 py-3 text-start font-bold uppercase dark:text-white text-black"><strong><b>{{ key }}</b></strong></td>
                                         </tr>
-                                        <tr v-for="(servicio, i) in filteredServicio" :key="servicio.id"  class="bg-white text-gray-900 font-bold dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 hover:text-white cursor-pointer">
+                                        <tr v-for="(servicio, i) in filteredServicio" :key="servicio.id"  class="bg-white text-gray-900 border-b border-gray-400 dark:border-white font-bold dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 hover:text-white cursor-pointer">
                                             <td class="px-6 py-4 text-center">
                                                 <div :class="{
                                                     'bg-blue-600': servicio.estado === 'Visitado',
@@ -159,12 +159,12 @@ const formatTime = (timeString) => {
                                             </td>
 
                                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.n_informe }}</td>
-                                            <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.cliente ? servicio.cliente.razonSocial : 'Sin marca' }}</td>
-                                            <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.descripcion }}</td>
+                                            <td class="px-6 py-4 text-left whitespace-normal">{{ servicio.cliente ? servicio.cliente.razonSocial : 'Sin marca' }}</td>
+                                            <td class="px-6 py-4 text-left whitespace-nowrap">{{ servicio.descripcion }}</td>
                                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ formatDate(servicio.fecha) }} a las {{ formatTime(servicio.hora) }}</td>
                                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.user ? servicio.user.name : 'Sin usuario' }}</td>
                                             <td class="p-3 text-center">
-                                                <Link  :href="route('hservicios.index', { servicio_id: servicio.id })">
+                                                <Link @click="guardarServicioId(servicio.n_informe)" :href="route('hservicios.index', { servicio_id: servicio.id }) ">
                                                     <i class="fas fa-arrow-right fa-beat text-yellow-400 mx-2"></i>
                                                 </Link>
                                                 <Link :href="route('servicios.edit',  servicio.id)">
@@ -179,6 +179,32 @@ const formatTime = (timeString) => {
                                     </template>
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-8 mb-3">
+                            <div class="flex max-w-sm p-2 text-xs font-bold bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center justify-center">
+                                <span class="bg-blue-600 text-white me-2 px-2.5 py-0.5 rounded">Visitado</span>
+                                <p class="text-gray-700 ml-2 dark:text-gray-100">
+                                    Equipo o instrumento ya verificado por servicio tecnico
+                                </p>
+                            </div>
+                            <div class="flex max-w-sm p-2 text-xs font-bold bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center ">
+                                <span class="bg-green-600 text-white me-2 px-2.5 py-0.5 rounded">Cotizado</span>
+                                <p class="text-gray-700 ml-2 dark:text-gray-100">
+                                    A la espera de una confirmacion positiva
+                                </p>
+                            </div>
+                            <div class="flex max-w-sm p-2 bg-white border text-xs font-bold border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center justify-center">
+                                <span class="bg-yellow-600 text-white me-2 px-2.5 py-0.5 rounded">Pendiente</span>
+                                <p class="text-gray-700 ml-2 dark:text-gray-100">
+                                    Equipo o instrumento aun no revisado por servicio tecnico
+                                </p>
+                            </div>
+                            <div class="flex max-w-sm p-2 bg-white border text-xs font-bold border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center">
+                                <span class="bg-red-600 text-white me-2 px-2.5 py-0.5 rounded">Finalizado</span>
+                                <p class="text-gray-700 ml-2 dark:text-gray-100">
+                                    Concluida y aceptada por el cliente
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -227,4 +253,13 @@ $(document).ready(function() {
         }
     });
 });
+
+export default {
+    methods: {
+        guardarServicioId(servicio_id) {
+            // Guardar el producto_id en localStorage
+            localStorage.setItem('servicio_id', servicio_id);
+        },
+    }
+};
 </script>

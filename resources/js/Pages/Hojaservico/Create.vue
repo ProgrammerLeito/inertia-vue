@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 import FileInput from '@/Components/FileInput.vue';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
 import DangerButton from '@/Components/DangerButton.vue';
-
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 
 const nameInput2 = ref(null);
 const modal2 = ref(false);
@@ -177,25 +177,33 @@ watch(form.servicio_id, () => {
     setCurrentDate();
     // Se actualiza automáticamente el número de informe y la razón social del cliente cuando se selecciona un servicio.
 });
+
+
+onMounted(() => {
+    const idrequerimiento = localStorage.getItem('idrequerimiento');
+    if (idrequerimiento) {
+        // console.log('aqui toy',idrequerimiento)
+        form.servicio_id = parseInt(idrequerimiento);
+    }
+    // document.getElementById('servicio_id').val(idrequerimiento);
+});
+
 </script>
 <template>
     <AppLayout title="Registrar H-servicio-requerimientos ">
         <template #header>
-            <h1 class="font-semibold uppercase text-md text-gray-800 leading-tight dark:text-white">Registrar requerimientos |
-                servicio</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Registrar requerimientos | servicio</h1>
         </template>
 
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-                <div
-                    class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
+                <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                         <form @submit.prevent="submitForm">
                             <div class="font-semibold d-flex flex-wrap items-center justify-center text-center dark:text-white py-4">
                                 <div class="d-flex">
                                     <select id="servicio_id" v-model="form.servicio_id" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 dark:text-white shadow-sm sm:text-sm border-gray-300 bg-gray-400 dark:bg-gray-800">
-                                        <option value=""  selected>Seleccione n°informe</option>
                                         <option v-for="servicio in servicios" :key="servicio.id" :value="servicio.id">{{ servicio.n_informe }}</option>
                                     </select>
                                 </div>
@@ -203,19 +211,21 @@ watch(form.servicio_id, () => {
                                 N° INFORME: {{ nInformeSeleccionado }} - {{ razonSocialCliente }}
                             </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-8 mb-3">
-                                <div class="flex mt-4 items-center">
-                                    <!-- <label for="tbsubcategoria" >Subcategoría</label> -->
-                                    <select id="hmarca_id" v-model="form.hmarca_id"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
-                                        <option value="" disabled selected>Selecciona una marca</option>
-                                        <option v-for="hmarca in hmarcas" :key="hmarca.id"
-                                            :value="hmarca.id">{{ hmarca.nombre }}</option>
-                                    </select>
-                                    <Button @click.prevent="() => openModal2(1)"
-                                        class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
-                                        <i class="fas fa-plus mx-2"></i>
-                                    </Button>
+                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 mb-3">
+                                <div class="flex flex-col items-start">
+                                    <InputLabel for="hmarca_id" value="Marca" class="ml-1"/>
+                                    <div class="flex w-full">
+                                        <select id="hmarca_id" v-model="form.hmarca_id"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                            <option value="" disabled selected>Selecciona una marca</option>
+                                            <option v-for="hmarca in hmarcas" :key="hmarca.id"
+                                                :value="hmarca.id">{{ hmarca.nombre }}</option>
+                                        </select>
+                                        <Button @click.prevent="() => openModal2(1)"
+                                            class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
+                                            <i class="fas fa-plus mx-2"></i>
+                                        </Button>
+                                    </div>
                                 </div>
                                 <div>
                                     <InputLabel for="serie" value="serie"
@@ -237,7 +247,7 @@ watch(form.servicio_id, () => {
                                     <InputError :message="form.errors.div" class="mt-2"></InputError>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-8 mb-3">
+                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel for="capacidad" value="capacidad" />
                                     <TextInput v-model="form.capacidad" type="text" id="capacidad"
@@ -272,9 +282,8 @@ watch(form.servicio_id, () => {
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="form.errors.fecha" class="mt-2"></InputError>
                                 </div>
-
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 mb-3">
+                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel for="diagnostico" value="diagnostico" />
                                     <textarea id="diagnostico" v-model="form.diagnostico" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las diagnostico..."></textarea>
@@ -286,42 +295,44 @@ watch(form.servicio_id, () => {
                                     <InputError :message="form.errors.trabajos" class="mt-2"></InputError>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
-                                <div>
-                                    <InputLabel for="foto" value="Foto" class="block text-xs font-medium text-gray-700"/>
-                                    <FileInput name="foto" @change="($event) => onSelectFoto($event, 'foto')"/>
-                                    <InputError :message="$page.props.errors.foto" class="mt-2" />
-                                    <div class="mt-2 " v-if="form.foto !== ''">
-                                        <img :src="imagePreview1" alt="Vista previa de la foto" class="h-32 mx-auto rounded">
+                            <div class="mt-0 flex justify-center items-center flex-wrap gap-y-0 sm:gap-x-2">
+                                <div class="sm:col-span-1 flex-1 whitespace-nowrap">
+                                    <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
+                                        <InputLabel for="foto" value="Foto" class="block text-xs font-medium text-gray-700"/>
+                                        <FileInput name="foto" @change="($event) => onSelectFoto($event, 'foto')"/>
+                                        <InputError :message="$page.props.errors.foto" class="mt-2" />
+                                        <div class="mt-2 flex items-center justify-center w-full" v-if="form.foto !== ''">
+                                            <img :src="imagePreview1" alt="Vista previa de la foto" class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                        </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <InputLabel for="foto2" value="Foto 2" class="block text-xs font-medium text-gray-700"/>
-                                    <FileInput name="foto2" @change="($event) => onSelectFoto($event, 'foto2')"/>
-                                    <InputError :message="$page.props.errors.foto2" class="mt-2" />
-                                    <div class="mt-2 " v-if="form.foto2 !== ''">
-                                        <img :src="imagePreview2" alt="Vista previa de la foto 2" class="h-32 mx-auto rounded">
+                                <div class="sm:col-span-1 flex-1 whitespace-nowrap">
+                                    <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
+                                        <InputLabel for="foto2" value="Foto 2" class="block text-xs font-medium text-gray-700"/>
+                                        <FileInput name="foto2" @change="($event) => onSelectFoto($event, 'foto2')"/>
+                                        <InputError :message="$page.props.errors.foto2" class="mt-2" />
+                                        <div class="mt-2 flex items-center justify-center w-full" v-if="form.foto2 !== ''">
+                                            <img :src="imagePreview2" alt="Vista previa de la foto 2" class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                        </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <InputLabel for="foto3" value="Foto 3" class="block text-xs font-medium text-gray-700"/>
-                                    <FileInput name="foto3" @change="($event) => onSelectFoto($event, 'foto3')"/>
-                                    <InputError :message="$page.props.errors.foto3" class="mt-2" />
-                                    <div class="mt-2 " v-if="form.foto3 !== ''">
-                                        <img :src="imagePreview3" alt="Vista previa de la foto 3" class="h-32 mx-auto rounded">
+                                <div class="sm:col-span-1 flex-1 whitespace-nowrap">
+                                    <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
+                                        <InputLabel for="foto3" value="Foto 3" class="block text-xs font-medium text-gray-700"/>
+                                        <FileInput name="foto3" @change="($event) => onSelectFoto($event, 'foto3')"/>
+                                        <InputError :message="$page.props.errors.foto3" class="mt-2" />
+                                        <div class="mt-2 flex items-center justify-center w-full" v-if="form.foto3 !== ''">
+                                            <img :src="imagePreview3" alt="Vista previa de la foto 3" class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
-                                    <PrimaryButton
+                                    <ButtonResponsive
                                         class="inline-block bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 md:w-min whitespace-nowrap w-full text-center">
                                         GUARDAR
-                                    </PrimaryButton>
-                                    <!-- <Link :href="route('hservicios.index', { servicio_id: '{{ $hservicio->servicio_id }}' })"
-                                        class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
-                                    Cancelar
-                                    </Link> -->
+                                    </ButtonResponsive>
                                 </div>
                             </div>
                         </form>

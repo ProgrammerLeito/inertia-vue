@@ -100,8 +100,7 @@ const submitForm = () => {
 <template>
     <AppLayout title="Actualizar H-servicio ">
         <template #header>
-            <h1 class="font-semibold uppercase text-md text-gray-800 leading-tight dark:text-white">Actualizar hoja de
-                servicio</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Actualizar Hoja de Servicio</h1>
         </template>
 
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
