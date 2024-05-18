@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { useForm, Link } from '@inertiajs/vue3';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
 import { computed, ref } from 'vue';
+import { Inertia } from '@inertiajs/inertia';
 
 const searchQuery = ref('');
 const isDropdownOpen = ref(false);
@@ -81,6 +82,47 @@ const deleteCliente = (id, razonSocial) => {
         }
     });
 }
+
+const openCtgModal = async (cliente) => {
+    const modalTitle = `Calificación del cliente: ${cliente.razonSocial}`;
+ 
+    const options = {
+        title: modalTitle,
+        input: 'select',
+        inputOptions: {
+            'Vip': 'Vip',
+            'Potencial': 'Potencial',
+            'Regular': 'Regular',
+            'Sin Informacion': 'Sin Informacion',
+        },
+        inputPlaceholder: 'Selecciona una opcion',
+        showCancelButton: true,
+        confirmButtonText: 'Asignar',
+        showLoaderOnConfirm: true,
+        inputValidator: (value) => {
+            if (!value) {
+                return 'Debes seleccionar un tipo de calificacion';
+            }
+        },
+        preConfirm: async (value) => {
+            const response = await Inertia.post(route('clientes.updateCtg'), { cliente_id: cliente.id, ctg: value });
+            if (response && response.status === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Calificación asignada exitosamente',
+                    timer: 1000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error(response ? response.statusText : 'Error desconocido');
+            }
+        }
+    };
+ 
+    const result = await Swal.fire(options);
+};
 </script>
  
 <template>
@@ -137,25 +179,42 @@ const deleteCliente = (id, razonSocial) => {
                                         <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">Razon social</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Direccion</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Ciudad</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Asesor</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Ctg</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
+                                    <tr @dblclick="redirectToClient(cliente.id)" v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
                                         <td class="px-6 py-4 text-center"><b>{{ i + 1 }}</b></td>
                                         <td class="px-6 py-4 text-center">{{ cliente.numeroDocumento }}</td>
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>
                                         <td class="px-6 py-4 text-center"><b>{{ cliente.direccion }}</b></td>
                                         <td class="px-6 py-4 text-center">{{ cliente.tbprovincia ? cliente.tbprovincia.prov_nombre : 'Sin ciudad' }}</td>
- 
+                                        <td class="px-6 py-4 text-center"><b>{{ cliente.asesor }}</b></td>
+                                        <td class="px-6 py-4 text-center whitespace-nowrap">
+                                            <div :class="{
+                                                'bg-blue-600': cliente.ctg === 'Vip',
+                                                'bg-yellow-600': cliente.ctg === 'Regular',
+                                                'bg-red-600': cliente.ctg === 'Sin Informacion',
+                                                'bg-green-600': cliente.ctg === 'Potencial'
+                                            }" class="inline-block px-2 py-1 rounded">
+                                                <b>{{ cliente.ctg }}</b>
+                                            </div>
+                                        </td>
                                         <td class="p-3 text-center whitespace-nowrap">
-                                            <Link class="py-0.5 px-2.5 text-xs text-black font-semibold bg-yellow-300 rounded-lg border-solid border-2 hover:bg-yellow-400" :href="route('datos.index', { cliente_id: cliente.id })">
+                                            <button @click="openCtgModal(cliente)" class="text-center mx-4 text-white bg-blue-500 hover:bg-blue-600 py-[6.5px] px-[9px] rounded-md"><i class="fas fa-star"></i></button>
+                                            <!-- <Link class="py-0.5 px-2.5 text-xs text-black font-semibold bg-yellow-300 rounded-lg border-solid border-2 hover:bg-yellow-400" :href="route('datos.index', { cliente_id: cliente.id })">
                                                 <i class='bi bi-eye'><label class="ml-2">Cartera</label></i>
-                                            </Link>
-                                            <Link class="py-2 px-4 text-green-500 hover:text-green-600" :href="route('clientes.edit', { cliente: cliente.id })"><i class="bi bi-pencil-square"></i></Link>
-                                            <ButtonDelete  @click="$event => deleteCliente(cliente.id,cliente.razonSocial)" class="ml-1">
+                                            </Link> -->
+                                            <!-- <Link class="py-2 px-4 text-green-500 hover:text-green-600" :href="route('clientes.edit', { cliente: cliente.id })"><i class="bi bi-pencil-square"></i></Link> -->
+                                            <Link class="py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700" :href="route('clientes.edit', { cliente: cliente.id })" v-if="$page.props.user.permissions.includes('Acciones Productos')"><i class="bi bi-pencil-square"></i></Link>
+                                            <!-- <ButtonDelete  @click="$event => deleteCliente(cliente.id,cliente.razonSocial)" class="ml-1">
                                                 <i class="bi bi-trash3 text-red-500"></i>
-                                            </ButtonDelete>
+                                            </ButtonDelete> -->
+                                            <ButtonDelete @click="$event => deleteCliente(cliente.id,cliente.razonSocial)" v-if="$page.props.user.permissions.includes('Acciones Productos')">
+                                                <i class="bi bi-trash3 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
+                                            </ButtonDelete>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -170,3 +229,14 @@ const deleteCliente = (id, razonSocial) => {
         </div>
     </AppLayout>
 </template>
+
+<script>
+export default {
+    methods: {
+        redirectToClient(cliente_id) {
+            // Redirigir a la página de detalles usando el mismo enlace que el botón de visualización
+            window.location.href = this.route('datos.index', { cliente_id: cliente_id });
+        }
+    }
+};
+</script>

@@ -25,7 +25,8 @@ class Tbproducto extends Model
         'estado',
         'capacidades',
         'especificaciones',
-        'foto'
+        'foto',
+        'precio_max'
     ];
  
     public function tbcategoria()

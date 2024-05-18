@@ -42,7 +42,7 @@ class CventaController extends Controller
         $validatedData = $request->validated();
         $cventa = Cventa::create($validatedData);
         $cventa -> save ();
-        return redirect()->route('cotizas.index');
+        return redirect()->route('cventas.index');
     }
 
     public function edit(Cventa $cventa)

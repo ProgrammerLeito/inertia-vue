@@ -85,6 +85,9 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/hservicios/{hservicio}', [HservicioController::class, 'update'])->name('hservicios.update');
  
     Route::resource('hmarcas',HmarcaController::class);
+
+    Route::post('/clientes/update-ctg', [ClienteController::class, 'updateCtg'])->name('clientes.updateCtg');
+    Route::post('/datos/{dato}', [DatoController::class, 'update'])->name('datos.update');
 });
 
 Route::middleware(['auth:web'])->group(function () {

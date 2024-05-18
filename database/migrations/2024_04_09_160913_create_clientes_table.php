@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('provincia', 250);
             $table->string('departamento', 250);
             $table->string('estado');
+            $table->string('ctg');
+            $table->string('asesor');
             $table->string('cli_direccion2', 250)->nullable();
             $table->string('cli_observacion', 250)->nullable();
             $table->foreignId('tbprovincia_id')->constrained()->onDelete('cascade');

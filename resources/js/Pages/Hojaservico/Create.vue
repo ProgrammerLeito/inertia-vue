@@ -201,7 +201,7 @@ onMounted(() => {
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                         <form @submit.prevent="submitForm">
                             <div class="font-semibold d-flex flex-wrap items-center justify-center text-center dark:text-white py-4">
-                                <div class="d-flex">
+                                <div class="hidden d-flex">
                                     <select id="servicio_id" v-model="form.servicio_id" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 dark:text-white shadow-sm sm:text-sm border-gray-300 bg-gray-400 dark:bg-gray-800">
                                         <option v-for="servicio in servicios" :key="servicio.id" :value="servicio.id">{{ servicio.n_informe }}</option>

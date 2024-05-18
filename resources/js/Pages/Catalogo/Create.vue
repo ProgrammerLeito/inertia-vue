@@ -71,6 +71,7 @@ const initialvalues = {
     stock: 0,
     codigo: '',
     estado: '',
+    precio_max: '',
     capacidades: '',
     especificaciones: '',
     foto: null,
@@ -338,13 +339,15 @@ const ok4 = (msj) => {
                                     </select>
                                 </div>
  
-                                <!-- Precio -->
+                                <!-- Precio Sin Igv -->
                                 <div>
-                                    <InputLabel for="precio" class="block text-sm font-medium text-gray-700">Precio</InputLabel>
+                                    <InputLabel for="precio" class="block text-sm font-medium text-gray-700">Precio Min</InputLabel>
                                     <TextInput type="text" id="precio" v-model="form.precio" required placeholder="0.00"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.precio" class="mt-2"/>
                                 </div>
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-8 mt-2">
                                 <!-- Descuento -->
                                 <div>
                                     <InputLabel for="descuento" class="block text-sm font-medium text-gray-700">Descuento(%)</InputLabel>
@@ -399,6 +402,16 @@ const ok4 = (msj) => {
                                     <FileInput name="foto" @change="onSelectFoto"/>
                                     <InputError :message="$page.props.errors.foto" class="mt-2" />
                                     <div class="py-1 dark:text-white normal-case">De preferencia Subir Imagenes Cuadradas</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mt-2">
+                                <!-- Precio Maximo -->
+                                <div>
+                                    <InputLabel for="precio_max" class="block text-sm font-medium text-gray-700">Precio Max</InputLabel>
+                                    <TextInput type="text" id="precio_max" v-model="form.precio_max" required placeholder="0.00"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                    <InputError :message="$page.props.errors.precio_max" class="mt-2"/>
                                 </div>
                             </div>
  

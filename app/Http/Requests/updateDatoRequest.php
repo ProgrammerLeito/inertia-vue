@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CreateDatoRequest extends FormRequest
+class updateDatoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,7 @@ class CreateDatoRequest extends FormRequest
             'cargo' => 'required|string',
             'telefono' => 'required|string',
             'correo' => 'required|string',
-            'tarjeta' => 'nullable',
+            'tarjeta' => '',
             'cliente_id' => [
                 'required',
                 Rule::exists('clientes', 'id'),

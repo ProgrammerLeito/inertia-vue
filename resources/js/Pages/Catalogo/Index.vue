@@ -172,7 +172,7 @@ watchEffect(() => {
                                                     <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
                                                 </ul>
                                             </td>
-                                            <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.precio }}</td>
+                                            <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio).toFixed(2) }} / {{ parseFloat(tbproducto.precio_max).toFixed(2) }}</td>
                                             <td class="p-3 text-center border-b">
                                                 <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })">
                                                     <i class="bi bi-pencil-square text-green-500"></i>

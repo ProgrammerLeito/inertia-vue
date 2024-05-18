@@ -146,7 +146,7 @@ const formatTime = (timeString) => {
                                         <tr class="bg-gray-300 dark:bg-gray-900">
                                             <td colspan="7" class="px-6 py-3 text-start font-bold uppercase dark:text-white text-black"><strong><b>{{ key }}</b></strong></td>
                                         </tr>
-                                        <tr v-for="(servicio, i) in filteredServicio" :key="servicio.id"  class="bg-white text-gray-900 border-b border-gray-400 dark:border-white font-bold dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 hover:text-white cursor-pointer">
+                                        <tr @dblclick="guardarServicioId(servicio.n_informe); redirectToDetails(servicio.id)" v-for="(servicio, i) in filteredServicio" :key="servicio.id"  class="bg-white text-gray-900 border-b border-gray-400 dark:border-white font-bold dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 hover:text-white cursor-pointer">
                                             <td class="px-6 py-4 text-center">
                                                 <div :class="{
                                                     'bg-blue-600': servicio.estado === 'Visitado',
@@ -164,14 +164,12 @@ const formatTime = (timeString) => {
                                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ formatDate(servicio.fecha) }} a las {{ formatTime(servicio.hora) }}</td>
                                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.user ? servicio.user.name : 'Sin usuario' }}</td>
                                             <td class="p-3 text-center">
-                                                <Link @click="guardarServicioId(servicio.n_informe)" :href="route('hservicios.index', { servicio_id: servicio.id }) ">
+                                                <!-- <Link @click="guardarServicioId(servicio.n_informe)" :href="route('hservicios.index', { servicio_id: servicio.id }) ">
                                                     <i class="fas fa-arrow-right fa-beat text-yellow-400 mx-2"></i>
-                                                </Link>
-                                                <Link :href="route('servicios.edit',  servicio.id)">
-                                                    <i class="bi bi-pencil-square text-green-500 mx-2"></i>
-                                                </Link>
-                                                <ButtonDelete @click="$event => deleteServicio(servicio.id,servicio.n_informe)" class="ml-1">
-                                                    <i class="bi bi-trash3 text-red-500"></i>
+                                                </Link> -->
+                                                <Link class="py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700" :href="route('servicios.edit',  servicio.id)"><i class="bi bi-pencil-square"></i></Link>
+                                                <ButtonDelete @click="$event => deleteServicio(servicio.id,servicio.n_informe)">
+                                                    <i class="ml-2 bi bi-trash3 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
                                                 </ButtonDelete>
                                             </td>
                                             <td class="hidden">{{ servicio.id }}</td>
@@ -260,6 +258,10 @@ export default {
             // Guardar el producto_id en localStorage
             localStorage.setItem('servicio_id', servicio_id);
         },
+        redirectToDetails(servicio_id) {
+            // Redirigir a la página de detalles usando el mismo enlace que el botón de visualización
+            window.location.href = this.route('hservicios.index', { servicio_id: servicio_id });
+        }
     }
 };
 </script>

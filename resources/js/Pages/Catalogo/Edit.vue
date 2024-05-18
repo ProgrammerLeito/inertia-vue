@@ -29,6 +29,7 @@ const initialvalues={
     stock: tbproducto.value.stock,
     codigo: tbproducto.value.codigo,
     estado: tbproducto.value.estado,
+    precio_max: tbproducto.value.precio_max,
     capacidades: tbproducto.value.capacidades,
     especificaciones: tbproducto.value.especificaciones,
     foto: null,
@@ -208,6 +209,17 @@ const submitForm = () => {
                                 </div>
 
                             </div>
+
+                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mt-2">
+                                <!-- Precio Maximo -->
+                                <div>
+                                    <InputLabel for="precio_max" class="block text-sm font-medium text-gray-700">Precio Max</InputLabel>
+                                    <TextInput type="text" id="precio_max" v-model="form.precio_max" required placeholder="0.00"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
+                                    <InputError :message="$page.props.errors.precio_max" class="mt-2"/>
+                                </div>
+                            </div>
+                            
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
                                     <ButtonResponsive class="font-bold">ACTUALIZAR</ButtonResponsive>

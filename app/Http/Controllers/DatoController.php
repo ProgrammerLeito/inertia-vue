@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateDatoRequest;
+use App\Http\Requests\updateDatoRequest;
 use App\Models\Cliente;
 use App\Models\Dato;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -25,20 +27,43 @@ class DatoController extends Controller
 
     public function store(CreateDatoRequest $request)
     {
-        $validatedData = $request->validated();
+        $validatedData = $request->except(['tarjeta']);
+        if ($request->hasFile('tarjeta')) {
+            $tarjeta = $request->file('tarjeta');
+            $routeName = $tarjeta->store('cliente', ['disk' => 'public']);
+            $validatedData['tarjeta'] = $routeName;
+        }
         $dato = Dato::create($validatedData);
         return redirect()->back();
     }
+ 
+    public function edit(Dato $dato){
+        $clientes=Cliente::all();
+        return Inertia::render('Datos/Edit',compact('clientes','dato'));
+    }
 
-    public function update(Request $request, Dato $dato)
+    public function update(updateDatoRequest $request, Dato $dato)
     {
-        $dato->update($request->all());
-        return redirect()->back();
+        $validatedData = $request->except(['tarjeta']);
+        if ($request->hasFile('tarjeta')) {
+            $file = $request->file('tarjeta');
+            $routeName = $file->store('cliente', ['disk' => 'public']);
+            $validatedData['tarjeta'] = $routeName;
+
+            if ($dato->tarjeta) {
+                Storage::disk('public')->delete($dato->tarjeta);
+            }
+        }
+        $dato->update($validatedData);
+        return redirect()->route('datos.index', ['cliente_id' => $dato->cliente_id]);
     }
  
     public function destroy($id)
     {
         $dato = Dato::find($id);
+        if ($dato->tarjeta) {
+            Storage::disk('public')->delete($dato->tarjeta);
+        }
         $dato->delete();
         return redirect()->back();
     }

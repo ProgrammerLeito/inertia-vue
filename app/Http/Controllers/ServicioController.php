@@ -37,6 +37,7 @@ class ServicioController extends Controller
         $tecnico = Auth::user()->name;
         $validatedData= $request->validated();
         $validatedData['tecnico'] = $tecnico;
+        $validatedData['estado'] = 'Pendiente';
         $servicios= Servicio::create($validatedData);
         $servicios->save();
         return redirect()->route('servicios.index');

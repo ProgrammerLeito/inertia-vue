@@ -13,7 +13,6 @@
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-        <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.6/b-3.0.2/b-html5-3.0.2/r-3.0.2/datatables.min.css" rel="stylesheet">
 
         <!-- Scripts -->
         @routes
@@ -24,18 +23,10 @@
     <body class="antialiased bg-white h-full">
         @inertia
         <div id="app" class="overflow-hidden"></div>
-        {{-- <div id="contenido"></div> --}}
-        
-        {{-- <div class="min-h-[calc(100%-148px)] overflow-hidden"> --}}
+
         <div class="overflow-hidden">
         </div>
-        <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.6/b-3.0.2/b-html5-3.0.2/r-3.0.2/datatables.min.js"></script>
+        {{-- <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.6/b-3.0.2/b-html5-3.0.2/r-3.0.2/datatables.min.js"></script> --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        {{-- <script src="{{ asset('js/plantillacotizacion.js') }}"></script> --}}
     </body>
-
-    {{-- <body class="font-sans antialiased box-border">
-        @inertia
-        
-    </body> --}}
 </html>

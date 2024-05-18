@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->string('codigo')->unique();
             $table->string('estado');
+            $table->string('precio_max');
             $table->text('capacidades')->nullable();
             $table->text('especificaciones')->nullable();
             $table->string('foto')->nullable();

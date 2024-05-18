@@ -32,6 +32,8 @@ class CreateClientesRequest extends FormRequest
             'cli_direccion2' => 'required',
             'cli_observacion' => 'required|string',
             'tbprovincia_id' => 'required',
+            'ctg' => 'nullable',
+            'asesor' => 'nullable',
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateClientesRequest;
 use App\Models\Cliente;
 use App\Models\Tbprovincias;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -14,7 +15,7 @@ class ClienteController extends Controller
  
     public function index()
     {
-        $clientes = Cliente::with('tbprovincia')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id')->paginate(10);
+        $clientes = Cliente::with('tbprovincia')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id','ctg','asesor')->paginate(10);
         $tbprovincias = Tbprovincias::all();
     
         return Inertia::render('Clientes/Index', compact('clientes', 'tbprovincias'));
@@ -23,7 +24,7 @@ class ClienteController extends Controller
     public function trashed_cliente(Request $request)
     {
        
-        $clientes = Cliente::onlyTrashed()->with('tbprovincia')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id')->paginate(10);
+        $clientes = Cliente::onlyTrashed()->with('tbprovincia')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id','ctg','asesor')->paginate(10);
         $tbprovincias = Tbprovincias::all();
  
         return Inertia::render('Clientes/Trash_list', compact('clientes', 'tbprovincias'));
@@ -54,6 +55,7 @@ class ClienteController extends Controller
 
     public function store(CreateClientesRequest $request)
     {
+        $asesor = Auth::user()->name;
         $token = 'apis-token-7907.K0qLm91OLHYP07iBLCqF4INtKqqtu0H6'; // Reemplaza con tu token
         $ruc = $request->input('numeroDocumento');
    
@@ -94,6 +96,8 @@ class ClienteController extends Controller
             'cli_direccion2' => $request->input('cli_direccion2'),
             'cli_observacion' => $request->input('cli_observacion'),
             'tbprovincia_id' => $request->input('tbprovincia_id'),
+            'ctg' => 'Sin Informacion',
+            'asesor' => $asesor,
         ]);
    
         return redirect()->route('clientes.index');
@@ -116,6 +120,24 @@ class ClienteController extends Controller
         $cliente = Cliente::find($id);
         $cliente->delete();
         return redirect()->back();
+    }
+
+    public function updateCtg(Request $request)
+    {
+        // Validar la solicitud
+        $request->validate([
+            'cliente_id' => 'required|exists:clientes,id',
+            'ctg' => 'required|in:Vip,Potencial,Regular,Sin Informacion', // Sin espacios en los valores 'Cliente Potencial' y 'Cliente Regular'
+        ]);
+ 
+        // Obtener el cliente
+        $cliente = Cliente::find($request->cliente_id);
+ 
+        // Asignar el nuevo estado al cliente
+        $cliente->ctg = $request->ctg;
+        $cliente->save();
+ 
+        // return response()->json(['message' => 'Estado del cliente cambiado con éxito'], 200);
     }
    
 }

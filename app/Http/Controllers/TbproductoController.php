@@ -45,19 +45,6 @@ class TbproductoController extends Controller
         return redirect()->back();
     }
 
-    // public function deletePermanently($id){
-    //     $tbproducto= Tbproducto::withTrashed()->find($id);
-
-    //     if (file_exists(public_path('img/catalogo/' . $tbproducto->foto))) {
-    //         unlink(public_path('img/catalogo/' . $tbproducto->foto));
-    //     }
-
-    //     if(!empty($tbproducto)){
-    //         $tbproducto->forceDelete();
-    //     }
-    //     return redirect()->back();
-    // }
-
     public function deletePermanently($id)
     {
         $tbproducto = Tbproducto::withTrashed()->find($id);

@@ -25,6 +25,8 @@ class Cliente extends Model
         'cli_direccion2',
         'cli_observacion',
         'tbprovincia_id',
+        'ctg',
+        'asesor',
     ];
  
  

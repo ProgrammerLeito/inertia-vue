@@ -240,9 +240,9 @@ const submitForm = () => {
 const previewPDF = () => {
     const doc = new jsPDF();
 
-    let plantilla = 'public/plantillacotizacion.png';
+    let plantilla = '/storage/catalago_productos/plantillacotizacion.png';
 
-    // doc.addImage(plantilla, 'PNG', 0, 0, 100, 100); // Agregar la imagen en las coordenadas fijas
+    doc.addImage(plantilla, 'PNG', 1, 1, 208, 295); // Agregar la imagen en las coordenadas fijas
    
     const cliente = document.getElementById("cliente_id").options[document.getElementById("cliente_id").selectedIndex].text;
     const descripcion = document.getElementById("tenor_id").options[document.getElementById("tenor_id").selectedIndex].text;
@@ -255,8 +255,9 @@ const previewPDF = () => {
     const igv = document.getElementById("igv").value;
     const total = document.getElementById("total").value;
  
-    var eje_y = 40
+    var eje_y = 50
     var yPos = 0
+    var eje_r = 30
 
     doc.setTextColor(0,0,0);//Color de texto
 	doc.setFontSize(10);//Tamaño de texto
@@ -312,8 +313,9 @@ const previewPDF = () => {
             yPos += 150; // Ajustar la posición Y para el siguiente elemento
             if (yPos + 150 > doc.internal.pageSize.height) {
                 doc.addPage();
-                yPos = 20; // Reiniciar la posición vertical en la nueva página
-                eje_y =20 // Reiniciar la posición vertical para el contenido
+                doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
+                yPos = 40; // Reiniciar la posición vertical en la nueva página
+                eje_y = 40 // Reiniciar la posición vertical para el contenido
                 nextPageCallback();
             }
         };
@@ -406,7 +408,7 @@ const previewPDF = () => {
 
         let precioProducto = producto.precio;
 
-        let precioProducto1 = String(precioProducto).toLocaleString('es-ES',{
+        let precioProducto1 = parseFloat(precioProducto).toLocaleString('es-ES',{
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
             useGrouping: true});
@@ -434,7 +436,9 @@ const previewPDF = () => {
     
     const addAllProducts = (productos, index) => {
         if (index >= productos.length) {
-
+            
+            doc.addPage();
+            doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
             // Establecer el color de la línea
             doc.setDrawColor(0, 0, 0);
 
@@ -445,93 +449,93 @@ const previewPDF = () => {
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_y += 10 // vale 125
+            eje_r += 20 // vale 125
             var texto = 'CONDICIONES GENERALES:';
             var textWidth = doc.getStringUnitWidth(texto) * doc.internal.getFontSize() / doc.internal.scaleFactor;
             var textHeight = doc.internal.getLineHeight();
             var startX = 20;
-            var startY = eje_y + 2; // Ajustar según el tamaño de la fuente
+            var startY = eje_r + 2; // Ajustar según el tamaño de la fuente
             doc.text(texto, startX, startY);
             doc.line(startX, startY + 1, startX + textWidth, startY + 1);
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_y += 8 // vale 133
-            doc.text(20, eje_y, 'Garantia');
+            eje_r += 8 // vale 133
+            doc.text(20, eje_r, 'Garantia');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(55, eje_y, ': ' + `${garantia}`);
+            doc.text(55, eje_r, ': ' + `${garantia}`);
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_y += 5 // vale 138
-            doc.text(20, eje_y, 'Plazo de Entrega');
+            eje_r += 5 // vale 138
+            doc.text(20, eje_r, 'Plazo de Entrega');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(55, eje_y, ': ' + `${dias_entrega}` + ' Dias');
+            doc.text(55, eje_r, ': ' + `${dias_entrega}` + ' Dias');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_y += 5 // vale 143
-            doc.text(20, eje_y, 'Forma de Pago');
+            eje_r += 5 // vale 143
+            doc.text(20, eje_r, 'Forma de Pago');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(55, eje_y, ': ' + `${forma_pago}`);
+            doc.text(55, eje_r, ': ' + `${forma_pago}`);
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_y += 5 // vale 148
-            doc.text(20, eje_y, 'Deposito a cuenta de Ahorros');
+            eje_r += 5 // vale 148
+            doc.text(20, eje_r, 'Deposito a cuenta de Ahorros');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_y += 5 // vale 153
-            doc.text(20, eje_y, 'BBVA : ');
+            eje_r += 5 // vale 153
+            doc.text(20, eje_r, 'BBVA : ');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(33, eje_y, 'S/ 0011 0267 0201320316  /  CCI: 011 267 000201320316 27');
+            doc.text(33, eje_r, 'S/ 0011 0267 0201320316  /  CCI: 011 267 000201320316 27');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_y += 5 // vale 158
-            doc.text(20, eje_y, 'BCP : ');
+            eje_r += 5 // vale 158
+            doc.text(20, eje_r, 'BCP : ');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(32, eje_y, '$ 475-2156380-1-04  /  S/ 475-2156367-0-62');
+            doc.text(32, eje_r, '$ 475-2156380-1-04  /  S/ 475-2156367-0-62');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_y += 5 // vale 163
-            doc.text(20, eje_y, 'Orden de compra irrevocable');
+            eje_r += 5 // vale 163
+            doc.text(20, eje_r, 'Orden de compra irrevocable');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_y += 5 // vale 168
-            doc.text(20, eje_y, 'Servicio gratuito dentro del tiempo de garantia');
+            eje_r += 5 // vale 168
+            doc.text(20, eje_r, 'Servicio gratuito dentro del tiempo de garantia');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_y += 5 // vale 173
-            doc.text(20, eje_y, 'A la espera de su orden');
+            eje_r += 5 // vale 173
+            doc.text(20, eje_r, 'A la espera de su orden');
 
             doc.output('dataurlnewwindow');
             return;
@@ -613,7 +617,6 @@ const previewPDF = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <!-- <img src="/storage/fotos/plantillacotizacion.png"> -->
                                             <tr v-for="(tbproducto, i) in tbproductosAgregados" :key="index">
                                                 <td class="px-3 py-4 text-center border-r border-b">{{ tbproducto.modelo }}</td>
                                                 <td class="px-6 py-3 text-center border-r border-b">

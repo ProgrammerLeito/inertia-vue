@@ -10,12 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
-    const Numero_de_items_pagina =25;
     public function index()
     {
         $categories = DB::table('categories')
                         ->select('id', 'name') // Selecciona los campos que desees
-                        ->paginate(self::Numero_de_items_pagina);
+                        ->paginate(2);
 
         return inertia('Categories/Index', compact('categories'));
     }
