@@ -14,7 +14,7 @@ class Tbmarca extends Model
         'tbsubcategoria_id'
     ];
  
-    public function tbcategoria()
+    public function tbsubcategoria()
     {
         return $this->belongsTo(Tbsubcategoria::class);
     }

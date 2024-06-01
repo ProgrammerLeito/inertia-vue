@@ -11,7 +11,7 @@ class TbmarcaController extends Controller
     {
         $validatedData = $request->validate([
             'nombre' => 'required|string|max:255|unique:tbmarcas',
-            'tbsubcategoria_id' => 'required|exists:tbcategorias,id',
+            'tbsubcategoria_id' => 'required|exists:tbsubcategorias,id',
         ]);
  
         $marca = Tbmarca::create($validatedData);

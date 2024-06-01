@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class ProductoController extends Controller
 {
-    const Numero_de_items_pagina =25;
     public function index(Request $request)
     {
         $categoryId = $request->query('category_id');
@@ -42,7 +41,7 @@ class ProductoController extends Controller
                             DB::raw('(SELECT COALESCE((SELECT cantidad FROM entradas WHERE entradas.producto_id = productos.id ORDER BY id DESC LIMIT 1), 0)) as ultima_cantidad_entrada')
                         )
                         ->where('categories.id', '=', $categoryId)->orderBy('id', 'DESC')
-                        ->paginate(self::Numero_de_items_pagina);
+                        ->paginate(1);
 
         $productos->appends(['category_id' => $categoryId]);
 

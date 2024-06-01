@@ -14,7 +14,7 @@ class CategoryController extends Controller
     {
         $categories = DB::table('categories')
                         ->select('id', 'name') // Selecciona los campos que desees
-                        ->paginate(2);
+                        ->paginate(20);
 
         return inertia('Categories/Index', compact('categories'));
     }

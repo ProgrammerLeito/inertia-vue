@@ -11,7 +11,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
-import { nextTick, ref } from 'vue';
+import { nextTick, ref, onMounted } from 'vue';
 import FileInput from '@/Components/FileInput.vue';
  
 const nameInput = ref(null);
@@ -130,6 +130,13 @@ const deleteDatos = (id, nombre) => {
     });
 }
  
+onMounted(() => {
+    const cliente_id = localStorage.getItem('cliente_id');
+        if (cliente_id) {
+            form.cliente_id = cliente_id;
+        }
+});
+
 </script>
 <template>
     <AppLayout title="datos">
@@ -204,7 +211,7 @@ const deleteDatos = (id, nombre) => {
                     <InputLabel for="cliente_id" value="Cliente:" class="mb-2 text-xs"></InputLabel>
                     <select id="cliente_id" v-model="form.cliente_id" required
                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                        <option value="">Seleccione una categoría</option>
+                        <option value="">Seleccione un Cliente</option>
                         <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{ cliente.razonSocial
                             }}
                         </option>

@@ -6,11 +6,11 @@ import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
-import ButtonResponsive from '@/Components/ButtonResponsive.vue';
+import Modal from '@/Components/Modal.vue';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
-import { nextTick, ref } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import FileInput from '@/Components/FileInput.vue';
 
 const nameInput4 = ref(null);
@@ -31,7 +31,7 @@ const title3 = ref('');
 const operation3 = ref(1);
 const id3 = ref('');
 
-defineProps({
+const { tbcategorias, tbsubcategorias, tbmarcas  }= defineProps({
     tbcategorias: {
         type: Object,
         required: true
@@ -46,6 +46,8 @@ defineProps({
     }
 
 });
+
+
 const form4 = useForm({
     nombre: '',
 
@@ -67,24 +69,71 @@ const initialvalues = {
     medida: '',
     moneda: '',
     precio: 0,
+    precio_max: 0,
     descuento: 0,
     stock: 0,
     codigo: '',
     estado: '',
-    precio_max: '',
     capacidades: '',
     especificaciones: '',
     foto: null,
 };
 
- const form = useForm(initialvalues)
+const form = useForm(initialvalues);
 
-const onSelectFoto= (e) =>{
+ const imagePreview1 = ref('');
+const onSelectFoto = (e, fieldName) => {
     const files = e.target.files;
-    if(files.length){
-        form.foto= files[0]
+    if (files.length) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            switch (fieldName) {
+                case 'foto':
+                    imagePreview1.value = e.target.result;
+                    break;
+            }
+        };
+        reader.readAsDataURL(files[0]);
+        switch (fieldName) {
+            case 'foto':
+                form.foto = files[0];
+                break;
+        }
     }
 }
+
+const filteredSubcategorias = ref([]);
+const filteredMarcas = ref([]);
+
+const updateFilteredSubcategoriasYMarcas = () => {
+    if (form.tbcategoria_id) {
+        // Filtrar subcategorías basadas en la categoría seleccionada
+        filteredSubcategorias.value = tbsubcategorias.filter(subcategoria => subcategoria.tbcategoria_id == form.tbcategoria_id);
+
+        if (form.tbsubcategoria_id) {
+            // Si se ha seleccionado una subcategoría, filtrar marcas basadas en la subcategoría seleccionada
+            filteredMarcas.value = tbmarcas.filter(marca => marca.tbsubcategoria_id == form.tbsubcategoria_id);
+        } else {
+            // Si no se ha seleccionado ninguna subcategoría, mostrar todas las marcas relacionadas con las subcategorías filtradas
+            filteredMarcas.value = tbmarcas.filter(marca => filteredSubcategorias.value.some(subcategoria => subcategoria.id == marca.tbsubcategoria_id));
+        }
+    } else {
+        // Si no se ha seleccionado ninguna categoría, restablecer tanto subcategorías como marcas
+        filteredSubcategorias.value = [];
+        filteredMarcas.value = [];
+    }
+};
+
+watch(() => form.tbcategoria_id, () => {
+    // Observar cambios en la categoría seleccionada y actualizar subcategorías y marcas
+    updateFilteredSubcategoriasYMarcas();
+});
+
+watch(() => form.tbsubcategoria_id, () => {
+    // Observar cambios en la subcategoría seleccionada y actualizar marcas
+    updateFilteredSubcategoriasYMarcas();
+});
+
 
 const submitForm = () => {
     form.post(route('tbproductos.store'), {
@@ -119,25 +168,13 @@ const submitForm = () => {
     });
 }
 
-
-// const onFileChange = (event) => {
-//     const file = event.target.files[0];
-//     form.foto = file;
-//     form.fotoPreview = URL.createObjectURL(file);
-// }
-
-const openModal3 = (op, nombre, tbsubcategoria, tbmarca) => {
+const openModal3 = (op,tbmarca) => {
     modal3.value = true;
     nextTick(() => nameInput3.value.focus());
     operation3.value = op;
     id3.value = tbmarca;
     if (op === 1) {
         title3.value = 'Registrar marca';
-    }
-    else {
-        title3.value = 'Actualizar marca';
-        form3.nombre = nombre;
-        form3.tbsubcategoria_id = tbsubcategoria;
     }
 }
 
@@ -150,10 +187,6 @@ const save3 = () => {
     if (operation3.value == 1) {
         form3.post(route('tbmarcas.store'), {
             onSuccess: () => { ok3('marca registrada') }
-        });
-    } else {
-        form3.put(route('tbmarcas.update', id3.value), {
-            onSuccess: () => { ok3('marca actualizado') }
         });
     }
 }
@@ -169,17 +202,13 @@ const ok3 = (msj) => {
     });
 };
 
-const openModal2 = (op, nombre, tbcategoria, tbsubcategoria) => {
+const openModal2 = (op, tbsubcategoria) => {
     modal2.value = true;
     nextTick(() => nameInput2.value.focus());
     operation2.value = op;
     id2.value = tbsubcategoria;
     if (op === 1) {
         title2.value = 'Registrar Subcategoría';
-    } else {
-        title2.value = 'Actualizar Subcategoría';
-        form2.nombre = nombre;
-        form2.tbcategoria_id = tbcategoria;
     }
 };
 
@@ -192,10 +221,6 @@ const save2 = () => {
     if (operation2.value === 1) {
         form2.post(route('tbsubcategorias.store'), {
             onSuccess: () => { ok2('Subcategoría registrada'); }
-        });
-    } else {
-        form2.put(route('tbsubcategorias.update', id2.value), {
-            onSuccess: () => { ok2('Subcategoría actualizada'); }
         });
     }
 };
@@ -210,17 +235,13 @@ const ok2 = (msj) => {
     });
 };
 
-const openModal4 = (op, nombre, tbcategoria) => {
+const openModal4 = (op, tbcategoria) => {
     modal4.value = true;
     nextTick(() => nameInput4.value.focus());
     operation4.value = op;
     id4.value = tbcategoria;
     if (op === 1) {
         title4.value = 'Registrar categoria';
-    }
-    else {
-        title4.value = 'Actualizar categoria';
-        form4.nombre = nombre;
     }
 }
 
@@ -233,10 +254,6 @@ const save4 = () => {
     if (operation4.value == 1) {
         form4.post(route('tbcategorias.store'), {
             onSuccess: () => { ok4('categoria registrada') }
-        });
-    } else {
-        form4.put(route('tbcategorias.update', id4.value), {
-            onSuccess: () => { ok4('categoria actualizado') }
         });
     }
 }
@@ -271,10 +288,11 @@ const ok4 = (msj) => {
                                 <div class="flex flex-col items-start">
                                     <InputLabel for="tbcategoria" value="Categoria" class="ml-1"/>
                                     <div class="flex w-full">
-                                        <select id="tbcategoria" v-model="form.tbcategoria_id" required
+                                        <select id="tbcategoria" v-model="form.tbcategoria_id" required  @change="updateFilteredSubcategoriasYMarcas"
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
                                             <option value="" disabled selected>Seleccione una categoría</option>
-                                            <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
+                                            <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id"
+                                                :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
                                         </select>
                                         <Button @click.prevent="() => openModal4(1)" class="bg-green-600 text-white mt-1 py-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                             <i class="fas fa-plus mx-2"></i>
@@ -287,10 +305,10 @@ const ok4 = (msj) => {
                                     <InputLabel for="tbsubcategoria" value="Sub Categoria" class="ml-1"/>
                                     <div class="flex w-full">
                                         <!-- <label for="tbsubcategoria" >Subcategoría</label> -->
-                                        <select id="tbsubcategoria" v-model="form.tbsubcategoria_id"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                        <select id="tbsubcategoria" v-model="form.tbsubcategoria_id" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
                                             <option value="" disabled selected>Seleccione una subcategoría</option>
-                                            <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
+                                            <option v-for="tbsubcategoria in filteredSubcategorias" :key="tbsubcategoria.id"
+                                                :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
                                         </select>
                                         <Button  @click.prevent="() => openModal2(1)" class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                             <i class="fas fa-plus mx-2"></i>
@@ -301,11 +319,10 @@ const ok4 = (msj) => {
                                 <div class="flex flex-col items-start">
                                     <InputLabel for="tbmarca" value="Marca" class="ml-1"/>
                                     <div class="flex w-full">
-                                        <select id="tbmarca" v-model="form.tbmarca_id" required
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                        <select id="tbmarca" v-model="form.tbmarca_id" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
                                             <option value="" disabled selected>Seleccione una marca</option>
-                                            <!-- Iterar sobre las marcas -->
-                                            <option v-for="tbmarca in tbmarcas" :key="tbmarca.id" :value="tbmarca.id">{{ tbmarca.nombre }}</option>
+                                            <option v-for="tbmarca in filteredMarcas" :key="tbmarca.id"
+                                                :value="tbmarca.id">{{ tbmarca.nombre }}</option>
                                         </select>
                                         <Button @click.prevent="() => openModal3(1)" class="bg-green-600 py-1 text-white mt-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                             <i class="fas fa-plus mx-2"></i>

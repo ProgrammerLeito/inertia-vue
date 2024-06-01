@@ -185,8 +185,8 @@ const openCtgModal = async (cliente) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr @dblclick="redirectToClient(cliente.id)" v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
-                                        <td class="px-6 py-4 text-center"><b>{{ i + 1 }}</b></td>
+                                    <tr @dblclick="redirectToClient(cliente.id); guardarClienteId(cliente.id)" v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
+                                        <td class="px-6 py-4 text-center">{{ cliente.id }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.numeroDocumento }}</td>
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>
                                         <td class="px-6 py-4 text-center"><b>{{ cliente.direccion }}</b></td>
@@ -236,7 +236,11 @@ export default {
         redirectToClient(cliente_id) {
             // Redirigir a la página de detalles usando el mismo enlace que el botón de visualización
             window.location.href = this.route('datos.index', { cliente_id: cliente_id });
-        }
+        },
+        guardarClienteId(cliente_id) {
+            // Guardar el producto_id en localStorage
+            localStorage.setItem('cliente_id', cliente_id);
+        },
     }
 };
 </script>

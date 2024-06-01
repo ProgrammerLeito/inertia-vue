@@ -218,7 +218,28 @@ onMounted(() => {
     form.fecha = today;
 });
  
-const submitForm = () => {
+const submitForm = (event) => {
+    if (event) {
+        event.preventDefault();
+    }
+
+    // Definir los valores
+    let precio = parseFloat(tbproductosAgregados.precio);
+    let precio_max = parseFloat(tbproductosAgregados.precio_max);
+    let subtotal = parseFloat(form.subtotal);
+
+    // Validar el rango del subtotal
+    if (subtotal < precio || subtotal > precio_max) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error en el subtotal',
+            text: `El subtotal debe estar entre ${precio} y ${precio_max}.`,
+            showConfirmButton: false,
+            timer: 2000
+        });
+        return; // Detener el envío del formulario
+    }
+
     form.post(route('cventas.store'), {
         onSuccess: () => {
             form.reset();
@@ -406,7 +427,7 @@ const previewPDF = () => {
             });
         });
 
-        let precioProducto = producto.precio;
+        let precioProducto = subtotal;
 
         let precioProducto1 = parseFloat(precioProducto).toLocaleString('es-ES',{
             minimumFractionDigits: 2,
@@ -414,8 +435,6 @@ const previewPDF = () => {
             useGrouping: true});
 
         let precioProducto2 = precioProducto1.padStart(11);
-
-        console.log(precioProducto2)
 
         doc.setTextColor(0,0,0);//Color de texto
         doc.setFontSize(14);//Tamaño de texto
@@ -425,12 +444,26 @@ const previewPDF = () => {
         doc.rect(54, eje_y - 7.5, 45, 12, 'F');
         doc.text(60, eje_y, 'Precio Unitario');
 
+        // Supongamos que 'moneda' contiene el valor seleccionado que puede ser 'soles S/.' o 'dolares $'
+        let simboloMoneda = '';
+
+        if (form.moneda.includes('soles')) {
+            simboloMoneda = 'S/.';
+        } else if (form.moneda.includes('dolares')) {
+            simboloMoneda = '$';
+        } else {
+            simboloMoneda = ''; // Default case if needed
+        }
+
+        // Configuración del documento
         doc.setTextColor(0,0,0);//Color de texto
         doc.setFontSize(14);//Tamaño de texto
         doc.setFont('Helvetica', 'bold');//estilos de texto
         doc.setFillColor(255, 255, 0); // Amarillo
         doc.rect(98, eje_y - 7.5, 45, 12, 'F'); // Dibujar un rectángulo amarillo detrás del texto que viene después del colon
-        doc.text(105, eje_y, ': ' + `${precioProducto2}`);
+
+        // Dibujar el texto con el símbolo de la moneda correspondiente
+        doc.text(105, eje_y, ': ' + simboloMoneda + `${precioProducto2}`);
         
     };
     
@@ -643,7 +676,7 @@ const previewPDF = () => {
                                                         <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
                                                     </ul>
                                                 </td>
-                                                <td class="px-3 py-3 text-center border-r border-b">s/{{ tbproducto.precio }}</td>
+                                                <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio).toFixed(2) }} / {{ parseFloat(tbproducto.precio_max).toFixed(2) }}</td>
                                                 <td class="px-3 py-3 text-center border-r border-b"><input class="text-center dark:bg-gray-800 bg-white text-black border-white dark:border-gray-800 dark:text-white w-16" type="number" v-model="tbproducto.cantidad"></td>
                                                 <td class="px-3 py-3 text-center border-r border-b">s/{{ tbproducto.precio * tbproducto.cantidad }}</td>
                                                 <td class="px-3 py-3 text-center border-r border-b"><button @click.prevent="quitarProducto(index)"><i class="bi bi-trash3 text-red-500"></i></button></td>
@@ -703,7 +736,7 @@ const previewPDF = () => {
                             <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 py-2 card sm:gap-x-8">
                                 <div>
                                     <InputLabel class="text-xs" for="subtotal" :value="'Subtotal (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
-                                    <TextInput id="subtotal" v-model="form.subtotal" type="number" class="mt-2 w-full uppercase" disabled></TextInput>
+                                    <TextInput id="subtotal" v-model="form.subtotal" type="number" class="mt-2 w-full uppercase"></TextInput>
                                 </div>
                                 <div>
                                     <div class="flex items-center">
@@ -840,7 +873,7 @@ const previewPDF = () => {
                                             <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
                                         </ul>
                                     </td>
-                                    <td class="px-6 py-3 text-center border-r border-b">s/{{ tbproducto.precio }}</td>
+                                    <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio).toFixed(2) }} / {{ parseFloat(tbproducto.precio_max).toFixed(2) }}</td>
                                     <td class="px-6 py-3 text-center border-r border-b">
                                         <button @click="agregarProducto(tbproducto)" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:bg-green-700">
                                             Agregar

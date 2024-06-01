@@ -209,30 +209,32 @@ const totalCount = props.categories.total;
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-wrap justify-between">
-                        <div class="mt-4 text-star">
-                            <p class="text-gray-700 dark:text-white">Registros por página: {{ countPerPage }}
-                                Total de registros: {{ totalCount }}</p>
+                    <div class="flex flex-wrap md:justify-between sm:justify-between justify-center">
+                        <div class="hidden sm:block">
+                            <div class="flex flex-wrap mt-4 md:justify-between sm:justify-between justify-center gap-4 text-star">
+                                <p class="text-gray-700 dark:text-white font-semibold">Registros por página: {{ countPerPage }}</p>
+                                <p class="text-gray-700 dark:text-white font-semibold">Total de Categorias: {{ totalCount }}</p>
+                            </div>
                         </div>
-                        <div class="mt-4 text-end">
+                        <div class="mt-4 sm:text-end text-center">
                             <nav aria-label="Page navigation example mt-4">
                                 <ul class="inline-flex -space-x-px text-sm">
                                     <li>
                                         <button @click="previousPage" :disabled="!categories.prev_page_url"
-                                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-700 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                             Prev
                                         </button>
                                     </li>
                                     <li v-for="page in total_pages" :key="page">
                                         <button @click="goToPage(page)"
-                                            :class="{ 'text-blue-600 border-blue-300 dark:text-gray-800 bg-blue-50 hover:bg-blue-100 hover:text-blue-700': page === current_page, 'text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': page !== current_page }"
+                                            :class="{ 'text-blue-600 border-blue-300 dark:text-gray-900 bg-blue-50 hover:bg-blue-100 hover:text-blue-700': page === current_page, 'text-gray-900 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': page !== current_page }"
                                             class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                             {{ page }}
                                         </button>
                                     </li>
                                     <li>
                                         <button @click="nextPage" :disabled="!categories.next_page_url"
-                                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-700 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                             Next
                                         </button>
                                     </li>

@@ -44,7 +44,7 @@ import ButtonDelete from '@/Components/ButtonDelete.vue';
 import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
 
-defineProps({
+const props = defineProps({
     productos: {
         type : Object,
         required: true
@@ -104,6 +104,32 @@ const formatDate = (dateString) => {
     const date = new Date(new Date(dateString).getTime() + offsetMilliseconds);
     return date.toLocaleDateString('es-ES', options);
 };
+
+const formPage = useForm({});
+ 
+const onPageClick = (event) => {
+    formPage.get(route('productos.index', { page: event }));
+};
+ 
+ 
+const previousPage = () => {
+    const prevPage = props.productos.current_page - 1;
+    formPage.get(route('productos.index', { page: prevPage }));
+};
+ 
+const nextPage = () => {
+    const nextPage = props.productos.current_page + 1;
+    formPage.get(route('productos.index', { page: nextPage }));
+};
+ 
+const goToPage = (page) => {
+    formPage.get(route('productos.index', { page }));
+};
+ 
+const total_pages = props.productos.last_page;
+const current_page = props.productos.current_page;
+const countPerPage = props.productos.data.length;
+const totalCount = props.productos.total;
 
 </script>
 
@@ -196,19 +222,36 @@ const formatDate = (dateString) => {
                             </div>
                         </div>
                     </div>
-                    <div class="flex justify-between mt-4">
-                        <Link v-if="productos.current_page > 1" :href="productos.prev_page_url" class="flex items-center justify-center px-3 h-8 me-3 text-sm font-medium text-white bg-blue-600 border rounded-lg hover:text-white hover:bg-blue-700">
-                            <svg class="w-3.5 h-3.5 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
-                            </svg>
-                            Anterior
-                        </Link>
-                        <Link v-if="productos.current_page < productos.last_page" :href="productos.next_page_url" class="flex items-center justify-center px-3 h-8 me-3 text-sm font-medium text-white bg-blue-600 border rounded-lg hover:text-white hover:bg-blue-700">
-                            Siguiente
-                            <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-                            </svg>
-                        </Link>
+                    <div class="flex flex-wrap md:justify-between sm:justify-between justify-center">
+                        <div class="flex flex-wrap mt-4 md:justify-between sm:justify-between justify-center gap-4 text-star">
+                            <p class="text-gray-700 dark:text-white font-semibold">Registros por página: {{ countPerPage }}</p>
+                            <p class="text-gray-700 dark:text-white font-semibold">Total de Categorias: {{ totalCount }}</p>
+                        </div>
+                        <div class="mt-4 sm:text-end text-center">
+                            <nav aria-label="Page navigation example mt-4">
+                                <ul class="inline-flex -space-x-px text-sm">
+                                    <li>
+                                        <button @click="previousPage" :disabled="!productos.prev_page_url"
+                                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-700 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            Prev
+                                        </button>
+                                    </li>
+                                    <li v-for="page in total_pages" :key="page">
+                                        <button @click="goToPage(page)"
+                                            :class="{ 'text-blue-600 border-blue-300 dark:text-gray-900 bg-blue-50 hover:bg-blue-100 hover:text-blue-700': page === current_page, 'text-gray-900 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': page !== current_page }"
+                                            class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            {{ page }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button @click="nextPage" :disabled="!productos.next_page_url"
+                                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-700 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            Next
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </div>
