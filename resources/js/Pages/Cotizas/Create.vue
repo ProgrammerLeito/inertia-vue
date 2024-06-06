@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link, useForm } from '@inertiajs/vue3'
+import { Link, useForm, usePage } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -258,16 +258,31 @@ const submitForm = (event) => {
     });
 };
 
+const { props } = usePage();
+const user = props.auth.user;
+const obtenerNombreCompleto = (user) => {
+    if (user) { return `${user.name} ${user.apellidopat} ${user.apellidomat}` }
+    return '';
+}
+const nombreCompleto = obtenerNombreCompleto(user);
+
 const previewPDF = () => {
     const doc = new jsPDF();
 
     let plantilla = '/storage/catalago_productos/plantillacotizacion.png';
 
-    doc.addImage(plantilla, 'PNG', 1, 1, 208, 295); // Agregar la imagen en las coordenadas fijas
+    doc.addImage(plantilla, 'PNG', 1, 1, 208, 295); // Agregar la imagen en las coordenadas fijas
+
+    const fechaValor = document.getElementById("fecha").value;
+
+    // Parsear la fecha para formatearla
+    const partesFecha = fechaValor.split('-');
+    const fecha = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
+    const opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric' };
+    const fechaFormateada = fecha.toLocaleDateString('es-ES', opcionesFecha);
    
     const cliente = document.getElementById("cliente_id").options[document.getElementById("cliente_id").selectedIndex].text;
     const descripcion = document.getElementById("tenor_id").options[document.getElementById("tenor_id").selectedIndex].text;
-    const fecha = document.getElementById("fecha").value;
     const moneda = document.getElementById("moneda").options[document.getElementById("moneda").selectedIndex].text;
     const garantia = document.getElementById("garantia").options[document.getElementById("garantia").selectedIndex].text;
     const forma_pago = document.getElementById("forma_pago").options[document.getElementById("forma_pago").selectedIndex].text;
@@ -276,301 +291,137 @@ const previewPDF = () => {
     const igv = document.getElementById("igv").value;
     const total = document.getElementById("total").value;
  
-    var eje_y = 50
-    var yPos = 0
-    var eje_r = 30
+    var eje_y = 50;
+    var yPos = 0;
+    var eje_r = 30;
+
+    doc.setTextColor(255,0,0);//Color de texto
+    doc.setFontSize(12);//Tamaño de texto
+    doc.setFont('Helvetica', 'bold');//estilos de texto
+    doc.text(120, eje_y, 'COTIZACION N° - ');
+    doc.text(157, eje_y, '0000001');
+    eje_y += 5; // vale 15
 
     doc.setTextColor(0,0,0);//Color de texto
-	doc.setFontSize(10);//Tamaño de texto
+    doc.setFont('Helvetica', 'bold');//estilos de texto
+    doc.setFontSize(10.5);//Tamaño de texto
+    doc.text(132, eje_y, `${fechaFormateada}`);
+    eje_y += 5; // vale 15
+
+    doc.setTextColor(0,0,0);//Color de texto
+    doc.setFontSize(10);//Tamaño de texto
     doc.setFont('Helvetica', 'normal');//estilos de texto
     doc.text(20, eje_y, 'Señores:');
     doc.setFont('Helvetica', 'bold');//estilos de texto
     doc.setFontSize(10.5);//Tamaño de texto
-    eje_y += 5 // vale 15
+    eje_y += 5; // vale 15
     doc.text(20, eje_y, `${cliente}`);
+    
+    // user
+    // doc.setTextColor(0,0,0);//Color de texto
+    // doc.setFontSize(10);//Tamaño de texto
+    // doc.setFont('Helvetica', 'bold');//estilos de texto
+    // doc.setFontSize(10.5);//Tamaño de texto
+    // eje_y += 5; // vale 15
+    // doc.text(20, eje_y, `${nombreCompleto}`);
 
     doc.setTextColor(0,0,0);//Color de texto
-	doc.setFontSize(10);//Tamaño de texto
+    doc.setFontSize(10);//Tamaño de texto
     doc.setFont('Helvetica', 'normal');//estilos de texto
-    eje_y += 14 // vale 29
+    eje_y += 14; // vale 29
     doc.text(20, eje_y, 'Estimados Señores:');
-	var splitten = doc.splitTextToSize('En atención a su solicitud nos es grato dirigirnos a Ustedes, para presentarles la mejor propuesta del mercado:', 160);
-	eje_y += 5 // vale 34
+    var splitten = doc.splitTextToSize('En atención a su solicitud nos es grato dirigirnos a Ustedes, para presentarles la mejor propuesta del mercado:', 160);
+    eje_y += 5; // vale 34
     doc.text(20, eje_y, splitten);
 
     doc.setTextColor(0,0,0);//Color de texto
-	doc.setFontSize(10.5);//Tamaño de texto
+    doc.setFontSize(10.5);//Tamaño de texto
     doc.setFont('Helvetica', 'bold');//estilos de texto
-    eje_y += 11 // vale 45
+    eje_y += 11; // vale 45
     doc.text(20, eje_y, `${descripcion}`);
 
-    yPos = eje_y
+    yPos = eje_y;
 
-    // doc.setTextColor(0,0,0);//Color de texto
-    // doc.setFontSize(15);//Tamaño de texto
-    // doc.setFont('', '');//estilos de texto
-    // doc.text(20, 30, `Cliente: ${cliente}`);
-    // doc.text(20, 40, `Tenor: ${descripcion}`);
-    // doc.text(20, 50, `Fecha: ${fecha}`);
-    // doc.text(20, 60, `Moneda: ${moneda}`);
-    // doc.text(20, 70, `Garantía: ${garantia}`);
-    // doc.text(20, 80, `Forma de pago: ${forma_pago}`);
-    // doc.text(20, 90, `Días de entrega: ${dias_entrega}`);
-    // doc.text(20, 100, `Subtotal: ${subtotal}`);
-    // doc.text(20, 110, `IGV: ${igv}`);
-    // doc.text(20, 120, `Total: ${total}`);
- 
     const addProductData = (producto, index, nextPageCallback) => {
-
         const img = new Image();
         img.src = `/storage/${producto.foto}`;
-        console.log(img.src);
-
-        // Coordenadas fijas para la posición de la imagen
-        const imgX = 135; // Posición X
 
         img.onload = () => {
-            doc.addImage(img, 'JPEG', imgX, (yPos += 5), 40, 40); // Agregar la imagen en las coordenadas fijas
-            yPos += 150; // Ajustar la posición Y para el siguiente elemento
             if (yPos + 150 > doc.internal.pageSize.height) {
                 doc.addPage();
                 doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
-                yPos = 40; // Reiniciar la posición vertical en la nueva página
-                eje_y = 40 // Reiniciar la posición vertical para el contenido
-                nextPageCallback();
+                yPos = 40;
+                eje_y = 40;
             }
-        };
+            doc.addImage(img, 'JPEG', 135, yPos + 5, 40, 40);
+            yPos += 150;
 
-        // doc.text(20, yPos, `Producto ${index + 1}:`);
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(10);//Tamaño de texto
-        doc.setFont('Helvetica', 'bold');//estilos de texto
-        eje_y += 20 // vale 65
-        doc.text(20, eje_y, 'Marca');
+            // Continúa con el contenido de producto
+            doc.setTextColor(0,0,0);
+            doc.setFontSize(10);
+            doc.setFont('Helvetica', 'bold');
+            eje_y += 20;
+            doc.text(20, eje_y, 'Marca');
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(10.5);
+            doc.text(55, eje_y, ': ' + `${producto.tbmarca ? producto.tbmarca.nombre : 'Sin marca'}`);
 
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(10.5);//Tamaño de texto
-        doc.setFont('Helvetica', 'normal');//estilos de texto
-        doc.text(55, eje_y, ': ' + `${producto.tbmarca ? producto.tbmarca.nombre : 'Sin marca'}`);
+            eje_y += 5;
+            doc.setFont('Helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.text(20, eje_y, 'Modelo');
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(10.5);
+            doc.text(55, eje_y, ': ' + `${producto.modelo}`);
 
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(10);//Tamaño de texto
-        doc.setFont('Helvetica', 'bold');//estilos de texto
-        eje_y += 5 // vale 70
-        doc.text(20, eje_y, 'Modelo');
+            eje_y += 5;
+            doc.setFont('Helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.text(20, eje_y, 'Capacidades');
+            const capacidadTecnica = `${producto.capacidades}`;
+            const capacidadesDivididas = doc.splitTextToSize(capacidadTecnica, 70);
 
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(10.5);//Tamaño de texto
-        doc.setFont('Helvetica', 'normal');//estilos de texto
-        doc.text(55, eje_y, ': ' + `${producto.modelo}`);
-
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(10);//Tamaño de texto
-        doc.setFont('Helvetica', 'bold');//estilos de texto
-        eje_y += 5 // vale 75
-        doc.text(20, eje_y, 'Capacidades');
-
-        // Capacidad técnica
-        var capacidadTecnica = `${producto.capacidades}`;
-        var capacidadesDivididas = doc.splitTextToSize(capacidadTecnica, 70); // Dividir el texto en líneas de máximo 160 unidades de ancho
-
-        // Dibujar cada línea
-        capacidadesDivididas.forEach(function(linea, indice) {
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            var texto = (indice === 0) ? ': ' + linea : '  '+ linea; // Agregar ":" solo a la primera línea
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(55, eje_y, texto);
-            eje_y += 5; // Incrementar la posición vertical para la siguiente línea
-        });
-
-        // doc.text(30, yPos + 10, `Marca: ${producto.tbmarca ? producto.tbmarca.nombre : 'Sin marca'}`);
-        // doc.text(30, yPos + 15, `Modelo: ${producto.modelo}`);
-        // doc.text(30, yPos + 20, `Capacidades: ${producto.capacidades}`);
-        // // doc.text(30, yPos + 20, `Especificaciones: ${producto.especificaciones}`);
-        // doc.text(30, yPos + 50, `Precio: S/ ${producto.precio}`);
-        // doc.text(30, yPos + 60, `Cantidad: ${producto.cantidad}`);
-        // doc.text(30, yPos + 70, `Importe: S/ ${producto.precio * producto.cantidad}`);
-
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(10);//Tamaño de texto
-        doc.setFont('Helvetica', 'bold');//estilos de texto
-        eje_y += 20 // vale 105
-        doc.text(20, eje_y, 'Especificaciones Tecnicas');
-
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(10);//Tamaño de texto
-        doc.setFont('Helvetica', 'normal');//estilos de texto
-        
-        const especificaciones = producto.especificaciones.split('\n');
-        const viñeta = '\u2022';
-
-        const maxWidth = 160;
-
-        // Itera sobre las especificaciones y agrega cada fragmento al PDF
-        eje_y += 10; // vale 115 Ajusta la posición inicial Y
-        especificaciones.forEach((especificacion) => {
-            const splitten = doc.splitTextToSize(especificacion, maxWidth);
-            splitten.forEach((fragment, index) => {
-                if (eje_y > 240) {
-                    eje_y = 50; // Reinicia la posición Y
-                }
-                // Comprueba si el fragmento es el primer fragmento de la especificación
-                const isFirstFragment = index === 0;
-                // Si es el primer fragmento, muestra la viñeta
-                const prefix = isFirstFragment ? `${viñeta} ` : '   ';
-                doc.text(20, eje_y, `${prefix}${fragment}`);
-                eje_y += 5; // Ajusta la posición Y para el siguiente fragmento
+            capacidadesDivididas.forEach((linea, indice) => {
+                const texto = (indice === 0) ? ': ' + linea : '  '+ linea;
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(10.5);
+                doc.text(55, eje_y, texto);
+                eje_y += 5;
             });
-        });
 
-        let precioProducto = subtotal;
+            eje_y += 20;
+            doc.setFont('Helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.text(20, eje_y, 'Especificaciones Tecnicas');
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(10);
 
-        let precioProducto1 = parseFloat(precioProducto).toLocaleString('es-ES',{
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-            useGrouping: true});
+            const especificaciones = producto.especificaciones.split('\n');
+            const viñeta = '\u2022';
+            const maxWidth = 160;
 
-        let precioProducto2 = precioProducto1.padStart(11);
+            eje_y += 10;
+            especificaciones.forEach((especificacion) => {
+                const splitten = doc.splitTextToSize(especificacion, maxWidth);
+                splitten.forEach((fragment, index) => {
+                    if (eje_y > 240) {
+                        doc.addPage();
+                        doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
+                        eje_y = 40;
+                    }
+                    const prefix = index === 0 ? `${viñeta} ` : '   ';
+                    doc.text(20, eje_y, `${prefix}${fragment}`);
+                    eje_y += 5;
+                });
+            });
 
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(14);//Tamaño de texto
-        doc.setFont('Helvetica', 'bold');//estilos de texto
-        eje_y += 10 // vale 70
-        doc.setFillColor(255, 255, 0); // Amarillo
-        doc.rect(54, eje_y - 7.5, 45, 12, 'F');
-        doc.text(60, eje_y, 'Precio Unitario');
-
-        // Supongamos que 'moneda' contiene el valor seleccionado que puede ser 'soles S/.' o 'dolares $'
-        let simboloMoneda = '';
-
-        if (form.moneda.includes('soles')) {
-            simboloMoneda = 'S/.';
-        } else if (form.moneda.includes('dolares')) {
-            simboloMoneda = '$';
-        } else {
-            simboloMoneda = ''; // Default case if needed
-        }
-
-        // Configuración del documento
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(14);//Tamaño de texto
-        doc.setFont('Helvetica', 'bold');//estilos de texto
-        doc.setFillColor(255, 255, 0); // Amarillo
-        doc.rect(98, eje_y - 7.5, 45, 12, 'F'); // Dibujar un rectángulo amarillo detrás del texto que viene después del colon
-
-        // Dibujar el texto con el símbolo de la moneda correspondiente
-        doc.text(105, eje_y, ': ' + simboloMoneda + `${precioProducto2}`);
-        
+            nextPageCallback();
+        };
     };
-    
+
     const addAllProducts = (productos, index) => {
         if (index >= productos.length) {
-            
-            doc.addPage();
-            doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
-            // Establecer el color de la línea
-            doc.setDrawColor(0, 0, 0);
-
-            // Establecer el grosor de la línea (en este caso, 0.5)
-            doc.setLineWidth(0.4);
-
-            // Dibujar una línea debajo del texto
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 20 // vale 125
-            var texto = 'CONDICIONES GENERALES:';
-            var textWidth = doc.getStringUnitWidth(texto) * doc.internal.getFontSize() / doc.internal.scaleFactor;
-            var textHeight = doc.internal.getLineHeight();
-            var startX = 20;
-            var startY = eje_r + 2; // Ajustar según el tamaño de la fuente
-            doc.text(texto, startX, startY);
-            doc.line(startX, startY + 1, startX + textWidth, startY + 1);
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 8 // vale 133
-            doc.text(20, eje_r, 'Garantia');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(55, eje_r, ': ' + `${garantia}`);
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 5 // vale 138
-            doc.text(20, eje_r, 'Plazo de Entrega');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(55, eje_r, ': ' + `${dias_entrega}` + ' Dias');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 5 // vale 143
-            doc.text(20, eje_r, 'Forma de Pago');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(55, eje_r, ': ' + `${forma_pago}`);
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_r += 5 // vale 148
-            doc.text(20, eje_r, 'Deposito a cuenta de Ahorros');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 5 // vale 153
-            doc.text(20, eje_r, 'BBVA : ');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(33, eje_r, 'S/ 0011 0267 0201320316  /  CCI: 011 267 000201320316 27');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 5 // vale 158
-            doc.text(20, eje_r, 'BCP : ');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(32, eje_r, '$ 475-2156380-1-04  /  S/ 475-2156367-0-62');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_r += 5 // vale 163
-            doc.text(20, eje_r, 'Orden de compra irrevocable');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_r += 5 // vale 168
-            doc.text(20, eje_r, 'Servicio gratuito dentro del tiempo de garantia');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_r += 5 // vale 173
-            doc.text(20, eje_r, 'A la espera de su orden');
-
-            doc.output('dataurlnewwindow');
+            addPriceUnit();
             return;
         }
         
@@ -578,7 +429,143 @@ const previewPDF = () => {
             addAllProducts(productos, index + 1);
         });
     };
- 
+
+    const addPriceUnit = () => {
+        let precioProducto = total;
+        let precioProducto1 = parseFloat(precioProducto).toLocaleString('es-ES', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+            useGrouping: true
+        });
+        let precioProducto2 = precioProducto1.padStart(11);
+
+        doc.setFont('Helvetica', 'bold');
+        doc.setFontSize(14);
+        eje_y += 10;
+        doc.setFillColor(255, 255, 0);
+        doc.rect(54, eje_y - 7.5, 45, 12, 'F');
+        doc.text(60, eje_y, 'Precio Unitario');
+
+        let simboloMoneda = '';
+        if (moneda.includes('soles')) {
+            simboloMoneda = 'S/.';
+        } else if (moneda.includes('dolares')) {
+            simboloMoneda = '$';
+        }
+
+        doc.setFont('Helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setFillColor(255, 255, 0);
+        doc.rect(98, eje_y - 7.5, 45, 12, 'F');
+        doc.text(105, eje_y, ': ' + simboloMoneda + `${precioProducto2}`);
+
+        addGeneralConditions();
+    };
+
+    const addGeneralConditions = () => {
+        doc.addPage();
+        doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
+        // Establecer el color de la línea
+        doc.setDrawColor(0, 0, 0);
+
+        // Establecer el grosor de la línea (en este caso, 0.5)
+        doc.setLineWidth(0.4);
+
+        // Dibujar una línea debajo del texto
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_r += 20; // vale 125
+        var texto = 'CONDICIONES GENERALES:';
+        var textWidth = doc.getStringUnitWidth(texto) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+        var textHeight = doc.internal.getLineHeight();
+        var startX = 20;
+        var startY = eje_r + 2; // Ajustar según el tamaño de la fuente
+        doc.text(texto, startX, startY);
+        doc.line(startX, startY + 1, startX + textWidth, startY + 1);
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_r += 8; // vale 133
+        doc.text(20, eje_r, 'Garantia');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10.5);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        doc.text(55, eje_r, ': ' + `${garantia}`);
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_r += 5; // vale 138
+        doc.text(20, eje_r, 'Plazo de Entrega');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10.5);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        doc.text(55, eje_r, ': ' + `${dias_entrega}` + ' Dias');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_r += 5; // vale 143
+        doc.text(20, eje_r, 'Forma de Pago');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10.5);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        doc.text(55, eje_r, ': ' + `${forma_pago}`);
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        eje_r += 5; // vale 148
+        doc.text(20, eje_r, 'Deposito a cuenta de Ahorros');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_r += 5; // vale 153
+        doc.text(20, eje_r, 'BBVA : ');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        doc.text(33, eje_r, 'S/ 0011 0267 0201320316  /  CCI: 011 267 000201320316 27');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'bold');//estilos de texto
+        eje_r += 5; // vale 158
+        doc.text(20, eje_r, 'BCP : ');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        doc.text(32, eje_r, '$ 475-2156380-1-04  /  S/ 475-2156367-0-62');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        eje_r += 5; // vale 163
+        doc.text(20, eje_r, 'Orden de compra irrevocable');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        eje_r += 5; // vale 168
+        doc.text(20, eje_r, 'Servicio gratuito dentro del tiempo de garantia');
+
+        doc.setTextColor(0,0,0);//Color de texto
+        doc.setFontSize(10);//Tamaño de texto
+        doc.setFont('Helvetica', 'normal');//estilos de texto
+        eje_r += 5; // vale 173
+        doc.text(20, eje_r, 'A la espera de su orden');
+
+        doc.output('dataurlnewwindow');
+    };
+
     addAllProducts(tbproductosAgregados.value, 0);
 };
 
