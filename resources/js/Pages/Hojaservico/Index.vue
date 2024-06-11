@@ -7,7 +7,10 @@ import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
 import {computed, nextTick, ref, watchEffect, onMounted } from 'vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
 
-const{servicios,hmarcas}=defineProps({
+const searchQuery = ref('');
+const filteredHservicios = ref([]);
+
+const{hservicios,servicios,hmarcas}=defineProps({
     hservicios:{
         type : Array,
         required:true
@@ -18,39 +21,61 @@ const{servicios,hmarcas}=defineProps({
     hmarcas:{
         type:Object
     },
-    countByRequiere:{type: Object}
+    countByRequiere:{type: Object},
 });
 const form = useForm({
     id:''
 })
 
+//filtros
+watchEffect(() => {
+    filteredHservicios.value = hservicios.data.filter(hservicio => {
+        const searchLower = searchQuery.value.toLowerCase();
+        return (hservicio.modelo && hservicio.modelo.toLowerCase().includes(searchLower)) ||
+               (hservicio.serie && hservicio.serie.toLowerCase().includes(searchLower)) ||
+               hservicio.id.toString().includes(searchLower);
+    });
+});
 
+//no se que hace
 const selectedServicio = computed(() => {
     return servicios.find(servicio => servicio.id === form.servicio_id);
 });
 
-const deleteHservicio= (id, marca) => {
+
+//eliminar
+const deleteHservicio= (id, modelo) => {
     const alerta = Swal.mixin({
         buttonsStyling:true
     });
 
     alerta.fire({
-        title: '¿Estás seguro de eliminar ' +marca+ '?',
+        title: '¿Estás seguro de eliminar ' +modelo+ '?',
         icon: 'question',
         showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
         confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
     }).then((result) => {
         if (result.isConfirmed) {
             form.delete(route('hservicios.destroy', id), {
                 onSuccess: () => {
-                    alerta.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'requerimientos de servicio  eliminado exitosamente',
-                        timer: 1000,
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "bottom-end",
+                        showConfirmButton: false,
+                        timer: 3000,
                         timerProgressBar: true,
-                        showConfirmButton: false
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: 'Éxito',
+                        text: "Requerimientos de servicio  eliminado exitosamente"
                     });
                 }
             });
@@ -67,13 +92,18 @@ const formatDate = (dateString) => {
     return date.toLocaleDateString('es-ES', options);
 };
 
+//llamando cliente_id razonSocial local datos
 const idHojasServicio = ref('');
+const razonSocial = ref('');
+const nInforme = ref('');
 
 onMounted(() => {
-    const servicio_id = localStorage.getItem('servicio_id');
-    idHojasServicio.value = servicio_id; // Asigna el valor de servicio_id a idHojasServicio
+    idHojasServicio.value = localStorage.getItem('servicio_id');
+    razonSocial.value = localStorage.getItem('razonSocial');
+    nInforme.value = localStorage.getItem('n_informe');
 });
 
+//estilos
 const getBadgeClass=(requiere)=> {
     switch (requiere) {
         case 'REQUIERE MANTENIMIENTO':
@@ -93,7 +123,24 @@ const getBadgeClass=(requiere)=> {
         default:
             return 'bg-gray-500';
     }
-}
+};
+//paginacion
+const previousPage = () => {
+    const prevPage = hservicios.current_page - 1;
+    formPage.get(route('hservicios.index', { page: prevPage }));
+};
+const nextPage = () => {
+    const nextPage = hservicios.current_page + 1;
+    formPage.get(route('hservicios.index', { page: nextPage }));
+};
+const goToPage = (page) => {
+    formPage.get(route('hservicios.index', { page }));
+};
+
+const total_pages = hservicios.last_page;
+const current_page = hservicios.current_page;
+const countPerPage = hservicios.data.length;
+const totalCount = hservicios.total;
 </script>
 
 <template>
@@ -114,7 +161,9 @@ const getBadgeClass=(requiere)=> {
                     </Link>
                     </div>
                     <div class="md:mt-0 mt-4">
-                        <div class="font-semibold text-center dark:text-white">N° Informe || {{ idHojasServicio }}</div>
+                        <div class="w-full my-2 text-center font-bold flex justify-center text-black dark:border-gray-700">
+                           <p class="py-2 text-black dark:text-white rounded ml-1">N° Informe | {{ nInforme }}</p> <p class="text-center mx-2 ml-1 py-2 dark:text-white"> - {{ razonSocial }}</p>
+                        </div>
                     </div>
                     <div class="flex flex-col">
                         <InputLabel for="table-search" class="block text-md font-medium text-gray-700">Buscar</InputLabel>
@@ -124,7 +173,7 @@ const getBadgeClass=(requiere)=> {
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                                 </svg>
                             </div>
-                            <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el modelo o serie">
+                            <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar Hoja de Servico">
                             </div>
                         </div>
                     <div>
@@ -156,7 +205,7 @@ const getBadgeClass=(requiere)=> {
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
-                                    <tr v-for="hservicio in filteredHservicios" :key="hservicio.id"  class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                                    <tr v-for="hservicio in filteredHservicios" :key="hservicio.id" class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                         <!-- Mostrar los datos de cada hservicio -->
                                         <td class="px-6 py-4 text-center">{{ hservicio.hmarca ? hservicio.hmarca.nombre : 'Sin marca' }}</td>
                                         <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.modelo }}</td>
@@ -169,12 +218,12 @@ const getBadgeClass=(requiere)=> {
                                         <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.tecnico }}</td>
                                         <td class="px-6 py-3 text-center dark:border-white border-b">{{ formatDate(hservicio.fecha) }}</td>
                                         <td class="px-6 py-3 text-center dark:border-white border-b">
-                                            <Link :href="route('hservicios.edit',  hservicio.id)">
-                                                    <i class="bi bi-pencil-square text-green-500 mx-2"></i>
-                                                </Link>
-                                            <ButtonDelete @click="$event => deleteHservicio(hservicio.id,hservicio.marca)" class="ml-1">
-                                                <i class="bi bi-trash3 text-red-500"></i>
-                                            </ButtonDelete>
+                                            <Link :href="route('hservicios.edit',  hservicio.id)" class="mx-2 px-1 py-1 bg-green-700 text-white rounded hover:bg-green-500">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </Link>
+                                            <Button @click="$event => deleteHservicio(hservicio.id,hservicio.modelo)" class=" ml-1 px-1 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+                                                <i class="bi bi-trash3"></i>
+                                            </Button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -182,6 +231,39 @@ const getBadgeClass=(requiere)=> {
                         </div>
                         <div v-if="filteredHservicios.length === 0" class="text-center py-2 dark:text-white">
                             No se encontraron datos.
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap md:justify-between sm:justify-between justify-center">
+                        <div class="hidden sm:block">
+                            <div class="flex flex-wrap mt-4 md:justify-between sm:justify-between justify-center gap-4 text-star">
+                                <p class="text-gray-700 dark:text-white font-semibold">Registros por página: {{ countPerPage }}</p>
+                                <p class="text-gray-700 dark:text-white font-semibold">Total de Hojas de Servicios: {{ totalCount }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 sm:text-end text-center">
+                            <nav aria-label="Page navigation example mt-4">
+                                <ul class="inline-flex -space-x-px text-sm">
+                                    <li>
+                                        <button @click="previousPage" :disabled="!hservicios.prev_page_url"
+                                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-700 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            Prev
+                                        </button>
+                                    </li>
+                                    <li v-for="page in total_pages" :key="page">
+                                        <button @click="goToPage(page)"
+                                            :class="{ 'text-blue-600 border-blue-300 dark:text-gray-900 bg-blue-50 hover:bg-blue-100 hover:text-blue-700': page === current_page, 'text-gray-900 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': page !== current_page }"
+                                            class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            {{ page }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button @click="nextPage" :disabled="!hservicios.next_page_url"
+                                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-700 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            Next
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
                     </div>
                 </div>
@@ -193,21 +275,6 @@ const getBadgeClass=(requiere)=> {
 <script>
 export default {
     name: 'CategoriesIndex',
-    data() {
-        return {
-            searchQuery: '',
-        };
-    },
-    computed: {
-        filteredHservicios() {
-            const query = this.searchQuery.toLowerCase();
-            return this.hservicios.filter(hservicio => {
-                // Filtra por cualquier campo que desees, aquí se filtra por modelo y serie
-                return hservicio.modelo.toLowerCase().includes(query) ||
-                    hservicio.serie.toLowerCase().includes(query);
-            });
-        }
-    },
     methods: {
         guardarRequerimientoId(idHojasServicio) {
             // Guardar el producto_id en localStorage

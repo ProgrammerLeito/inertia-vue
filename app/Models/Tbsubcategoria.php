@@ -13,7 +13,7 @@ class Tbsubcategoria extends Model
         'nombre',
         'categoria_id'
     ];
- 
+
     public function tbcategoria()
     {
         return $this->belongsTo(Tbcategoria::class);

@@ -5,7 +5,6 @@ import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
-
 defineProps({
     roles: {
         type : Object,
@@ -14,7 +13,7 @@ defineProps({
 })
  
 const form = useForm({
-  name: '',
+    name: '',
  
   // Agregar otros campos según sea necesario
 });
@@ -62,7 +61,8 @@ const submitForm = () => {
  
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">   
+                <div class="py-1 bg-green-600 rounded-t-lg"></div>
+                <div class="p-6 bg-white border-gray-600 rounded-b-lg dark:bg-gray-800">   
                     <form @submit.prevent="submitForm">
                         <div>
                             <InputLabel for="name" value="Nombre" class="text-md ml-1"/>

@@ -1,19 +1,20 @@
 <?php
- 
+
 namespace App\Models;
- 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cliente extends Model
 {
+    use HasFactory;
     use SoftDeletes;
- 
+
     protected $guarded = [];
- 
+
     protected $primaryKey = 'id';
- 
+
     protected $fillable = [
         'numeroDocumento',
         'razonSocial',
@@ -22,15 +23,12 @@ class Cliente extends Model
         'provincia',
         'departamento',
         'estado',
+        'ctg',
+        'asesor',
         'cli_direccion2',
         'cli_observacion',
         'tbprovincia_id',
-        'ctg',
-        'asesor',
     ];
- 
- 
- 
     public function tbprovincia()
     {
         return $this->belongsTo(Tbprovincias::class);
@@ -39,4 +37,8 @@ class Cliente extends Model
     {
         return $this->hasMany(Dato::class);
     }
+    public function servicios(){
+        return $this->hasMany(Servicio::class);
+    }
+
 }

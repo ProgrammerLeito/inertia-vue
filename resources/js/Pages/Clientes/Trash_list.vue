@@ -1,11 +1,17 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Link, useForm } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import DangerButton from '@/Components/DangerButton.vue';
 import Swal from 'sweetalert2';
-import { computed, ref } from 'vue';
- 
+import { useForm } from '@inertiajs/vue3';
+import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
+import { ref } from 'vue';
+import ButtonDelete from '@/Components/ButtonDelete.vue';
+import ButtonEdit from '@/Components/ButtonEdit.vue';
+import { computed } from 'vue';
+
 const searchQuery = ref('');
- 
+
 const props = defineProps({
     clientes: {
         type : Object,
@@ -16,7 +22,7 @@ const props = defineProps({
         // required: true
     }
 });
- 
+
 const form = useForm({
   numeroDocumento: '',
   razonSocial: '',
@@ -30,13 +36,13 @@ const form = useForm({
   tbprovincia_id: '',
   // Agregar otros campos según sea necesario
 });
- 
+
 const formPage = useForm({});
- 
+
 const onPageClick = (event) => {
     formPage.get(route('clientes.index', { page: event }));
 };
- 
+
 //Constante para filtrar clientes por diferentes campos
 const filteredClients = computed(() => {
     const normalizedQuery = searchQuery.value.toLowerCase().trim();
@@ -51,8 +57,8 @@ const filteredClients = computed(() => {
         });
     }
 });
- 
- 
+
+
 const deleteCliente = async (clienteId) => {
     const confirmed = await Swal.fire({
         title: '¿Estás seguro?',
@@ -64,12 +70,12 @@ const deleteCliente = async (clienteId) => {
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar'
     });
- 
+
     if (confirmed.isConfirmed) {
         try {
             // Realiza una solicitud HTTP DELETE para eliminar permanentemente el usuario
             await form.delete(`/delete_cliente_deletePermanently/${clienteId}`);
-       
+
             Swal.fire('cliente eliminado', 'El producto ha sido eliminado permanentemente.', 'success');
             location.reload();
         } catch (error) {
@@ -79,13 +85,13 @@ const deleteCliente = async (clienteId) => {
     }
 };
 </script>
- 
+
 <template>
     <AppLayout title="Clientes Eliminados">
         <template #header>
             <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Historial de Clientes Eliminados</h1>
         </template>
- 
+
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
@@ -108,19 +114,19 @@ const deleteCliente = async (clienteId) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(cliente, i) in filteredClients" :key="cliente.id"  class="bg-white text-black dark:bg-gray-700 dark:text-white">
+                                    <tr v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
                                         <td class="px-6 py-4 text-center">{{ i + 1 }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.numeroDocumento }}</td>
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.direccion }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.tbprovincia ? cliente.tbprovincia.prov_nombre : 'Sin ciudad' }}</td>
                                         <td class="p-3 text-center">
-                                            <Link class="py-0.5 px-2.5 text-xs text-black font-semibold bg-yellow-300 rounded-lg border-solid border-2 hover:bg-yellow-400" :href="route('clientes.restore', { id: cliente.id })">
+                                            <Link class="py-0.5 px-2.5 text-xs text-black font-semibold bg-yellow-400 rounded-lg border-solid border-2 hover:bg-yellow-500" :href="route('clientes.restore', { id: cliente.id })">
                                                 <i class='bx bxs-share'><label class="ml-2">Restaurar</label></i>
                                             </Link>
-                                            <Link @click="deleteCliente(cliente.id)" class="ml-4">
-                                                <i class="bi bi-trash3 text-red-500"></i>
-                                            </Link> 
+                                            <Link @click="deleteCliente(cliente.id)" class="text-center ml-1 text-white bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md">
+                                                <i class="bi bi-trash3 text-white"></i>
+                                            </Link>
                                         </td>
                                     </tr>
                                 </tbody>

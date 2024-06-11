@@ -17,13 +17,13 @@ const modal2 = ref(false);
 const title2 = ref('');
 const operation2 = ref(1);
 const id2 = ref('');
-const {servicios,hmarcas}=defineProps({
+const { servicios, hmarcas } = defineProps({
     servicios: {
         type: Object,
         required: true
     },
-    hmarcas:{
-        type:Object
+    hmarcas: {
+        type: Object
     }
 });
 
@@ -42,6 +42,8 @@ const initialvalues = {
     foto: '',
     foto2: '',
     foto3: '',
+    n_informe: '',
+    razonSocial: '',
 };
 const form2 = useForm({
     nombre: '',
@@ -127,17 +129,30 @@ const onSelectFoto = (e, fieldName) => {
 const submitForm = () => {
     form.post(route('hservicios.store'), {
         onSuccess: () => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'El hoja de servico se ha registrado correctamente.',
-                timer: 1000,
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 2000,
                 timerProgressBar: true,
-                showConfirmButton: false
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: 'Éxito',
+                text: "El hoja de servico se ha registrado correctamente.",
+                customClass: {
+                    title: 'text-2xl font-bold tracking-widest ',
+                    icon: 'text-base font-bold tracking-widest ',
+                    text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+                },
             });
         },
         onError: (errors) => {
-            if(errors.response && errors.response.status) {
+            if (errors.response && errors.response.status) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -164,6 +179,9 @@ onMounted(() => {
     setCurrentDate();
 });
 
+
+
+
 const nInformeSeleccionado = computed(() => {
     const servicioSeleccionado = servicios.find(servicio => servicio.id === form.servicio_id);
     return servicioSeleccionado ? servicioSeleccionado.n_informe : '';
@@ -173,19 +191,20 @@ const razonSocialCliente = computed(() => {
     const servicioSeleccionado = servicios.find(servicio => servicio.id === form.servicio_id);
     return servicioSeleccionado && servicioSeleccionado.cliente ? servicioSeleccionado.cliente.razonSocial : '';
 });
-watch(form.servicio_id, () => {
-    setCurrentDate();
-    // Se actualiza automáticamente el número de informe y la razón social del cliente cuando se selecciona un servicio.
-});
-
 
 onMounted(() => {
     const idrequerimiento = localStorage.getItem('idrequerimiento');
     if (idrequerimiento) {
-        // console.log('aqui toy',idrequerimiento)
         form.servicio_id = parseInt(idrequerimiento);
+        form.n_informe = nInformeSeleccionado.value;
+        form.razonSocial = razonSocialCliente.value;
     }
-    // document.getElementById('servicio_id').val(idrequerimiento);
+});
+
+watch(form.servicio_id, () => {
+    setCurrentDate();
+    form.n_informe = nInformeSeleccionado.value;
+    form.razonSocial = razonSocialCliente.value;
 });
 
 </script>
@@ -200,26 +219,46 @@ onMounted(() => {
                 <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                         <form @submit.prevent="submitForm">
-                            <div class="font-semibold d-flex flex-wrap items-center justify-center text-center dark:text-white py-4">
-                                <div class="hidden d-flex">
+                            <div
+                                class="font-semibold d-flex flex-wrap items-center justify-center text-center dark:text-white py-4">
+                                <div class="d-flex hidden">
                                     <select id="servicio_id" v-model="form.servicio_id" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 dark:text-white shadow-sm sm:text-sm border-gray-300 bg-gray-400 dark:bg-gray-800">
-                                        <option v-for="servicio in servicios" :key="servicio.id" :value="servicio.id">{{ servicio.n_informe }}</option>
+                                        <option v-for="servicio in servicios" :key="servicio.id" :value="servicio.id">{{
+                                            servicio.n_informe }}</option>
                                     </select>
                                 </div>
-                            <div class="d-flex">
-                                N° INFORME: {{ nInformeSeleccionado }} - {{ razonSocialCliente }}
+                                <div class="flex items-center font-bold p-4 border py-2.5 border-green-600 rounded bg-green-600">
+                                    <div class="bg-yellow-400 text-base font-bold py-4 p-2 rounded text-white"> N° INFORME: {{ nInformeSeleccionado }} </div>
+                                    <p class="py-4 text-base text-white font-bold mx-4">PARA : {{ razonSocialCliente }}</p>
+                                </div>
+                            </div>
+                            <!-- no se muestran los campos ocultos -->
+                            <div class="hidden">
+                                <div>
+                                <InputLabel for="n_informe" value="n_informe"
+                                    class="block text-md font-medium text-gray-700 " />
+                                <TextInput v-model="form.n_informe" type="text" id="n_informe"
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                <InputError :message="form.errors.n_informe" class="mt-2"></InputError>
+                            </div>
+                            <div>
+                                <InputLabel for="razonSocial" value="razonSocial"
+                                    class="block text-md font-medium text-gray-700 " />
+                                <TextInput v-model="form.razonSocial" type="text" id="razonSocial"
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                <InputError :message="form.errors.razonSocial" class="mt-2"></InputError>
                             </div>
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 mb-3">
                                 <div class="flex flex-col items-start">
-                                    <InputLabel for="hmarca_id" value="Marca" class="ml-1"/>
+                                    <InputLabel for="hmarca_id" value="Marca" class="ml-1" />
                                     <div class="flex w-full">
                                         <select id="hmarca_id" v-model="form.hmarca_id"
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
                                             <option value="" disabled selected>Selecciona una marca</option>
-                                            <option v-for="hmarca in hmarcas" :key="hmarca.id"
-                                                :value="hmarca.id">{{ hmarca.nombre }}</option>
+                                            <option v-for="hmarca in hmarcas" :key="hmarca.id" :value="hmarca.id">{{
+                                                hmarca.nombre }}</option>
                                         </select>
                                         <Button @click.prevent="() => openModal2(1)"
                                             class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
@@ -263,16 +302,16 @@ onMounted(() => {
                                 <div>
                                     <InputLabel for="requiere" value="requiere" />
                                     <select id="moneda" v-model="form.requiere" required
-                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="">Selecciona una opcion</option>
-                                            <option value="REQUIERE MANTENIMIENTO">REQUIERE MANTENIMIENTO</option>
-                                            <option value="REQUIERE REPARACION">REQUIERE REPARACION</option>
-                                            <option value="POR REVISAR">POR REVISAR</option>
-                                            <option value="CERTIFICACION">CERTIFICACION</option>
-                                            <option value="GARANTIA">GARANTIA</option>
-                                            <option value="IMPLEMENTACION">IMPLEMENTACION</option>
-                                            <option value="CALIBRACION">CALIBRACION</option>
-                                        </select>
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="">Selecciona una opcion</option>
+                                        <option value="REQUIERE MANTENIMIENTO">REQUIERE MANTENIMIENTO</option>
+                                        <option value="REQUIERE REPARACION">REQUIERE REPARACION</option>
+                                        <option value="POR REVISAR">POR REVISAR</option>
+                                        <option value="CERTIFICACION">CERTIFICACION</option>
+                                        <option value="GARANTIA">GARANTIA</option>
+                                        <option value="IMPLEMENTACION">IMPLEMENTACION</option>
+                                        <option value="CALIBRACION">CALIBRACION</option>
+                                    </select>
                                     <InputError :message="$page.props.errors.descripcion" class="" />
                                 </div>
                                 <div>
@@ -286,43 +325,56 @@ onMounted(() => {
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel for="diagnostico" value="diagnostico" />
-                                    <textarea id="diagnostico" v-model="form.diagnostico" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las diagnostico..."></textarea>
+                                    <textarea id="diagnostico" v-model="form.diagnostico" rows="4"
+                                        class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Escriba las diagnostico..."></textarea>
                                     <InputError :message="form.errors.diagnostico" class="mt-2"></InputError>
                                 </div>
                                 <div>
                                     <InputLabel for="trabajos" value="trabajos" />
-                                    <textarea id="trabajos" v-model="form.trabajos" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las trabajos..."></textarea>
+                                    <textarea id="trabajos" v-model="form.trabajos" rows="4"
+                                        class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Escriba las trabajos..."></textarea>
                                     <InputError :message="form.errors.trabajos" class="mt-2"></InputError>
                                 </div>
                             </div>
                             <div class="mt-0 flex justify-center items-center flex-wrap gap-y-0 sm:gap-x-2">
                                 <div class="sm:col-span-1 flex-1 whitespace-nowrap">
                                     <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
-                                        <InputLabel for="foto" value="Foto" class="block text-xs font-medium text-gray-700"/>
-                                        <FileInput name="foto" @change="($event) => onSelectFoto($event, 'foto')"/>
+                                        <InputLabel for="foto" value="Foto"
+                                            class="block text-xs font-medium text-gray-700" />
+                                        <FileInput name="foto" @change="($event) => onSelectFoto($event, 'foto')" />
                                         <InputError :message="$page.props.errors.foto" class="mt-2" />
-                                        <div class="mt-2 flex items-center justify-center w-full" v-if="form.foto !== ''">
-                                            <img :src="imagePreview1" alt="Vista previa de la foto" class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                        <div class="mt-2 flex items-center justify-center w-full"
+                                            v-if="form.foto !== ''">
+                                            <img :src="imagePreview1" alt="Vista previa de la foto"
+                                                class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="sm:col-span-1 flex-1 whitespace-nowrap">
                                     <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
-                                        <InputLabel for="foto2" value="Foto 2" class="block text-xs font-medium text-gray-700"/>
-                                        <FileInput name="foto2" @change="($event) => onSelectFoto($event, 'foto2')"/>
+                                        <InputLabel for="foto2" value="Foto 2"
+                                            class="block text-xs font-medium text-gray-700" />
+                                        <FileInput name="foto2" @change="($event) => onSelectFoto($event, 'foto2')" />
                                         <InputError :message="$page.props.errors.foto2" class="mt-2" />
-                                        <div class="mt-2 flex items-center justify-center w-full" v-if="form.foto2 !== ''">
-                                            <img :src="imagePreview2" alt="Vista previa de la foto 2" class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                        <div class="mt-2 flex items-center justify-center w-full"
+                                            v-if="form.foto2 !== ''">
+                                            <img :src="imagePreview2" alt="Vista previa de la foto 2"
+                                                class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="sm:col-span-1 flex-1 whitespace-nowrap">
                                     <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
-                                        <InputLabel for="foto3" value="Foto 3" class="block text-xs font-medium text-gray-700"/>
-                                        <FileInput name="foto3" @change="($event) => onSelectFoto($event, 'foto3')"/>
+                                        <InputLabel for="foto3" value="Foto 3"
+                                            class="block text-xs font-medium text-gray-700" />
+                                        <FileInput name="foto3" @change="($event) => onSelectFoto($event, 'foto3')" />
                                         <InputError :message="$page.props.errors.foto3" class="mt-2" />
-                                        <div class="mt-2 flex items-center justify-center w-full" v-if="form.foto3 !== ''">
-                                            <img :src="imagePreview3" alt="Vista previa de la foto 3" class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                        <div class="mt-2 flex items-center justify-center w-full"
+                                            v-if="form.foto3 !== ''">
+                                            <img :src="imagePreview3" alt="Vista previa de la foto 3"
+                                                class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
                                         </div>
                                     </div>
                                 </div>
@@ -330,8 +382,8 @@ onMounted(() => {
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
                                     <ButtonResponsive
-                                        class="inline-block bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 md:w-min whitespace-nowrap w-full text-center">
-                                        GUARDAR
+                                        class="inline-block uppercase bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 md:w-min whitespace-nowrap w-full text-center">
+                                        Guadar Hoja de Servicio
                                     </ButtonResponsive>
                                 </div>
                             </div>
@@ -342,25 +394,25 @@ onMounted(() => {
         </div>
     </AppLayout>
     <ModalResponsive :show="modal2" @close="closeModal2">
-            <div class="p-4 uppercase">
-                <h2 class="text-lg font-medium text-gray-900 dark:text-white text-center uppercase mb-4">{{ title2 }}
-                </h2>
-                <div class="p-1">
-                    <div class="w-full">
-                        <InputLabel for="nombre" value="Nombre:" class="mb-2"></InputLabel>
-                        <TextInput id="nombre" ref="nameInput2" v-model="form2.nombre" type="text" class="w-full"
-                            placeholder="Nombre"></TextInput>
-                        <InputError :message="form2.errors.nombre" class="mt-2"></InputError>
-                    </div>
-                </div>
-                <div class="p-1 flex justify-center">
-                    <PrimaryButton :disabled="form2.processing" @click="save2">
-                        <i class="fa-solid fa-save mx-1"></i>{{ operation2 == 1 ? 'Registrar' : 'Actualizar' }}
-                    </PrimaryButton>
-                    <DangerButton class="ml-3" :disabled="form2.processing" @click="closeModal2">
-                        Cancelar
-                    </DangerButton>
+        <div class="p-4 uppercase">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-white text-center uppercase mb-4">{{ title2 }}
+            </h2>
+            <div class="p-1">
+                <div class="w-full">
+                    <InputLabel for="nombre" value="Nombre:" class="mb-2"></InputLabel>
+                    <TextInput id="nombre" ref="nameInput2" v-model="form2.nombre" type="text" class="w-full"
+                        placeholder="Nombre"></TextInput>
+                    <InputError :message="form2.errors.nombre" class="mt-2"></InputError>
                 </div>
             </div>
-        </ModalResponsive>
+            <div class="p-1 flex justify-center">
+                <PrimaryButton :disabled="form2.processing" @click="save2">
+                    <i class="fa-solid fa-save mx-1"></i>{{ operation2 == 1 ? 'Registrar' : 'Actualizar' }}
+                </PrimaryButton>
+                <DangerButton class="ml-3" :disabled="form2.processing" @click="closeModal2">
+                    Cancelar
+                </DangerButton>
+            </div>
+        </div>
+    </ModalResponsive>
 </template>

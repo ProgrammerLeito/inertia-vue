@@ -1,49 +1,68 @@
 <?php
- 
+
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateCventaRequest;
+use App\Http\Requests\CventaRequest;
 use App\Models\Cliente;
 use App\Models\Cventa;
-use App\Models\Tbcategoria;
 use App\Models\Tbmarca;
 use App\Models\Tbproducto;
-use App\Models\Tbsubcategoria;
 use App\Models\Tenor;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
- 
- 
+
+
 class CventaController extends Controller
 {
-    public function index(){
-        $cventas = Cventa::with('cliente', 'tenor')->get();
-        return Inertia::render('Cotizas/Index',compact('cventas'));
-    }
- 
-    public function create(){
-        $tbcategorias = Tbcategoria::all();
-        $tbsubcategorias=Tbsubcategoria::all();
-        $clientes = Cliente::all();
-        $tenors = Tenor::all();
-   
-        $tbproductos = Tbproducto::with('tbmarca')->get();
-       
-        $tbmarcas = Tbmarca::all();
-       
-        return Inertia::render('Cotizas/Create',compact('clientes', 'tenors', 'tbproductos', 'tbmarcas', 'tbcategorias', 'tbsubcategorias'));
+    public function index()
+    {
+        $cventas = Cventa::with('cliente', 'tenor')->orderBy('id', 'DESC')->paginate(10);
+        return Inertia::render('Cotizas/Index', compact('cventas'));
     }
 
-    public function store(CreateCventaRequest $request)
+    public function create()
     {
+        $clientes = Cliente::all();
+        $tenors = Tenor::all();
+        $tbproductos = Tbproducto::with('tbmarca')->get();
+        $tbmarcas = Tbmarca::all();
+        return Inertia::render('Cotizas/Create', compact('clientes', 'tenors', 'tbproductos', 'tbmarcas'));
+    }
+
+
+
+    public function store(CventaRequest $request)
+    {
+        $tecnico = Auth::user()->name;
         $validatedData = $request->validated();
+        $validatedData['tecnico'] = $tecnico;
+        $validatedData['estado'] = 'Por Enviar';
+
         $cventa = Cventa::create($validatedData);
-        $cventa -> save ();
+
+        if ($request->has('productos')) {
+            foreach ($request->productos as $producto) {
+                $productoNuevo = new Tbproducto([
+                    'modelo' => $producto['modelo'],
+                    'foto' => $producto['foto'],
+                    'especificaciones' => $producto['especificaciones'],
+                    'marca' => $producto['marca'],
+                    'capacidades' => $producto['capacidades'],
+                    'precio' => $producto['precio'],
+                    'cantidad' => $producto['cantidad'],
+                ]);
+                $cventa->productos()->save($productoNuevo);
+            }
+        }
+
         return redirect()->route('cventas.index');
     }
+
 
     public function edit(Cventa $cventa)
     {
@@ -51,23 +70,53 @@ class CventaController extends Controller
         $tenors = Tenor::all();
         $tbproductos = Tbproducto::with('tbmarca')->get();
         $tbmarcas = Tbmarca::all();
-       
-        // Aquí obtén los productos agregados y pásalos a la vista
-        $productosAgregados = [];
-   
-        return Inertia::render('Cotizas/Edit', compact('cventa', 'clientes', 'tenors', 'tbproductos', 'tbmarcas', 'productosAgregados'));
+        $tbproductosAgregados = $cventa->productos;
+        // dd($tbproductosAgregados);
+
+        return Inertia::render('Cotizas/Edit', compact('cventa', 'clientes', 'tenors', 'tbproductos', 'tbmarcas', 'tbproductosAgregados'));
     }
+
+
+
 
     public function update(Request $request, Cventa $cventa)
     {
+        // Actualiza el objeto Cventa con los datos del formulario
         $cventa->update($request->all());
-        return redirect()->route('cventa.index');
+
+        // Redirige al usuario a la lista de cotizaciones
+        return redirect()->route('cventas.index');
     }
- 
+
+
+
     public function destroy($id)
     {
         $cventa = Cventa::findOrFail($id);
         $cventa->delete();
         return redirect()->back();
+    }
+    public function cambiarEstado(Request $request)
+    {
+        // Validar la solicitud
+        $request->validate([
+            'cventa_id' => 'required|exists:cventas,id',
+            'estado' => 'required|in:Por Enviar,Enviado,Aceptado,Rechazado,Finalizado',
+        ]);
+
+        // Obtener el servicio
+        $cventa = Cventa::find($request->cventa_id);
+
+        // Asignar el nuevo estado al servicio
+        $cventa->estado = $request->estado;
+        $cventa->save();
+
+        // return response()->json(['message' => 'Estado del servicio cambiado con éxito'], 200);
+    }
+
+    public function show()
+    {
+        $cventa = Cventa::all();
+        return Inertia::render('Cotizas/Index', compact('cventa'));
     }
 }

@@ -2,30 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateDatoRequest;
+use App\Http\Requests\DatoRequest;
 use App\Http\Requests\updateDatoRequest;
 use App\Models\Cliente;
 use App\Models\Dato;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
 
 class DatoController extends Controller
 {
+
     public function index(Request $request)
     {
         $cliente_id = $request->input('cliente_id');
-   
-        $datos = Dato::where('cliente_id', $cliente_id)->get();
-   
+        $datos = Dato::where('cliente_id', $cliente_id)->orderBy('id', 'DESC')->paginate(10);
         $clientes = Cliente::all();
-   
-        return Inertia::render('Datos/Index', compact('datos', 'clientes'));
+
+        return Inertia::render('Datos/Index',compact('datos','clientes'));
     }
 
-    public function store(CreateDatoRequest $request)
+    public function store(DatoRequest $request)
     {
         $validatedData = $request->except(['tarjeta']);
         if ($request->hasFile('tarjeta')) {
@@ -36,7 +35,7 @@ class DatoController extends Controller
         $dato = Dato::create($validatedData);
         return redirect()->back();
     }
- 
+
     public function edit(Dato $dato){
         $clientes=Cliente::all();
         return Inertia::render('Datos/Edit',compact('clientes','dato'));
@@ -57,7 +56,7 @@ class DatoController extends Controller
         $dato->update($validatedData);
         return redirect()->route('datos.index', ['cliente_id' => $dato->cliente_id]);
     }
- 
+
     public function destroy($id)
     {
         $dato = Dato::find($id);
@@ -67,4 +66,5 @@ class DatoController extends Controller
         $dato->delete();
         return redirect()->back();
     }
+
 }

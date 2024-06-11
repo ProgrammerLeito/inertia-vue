@@ -2,9 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Support\Facades\DB;
 return new class extends Migration
 {
     /**
@@ -14,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('servicios', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('n_informe', 6)->unique();
+            $table->string('n_informe', 9)->unique();
             $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
             $table->string('direccion');
             $table->foreignId('dato_id')->constrained()->onDelete('cascade');
@@ -28,7 +27,7 @@ return new class extends Migration
             $table->timestamps();
         });
           // Agregamos un evento para autoincrementar el campo 'n_informe'
-        DB::statement('ALTER TABLE servicios AUTO_INCREMENT = 1');
+          DB::statement('ALTER TABLE servicios AUTO_INCREMENT = 1');
     }
 
     /**

@@ -1,9 +1,10 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import InputLabel from '@/Components/InputLabel.vue';
 import Swal from 'sweetalert2';
-import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
-import {nextTick, ref, watchEffect } from 'vue';
+import { useForm } from '@inertiajs/vue3';
+import { nextTick, ref, watchEffect } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 
 const searchQuery = ref('');
@@ -12,18 +13,18 @@ const groupedServicios = ref({});
 
 const props = defineProps({
     servicios: {
-        type : Object,
+        type: Object,
         required: true
     },
-    users:{
-        type : Object
+    users: {
+        type: Object
     },
-    datos:{
-        type:Object
+    datos: {
+        type: Object
     }
 });
 const form = useForm({
-    id:''
+    id: ''
 })
 //filtro
 watchEffect(() => {
@@ -54,34 +55,92 @@ function groupByMonthAndYear(servicios) {
 }
 
 //eliminar
-const deleteServicio= (id, n_informe) => {
+const deleteServicio = (id, n_informe) => {
     const alerta = Swal.mixin({
-        buttonsStyling:true
+        buttonsStyling: true
     });
 
     alerta.fire({
-        title: '¿Estás seguro de eliminar ' +n_informe+ '?',
+        title: '¿Estás seguro de eliminar ' + n_informe + '?',
         icon: 'question',
         showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
         confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
     }).then((result) => {
         if (result.isConfirmed) {
             form.delete(route('servicios.destroy', id), {
                 onSuccess: () => {
-                    alerta.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Servicio eliminado exitosamente',
-                        timer: 1000,
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "bottom-end",
+                        showConfirmButton: false,
+                        timer: 3000,
                         timerProgressBar: true,
-                        showConfirmButton: false
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: 'Éxito',
+                        text: "Servicio eliminado exitosamente"
                     });
                 }
             });
         }
     });
 }
+//cambio de estado
+const openCtgModal = async (servicio) => {
+    const modalTitle = `Estado del cliente: ${servicio.descripcion}`;
+
+    const options = {
+        title: modalTitle,
+        input: 'select',
+        inputOptions: {
+            'Visitado': 'Visitado',
+            'Cotizado': 'Cotizado',
+            'Pendiente': 'Pendiente',
+            'Finalizado': 'Finalizado',
+        },
+        customClass: {
+            title: 'text-2xl font-bold tracking-widest ',
+            input: 'text-base tracking-widest ',
+            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+        },
+        inputPlaceholder: 'Selecciona una opcion',
+        showCancelButton: true,
+        confirmButtonColor: '#009846',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Asignar',
+        showLoaderOnConfirm: true,
+        inputValidator: (value) => {
+            if (!value) {
+                return 'Debes seleccionar un tipo de estado de envio';
+            }
+        },
+        preConfirm: async (value) => {
+            const response = await Inertia.post(route('servicios.cambiar_estado'), { servicio_id: servicio.id, estado: value });
+            if (response && response.status === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Calificación asignada exitosamente',
+                    timer: 1000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error(response ? response.statusText : 'Error desconocido');
+            }
+        }
+    };
+
+    const result = await Swal.fire(options);
+};
 
 //formateo de fecha y hora
 const formatDate = (dateString) => {
@@ -102,11 +161,61 @@ const formatTime = (timeString) => {
 };
 
 
+
+const openModal = (servicio) => {
+    if (servicio) {
+        Swal.fire({
+            title: 'DETALLES DEL SERVICIO',
+            width: 800,
+            html: `<hr/><br/>
+            <div style="text-align: left;" class="text-justify p-1 uppercase">
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>ESTADO</strong>: ${servicio.estado}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>CLIENTE</strong>: ${servicio.cliente ? servicio.cliente.razonSocial : 'Sin marca'}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>N° INFORME</strong>: ${servicio.n_informe}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>DESCRIPCION</strong>: ${servicio.descripcion}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>FECHA REGISTRO</strong>: ${servicio.fecha}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>REGISTRADO POR</strong>: ${servicio.tecnico}</p>
+            </div><br/><hr/>
+            `,
+            confirmButtonText: 'Cerrar',
+            customClass: {
+                title: 'text-2xl rounded text-white font-bold bg-green-600 py-3  tracking-widest ',
+                content: 'text-base tracking-widest font-bold',
+                confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+            },
+        });
+    }
+};
+
+const formPage = useForm({});
+const onPageClick = (event) => {
+    formPage.get(route('servicios.index', { page: event }));
+}
+const previousPage = () => {
+    const prevPage = props.servicios.current_page - 1;
+    formPage.get(route('servicios.index', { page: prevPage }));
+};
+
+const nextPage = () => {
+    const nextPage = props.servicios.current_page + 1;
+    formPage.get(route('servicios.index', { page: nextPage }));
+};
+
+const goToPage = (page) => {
+    formPage.get(route('servicios.index', { page }));
+};
+
+const total_pages = props.servicios.last_page;
+const current_page = props.servicios.current_page;
+const countPerPage = props.servicios.data.length;
+const totalCount = props.servicios.total;
 </script>
 <template>
-    <AppLayout title="Servicios" >
+    <AppLayout title="Servicios">
         <template #header>
-            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Lista de Hojas Tecnicas</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">
+                Hojas De Servicios De Clientes
+            </h1>
         </template>
 
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
@@ -125,8 +234,8 @@ const formatTime = (timeString) => {
                                 </svg>
                             </div>
                             <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar Hoja de Servicio">
-                            </div>
                         </div>
+                    </div>
                     <div>
                         <div class="relative overflow-x-auto shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-600 mt-2">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
@@ -144,41 +253,55 @@ const formatTime = (timeString) => {
                                 <tbody class="text-center text-xs">
                                     <template v-for="(filteredServicio, key) in groupedServicios" :key="key">
                                         <tr class="bg-gray-300 dark:bg-gray-900">
-                                            <td colspan="7" class="px-6 py-3 text-start font-bold uppercase dark:text-white text-black"><strong><b>{{ key }}</b></strong></td>
+                                            <td colspan="8" class="px-12 py-2 uppercase text-start font-bold text-gray-900 dark:text-white">
+                                                <strong>{{ key }}</strong></td>
                                         </tr>
-                                        <tr @dblclick="guardarServicioId(servicio.n_informe); redirectToDetails(servicio.id)" v-for="(servicio, i) in filteredServicio" :key="servicio.id"  class="bg-white text-gray-900 border-b border-gray-400 dark:border-white font-bold dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 hover:text-white cursor-pointer">
+                                        <tr v-for="(servicio, i) in filteredServicio" :key="servicio.id" class="bg-white text-gray-900 border-b border-gray-400 dark:border-white font-bold dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 hover:text-white cursor-pointer">
                                             <td class="px-6 py-4 text-center">
                                                 <div :class="{
                                                     'bg-blue-600': servicio.estado === 'Visitado',
-                                                    'bg-green-600': servicio.estado === 'Cotizado',
-                                                    'bg-yellow-600': servicio.estado === 'Pendiente',
-                                                    'bg-red-600': servicio.estado === 'Finalizado'
-                                                }" class="estadoco inline-block px-2 py-1 rounded font-bold text-white">
+                                                    'bg-yellow-600': servicio.estado === 'Cotizado',
+                                                    'bg-red-600': servicio.estado === 'Pendiente',
+                                                    'bg-green-600': servicio.estado === 'Finalizado'
+                                                }" class="text-white inline-block px-2 py-1 rounded font-bold">
                                                     {{ servicio.estado }}
                                                 </div>
                                             </td>
-
                                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.n_informe }}</td>
                                             <td class="px-6 py-4 text-left whitespace-normal">{{ servicio.cliente ? servicio.cliente.razonSocial : 'Sin marca' }}</td>
                                             <td class="px-6 py-4 text-left whitespace-nowrap">{{ servicio.descripcion }}</td>
                                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ formatDate(servicio.fecha) }} a las {{ formatTime(servicio.hora) }}</td>
                                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.user ? servicio.user.name : 'Sin usuario' }}</td>
-                                            <td class="p-3 text-center">
-                                                <!-- <Link @click="guardarServicioId(servicio.n_informe)" :href="route('hservicios.index', { servicio_id: servicio.id }) ">
-                                                    <i class="fas fa-arrow-right fa-beat text-yellow-400 mx-2"></i>
-                                                </Link> -->
-                                                <Link class="py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700" :href="route('servicios.edit',  servicio.id)"><i class="bi bi-pencil-square"></i></Link>
-                                                <ButtonDelete @click="$event => deleteServicio(servicio.id,servicio.n_informe)">
-                                                    <i class="ml-2 bi bi-trash3 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
-                                                </ButtonDelete>
+                                            <td class="p-3 text-center whitespace-nowrap">
+                                                <button @click="redirectToCreate(servicio)"
+                                                    class="bg-blue-600 hover:bg-blue-400 text-white px-2 py-1 rounded mx-1">
+                                                    <i class="fas fa-arrow-right fa-beat"></i>
+                                                </button>
+
+                                                <Link :href="route('servicios.edit', servicio.id)" class="py-1 px-2 bg-green-600 rounded hover:bg-green-600 dark:hover:bg-white dark:hover:text-green-600">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </Link>
+                                                <Button
+                                                    @click="$event => deleteServicio(servicio.id, servicio.n_informe)"
+                                                    class="ml-1 py-1 px-2 bg-red-600 rounded  hover:bg-red-600  dark:hover:bg-white dark:hover:text-red-600">
+                                                    <i class="bi bi-trash3"></i>
+                                                </Button>
+
+                                                <button @click="openModal(servicio)"
+                                                    class="text-center ml-1 text-white bg-blue-500 rounded-md  hover:bg-blue-600 py-1 px-2 dark:hover:bg-white dark:hover:text-blue-600"><i
+                                                        class="bi bi-eye"></i>
+                                                </button>
+                                                <button @click="openCtgModal(servicio)"
+                                                    class="text-center ml-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 dark:hover:bg-white dark:hover:text-blue-600 rounded-md"><i
+                                                        class="fas fa-star"></i>
+                                                </button>
                                             </td>
-                                            <td class="hidden">{{ servicio.id }}</td>
                                         </tr>
                                     </template>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-8 mb-3">
+                        <div class="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 sm:gap-x-8 mb-3">
                             <div class="flex max-w-sm p-2 text-xs font-bold bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center justify-center">
                                 <span class="bg-blue-600 text-white me-2 px-2.5 py-0.5 rounded">Visitado</span>
                                 <p class="text-gray-700 ml-2 dark:text-gray-100">
@@ -205,62 +328,53 @@ const formatTime = (timeString) => {
                             </div>
                         </div>
                     </div>
+                    <div class="flex flex-wrap md:justify-between sm:justify-between justify-center">
+                        <div class="hidden sm:block">
+                            <div class="flex flex-wrap mt-4 md:justify-between sm:justify-between justify-center gap-4 text-star">
+                                <p class="text-gray-700 dark:text-white font-semibold">Registros por página: {{ countPerPage }}</p>
+                                <p class="text-gray-700 dark:text-white font-semibold">Total de Servicios: {{ totalCount }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 sm:text-end text-center">
+                            <nav aria-label="Page navigation example mt-4">
+                                <ul class="inline-flex -space-x-px text-sm">
+                                    <li>
+                                        <button @click="previousPage" :disabled="!servicios.prev_page_url"
+                                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-700 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            Prev
+                                        </button>
+                                    </li>
+                                    <li v-for="page in total_pages" :key="page">
+                                        <button @click="goToPage(page)"
+                                            :class="{ 'text-blue-600 border-blue-300 dark:text-gray-900 bg-blue-50 hover:bg-blue-100 hover:text-blue-700': page === current_page, 'text-gray-900 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': page !== current_page }"
+                                            class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            {{ page }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button @click="nextPage" :disabled="!servicios.next_page_url"
+                                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-700 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            Next
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
     </AppLayout>
 </template>
-
 <script>
-$(document).ready(function() {
-    const changeState = async (servicioId, newState) => {
-        try {
-            await Inertia.post(route('servicios.cambiar_estado'), {
-                servicio_id: servicioId,
-                estado: newState
-            });
-            const servicio = filteredServicio.value.find(servicio => servicio.id === servicioId);
-            if (servicio) {
-                servicio.estado = newState;
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    // Selecciona todos los elementos con la clase ".estadoco"
-    $('.estadoco').on('contextmenu', function(event) {
-        // Evita el comportamiento por defecto del menú contextual
-        event.preventDefault();
-        let fila = $(this).closest('tr');
-        let estadoco = fila.find('td:eq(0)').text();
-        let servicioid = fila.find('td:eq(7)').text();
-        console.log(estadoco);
-        console.log(servicioid);
-        // console.log(event.target);
-        if (estadoco == "Visitado") {
-            changeState(servicioid, 'Cotizado')
-        }
-        if (estadoco == "Cotizado") {
-            changeState(servicioid, 'Pendiente')
-        }
-        if (estadoco == "Pendiente") {
-            changeState(servicioid, 'Finalizado')
-        }
-        if (estadoco == "Finalizado") {
-            changeState(servicioid, 'Visitado')
-        }
-    });
-});
-
 export default {
     methods: {
-        guardarServicioId(servicio_id) {
-            // Guardar el producto_id en localStorage
-            localStorage.setItem('servicio_id', servicio_id);
-        },
-        redirectToDetails(servicio_id) {
-            // Redirigir a la página de detalles usando el mismo enlace que el botón de visualización
-            window.location.href = this.route('hservicios.index', { servicio_id: servicio_id });
+        redirectToCreate(servicio) {
+            localStorage.setItem('servicio_id', servicio.id);
+            localStorage.setItem('razonSocial', servicio.cliente ? servicio.cliente.razonSocial : 'Sin marca');
+            localStorage.setItem('n_informe', servicio.n_informe);
+            this.$inertia.visit(route('hservicios.index', { servicio_id: servicio.id }));
         }
     }
 };

@@ -10,16 +10,17 @@ class Tbprovincias extends Model
 {
     use HasFactory;
     use SoftDeletes;
- 
+
     protected $guarded = [];
  
     protected $primaryKey = 'id';
  
    
     protected $fillable = ['prov_nombre'];
- 
+
     public function clientes()
     {
         return $this->hasMany(Cliente::class);
     }
+
 }

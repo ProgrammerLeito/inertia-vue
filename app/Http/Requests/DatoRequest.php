@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Requests;
-
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CreateDatoRequest extends FormRequest
+use Illuminate\Foundation\Http\FormRequest;
+
+class DatoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,11 +27,22 @@ class CreateDatoRequest extends FormRequest
             'cargo' => 'required|string',
             'telefono' => 'required|string',
             'correo' => 'required|string',
-            'tarjeta' => 'nullable',
+            'tarjeta' => '',
             'cliente_id' => [
                 'required',
                 Rule::exists('clientes', 'id'),
             ],
+        ];
+    }
+    public function messages()
+    {
+        return [
+            'nombre.required' => 'El nombre es obligatorio.',
+            'cargo.required' => 'El cargo es obligatorio.',
+            'telefono.required' => 'El teléfono es obligatorio.',
+            'correo.required' => 'El correo electrónico es obligatorio.',
+            'cliente_id.required' => 'El cliente es obligatorio.',
+            'cliente_id.exists' => 'El cliente seleccionado no existe.',
         ];
     }
 }

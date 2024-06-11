@@ -78,13 +78,12 @@ const logout = () => {
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-gear-wide-connected'><span v-show="dataOpenSideBar" class="ml-2">Servicio Tecnico</span></span></summary>
                             <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Manuales y Calibracion</span> <img src="../../../public/img/one_drive.png" class="w-4"></Link>
                             <Link :href="route('servicios.index')" :active="route().current('servicios.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Hojas de Servicio</span></Link>
-                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Ticket</span></Link>
+                            <!-- <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Ticket</span></Link> -->
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-graph-up-arrow'><span v-show="dataOpenSideBar" class="ml-2">Cotizaciones</span></span></summary>
-                            <Link  :href="route('cventas.index')" :active="route().current('cventas.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Cotizacion por Venta</span></Link>
-                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Generar Cotizacion por Servicio</span></Link>
-                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Cotizaciones</span></Link>
+                            <Link :href="route('cventas.index')" :active="route().current('cventas.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Cotizacion por Venta</span></Link>
+                            <Link :href="route('c_servicos.index')" :active="route().current('c_servicos.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Cotizacion por Servicio</span></Link>
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-bar-chart-line'><span v-show="dataOpenSideBar" class="ml-2">Prestamos o Alquiler</span></span></summary>

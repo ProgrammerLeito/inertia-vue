@@ -8,11 +8,17 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\SalidasController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\CondicioneController;
+use App\Http\Controllers\CServicioController;
 use App\Http\Controllers\CventaController;
 use App\Http\Controllers\DatoController;
+use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\HmarcaController;
 use App\Http\Controllers\HservicioController;
+use App\Http\Controllers\ObservacioneController;
 use App\Http\Controllers\PermisoController;
+use App\Http\Controllers\PlantillaController;
+use App\Http\Controllers\RecomendacioneController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\TbcategoriaController;
 use App\Http\Controllers\TbmarcaController;
@@ -22,6 +28,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SidebarController;
 use App\Http\Controllers\TbprovinciaController;
 use App\Http\Controllers\TenorController;
+use App\Http\Controllers\TrealizadoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -60,6 +67,21 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('trashed_users',[UserController::class,'trashed_users'])->name('users.trashed');
     Route::get('restore_users/{id}',[UserController::class,'restore'])->name('users.restore');
     Route::delete('delete_users_deletePermanently/{id}',[UserController::class,'deletePermanently'])->name('users.deletePermanently');
+
+    Route::resource('c_servicos',CServicioController::class);
+    Route::post('/cservicios/cambiar_estado', [CServicioController::class, 'cambiarEstado'])->name('cservicios.cambiar_estado');
+    Route::post('/cservicios/codigoSunat', [CServicioController::class, 'codigoSunat'])->name('cservicios.codigoSunat');
+
+    Route::get('/balanzas', [CServicioController::class, 'balanza'])->name('balanza');
+    Route::get('requiere', [CServicioController::class, 'cotiza'])->name('requiere.cotiza');
+
+    Route::resource('plantillas',PlantillaController::class);
+    Route::resource('trealizados',TrealizadoController::class);
+    Route::resource('condiciones',CondicioneController::class);
+    Route::resource('observaciones',ObservacioneController::class);
+    Route::resource('documentos',DocumentoController::class);
+    Route::resource('recomendaciones',RecomendacioneController::class);
+
     //Consulta para consumir la api de sunat
     Route::get('/consultar-reniec', function (Request $request) {
         $numeroDocumento = $request->query('numero');
@@ -73,10 +95,12 @@ Route::middleware(['auth:web'])->group(function () {
    
         return $response->json();
     });
+    
     Route::resource('datos', DatoController::class);
     Route::resource('/tbprovincias', TbprovinciaController::class);
     Route::resource('tenors', TenorController::class);
     Route::resource('/cventas', CventaController::class);
+    Route::post('/cventas/cambiar_estado', [CventaController::class, 'cambiarEstado'])->name('cventas.cambiar_estado');
 
     Route::resource('servicios', ServicioController::class);
     Route::post('/servicios/cambiar_estado', [ServicioController::class, 'cambiarEstado'])->name('servicios.cambiar_estado');

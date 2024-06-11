@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateTbproductoRequest;
 use App\Http\Requests\TbproductoRequest;
 use App\Http\Requests\UpdateTbproductoRequest;
 use App\Models\Tbcategoria;
@@ -45,6 +44,19 @@ class TbproductoController extends Controller
         return redirect()->back();
     }
 
+    // public function deletePermanently($id){
+    //     $tbproducto= Tbproducto::withTrashed()->find($id);
+
+    //     if (file_exists(public_path('img/catalogo/' . $tbproducto->foto))) {
+    //         unlink(public_path('img/catalogo/' . $tbproducto->foto));
+    //     }
+
+    //     if(!empty($tbproducto)){
+    //         $tbproducto->forceDelete();
+    //     }
+    //     return redirect()->back();
+    // }
+
     public function deletePermanently($id)
     {
         $tbproducto = Tbproducto::withTrashed()->find($id);
@@ -67,13 +79,13 @@ class TbproductoController extends Controller
         return Inertia::render('Catalogo/Create', compact('tbcategorias','tbsubcategorias','tbmarcas'));
     }
 
-    public function store(CreateTbproductoRequest $request)
+    public function store(TbproductoRequest $request)
     {
         $data = $request->except('foto');
 
         if($request->hasFile('foto')){
             $file= $request->file('foto');
-            $routeName= $file->store('catalago_productos',['disk'=>'public']);
+            $routeName= $file->store('fotos',['disk'=>'public']);
             $data['foto']=$routeName;
         }
         Tbproducto::create($data);
@@ -94,7 +106,7 @@ class TbproductoController extends Controller
 
         if($request->hasFile('foto')){
             $file= $request->file('foto');
-            $routeName= $file->store('catalago_productos',['disk'=>'public']);
+            $routeName= $file->store('fotos',['disk'=>'public']);
             $data['foto']=$routeName;
 
             if($tbproducto->foto){

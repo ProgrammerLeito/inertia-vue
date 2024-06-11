@@ -2,12 +2,13 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import InputError from '@/Components/InputError.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import { onMounted, ref, watch, watchEffect } from 'vue';
 import Swal from 'sweetalert2';
 import { defineProps } from 'vue';
-import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 
 const { datos, clientes, users ,servicio } = defineProps({
     clientes: {
@@ -67,14 +68,26 @@ updateFilteredDatos();
 const submitForm = () => {
     form.put(route('servicios.update',{ servicio: servicio.id }), {
         onSuccess: () => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'El servicio se ha actualizado correctamente.',
-                timer: 1000,
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 2000,
                 timerProgressBar: true,
-                showConfirmButton: false
-
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: 'Éxito',
+                text: "El servicio se ha actualizado correctamente",
+                customClass: {
+                    title: 'text-2xl font-bold tracking-widest ',
+                    icon: 'text-base font-bold tracking-widest ',
+                    text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+                },
             });
         },
         onError: (errors) => {
@@ -130,7 +143,7 @@ const submitForm = () => {
                                 </div>
                                 <div>
                                     <InputLabel for="dato_id" value="Contacto + N° Telefono"
-                                        class="block text-md font-medium text-gray-700 whitespace-nowrap" />
+                                        class="block text-md font-medium text-gray-700" />
                                     <select id="dato_id" v-model="form.dato_id" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Seleccione un contacto</option>
@@ -176,7 +189,7 @@ const submitForm = () => {
                                 </div>
                                 <div>
                                     <InputLabel for="user_id" value="Responsable del Transporte"
-                                        class="block text-md font-medium text-gray-700 whitespace-nowrap" />
+                                        class="block text-md font-medium text-gray-700" />
                                     <select id="user_id" v-model="form.user_id" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Seleccione un usuario</option>
@@ -190,8 +203,7 @@ const submitForm = () => {
                                     <ButtonResponsive>
                                         ACTUALIZAR
                                     </ButtonResponsive>
-                                    <Link :href="route('servicios.index')"
-                                        class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center " >
+                                    <Link :href="route('servicios.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
                                     Cancelar
                                     </Link>
                                 </div>

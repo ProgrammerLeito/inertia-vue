@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-
 class HservicioRequest extends FormRequest
 {
     /**
@@ -34,6 +33,8 @@ class HservicioRequest extends FormRequest
             'requiere' => 'required|string',
             'diagnostico' => 'required|string',
             'trabajos' => 'required|string',
+            'n_informe' => 'nullable',
+            'razonSocial' => 'nullable',
             'foto' => 'nullable',
             'foto2' => 'nullable',
             'foto3' => 'nullable',

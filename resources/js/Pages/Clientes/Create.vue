@@ -11,13 +11,13 @@ import {Link , useForm} from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 import Swal from 'sweetalert2';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
- 
+
 const nameInput4 = ref(null);
 const modal4 = ref(false);
 const title4 = ref('');
 const operation4 = ref(1);
 const id4 = ref('');
- 
+
 defineProps({
     tbprovincias: {
         type : Object,
@@ -26,7 +26,7 @@ defineProps({
 });
 const form4 = useForm ({
     prov_nombre: '',
- 
+
 });
 const form = useForm({
   numeroDocumento: '',
@@ -40,15 +40,15 @@ const form = useForm({
   cli_observacion:'',
   tbprovincia_id: '',
 });
- 
+
 const errors = ref({
   numeroDocumento: '',
 });
- 
+
 const consultarReniec = async () => {
   try {
     const response = await fetch(`/consultar-reniec?numero=${form.numeroDocumento}`);
- 
+
     if (response.ok) {
       const empresa = await response.json();
       form.razonSocial = empresa.razonSocial;
@@ -67,26 +67,33 @@ const consultarReniec = async () => {
     console.error(error);
   }
 };
- 
+
 // const submitForm = () => {
- 
+
 // };
- 
+
 const submitForm = () => {
     form.post(route('clientes.store'), {
         onSuccess: () => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'El cliente se ha registrado correctamente.',
-                timer: 1000,
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 2000,
                 timerProgressBar: true,
-                showConfirmButton: false
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: 'Éxito',
+                text: "El cliente se ha registrado correctamente"
             });
         },
         onError: (errors) => {
             if(errors.response && errors.response.status) {
-                // Si hay un error de respuesta HTTP, manejarlo aquí
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -94,7 +101,6 @@ const submitForm = () => {
                 });
                 console.error('Error HTTP:', errors.response.status);
             } else {
-                // Si el error no tiene una propiedad de respuesta o de estado, manejarlo aquí
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -105,8 +111,8 @@ const submitForm = () => {
         }
     });
 }
- 
- 
+
+
 const openModal4 = (op,prov_nombre,tbprovincia)=>{
     modal4.value = true;
     nextTick( () => nameInput4.value.focus());
@@ -120,12 +126,12 @@ const openModal4 = (op,prov_nombre,tbprovincia)=>{
         form4.prov_nombre=prov_nombre;
     }
 }
- 
+
 const closeModal4 = () =>{
     modal4.value = false;
     form4.reset();
 }
- 
+
 const save4 = () => {
     if (operation4.value == 1) {
         form4.post(route('tbprovincias.store'), {
@@ -137,25 +143,30 @@ const save4 = () => {
         });
     }
 }
- 
-const ok4 = (msj) =>{
+const ok4 = (msj) => {
     form4.reset();
     closeModal4();
     Swal.fire({
         title: msj,
-        icon:'success',
+        icon: 'success',
         timer: 1000,
         showConfirmButton: false
     });
-}
+};
+
+// const ok4 = (msj) =>{
+//     form4.reset();
+//     closeModal4();
+//     Swal.fire({title:msj,icon:'success'});
+// }
 </script>
- 
+
 <template>
     <AppLayout title="Registrar Cliente">
         <template #header>
             <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Registrar Cliente</h1>
         </template>
- 
+
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
@@ -176,21 +187,21 @@ const ok4 = (msj) =>{
                                     <TextInput v-model="form.razonSocial" type="text" placeholder="" class="mt-2 w-full"/>
                                 </div>
                                 <div>
-                                    <InputLabel value="estado" />
+                                    <InputLabel value="Estado"/>
                                     <TextInput v-model="form.estado" type="text" class="mt-2 w-full"/>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
-                                    <InputLabel value="distrito" />
+                                    <InputLabel value="Distrito" />
                                     <TextInput v-model="form.distrito" type="text" class="mt-2 w-full"/>
                                 </div>
                                 <div>
-                                    <InputLabel value="provincia" />
+                                    <InputLabel value="Provincia" />
                                     <TextInput v-model="form.provincia" type="text"  class="mt-2 w-full" />
                                 </div>
                                 <div>
-                                    <InputLabel value="departamento" />
+                                    <InputLabel value="Departamento" />
                                     <TextInput v-model="form.departamento" type="text" class="mt-2 w-full"/>
                                 </div>
                             </div>
@@ -245,7 +256,7 @@ const ok4 = (msj) =>{
                     <div class="w-full">
                         <InputLabel for="prov_nombre" value="ciudad:" class="mb-2"></InputLabel>
                         <TextInput id="prov_nombre" ref="nameInput4" v-model="form4.prov_nombre" type="text" class="w-full"
-                                placeholder="Ingrese el nombre de la ciudad"></TextInput>
+                                placeholder="ciudad"></TextInput>
                         <InputError :message="form4.errors.prov_nombre" class="mt-2"></InputError>
                     </div>
                 </div>

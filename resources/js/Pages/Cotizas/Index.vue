@@ -1,31 +1,31 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Link, useForm } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
-import ButtonDelete from '@/Components/ButtonDelete.vue';
-import Create from '@/Pages/Cotizas/Create.vue';
+import { useForm } from '@inertiajs/vue3';
+import { Inertia } from '@inertiajs/inertia';
  
-const props=defineProps({
+const props = defineProps({
     cventas: {
-        type : Object,
+        type: Object,
         required: true
     },
-    clientes:{
-        type:Object,
-        required:true
+    clientes: {
+        type: Object,
+        required: true
     }
 });
 const form = useForm({
-    id:''
+    id: ''
 })
  
 const deleteCotizacion = (id, cliente_id) => {
     const alerta = Swal.mixin({
-        buttonsStyling:true
+        buttonsStyling: true
     });
  
     alerta.fire({
-        title: '¿Estás seguro de eliminar ' +cliente_id+ '?',
+        title: '¿Estás seguro de eliminar ' + cliente_id + '?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
@@ -47,10 +47,106 @@ const deleteCotizacion = (id, cliente_id) => {
         }
     });
 }
+ 
+const openCtgModal = async (cventa) => {
+    const modalTitle = `Cotizacion del cliente: ${cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente'}`;
+ 
+    const options = {
+        title: modalTitle,
+        input: 'select',
+        inputOptions: {
+            'Por Enviar': 'Por Enviar',
+            'Enviado': 'Enviado',
+            'Aceptado': 'Aceptado',
+            'Rechazado': 'Rechazado',
+            'Finalizado': 'Finalizado',
+        },
+        customClass: {
+            title: 'text-2xl font-bold tracking-widest ',
+            input: 'text-base tracking-widest ',
+            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+        },
+        inputPlaceholder: 'Selecciona una opcion',
+        showCancelButton: true,
+        confirmButtonColor: '#009846',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Asignar',
+        showLoaderOnConfirm: true,
+        inputValidator: (value) => {
+            if (!value) {
+                return 'Debes seleccionar un tipo de estado de envio';
+            }
+        },
+        preConfirm: async (value) => {
+            const response = await Inertia.post(route('cventas.cambiar_estado'), { cventa_id: cventa.id, estado: value });
+            if (response && response.status === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Calificación asignada exitosamente',
+                    timer: 1000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error(response ? response.statusText : 'Error desconocido');
+            }
+        }
+    };
+ 
+    const result = await Swal.fire(options);
+};
+ 
+const openModal = (cventa) => {
+    if (cventa) {
+        Swal.fire({
+            title: 'DETALLES DE LA COTIZACION POR VENTA',
+            width: 800,
+            html: `<hr/><br/>
+            <div style="text-align: left;" class="text-justify p-1 uppercase">
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>N° COTIZACION</strong>: ${cventa.n_cotizacion}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>ESTADO</strong>: ${cventa.estado}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>CLIENTE</strong>: ${cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente'} </p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>FECHA REGISTRO</strong>: ${cventa.fecha}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>REGISTRADO POR</strong>: ${cventa.tecnico}</p>
+            </div><br/><hr/>
+            `,
+            confirmButtonText: 'Cerrar',
+            customClass: {
+                title: 'text-sm sm:text-xs lg:text-2xl  xl:text-2xl font-extrabold bg-green-600  overflow-hidden text-white rounded-t-md  py-3 tracking-widest ',
+                content: 'text-xs sm:text-xs lg:text-base xl:text-base  tracking-widest ',
+                confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+            },
+        });
+    }
+};
+ 
+const formPage = useForm({});
+const onPageClick = (event) => {
+    formPage.get(route('cventas.index', { page: event }));
+}
+const previousPage = () => {
+    const prevPage = props.cventas.current_page - 1;
+    formPage.get(route('cventas.index', { page: prevPage }));
+};
+ 
+const nextPage = () => {
+    const nextPage = props.cventas.current_page + 1;
+    formPage.get(route('cventas.index', { page: nextPage }));
+};
+ 
+const goToPage = (page) => {
+    formPage.get(route('cventas.index', { page }));
+};
+ 
+const total_pages = props.cventas.last_page;
+const current_page = props.cventas.current_page;
+const countPerPage = props.cventas.data.length;
+const totalCount = props.cventas.total;
 </script>
  
 <template>
-    <AppLayout title="Cotizaciones">
+    <AppLayout title="Cotizaciones por Venta">
         <template #header>
             <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Lista de Cotizaciones</h1>
         </template>
@@ -62,24 +158,6 @@ const deleteCotizacion = (id, cliente_id) => {
                         <Link :href="route('cventas.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="bi bi-folder-plus mx-1"></i> Registrar cotizacion
                         </Link>
-                    </div>
-                    <div class="flex flex-nowrap justify-normal py-1">
-                        <div class="flex items-center me-4">
-                            <input checked id="red-checkbox" type="checkbox" value="" class="w-4 h-4 text-cyan-600 bg-gray-100 border-gray-300 rounded focus:ring-cyan-500 dark:focus:ring-cyan-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-red-600 dark:border-gray-600">
-                            <label for="red-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Por enviar</label>
-                        </div>
-                        <div class="flex items-center me-4">
-                            <input checked id="green-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-green-600 dark:border-gray-600">
-                            <label for="green-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Enviado</label>
-                        </div>
-                        <div class="flex items-center me-4">
-                            <input checked id="yellow-checkbox" type="checkbox" value="" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-600 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-yellow-500 dark:border-gray-600">
-                            <label for="yellow-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Aceptado</label>
-                        </div>
-                        <div class="flex items-center me-4">
-                            <input checked id="orange-checkbox" type="checkbox" value="" class="w-4 h-4 text-red-500 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-orange-500 dark:border-gray-600">
-                            <label for="orange-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Rechazado</label>
-                        </div>
                     </div>
                     <div>
                         <div class="py-1">
@@ -103,42 +181,91 @@ const deleteCotizacion = (id, cliente_id) => {
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N°</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cliente</th>
-                                        <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">fecha</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Moneda</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">garantia</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">F_pago</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">D_entrega</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">subtotal</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Igv</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">C | Factura</th>
+                                        <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">Cliente</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Referencia</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Emision</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Neto</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Total</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Estado</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr v-for="(cventa, index) in cventas" :key="cventa.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
-                                        <td class="px-1 py-4 text-center">{{ index + 1 }}</td>
-                                        <td class="text-xs px-6">
-                                            <div class="max-h-[70px] overflow-y-auto">
-                                                <td class="px-6 py-4 text-center">{{ cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente' }}</td>
-                                            </div>
+                                <tbody class="text-center text-xs">
+                                    <tr v-for="(cventa, index) in cventas.data" :key="cventa.id" class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer">
+                                        <td class="px-1 py-4 text-center">{{ cventa.n_cotizacion }}</td>
+                                        <td class="px-1 py-4 text-center fa-fade font-semibold">s|codigo</td>
+                                        <td class="px-1 py-4 text-center">
+                                            {{ cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente' }}
+                                        </td>
+                                        <td class="px-6 py-4 text-center">{{ cventa.tenor ? cventa.tenor.name : 'Sin codigo' }}
                                         </td>
                                         <td class="px-6 py-4 text-center">{{ cventa.fecha }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.moneda }}</td>
-                                        <td class="px-2 py-4 text-center">{{ cventa.garantia }}</td>
-                                        <td class="px-2 py-4 text-center">{{ cventa.forma_pago }}</td>
-                                        <td class="px-2 py-4 text-center">{{ cventa.dias_entrega }}-dias</td>
-                                        <td class="px-3 py-4 text-center">{{ cventa.subtotal }}</td>
-                                        <td class="px-2 py-4 text-center">{{ cventa.igv }}</td>
-                                        <td class="px-3 py-4 text-center">{{ cventa.total }}</td>
-                                        <td class="p-3 text-center flex flex-wrap items-center justify-center">
-                                            <ButtonDelete @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id)" class="ml-1 text-red-500">
+                                        <td class="px-6 py-4 text-center">{{ cventa.subtotal }}</td>
+                                        <td class="px-6 py-4 text-center">{{ cventa.total }}</td>
+                                        <td class="px-6 py-4 text-center">
+                                            <div :class="{
+                                                'bg-blue-600': cventa.estado === 'Por Enviar',
+                                                'bg-yellow-600': cventa.estado === 'Enviado',
+                                                'bg-green-600': cventa.estado === 'Aceptado',
+                                                'bg-red-600': cventa.estado === 'Rechazado',
+                                                'bg-indigo-600': cventa.estado === 'Finalizado',
+                                            }" class="inline-block px-2 py-1 rounded">
+                                                <b>{{ cventa.estado }}</b>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 text-center whitespace-nowrap">
+                                            <button @click="openCtgModal(cventa)"
+                                                class="text-center mx-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 dark:hover:bg-white dark:hover:text-blue-600 rounded-md"><i
+                                                    class="fas fa-star"></i></button>
+                                            <Link :href="route('cventas.edit', { cventa: cventa.id })"
+                                                class=" bg-green-500 p-1 dark:hover:bg-white py-1 px-2  dark:hover:text-green-500 rounded">
+                                            <i class="bi bi-pencil-square"></i>
+                                            </Link>
+                                            <Button @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id)"
+                                                class="ml-1 bg-red-600 dark:hover:bg-white dark:hover:text-red-600 py-1 px-2 font-extrabold dark:text-white rounded cursor-pointer text-white">
                                                 <i class="bi bi-trash3"></i>
-                                            </ButtonDelete>
+                                            </Button>
+                                            <button @click="openModal(cventa)"
+                                                class="text-center ml-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded-md"><i
+                                                    class="bi bi-eye"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="flex flex-wrap justify-between">
+                            <div class="mt-4 text-star">
+                                <p class="text-gray-700 dark:text-white">Registros por página: {{ countPerPage }}
+                                    Total de
+                                    registros: {{
+                                        totalCount }}</p>
+                            </div>
+                            <div class="mt-4 text-end">
+                                <nav aria-label="Page navigation example mt-4">
+                                    <ul class="inline-flex -space-x-px text-sm">
+                                        <li>
+                                            <button @click="previousPage" :disabled="!cventas.prev_page_url"
+                                                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                                Previous
+                                            </button>
+                                        </li>
+                                        <li v-for="page in total_pages" :key="page">
+                                            <button @click="goToPage(page)"
+                                                :class="{ 'text-blue-600 border-blue-300 dark:text-gray-800 bg-blue-50 hover:bg-blue-100 hover:text-blue-700': page === current_page, 'text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': page !== current_page }"
+                                                class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                                {{ page }}
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button @click="nextPage" :disabled="!cventas.next_page_url"
+                                                class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                                Next
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
                         </div>
                     </div>
                 </div>

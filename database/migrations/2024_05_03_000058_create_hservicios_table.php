@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('serie');
             $table->string('div');
             $table->string('capacidad');
+            $table->string('n_informe');
+            $table->string('razonSocial');
             $table->string('plataforma');
             $table->string('fecha');
             $table->string('requiere');

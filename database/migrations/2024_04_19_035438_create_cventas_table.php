@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('cventas', function (Blueprint $table) {
             $table->id();
+            $table->string('n_cotizacion', 10)->unique();
+            $table->string('codesunat')->nullable();
+            $table->string('estado')->nullable();
+            $table->string('tecnico')->nullable();
             $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
             $table->foreignId('tenor_id')->constrained()->onDelete('cascade');
             $table->date('fecha');

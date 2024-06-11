@@ -2,14 +2,15 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import InputError from '@/Components/InputError.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import { onMounted, ref, watch, watchEffect } from 'vue';
-import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import Swal from 'sweetalert2';
 import { defineProps } from 'vue';
 
-const { datos, clientes, users  } = defineProps({
+const { datos, clientes, users } = defineProps({
     clientes: {
         type: Object,
         required: true
@@ -56,7 +57,7 @@ const updateFilteredDatos = () => {
 
     if (form.cliente_id) {
         filteredDatos.value = datos.filter(dato => dato.cliente_id == form.cliente_id);
-       const clienteSeleccionado = clientes.find(cliente => cliente.id == form.cliente_id);
+        const clienteSeleccionado = clientes.find(cliente => cliente.id == form.cliente_id);
         if (clienteSeleccionado) {
             form.direccion = clienteSeleccionado.direccion;
         } else {
@@ -74,14 +75,26 @@ watch(form.cliente_id, () => {
 const submitForm = () => {
     form.post(route('servicios.store'), {
         onSuccess: () => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'Hoja tecnica se ha registrado correctamente.',
-                timer: 1000,
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 2000,
                 timerProgressBar: true,
-                showConfirmButton: false
-
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: 'Éxito',
+                text: "Hoja tecnica se ha registrado correctamente.",
+                customClass: {
+                    title: 'text-2xl font-bold tracking-widest ',
+                    icon: 'text-base font-bold tracking-widest ',
+                    text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+                },
             });
         },
         onError: (errors) => {
@@ -137,7 +150,7 @@ const submitForm = () => {
                                 </div>
                                 <div>
                                     <InputLabel for="dato_id" value="Contacto + N° Telefono"
-                                        class="block text-md font-medium text-gray-700 whitespace-nowrap"/>
+                                        class="block text-md font-medium text-gray-700" />
                                     <select id="dato_id" v-model="form.dato_id" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Seleccione un contacto</option>
@@ -172,18 +185,18 @@ const submitForm = () => {
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
-                                    <InputLabel for="descripcion" value="descripcion"/>
+                                    <InputLabel for="descripcion" value="descripcion" />
                                     <select id="moneda" v-model="form.descripcion" required
-                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="">Selecciona una descripcion</option>
-                                            <option value="DIAGNOSTICO DE BALANZAS">DIAGNOSTICO DE BALANZAS</option>
-                                            <option value="DIAGNOSTICO DE TERMOMETRO">DIAGNOSTICO DE TERMOMETRO</option>
-                                        </select>
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="">Selecciona una descripcion</option>
+                                        <option value="DIAGNOSTICO DE BALANZAS">DIAGNOSTICO DE BALANZAS</option>
+                                        <option value="DIAGNOSTICO DE TERMOMETRO">DIAGNOSTICO DE TERMOMETRO</option>
+                                    </select>
                                     <InputError :message="$page.props.errors.descripcion" class="" />
                                 </div>
                                 <div>
                                     <InputLabel for="user_id" value="Responsable del Transporte"
-                                        class="block text-md font-medium text-gray-700 whitespace-nowrap"/>
+                                        class="block text-md font-medium text-gray-700" />
                                     <select id="user_id" v-model="form.user_id" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Seleccione un usuario</option>
@@ -194,12 +207,11 @@ const submitForm = () => {
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
-                                    <ButtonResponsive>
-                                        GUARDAR
+                                    <ButtonResponsive class="uppercase">
+                                        Generar Hoja de Informe
                                     </ButtonResponsive>
-                                    <Link :href="route('servicios.index')"
-                                        class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
-                                        Cancelar
+                                    <Link :href="route('servicios.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
+                                    Cancelar
                                     </Link>
                                 </div>
                             </div>

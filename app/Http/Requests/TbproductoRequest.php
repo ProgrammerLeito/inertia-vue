@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
-class CreateTbproductoRequest extends FormRequest
+class TbproductoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -12,6 +13,7 @@ class CreateTbproductoRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+        // return Auth::check();
     }
 
     /**
@@ -28,15 +30,21 @@ class CreateTbproductoRequest extends FormRequest
             'modelo' => 'required',
             'medida' => 'required',
             'moneda' => 'required',
-            'precio' => 'required',
-            'descuento' => 'nullable',
-            'stock' => 'required',
-            'codigo' => 'required|string|max:255|unique:tbproductos',
+            'precio' => 'required|numeric|min:0',
+            'precio_max' => 'required|numeric|min:0',
+            'descuento' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'codigo' => 'required|unique:tbproductos,codigo',
             'estado' => 'required',
-            'precio_max' => 'required',
             'capacidades' => 'required',
             'especificaciones' => 'required',
             'foto' => 'nullable',
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'codigo.unique' => 'El código debe ser único.', // Mensaje personalizado para la validación unique del campo 'codigo'
         ];
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateClientesRequest extends FormRequest
+class ClienteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,11 +29,11 @@ class CreateClientesRequest extends FormRequest
             'provincia' => 'required|string',
             'departamento' => 'required|string',
             'estado' => 'required|string',
+            'ctg' => '',
+            'asesor' => '',
             'cli_direccion2' => 'required',
             'cli_observacion' => 'required|string',
             'tbprovincia_id' => 'required',
-            'ctg' => 'nullable',
-            'asesor' => 'nullable',
         ];
     }
 }

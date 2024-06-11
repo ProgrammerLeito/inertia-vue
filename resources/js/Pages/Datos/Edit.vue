@@ -1,17 +1,15 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link, usePage } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import Modal from '@/Components/Modal.vue';
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import { defineProps, ref } from 'vue';
 import FileInput from '@/Components/FileInput.vue';
-import ButtonResponsive from '@/Components/ButtonResponsive.vue';
+
 
 const { clientes, dato } = defineProps({
     clientes: {
@@ -34,13 +32,21 @@ const onSelectFoto = (e) => {
 const submitForm = () => {
     form.post(route('datos.update', { dato: dato.id }), {
         onSuccess: () => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'Los datos se ha actualizado correctamente.',
-                timer: 1000,
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 2000,
                 timerProgressBar: true,
-                showConfirmButton: false
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: 'Éxito',
+                text: "Los datos se ha actualizado correctamente"
             });
         },
     });
@@ -50,9 +56,10 @@ const submitForm = () => {
 <template>
     <AppLayout title="Actualizar datos">
         <template #header>
-            <h1 class="font-semibold text-md uppercase text-gray-800 leading-tight dark:text-white">Actualizar Datos</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">
+                Actualizar Datos
+            </h1>
         </template>
-
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4  sm:px-6 lg:px-8">
                 <div
@@ -63,9 +70,9 @@ const submitForm = () => {
                                 <div>
                                     <InputLabel for="cliente_id" value="Cliente" class="block text-sm font-medium text-gray-700"/>
                                     <select id="cliente_id" v-model="form.cliente_id" required
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm text-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Seleccione una categoría</option>
-                                        <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{
+                                        <option class="text-sm" v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{
                                             cliente.razonSocial }}</option>
                                     </select>
                                     <InputError :message="$page.props.errors.cliente_id" class="mt-2" />
@@ -113,7 +120,7 @@ const submitForm = () => {
                                 <div>
                                     <InputLabel for="tarjeta" value="tarjeta:"
                                         class="block mb-2 text-sm font-medium text-gray-700" />
-                                    <FileInput name="tarjeta" @change="onSelectFoto" />
+                                    <FileInput class="text-sm" name="tarjeta" @change="onSelectFoto" />
                                     <InputError :message="$page.props.errors.tarjeta" class="mt-2" />
                                 </div>
                             </div>

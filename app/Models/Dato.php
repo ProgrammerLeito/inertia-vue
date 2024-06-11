@@ -10,8 +10,8 @@ class Dato extends Model
 {
     use HasFactory;
     use SoftDeletes;
- 
- 
+
+
     protected $fillable = [
         'cliente_id',
         'nombre',
@@ -20,9 +20,13 @@ class Dato extends Model
         'correo',
         'tarjeta',
     ];
- 
+
     public function cliente()
     {
         return $this->belongsTo(Cliente::class,'cliente_id');
     }
+    public function servicios(){
+        return $this->hasMany(Servicio::class);
+    }
+ 
 }

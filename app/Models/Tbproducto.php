@@ -10,7 +10,7 @@ class Tbproducto extends Model
 {
     use HasFactory;
     use SoftDeletes;
- 
+
     protected $fillable = [
         'tbcategoria_id',
         'tbsubcategoria_id',
@@ -19,26 +19,26 @@ class Tbproducto extends Model
         'medida',
         'moneda',
         'precio',
+        'precio_max',
         'descuento',
         'stock',
         'codigo',
         'estado',
         'capacidades',
         'especificaciones',
-        'foto',
-        'precio_max'
+        'foto'
     ];
- 
+
     public function tbcategoria()
     {
         return $this->belongsTo(Tbcategoria::class);
     }
- 
+
     public function tbsubcategoria()
     {
         return $this->belongsTo(Tbsubcategoria::class);
     }
- 
+
     public function tbmarca()
     {
         return $this->belongsTo(Tbmarca::class);
