@@ -30,14 +30,13 @@ class TbproductoRequest extends FormRequest
             'modelo' => 'required',
             'medida' => 'required',
             'moneda' => 'required',
-            'precio' => 'required|numeric|min:0',
+            'precio_min' => 'required|numeric|min:0',
             'precio_max' => 'required|numeric|min:0',
-            'descuento' => 'nullable|numeric|min:0',
+            'precio_list' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'codigo' => 'required|unique:tbproductos,codigo',
-            'estado' => 'required',
-            'capacidades' => 'required',
-            'especificaciones' => 'required',
+            'capacidades' => '',
+            'especificaciones' => '',
             'foto' => 'nullable',
         ];
     }

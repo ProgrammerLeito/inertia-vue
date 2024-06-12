@@ -41,9 +41,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('/categories', CategoryController::class);
 
     Route::resource('/clientes', ClienteController::class);
-    Route::get('trashed_cliente',[ClienteController::class,'trashed_cliente'])->name('clientes.trashed');
-    Route::get('restore_cliente/{id}',[ClienteController::class,'restore'])->name('clientes.restore');
-    Route::delete('delete_cliente_deletePermanently/{id}',[ClienteController::class,'deletePermanently'])->name('clientes.deletePermanently');
+    Route::post('/comprobarEliminacionCli', [ClienteController::class , 'comprobarEliminacionCli']);
 
     Route::resource('/roles', RoleController::class);
     Route::resource('/productos', ProductoController::class);
@@ -56,9 +54,6 @@ Route::middleware(['auth:web'])->group(function () {
     
     Route::post('/tbproductos/{tbproducto}', [TbproductoController::class, 'update'])->name('tbproductos.update');
     Route::resource('/tbproductos', TbproductoController::class);
-    Route::get('trashed_tbproducto',[TbproductoController::class,'trashed_tbproducto'])->name('tbproductos.trashed');
-    Route::get('restore_tbproducto/{id}',[TbproductoController::class,'restore'])->name('tbproductos.restore');
-    Route::delete('delete_tbproducto_deletePermanently/{id}',[TbproductoController::class,'deletePermanently'])->name('tbproductos.deletePermanently');
 
     Route::resource('/tbmarcas', TbmarcaController::class);
     Route::resource('/tbcategorias', TbcategoriaController::class);

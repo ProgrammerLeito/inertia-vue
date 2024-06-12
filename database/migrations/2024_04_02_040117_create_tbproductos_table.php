@@ -13,19 +13,17 @@ return new class extends Migration
     {
         Schema::create('tbproductos', function (Blueprint $table) {
             $table->id();
-            $table->softDeletes('deleted_at', precision: 0);
             $table->foreignId('tbcategoria_id')->constrained()->onDelete('cascade');
             $table->foreignId('tbsubcategoria_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('tbmarca_id')->constrained()->onDelete('cascade');
             $table->string('modelo');
             $table->string('medida');
             $table->string('moneda');
-            $table->decimal('precio', 10, 2);
-            $table->decimal('descuento', 10, 2)->nullable();
+            $table->decimal('precio_min', 10, 2)->nullable();
+            $table->decimal('precio_max', 10, 2)->nullable();
+            $table->decimal('precio_list', 10, 2)->nullable();
             $table->integer('stock')->default(0);
             $table->string('codigo')->unique();
-            $table->string('estado');
-            $table->string('precio_max');
             $table->text('capacidades')->nullable();
             $table->text('especificaciones')->nullable();
             $table->string('foto')->nullable();

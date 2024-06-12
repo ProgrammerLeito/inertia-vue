@@ -43,7 +43,7 @@ const deleteCliente = (id, razonSocial) => {
     });
 
     alerta.fire({
-        title: '¿Estás seguro de eliminar al cliente : ' + razonSocial + '?',
+        title: '¿Estás seguro de eliminar al cliente: ' + razonSocial + '?' + '¡Este cliente se eliminará definitivamente de la base de datos. Esta acción no se puede deshacer.!',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -57,28 +57,53 @@ const deleteCliente = (id, razonSocial) => {
         },
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('clientes.destroy', id), {
-                onSuccess: () => {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "bottom-end",
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
-                    });
-                    Toast.fire({
-                        icon: "success",
-                        title: 'Éxito',
-                        text: "Cliente eliminado exitosamente.",
-                        customClass: {
-                            title: 'text-2xl font-bold tracking-widest ',
-                            icon: 'text-base font-bold tracking-widest ',
-                            text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+            // Mostrar el segundo modal para ingresar la contraseña
+            Swal.fire({
+                title: "Ingrese su Contraseña para confirmar la eliminación",
+                input: "password",
+                inputAttributes: {
+                    autocapitalize: "off"
+                },
+                showCancelButton: true,
+                confirmButtonText: "Confirmar",
+                showLoaderOnConfirm: true,
+                cancelButtonText: "Cancelar",
+                preConfirm: (password) => {
+                    return fetch('/comprobarEliminacionCli', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Para protección CSRF
                         },
+                        body: JSON.stringify({ passwordconfirmacion: password })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.siexisteusuario) {
+                            throw new Error('Contraseña incorrecta');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            `Error: ${error}`
+                        );
+                    });
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.delete(route('clientes.destroy', id), {
+                        onSuccess: () => {
+                            Swal.fire({
+                                icon: "success",
+                                title: 'Éxito',
+                                text: "Cliente eliminado exitosamente.",
+                                customClass: {
+                                    title: 'text-2xl font-bold tracking-widest ',
+                                    icon: 'text-base font-bold tracking-widest ',
+                                    text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+                                },
+                            });
+                        }
                     });
                 }
             });
@@ -102,23 +127,23 @@ const openCtgModal = async (cliente) => {
         title: modalTitle,
         input: 'select',
         inputOptions: {
+            '': 'Seleccione una opción 🔽',
             'Vip': 'Vip',
             'Potencial': 'Potencial',
             'Regular': 'Regular',
             'Sin Informacion': 'Sin Informacion',
         },
         customClass: {
-            title: 'text-2xl font-bold tracking-widest ',
-            input: 'text-base tracking-widest ',
-            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+            title: 'text-2xl font-bold tracking-widest',
+            input: 'text-base tracking-widest',
+            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest',
         },
-        inputPlaceholder: 'Selecciona una opcion',
         showCancelButton: true,
         confirmButtonText: 'Asignar',
         showLoaderOnConfirm: true,
         inputValidator: (value) => {
             if (!value) {
-                return 'Debes seleccionar un tipo de calificacion';
+                return 'Debes seleccionar un tipo de calificación';
             }
         },
         preConfirm: async (value) => {
@@ -140,7 +165,6 @@ const openCtgModal = async (cliente) => {
 
     const result = await Swal.fire(options);
 };
-
 
 const formPage = useForm({});
 const onPageClick = (event) => {
@@ -180,9 +204,6 @@ const totalCount = props.clientes.total;
                     <div class="flex flex-wrap gap-2 justify-between">
                         <Link :href="route('clientes.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="bi bi-person-plus mx-1"></i> Registrar Cliente
-                        </Link>
-                        <Link :href="route('clientes.trashed')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            <i class="fas fa-trash-alt mx-1"></i> Clientes Eliminados
                         </Link>
                     </div>
                     <div>

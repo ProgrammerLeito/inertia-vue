@@ -97,9 +97,6 @@ watchEffect(() => {
                             <Link :href="route('tbproductos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                                 <i class="bi bi-clipboard-plus mx-1"></i>Registrar Producto
                             </Link>
-                            <Link :href="route('tbproductos.trashed')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                                <i class="fas fa-trash-alt mx-1"></i>Productos Eliminados
-                            </Link>
                         </div>
                         <div>
                             <div class="py-2 uppercase">
@@ -137,49 +134,59 @@ watchEffect(() => {
                                     <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                         <tr>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Codigo</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Modelo</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Marca</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Modelo</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_Min</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_Max</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_List</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(tbproducto, i) in filteredTbproductos" :key="tbproducto.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
+                                            <!-- <td class="px-6 py-4 text-center"><b>{{ i + 1 }}</b></td> -->
                                             <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.codigo }}</td>
+                                            <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }} </td>
                                             <td class="px-6 py-4 text-center border-r border-b"><b>{{ tbproducto.modelo }}</b></td>
-                                            <td class="px-6 py-4 text-center border-r border-b"><img @click="openModal('/storage/' + tbproducto.foto)" :src="'/storage/' + tbproducto.foto" alt="Foto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto"></td>
+                                            <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.capacidades }}</td>
                                             <td class="px-6 py-4 text-center border-r border-b whitespace-nowrap">
                                                 <div class="accordions">
                                                     <dl>
-                                                        <dt @click="toggleAccordion(i)" class="cursor-pointer">
+                                                        <dt @click="toggleAccordion(i)"
+                                                            class="cursor-pointer normal-case">
                                                             Especificaciones
-                                                            <i :class="{'fa-solid fa-arrow-up-long ml-2': activeAccordion.includes(i), 'fa-solid fa-arrow-down-long ml-2': !activeAccordion.includes(i)}"></i>
+                                                            <i
+                                                                :class="{ 'fa-solid fa-arrow-up-long ml-2': activeAccordion === i, 'fa-solid fa-arrow-down-long ml-2': activeAccordion !== i }"></i>
                                                         </dt>
-                                                        <dd v-if="activeAccordion.includes(i)" class="ml-4">
+                                                        <dd v-if="activeAccordion === i" class="ml-4">
                                                             <ul class="list-disc px-6 py-4 text-left">
-                                                                <li v-for="(item, index) in tbproducto.especificaciones.split('\n')" :key="index">{{ item }}</li>
+                                                                <li v-for="(item, index) in tbproducto.especificaciones.split('\n')"
+                                                                    :key="index">{{ item }}</li>
                                                             </ul>
                                                         </dd>
                                                     </dl>
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
-                                            <td class="px-6 py-4 text-center border-r border-b whitespace-nowrap">
-                                                <ul class="list-disc px-6 py-4 text-left -translate-y-1">
-                                                    <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
-                                                </ul>
+                                            <td class="px-6 py-4 text-center border-r border-b">
+                                                <img @click="openModal('/storage/' + tbproducto.foto)"
+                                                    :src="'/storage/' + tbproducto.foto" alt="Foto"
+                                                    style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
                                             </td>
-                                            <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio).toFixed(2) }} / {{ parseFloat(tbproducto.precio_max).toFixed(2) }}</td>
+                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.moneda }} {{ tbproducto.precio_min }} </td>
+                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.moneda }} {{ tbproducto.precio_max }} </td>
+                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.moneda }} {{ tbproducto.precio_list }} </td>
                                             <td class="p-3 text-center border-b">
-                                                <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })">
-                                                    <i class="bi bi-pencil-square text-green-500"></i>
+                                                <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })"
+                                                    class="py-1 p-1 bg-green-500 dark:hover:bg-white dark:text-white dark:hover:text-green-500 rounded">
+                                                    <i class="bi bi-pencil-square"></i>
                                                 </Link>
-                                                <ButtonDelete @click="$event => deleteTbproducto(tbproducto.id,tbproducto.modelo)" class="ml-1">
-                                                    <i class="bi bi-trash3 text-red-500"></i>
-                                                </ButtonDelete>
+                                                <Button @click="$event => deleteTbproducto(tbproducto.id, tbproducto.modelo)"
+                                                    class="ml-1 bg-red-600 dark:hover:bg-white dark:hover:text-red-600 py-1 px-1 font-extrabold dark:text-white rounded cursor-pointer text-white">
+                                                    <i class="bi bi-trash3"></i>
+                                                </Button>
                                             </td>
                                         </tr>
                                     </tbody>

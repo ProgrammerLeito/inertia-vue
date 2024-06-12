@@ -36,7 +36,7 @@ const submitForm = () => {
                 toast: true,
                 position: "bottom-end",
                 showConfirmButton: false,
-                timer: 2000,
+                timer: 1500,
                 timerProgressBar: true,
                 didOpen: (toast) => {
                     toast.onmouseenter = Swal.stopTimer;
@@ -125,7 +125,7 @@ const submitForm = () => {
                                 </div>
                             </div>
                             <div class="d-flex mt-4">
-                                    <div class="flex flex-wrap gap-2 justify-end">
+                                <div class="flex flex-wrap gap-2 justify-end">
                                     <ButtonResponsive>ACTUALIZAR</ButtonResponsive>
                                     <Link :href="route('datos.index', { cliente_id: $page.props.dato ? $page.props.dato.cliente_id : null })" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
                                         Cancelar

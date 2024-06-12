@@ -22,52 +22,7 @@ class TbproductoController extends Controller
         $tbcategorias=Tbcategoria::with('tbsubcategorias')->get();
         $tbsubcategorias=Tbsubcategoria::all();
         $tbmarcas=Tbmarca::all();
-        $numeroProductosEliminados = Tbproducto::onlyTrashed()->count();
-        return Inertia::render('Catalogo/Index',compact('tbproductos','tbcategorias','tbsubcategorias','tbmarcas','numeroProductosEliminados'));
-    }
-
-
-    public function trashed_tbproducto(Request $request)
-    {
-        $tbcategorias=Tbcategoria::with('tbsubcategorias')->get();
-        $tbsubcategorias=Tbsubcategoria::all();
-        $tbmarcas=Tbmarca::all();
-        $tbproductos=Tbproducto::onlyTrashed()->with('tbcategoria','tbsubcategoria','tbmarca')->paginate(8);
-        return Inertia::render('Catalogo/Trash_list', compact('tbproductos','tbcategorias','tbsubcategorias','tbmarcas'));
-    }
-
-    public function restore($id){
-        $tbproducto= Tbproducto::withTrashed()->find($id);
-        if(!empty($tbproducto)){
-            $tbproducto->restore();
-        }
-        return redirect()->back();
-    }
-
-    // public function deletePermanently($id){
-    //     $tbproducto= Tbproducto::withTrashed()->find($id);
-
-    //     if (file_exists(public_path('img/catalogo/' . $tbproducto->foto))) {
-    //         unlink(public_path('img/catalogo/' . $tbproducto->foto));
-    //     }
-
-    //     if(!empty($tbproducto)){
-    //         $tbproducto->forceDelete();
-    //     }
-    //     return redirect()->back();
-    // }
-
-    public function deletePermanently($id)
-    {
-        $tbproducto = Tbproducto::withTrashed()->find($id);
-
-        if (!empty($tbproducto)) {
-            if (!empty($tbproducto->foto)) {
-                Storage::disk('public')->delete($tbproducto->foto);
-            }
-            $tbproducto->forceDelete();
-        }
-        return redirect()->back();
+        return Inertia::render('Catalogo/Index',compact('tbproductos','tbcategorias','tbsubcategorias','tbmarcas'));
     }
 
     public function create()

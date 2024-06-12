@@ -66,18 +66,31 @@ const closeModal = () => {
 const save = () => {
     if (operation.value == 1) {
         form.post(route('datos.store'), {
-            onSuccess: () => { ok('datos registrada') }
+            onSuccess: () => { ok('Datos Registrados') }
         });
     }
 }
 const ok = (msj) => {
     form.reset();
     closeModal();
-    Swal.fire({
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+    Toast.fire({
+        icon: "success",
         title: msj,
-        icon: 'success',
-        timer: 1000,
-        showConfirmButton: false
+        customClass: {
+                title: 'text-2xl font-bold tracking-widest ',
+                icon: 'text-base font-bold tracking-widest ',
+            },
     });
 };
 

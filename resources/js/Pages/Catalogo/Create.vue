@@ -69,12 +69,11 @@ const initialvalues = {
     modelo: '',
     medida: '',
     moneda: '',
-    precio: 0,
+    precio_min: 0,
     precio_max: 0,
-    descuento: 0,
+    precio_list: 0,
     stock: 0,
     codigo: '',
-    estado: '',
     capacidades: '',
     especificaciones: '',
     foto: null,
@@ -103,37 +102,32 @@ const onSelectFoto = (e, fieldName) => {
     }
 }
 
-const filteredSubcategorias = ref([]);
-const filteredMarcas = ref([]);
-
+const filteredSubcategorias = ref(tbsubcategorias);
+const filteredMarcas = ref(tbmarcas);
+ 
 const updateFilteredSubcategoriasYMarcas = () => {
     if (form.tbcategoria_id) {
-        // Filtrar subcategorías basadas en la categoría seleccionada
         filteredSubcategorias.value = tbsubcategorias.filter(subcategoria => subcategoria.tbcategoria_id == form.tbcategoria_id);
-
+ 
         if (form.tbsubcategoria_id) {
-            // Si se ha seleccionado una subcategoría, filtrar marcas basadas en la subcategoría seleccionada
             filteredMarcas.value = tbmarcas.filter(marca => marca.tbsubcategoria_id == form.tbsubcategoria_id);
         } else {
-            // Si no se ha seleccionado ninguna subcategoría, mostrar todas las marcas relacionadas con las subcategorías filtradas
             filteredMarcas.value = tbmarcas.filter(marca => filteredSubcategorias.value.some(subcategoria => subcategoria.id == marca.tbsubcategoria_id));
         }
     } else {
-        // Si no se ha seleccionado ninguna categoría, restablecer tanto subcategorías como marcas
-        filteredSubcategorias.value = [];
-        filteredMarcas.value = [];
+        filteredSubcategorias.value = tbsubcategorias;
+        filteredMarcas.value = tbmarcas;
     }
 };
-
+ 
 watch(() => form.tbcategoria_id, () => {
-    // Observar cambios en la categoría seleccionada y actualizar subcategorías y marcas
     updateFilteredSubcategoriasYMarcas();
 });
-
+ 
 watch(() => form.tbsubcategoria_id, () => {
-    // Observar cambios en la subcategoría seleccionada y actualizar marcas
     updateFilteredSubcategoriasYMarcas();
 });
+updateFilteredSubcategoriasYMarcas();
 
 
 const submitForm = () => {
@@ -284,152 +278,169 @@ const ok4 = (msj) => {
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                
                         <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
-                                <!-- Categoría -->
+                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-8 mb-3">
                                 <div class="flex flex-col items-start">
-                                    <InputLabel for="tbcategoria" value="Categoria" class="ml-1"/>
+                                    <InputLabel for="tenor_id" class="block text-xs font-medium text-gray-700">
+                                        Categoria
+                                    </InputLabel>
                                     <div class="flex w-full">
-                                        <select id="tbcategoria" v-model="form.tbcategoria_id" required  @change="updateFilteredSubcategoriasYMarcas"
+                                        <select id="tbcategoria" v-model="form.tbcategoria_id" required
+                                            @change="updateFilteredSubcategoriasYMarcas"
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
                                             <option value="" disabled selected>Seleccione una categoría</option>
                                             <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id"
                                                 :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
                                         </select>
-                                        <Button @click.prevent="() => openModal4(1)" class="bg-green-600 text-white mt-1 py-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
+                                        <Button @click.prevent="() => openModal4(1)"
+                                            class="bg-green-600 text-white mt-1 py-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                             <i class="fas fa-plus mx-2"></i>
                                         </Button>
                                     </div>
                                 </div>
- 
-                                <!-- Subcategoría -->
                                 <div class="flex flex-col items-start">
-                                    <InputLabel for="tbsubcategoria" value="Sub Categoria" class="ml-1"/>
+                                    <InputLabel for="tenor_id" class="block text-xs font-medium text-gray-700">
+                                        Subcategoria
+                                    </InputLabel>
                                     <div class="flex w-full">
-                                        <!-- <label for="tbsubcategoria" >Subcategoría</label> -->
-                                        <select id="tbsubcategoria" v-model="form.tbsubcategoria_id" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                        <select id="tbsubcategoria" v-model="form.tbsubcategoria_id"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
                                             <option value="" disabled selected>Seleccione una subcategoría</option>
-                                            <option v-for="tbsubcategoria in filteredSubcategorias" :key="tbsubcategoria.id"
-                                                :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
+                                            <option v-for="tbsubcategoria in filteredSubcategorias"
+                                                :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{
+                                                tbsubcategoria.nombre }}</option>
                                         </select>
-                                        <Button  @click.prevent="() => openModal2(1)" class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
+                                        <Button @click.prevent="() => openModal2(1)"
+                                            class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                             <i class="fas fa-plus mx-2"></i>
                                         </Button>
                                     </div>
                                 </div>
-                                <!-- Marca -->
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 sm:gap-x-8">
+                                <div>
+                                    <InputLabel for="codigo" class="block text-xs font-medium text-gray-700">Código
+                                    </InputLabel>
+                                    <TextInput type="text" id="codigo" v-model="form.codigo" required
+                                        placeholder="Ingrese el codigo del producto"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="$page.props.errors.codigo" class="mt-2" />
+                                </div>
                                 <div class="flex flex-col items-start">
-                                    <InputLabel for="tbmarca" value="Marca" class="ml-1"/>
+                                    <InputLabel for="tenor_id" class="block text-xs font-medium text-gray-700">
+                                        Marca
+                                    </InputLabel>
                                     <div class="flex w-full">
-                                        <select id="tbmarca" v-model="form.tbmarca_id" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
+                                        <select id="tbmarca" v-model="form.tbmarca_id" required
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
                                             <option value="" disabled selected>Seleccione una marca</option>
+ 
                                             <option v-for="tbmarca in filteredMarcas" :key="tbmarca.id"
-                                                :value="tbmarca.id">{{ tbmarca.nombre }}</option>
+                                                :value="tbmarca.id">
+                                                {{
+                                                    tbmarca.nombre }}</option>
                                         </select>
-                                        <Button @click.prevent="() => openModal3(1)" class="bg-green-600 py-1 text-white mt-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
+                                        <Button @click.prevent="() => openModal3(1)"
+                                            class="bg-green-600 py-1 text-white mt-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
                                             <i class="fas fa-plus mx-2"></i>
                                         </Button>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-8">
-                                <!-- Modelo -->
                                 <div>
-                                    <InputLabel for="modelo" class="block text-md font-medium text-gray-700">Modelo</InputLabel>
-                                    <TextInput type="text" id="modelo" v-model="form.modelo" required placeholder="Escribe un modelo"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
-                                    <InputError :message="$page.props.errors.modelo" class="mt-2"/>
+                                    <InputLabel for="modelo" class="block text-xs font-medium text-gray-700">Modelo
+                                    </InputLabel>
+                                    <TextInput type="text" id="modelo" v-model="form.modelo" required
+                                        placeholder="Escribe un modelo"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="$page.props.errors.modelo" class="mt-2" />
                                 </div>
-                                <!-- Medida -->
+ 
                                 <div>
-                                    <InputLabel for="medida" class="block text-sm font-medium text-gray-700">Medida</InputLabel>
-                                    <TextInput type="text" id="medida" v-model="form.medida" required placeholder="Escribe la medida"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
-                                    <InputError :message="$page.props.errors.medida" class="mt-2"/>
+                                    <InputLabel for="medida" class="block text-xs font-medium text-gray-700">Medida
+                                    </InputLabel>
+                                    <TextInput type="text" id="medida" v-model="form.medida" required
+                                        placeholder="Escribe la medida"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="$page.props.errors.medida" class="mt-2" />
                                 </div>
-                                <!-- Moneda -->
+ 
                                 <div>
-                                    <InputLabel for="moneda" class="block text-sm font-medium text-gray-700">Moneda</InputLabel>
+                                    <InputLabel for="moneda" class="block text-xs font-medium text-gray-700">Moneda
+                                    </InputLabel>
                                     <select id="moneda" v-model="form.moneda" required
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="" disabled selected >Selecciona una moneda</option>
-                                        <option value="sol">Sol</option>
-                                        <option value="dolares">Dólares</option>
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="" disabled selected>Selecciona una moneda</option>
+                                        <option value="s/">Sol</option>
+                                        <option value="$">Dólares</option>
                                     </select>
                                 </div>
- 
-                                <!-- Precio Sin Igv -->
-                                <div>
-                                    <InputLabel for="precio" class="block text-sm font-medium text-gray-700">Precio Min</InputLabel>
-                                    <TextInput type="text" id="precio" v-model="form.precio" required placeholder="0.00"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
-                                    <InputError :message="$page.props.errors.precio" class="mt-2"/>
-                                </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-8 mt-2">
-                                <!-- Descuento -->
+                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 sm:gap-x-8 mt-3">
                                 <div>
-                                    <InputLabel for="descuento" class="block text-sm font-medium text-gray-700">Descuento(%)</InputLabel>
-                                    <TextInput type="text" id="descuento" v-model="form.descuento" placeholder="0.00"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
-                                    <InputError :message="$page.props.errors.descuento" class="mt-2"/>
-                                </div>
-                                <!-- Stock -->
-                                <div>
-                                    <InputLabel for="stock" class="block text-sm font-medium text-gray-700">Stock</InputLabel>
-                                    <TextInput type="number" id="stock" v-model="form.stock" required placeholder="0"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
-                                    <InputError :message="$page.props.errors.stock" class="mt-2"/>
-                                </div>
-                                <!-- Código -->
-                                <div>
-                                    <InputLabel for="codigo" class="block text-sm font-medium text-gray-700">Código</InputLabel>
-                                    <TextInput type="text" id="codigo" v-model="form.codigo" required placeholder="Ingrese el codigo del producto"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
-                                    <InputError :message="$page.props.errors.codigo" class="mt-2"/>
-                                </div>
-                                <!-- Estado -->
-                                <div>
-                                    <InputLabel for="estado" class="block text-sm font-medium text-gray-700">Estado</InputLabel>
-                                    <select id="estado" v-model="form.estado" required
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="" disabled selected >Selecciona un estado</option>
-                                        <option value="activado">Activado</option>
-                                        <option value="suspendido">Suspendido</option>
-                                    </select>
+                                    <InputLabel for="precio_min" class="block text-xs font-medium text-gray-700">
+                                        Precio_minim
+                                    </InputLabel>
+                                    <TextInput type="number" id="precio_min" v-model="form.precio_min" required
+                                        placeholder="escribe solo numeros"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="$page.props.errors.precio_min" class="mt-2" />
                                 </div>
  
+                                <div>
+                                    <InputLabel for="precio_max" value="Precio_maximo"
+                                        class="block text-xs font-medium text-gray-700">
+                                    </InputLabel>
+                                    <TextInput type="number" id="precio_max" v-model="form.precio_max" required
+                                        placeholder="escribe solo numeros"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="$page.props.errors.precio_max" class="mt-2" />
+                                </div>
+ 
+                                <div>
+                                    <InputLabel for="precio_list" class="block text-xs font-medium text-gray-700">
+                                        Precio_Lista
+                                    </InputLabel>
+                                    <TextInput type="text" id="precio_list" v-model="form.precio_list"
+                                        placeholder="escribe solo numeros"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="$page.props.errors.precio_list" class="mt-2" />
+                                </div>
+ 
+                                <div>
+                                    <InputLabel for="stock" class="block text-xs font-medium text-gray-700">Stock
+                                    </InputLabel>
+                                    <TextInput type="number" id="stock" v-model="form.stock" required
+                                        placeholder="escribe solo numeros"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="$page.props.errors.stock" class="mt-2" />
+                                </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mt-2">
-                                <!-- Capacidades -->
+                            <div class="grid grid-cols-1 gap-y-4 md:grid-cols-2 lg:grid-cols-3 sm:gap-x-8 mt-2">
                                 <div>
-                                    <InputLabel for="capacidades" class="block text-sm font-medium text-gray-700">Capacidades</InputLabel>
-                                    <textarea id="capacidades" v-model="form.capacidades" rows="5" placeholder="Escribe las capacidades..."
+                                    <InputLabel for="capacidades" class="block text-xs font-medium text-gray-700">
+                                        Capacidades
+                                    </InputLabel>
+                                    <textarea id="capacidades" v-model="form.capacidades" rows="5"
+                                        placeholder="Escribe las capacidades..."
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
-                                    <InputError :message="$page.props.errors.capacidades" class="mt-2"/>
+                                    <InputError :message="$page.props.errors.capacidades" class="mt-2" />
                                 </div>
-                                <!-- Especificaciones -->
                                 <div>
-                                    <InputLabel for="especificaciones" class="block text-sm font-medium text-gray-700">Especificaciones</InputLabel>
-                                    <textarea id="especificaciones" v-model="form.especificaciones" rows="5" placeholder="Escribe las especificaciones..."
+                                    <InputLabel for="especificaciones" class="block text-xs font-medium text-gray-700">
+                                        Especificaciones</InputLabel>
+                                    <textarea id="especificaciones" v-model="form.especificaciones" rows="5"
+                                        placeholder="Escribe las especificaciones..."
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
-                                    <InputError :message="$page.props.errors.especificaciones" class="mt-2"/>
+                                    <InputError :message="$page.props.errors.especificaciones" class="mt-2" />
                                 </div>
-                                <!-- Foto -->
                                 <div>
-                                    <InputLabel for="foto" value="Foto" class="block text-xs font-medium text-gray-700"/>
-                                    <FileInput name="foto" @change="onSelectFoto"/>
+                                    <InputLabel for="foto" value="Foto"
+                                        class="block text-xs font-medium text-gray-700" />
+                                    <FileInput name="foto" @change="(e) => onSelectFoto(e, 'foto')" />
                                     <InputError :message="$page.props.errors.foto" class="mt-2" />
-                                    <div class="py-1 dark:text-white normal-case">De preferencia Subir Imagenes Cuadradas</div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mt-2">
-                                <!-- Precio Maximo -->
-                                <div>
-                                    <InputLabel for="precio_max" class="block text-sm font-medium text-gray-700">Precio Max</InputLabel>
-                                    <TextInput type="text" id="precio_max" v-model="form.precio_max" required placeholder="0.00"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
-                                    <InputError :message="$page.props.errors.precio_max" class="mt-2"/>
+                                    <div class="mt-2 " v-if="form.foto !== ''">
+                                        <img :src="imagePreview1" alt="Vista previa de la foto"
+                                            class="h-32 mx-auto rounded">
+                                    </div>
                                 </div>
                             </div>
  
@@ -438,8 +449,9 @@ const ok4 = (msj) => {
                                     <ButtonResponsive>
                                         REGISTRAR
                                     </ButtonResponsive>
-                                    <Link :href="route('tbproductos.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
-                                        Cancelar
+                                    <Link :href="route('tbproductos.index')"
+                                    class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
+                                    Cancelar
                                     </Link>
                                 </div>
                             </div>

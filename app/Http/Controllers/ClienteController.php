@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ClienteRequest;
 use App\Models\Cliente;
 use App\Models\Tbprovincias;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Hash;
 
 class ClienteController extends Controller
 {
@@ -19,37 +20,8 @@ class ClienteController extends Controller
         $clientes = Cliente::with('tbprovincia')->orderBy('id', 'DESC')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id','ctg','asesor')->paginate(25);
          $tbprovincias = Tbprovincias::all();
          $totalClientes = Cliente::count();
-         $numeroClientesEliminados = Cliente::onlyTrashed()->count();
-          return Inertia::render('Clientes/Index', compact('clientes','tbprovincias','totalClientes','numeroClientesEliminados'));
+          return Inertia::render('Clientes/Index', compact('clientes','tbprovincias','totalClientes'));
     }
-
-
-    public function trashed_cliente(Request $request)
-    {
-        $clientes = Cliente::onlyTrashed()->with('tbprovincia')->orderBy('id', 'DESC')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id')->paginate(10);
-        $tbprovincias = Tbprovincias::all();
-
-        return Inertia::render('Clientes/Trash_list', compact('clientes','tbprovincias'));
-    }
-
-
-    public function restore($id){
-        $cliente= Cliente::withTrashed()->find($id);
-        if(!empty($cliente)){
-            $cliente->restore();
-        }
-        return redirect()->back();
-    }
-
-    public function deletePermanently($id){
-        $cliente= Cliente::withTrashed()->find($id);
-
-        if(!empty($cliente)){
-            $cliente->forceDelete();
-        }
-        return redirect()->back();
-    }
-
 
     public function create()
     {
@@ -57,6 +29,23 @@ class ClienteController extends Controller
         return inertia::render('Clientes/Create', compact('tbprovincias'));
     }
 
+    public function comprobarEliminacionCli(Request $request)
+    {
+        $idTec = 3; // ID fijo del usuario que verifica la eliminación
+        $passwordconfirmacion = $request->input('passwordconfirmacion');
+
+        // Obtener el usuario por su ID
+        $usuario = User::find($idTec);
+
+        if (!$usuario) {
+            return response()->json(['siexisteusuario' => false]);
+        }
+
+        // Verificar la contraseña utilizando Hash::check()
+        $contraseñaCorrecta = Hash::check($passwordconfirmacion, $usuario->password);
+
+        return response()->json(['siexisteusuario' => $contraseñaCorrecta]);
+    }
 
     public function store(ClienteRequest $request)
     {

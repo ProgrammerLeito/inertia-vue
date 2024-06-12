@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('clientes', function (Blueprint $table) {
             $table->id('id');
-            $table->softDeletes('deleted_at', precision: 0);
             $table->string('numeroDocumento');
             $table->string('razonSocial', 250);
             $table->string('direccion', 250);

@@ -4,12 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tbproducto extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
     protected $fillable = [
         'tbcategoria_id',
@@ -18,12 +16,11 @@ class Tbproducto extends Model
         'modelo',
         'medida',
         'moneda',
-        'precio',
+        'precio_min',
         'precio_max',
-        'descuento',
+        'precio_list',
         'stock',
         'codigo',
-        'estado',
         'capacidades',
         'especificaciones',
         'foto'
