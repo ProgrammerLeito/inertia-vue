@@ -25,12 +25,14 @@ class CreateServicioRequest extends FormRequest
             'cliente_id'=>'required',
             'direccion' =>'required',
             'dato_id' =>'required',
-            'user_id' =>'required',
+            'user_id' =>'',
             'n_guia' =>'required',
             'fecha' =>'required',
             'hora' =>'required',
             'tecnico' =>'',
-            'estado' =>'nullable',
+            'estado' =>'',
+            'pdf' =>'',
+            'e_servicio' =>'',
             'descripcion'=>'required',
         ];
     }

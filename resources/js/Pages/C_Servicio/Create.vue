@@ -17,12 +17,6 @@ import { useModalDocumento } from '@/utils/cotizaModalDocumento';
 import { useModalRecomendacione } from '@/utils/cotizaModalRecomendacione';
 import { useTrealizados, useCselecionados, useOselecionados, useDselecionados, useRselecionados } from '@/utils/cotizaAcoridion';
 
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
-import 'pdfmake/build/vfs_fonts';
-import InputError from '@/Components/InputError.vue';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
 const { plantillas, trealizados, condiciones, observaciones, documentos, recomendaciones, nCotizacion, ctrabajos } = defineProps({
     plantillas: {
         type: Object,
@@ -247,193 +241,7 @@ const obtenerNombreCompleto = (user) => {
     return '';
 };
 const nombreCompleto = obtenerNombreCompleto(user);
-const generarYPresentarPDF = async () => {
-    try {
 
-        // Define la fuente que deseas utilizar
-        const fonts = {
-            Roboto: {
-                normal: 'Roboto-Regular.ttf',
-                bold: 'Roboto-Medium.ttf',
-                italics: 'Roboto-Italic.ttf',
-                bolditalics: 'Roboto-MediumItalic.ttf'
-            },
-        };
-
-        // Configura las fuentes
-        pdfMake.fonts = fonts;
-
-        const backgroundImage = await loadImageAsBase64('/storage/catalago_productos/plantillacotizacion.png');
-        const partesFecha = form.fecha.split('-');
-        const fecha = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
-
-        const opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric' };
-        const fechaFormateada = fecha.toLocaleDateString('es-ES', opcionesFecha);
-
-        const docDefinition = {
-            background: [
-                {
-                    image: backgroundImage,
-                    width: 595, // Ancho en puntos (A4 = 595 x 842)
-                    height: 842, // Alto en puntos (A4 = 595 x 842)
-                    opacity: 1 // Ajusta la opacidad según sea necesario
-                }
-            ],
-            content: [
-                { text: 'COTIZACION N° ' + form.n_cotizacion, style: 'header' },
-                { text: 'Piura : ' + fechaFormateada, style: 'headerr' },
-                { text: 'Señores:', style: 'subheaderr' },
-                { text: form.razonSocial, style: 'subheadero' },
-                { text: 'Estimados Señores  :', style: 'bodyText' },
-                { text: 'Tenemos el agrado de prespuestarle lo siguiente:', style: 'bodyText' },
-                { text: form.requiere, style: 'bodyTextBold' },
-                { text: 'Marca     : ' + form.marca, style: 'bodyText' },
-                { text: 'Modelo    : ' + form.modelo, style: 'bodyText' },
-                { text: 'Capacidad : ' + form.capacidad, style: 'bodyText' },
-                { text: 'Div       : ' + form.div, style: 'bodyText' },
-                { text: 'Plataforma: ' + form.plataforma, style: 'bodyText' },
-                { text: 'Serie     : ' + form.serie, style: 'bodyText' },
-                { text: 'TRABAJOS A REALIZAR  :', style: 'bodyTextBold' },
-                { text: form.tselecionado, style: 'bodyTextjomarcruz' },
-                { text: 'CONDICIONES  :', style: 'bodyTextBold' },
-                { text: form.cselecionado, style: 'bodyTextjomarcruz' },
-                { text: 'OBSERVACIONES  :', style: 'bodyTextBold' },
-                { text: form.oselecionado, style: 'bodyTextjomarcruz' },
-                { text: 'DOCUMENTOS  :', style: 'bodyTextBold' },
-                { text: form.dselecionado, style: 'bodyTextjomarcruz' },
-                { text: 'RECOMENDACIONES  :', style: 'bodyTextBold' },
-                { text: form.rselecionado, style: 'bodyTextjomarcruz' },
-                { text: 'PRECIO: ' + ' ' + form.total + ' ' + ' + IGV', style: 'price' },
-                { text: 'CONDICIONES GENERALES  :', style: 'bodyJomar' },
-                { text: 'Garantía        : ' + form.garantia, style: 'bodyTextCruz' },
-                { text: 'Plazo de Entrega: ' + form.dentrega + 'dias', style: 'bodyTextCruz' },
-                { text: 'Forma de Pago    : ' + form.fpago, style: 'bodyTextCruz' },
-                { text: 'Deposito a cuenta de Ahorros  :', style: 'bodyText' },
-                { text: 'BBVA: S/ 0011 0267 0201320316 / CCI: 011 267 000201320316 27', style: 'bodyText' },
-                { text: 'BCP: $ 475-2156380-1-04 / S/ 475-2156367-0-6', style: 'bodyText' },
-                { text: 'Orden de compra irrevocable', style: 'bodyText' },
-                { text: 'Servicio gratuito dentro del tiempo de garantia', style: 'bodyText' },
-                { text: 'A la espera de su orden.', style: 'bodyText' },
-            ],
-            styles: {
-                header: {
-                    font: 'Roboto',
-                    fontSize: 12,
-                    bold: true,
-                    color: '#FF0000',
-                    alignment: 'right',
-                    margin: [0, 2, 0, 2]
-                },
-                headerr: {
-                    font: 'Roboto',
-                    fontSize: 11,
-                    bold: true,
-                    color: '#000000',
-                    alignment: 'right',
-                    margin: [0, 2, 0, 2]
-                },
-                subheaderr: {
-                    font: 'Roboto',
-                    fontSize: 12,
-                    color: '#000000',
-                    margin: [0, 2, 0, 2]
-                },
-                subheader: {
-                    font: 'Roboto',
-                    fontSize: 14,
-                    bold: true,
-                    color: '#000080',
-                    margin: [0, 2, 0, 2]
-                },
-                subheadero: {
-                    font: 'Roboto',
-                    fontSize: 14,
-                    bold: true,
-                    color: '#000080',
-                    margin: [0, 2, 0, 20]
-                },
-                bodyText: {
-                    font: 'Roboto',
-                    fontSize: 10,
-                    color: '#000000',
-                    margin: [0, 2, 0, 2]
-                },
-                bodyTextjomarcruz: {
-                    font: 'Roboto',
-                    fontSize: 10,
-                    color: '#000000',
-                    margin: [8, 2, 0, 2]
-                },
-                bodyTextBold: {
-                    font: 'Roboto',
-                    fontSize: 11,
-                    bold: true,
-                    color: '#000000',
-                    margin: [0, 8, 0, 10]
-                },
-                price: {
-                    font: 'Roboto',
-                    fontSize: 12,
-                    bold: true,
-                    color: '#FF0000',
-                    margin: [0, 20, 0, 20],
-                    alignment: 'center',
-                    fillColor: '#FFFF00', // Fondo amarillo
-                    borderRadius: 5 // Bordes redondeados
-                },
-                bodyJomar: {
-                    font: 'Roboto',
-                    fontSize: 11,
-                    bold: true,
-                    color: '#000000',
-                    margin: [0, 5, 0, 5]
-                },
-                bodyTextCruz: {
-                    font: 'Roboto',
-                    fontSize: 10,
-                    color: '#000000',
-                    margin: [0, 2, 0, 2]
-                },
-            },
-            footer: function (currentPage, pageCount) {
-                if (currentPage === pageCount) {
-                    return {
-                        stack: [
-                            {
-                                text: nombreCompleto,
-                                alignment: 'right',
-                                fontSize: 10,
-                                margin: [70, 0, 70, 0],
-                                font: 'Roboto',
-                            },
-                            {
-                                text: 'Asesor De Ventas',
-                                alignment: 'right',
-                                fontSize: 9,
-                                margin: [70, 5, 70, 0],
-                                font: 'Roboto',
-                            }
-                        ]
-                    };
-                }
-                return {}; // No mostrar footer en otras páginas
-            },
-            pageMargins: [70, 135, 70, 135], // Márgenes de la página (izquierda, arriba, derecha, abajo)
-            absolutePosition: { bottom: 40, right: 40 } // Posición absoluta en la esquina inferior derecha
-        };
-
-        const pdfDocGenerator = pdfMake.createPdf(docDefinition).open();
-
-        pdfDocGenerator.getDataUrl((dataUrl) => {
-            if (pdfPreview.value) {
-                pdfPreview.value.src = dataUrl;
-                pdfPreview.value.classList.remove('hidden');
-            }
-        });
-    } catch (error) {
-        console.error('Error generating PDF: ', error);
-    }
-};
 
 //modal para calcular tipo moneda en dolares
 const igvEnabled = ref(false);
@@ -489,7 +297,7 @@ const updateTotal = () => {
                     class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                         <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 mb-3 hidden">
+                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 mb-3">
                                 <div>
                                     <InputLabel>N° informe</InputLabel>
                                     <TextInput v-model="form.n_informe" type="text"

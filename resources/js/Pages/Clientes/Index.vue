@@ -1,26 +1,21 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
-import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
 import { ref, watchEffect } from 'vue';
-import ButtonDelete from '@/Components/ButtonDelete.vue';
 import { Inertia } from '@inertiajs/inertia';
-
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+ 
 const searchQuery = ref('');
 const filteredClients = ref([]);
 const selectedProvincia = ref('');
 const isDropdownOpen = ref(false);
+const tecnicoQuery = ref('');
 
 const toggleDropdown = () => {
     isDropdownOpen.value = !isDropdownOpen.value;
-};
-
-// Función para seleccionar una provincia
-const selectProvincia = (id) => {
-    selectedProvincia.value = id;
-    toggleDropdown(); // Cierra el dropdown después de seleccionar una provincia
 };
 
 const props = defineProps({
@@ -57,40 +52,6 @@ const deleteCliente = (id, razonSocial) => {
         },
     }).then((result) => {
         if (result.isConfirmed) {
-            // Mostrar el segundo modal para ingresar la contraseña
-            Swal.fire({
-                title: "Ingrese su Contraseña para confirmar la eliminación",
-                input: "password",
-                inputAttributes: {
-                    autocapitalize: "off"
-                },
-                showCancelButton: true,
-                confirmButtonText: "Confirmar",
-                showLoaderOnConfirm: true,
-                cancelButtonText: "Cancelar",
-                preConfirm: (password) => {
-                    return fetch('/comprobarEliminacionCli', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Para protección CSRF
-                        },
-                        body: JSON.stringify({ passwordconfirmacion: password })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.siexisteusuario) {
-                            throw new Error('Contraseña incorrecta');
-                        }
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(
-                            `Error: ${error}`
-                        );
-                    });
-                },
-            }).then((result) => {
-                if (result.isConfirmed) {
                     form.delete(route('clientes.destroy', id), {
                         onSuccess: () => {
                             Swal.fire({
@@ -108,17 +69,26 @@ const deleteCliente = (id, razonSocial) => {
                 }
             });
         }
-    });
-}
-
 
 watchEffect(() => {
-    filteredClients.value = props.clientes.data.filter(cliente => {
-        return (cliente.modelo && cliente.modelo.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
-            cliente.id.toString().includes(searchQuery.value.toLowerCase()) &&
-            (selectedProvincia.value === '' || cliente.tbprovincia_id === selectedProvincia.value);
-    });
+    if (props.clientes.data) {
+        const jomar = searchQuery.value.toLowerCase().trim();
+
+        filteredClients.value = props.clientes.data.filter(cliente => {
+            const primero = cliente.id.toString().includes(jomar);
+            const segundo = cliente.ctg.toLowerCase().includes(jomar);
+            const tercero = cliente.razonSocial.toLowerCase().includes(jomar);
+            const cuarto = cliente.numeroDocumento.toLowerCase().includes(jomar);
+
+            const searchMatch = primero || segundo || tercero || cuarto;
+            const provinciaMatch = selectedProvincia.value === '' || cliente.tbprovincia_id === selectedProvincia.value;
+            const tecnicoMatch = tecnicoQuery.value === '' || cliente.asesor.toLowerCase().includes(tecnicoQuery.value.toLowerCase());
+
+            return searchMatch && provinciaMatch && tecnicoMatch;
+        });
+    }
 });
+
 
 const openCtgModal = async (cliente) => {
     const modalTitle = `Calificación del cliente: ${cliente.razonSocial}`;
@@ -174,20 +144,82 @@ const previousPage = () => {
     const prevPage = props.clientes.current_page - 1;
     formPage.get(route('clientes.index', { page: prevPage }));
 };
-
+ 
 const nextPage = () => {
     const nextPage = props.clientes.current_page + 1;
     formPage.get(route('clientes.index', { page: nextPage }));
 };
-
+ 
 const goToPage = (page) => {
     formPage.get(route('clientes.index', { page }));
 };
-
+ 
 const total_pages = props.clientes.last_page;
 const current_page = props.clientes.current_page;
 const countPerPage = props.clientes.data.length;
 const totalCount = props.clientes.total;
+
+const printPDF = async () => {
+    const doc = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4',
+        compress: true,
+    });
+
+    const backgroundImage = '/storage/profile-photos/plantillaclientes.png';
+
+    // Agregar la imagen de fondo (simulado, jsPDF no admite imágenes de fondo directamente)
+    doc.addImage(backgroundImage, 'PNG', 0, 0, 210, 297);
+    // A4: 210 x 297 mm
+
+    // Definir el contenido del PDF
+    const headerText = 'LISTA DE CLIENTES:';
+    const tableHeaders = ['N°', 'RUC', 'RAZÓN SOCIAL', 'DIRECCIÓN', 'CIUDAD', 'ASESOR'];
+    const tableData = filteredClients.value.map((cliente, i) => [
+        i + 1,
+        cliente.numeroDocumento || '',
+        cliente.razonSocial || '',
+        cliente.direccion || '',
+        cliente.tbprovincia ? cliente.tbprovincia.prov_nombre : 'Sin ciudad',
+        cliente.asesor || '',
+    ]);
+
+    var eje_y = 40;
+
+    // Añadir contenido al PDF
+    doc.setFontSize(14);
+    doc.setFont('courier', 'bold');//estilos de texto
+    doc.text(headerText, 15, eje_y += 7); // Alineado a la izquierda y más abajo
+
+    // Usar autoTable para generar la tabla
+    doc.autoTable({
+        head: [tableHeaders],
+        body: tableData,
+        startY: eje_y += 4, // Posición más abajo
+        theme: 'grid',
+        styles: {
+            fontSize: 8,
+            cellPadding: 2,
+            valign: 'middle',
+            halign: 'center',
+            textColor: '#ffffff', // Color de texto para toda la tabla
+        },
+        headStyles: {
+            fillColor: '#1423BC', // Color de fondo del encabezado
+            textColor: '#ffffff', // Color de texto del encabezado
+        },
+        bodyStyles: {
+            fillColor: '#d5d7d8', // Color de fondo del cuerpo
+            textColor: '#000000', // Color de texto del cuerpo
+        },
+        columnStyles: {
+            2: { fontStyle: 'bold' }, // Aplicar negrita a la primera columna (N°2)
+        },
+    });
+    // Abrir el PDF en una nueva ventana para imprimir
+    doc.output('dataurlnewwindow');
+};
 </script>
 
 <template>
@@ -207,30 +239,50 @@ const totalCount = props.clientes.total;
                         </Link>
                     </div>
                     <div>
-                        <div class="py-2 sm:py-2">
-                            <div class="md:max-w-lg">
-                                <div class="flex">
-                                    <div class="relative w-full">
-                                        <input v-model="searchQuery" type="text" id="table-search" class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-l-lg border-s-gray-200 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-s-gray-700 dark:border-gray-600 placeholder-gray-700 dark:text-black dark:focus:border-blue-500" placeholder="Buscar cliente" required />
-                                    </div>
+                        <div class="py-1">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-y-3 sm:gap-x-6 py-2">
+                                <div class="flex flex-col ">
+                                    <InputLabel for="table-search"
+                                        class="block text-md font-medium text-gray-700 dark:text-white">Buscar
+                                    </InputLabel>
                                     <div class="relative">
-                                        <button id="dropdown-button" data-dropdown-toggle="dropdown" @click="toggleDropdown" class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-r-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600" type="button">
-                                            {{ selectedProvincia ? tbprovincias.find(p => p.id === selectedProvincia).prov_nombre : 'Ciudades' }}
-                                            <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                        <div
+                                            class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                            <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                                             </svg>
-                                        </button>
-                                        <div id="dropdown" :class="{ 'hidden': !isDropdownOpen }" class="z-20 absolute right-0 mt-2 w-44 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 font-bold">
-                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button">
-                                                <li>
-                                                    <button @click="selectProvincia('')" type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white font-bold">Todas</button>
-                                                </li>
-                                                <li v-for="tbprovincia in tbprovincias" :key="tbprovincia.id">
-                                                    <button @click="selectProvincia(tbprovincia.id)" type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white font-bold">{{ tbprovincia.prov_nombre }}</button>
-                                                </li>
-                                            </ul>
                                         </div>
+                                        <input v-model="searchQuery" type="text" id="table-search"
+                                            class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="Buscar cliente">
                                     </div>
+                                </div>
+                                <div class="flex flex-col">
+                                    <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Ciudad
+                                    </InputLabel>
+                                    <select v-model="selectedProvincia"
+                                        class="block pt-2 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Buscar cliente">
+                                        <option value="" selected disabled>Seleccione por Ciudad</option>
+                                        <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id"
+                                            :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
+                                    </select>
+                                </div>
+                                <div class="flex flex-col">
+                                    <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Asesor
+                                    </InputLabel>
+                                    <input v-model="tecnicoQuery" type="text"
+                                        class="block pt-2 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Buscar por asesor">
+                                </div>
+                                <div class="flex flex-col 2xl:mt-5 mt-1">
+                                    <button @click="printPDF"
+                                        class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                        <i class="fas fa-print mx-2"></i> Imprimir
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -248,8 +300,8 @@ const totalCount = props.clientes.total;
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody  class="text-center">
-                                    <tr @dblclick="redirectToClient(cliente.id); guardarClienteId(cliente.id)" v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
+                                <tbody class="text-center text-xs">
+                                    <tr @dblclick="redirectToClient(cliente.id); guardarClienteId(cliente.id)" v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white border-b-2 dark:border-white border-gray-400 dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
                                         <td class="px-6 py-4 text-center">{{ cliente.id }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.numeroDocumento }}</td>
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>
@@ -258,19 +310,19 @@ const totalCount = props.clientes.total;
                                         <td class="px-6 py-4 text-center">{{ cliente.asesor }}</td>
                                         <td class="py-4 text-center">
                                             <div :class="{
-                                                'bg-blue-600': cliente.ctg === 'Vip',
-                                                'bg-yellow-600': cliente.ctg === 'Regular',
-                                                'bg-red-600': cliente.ctg === 'Sin Informacion',
-                                                'bg-green-600': cliente.ctg === 'Potencial'
+                                                'bg-blue-600 text-white': cliente.ctg === 'Vip',
+                                                'bg-yellow-600 text-white': cliente.ctg === 'Regular',
+                                                'bg-red-600 text-white': cliente.ctg === 'Sin Informacion',
+                                                'bg-green-600 text-white': cliente.ctg === 'Potencial'
                                             }" class="inline-block px-2 py-1 rounded">
                                                 <b>{{ cliente.ctg }}</b>
                                             </div>
                                         </td>
                                         <td class="p-3 text-center whitespace-nowrap">
-                                            <Link class="text-center text-white bg-green-500 hover:bg-green-600 py-1.5 px-2 rounded-md" :href="route('clientes.edit', cliente.id)">
+                                            <Link class="text-center text-white bg-green-500 hover:bg-green-600 py-1.5 px-2 rounded-md" :href="route('clientes.edit', cliente.id)" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
                                                 <i class="bi bi-pencil-square"></i>
                                             </Link>
-                                            <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="text-center ml-1 text-white bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md">
+                                            <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="text-center ml-1 text-white bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
                                                 <i class="bi bi-trash3"></i>
                                             </button>
                                             <button @click="openCtgModal(cliente)" class="text-center ml-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded-md">
@@ -323,6 +375,7 @@ const totalCount = props.clientes.total;
         </div>
     </AppLayout>
 </template>
+
 <script>
 export default {
     methods: {

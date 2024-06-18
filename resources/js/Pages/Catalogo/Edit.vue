@@ -164,7 +164,7 @@ const submitForm = () => {
                                 <div>
                                     <InputLabel for="modelo" class="block text-xsfont-medium text-gray-700">Modelo
                                     </InputLabel>
-                                    <TextInput type="text" id="modelo" v-model="form.modelo" required
+                                    <TextInput type="text" id="modelo" v-model="form.modelo"
                                         placeholder="Ingrese el modelo"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.modelo" class="mt-2" />
@@ -174,7 +174,7 @@ const submitForm = () => {
                                 <div>
                                     <InputLabel for="medida" class="block text-xs font-medium text-gray-700">Medida
                                     </InputLabel>
-                                    <TextInput type="text" id="medida" v-model="form.medida" required
+                                    <TextInput type="text" id="medida" v-model="form.medida"
                                         placeholder="Ingrese la medida"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.medida" class="mt-2" />
@@ -196,7 +196,7 @@ const submitForm = () => {
                                     <InputLabel for="precio_min" class="block text-xs font-medium text-gray-700">
                                         Precio_min
                                     </InputLabel>
-                                    <TextInput type="text" id="precio_min" v-model="form.precio_min" required
+                                    <TextInput type="text" id="precio_min" v-model="form.precio_min"
                                         placeholder="Ingrese el precio"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.precio" class="mt-2" />
@@ -204,7 +204,7 @@ const submitForm = () => {
                                 <div>
                                     <InputLabel for="precio_max" value="Precio_maximo"
                                         class="block text-xs font-medium text-gray-700"></InputLabel>
-                                    <TextInput type="text" id="precio_max" v-model="form.precio_max" required
+                                    <TextInput type="text" id="precio_max" v-model="form.precio_max"
                                         placeholder="escribe solo numeros"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.precio_max" class="mt-2" />
@@ -221,7 +221,7 @@ const submitForm = () => {
                                 <div>
                                     <InputLabel for="stock" class="block text-xs font-medium text-gray-700">Stock
                                     </InputLabel>
-                                    <TextInput type="number" id="stock" v-model="form.stock" required
+                                    <TextInput type="number" id="stock" v-model="form.stock"
                                         placeholder="Ingrese el stock"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.stock" class="mt-2" />

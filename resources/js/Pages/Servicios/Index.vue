@@ -26,18 +26,29 @@ const props = defineProps({
 const form = useForm({
     id: ''
 })
-//filtro
 watchEffect(() => {
     if (props.servicios.data) {
         const searchLowerCase = searchQuery.value.toLowerCase().trim();
 
-        // Filtramos los servicios basándonos en si la cadena de búsqueda está incluida en el ID o el número de informe
+        // Filtramos los servicios basándonos en si la cadena de búsqueda está incluida en varios campos
         const serviciosFiltrados = props.servicios.data.filter(servicio => {
-            return servicio.id.toString().includes(searchLowerCase) || servicio.n_informe.includes(searchLowerCase);
+            const idMatch = servicio.id.toString().includes(searchLowerCase);
+            const nInformeMatch = servicio.n_informe.includes(searchLowerCase);
+            const descripcionMatch = servicio.descripcion.toLowerCase().includes(searchLowerCase);
+            const razonSocialMatch = servicio.cliente ? servicio.cliente.razonSocial.toLowerCase().includes(searchLowerCase) : false;
+            const fecht = servicio.fecha.includes(searchLowerCase);
+            const jomar= servicio.estado.includes(searchLowerCase);
+            const cruz= servicio.e_servicio.includes(searchLowerCase);
+            const valencia = servicio.user ? servicio.user.name.toLowerCase().includes(searchLowerCase) : false;
+
+            // Retorna true si alguna de las condiciones se cumple
+            return idMatch || nInformeMatch || descripcionMatch || razonSocialMatch || fecht || jomar || cruz || valencia;
         });
+
         groupedServicios.value = groupByMonthAndYear(serviciosFiltrados);
     }
 });
+
 // Función para agrupar por mes y año
 function groupByMonthAndYear(servicios) {
     const grouped = {};
@@ -61,7 +72,7 @@ const deleteServicio = (id, n_informe) => {
     });
 
     alerta.fire({
-        title: '¿Estás seguro de eliminar ' + n_informe + '?',
+        title: '¿Estás seguro de eliminar todos los datos del N° Informe : ' + n_informe + '?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -86,7 +97,12 @@ const deleteServicio = (id, n_informe) => {
                     Toast.fire({
                         icon: "success",
                         title: 'Éxito',
-                        text: "Servicio eliminado exitosamente"
+                        text: "Servicio eliminado exitosamente",
+                        customClass: {
+                            title: 'text-2xl font-bold tracking-widest ',
+                            icon: 'text-base font-bold tracking-widest ',
+                            text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+                        },
                     });
                 }
             });
@@ -95,16 +111,15 @@ const deleteServicio = (id, n_informe) => {
 }
 //cambio de estado
 const openCtgModal = async (servicio) => {
-    const modalTitle = `Estado del cliente: ${servicio.descripcion}`;
+    const jomar = `<i class="bi bi-check-circle-fill icon-large mx-2"></i>`;
+    const modalTitle = `Estado del cliente:<i class="bi bi-circle icon-large mx-2"></i> ${servicio.descripcion}`;
 
     const options = {
-        title: modalTitle,
+        title: jomar + modalTitle,
         input: 'select',
         inputOptions: {
-            'Visitado': 'Visitado',
-            'Cotizado': 'Cotizado',
-            'Pendiente': 'Pendiente',
-            'Finalizado': 'Finalizado',
+            'atendidos': 'atendidos',
+            'no atendido': 'no atendido',
         },
         customClass: {
             title: 'text-2xl font-bold tracking-widest ',
@@ -169,17 +184,17 @@ const openModal = (servicio) => {
             width: 800,
             html: `<hr/><br/>
             <div style="text-align: left;" class="text-justify p-1 uppercase">
-                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>ESTADO</strong>: ${servicio.estado}</p>
-                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>CLIENTE</strong>: ${servicio.cliente ? servicio.cliente.razonSocial : 'Sin marca'}</p>
-                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>N° INFORME</strong>: ${servicio.n_informe}</p>
-                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>DESCRIPCION</strong>: ${servicio.descripcion}</p>
-                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>FECHA REGISTRO</strong>: ${servicio.fecha}</p>
-                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1 text-base"><strong>REGISTRADO POR</strong>: ${servicio.tecnico}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>ESTADO</strong>: ${servicio.estado}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>CLIENTE</strong>: ${servicio.cliente ? servicio.cliente.razonSocial : 'Sin marca'}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>N° INFORME</strong>: ${servicio.n_informe}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>DESCRIPCION</strong>: ${servicio.descripcion}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>FECHA REGISTRO</strong>: ${servicio.fecha}</p>
+                <p class="py-1 grid gap-1 grid-cols-2 grid-rows-1"><strong>REGISTRADO POR</strong>: ${servicio.tecnico}</p>
             </div><br/><hr/>
             `,
             confirmButtonText: 'Cerrar',
             customClass: {
-                title: 'text-2xl rounded text-white font-bold bg-green-600 py-3  tracking-widest ',
+                title: 'text-2xl rounded-t-md text-white font-bold bg-green-600 py-3  tracking-widest ',
                 content: 'text-base tracking-widest font-bold',
                 confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
             },
@@ -243,11 +258,12 @@ const totalCount = props.servicios.total;
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Estado</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N° informe</th>
-                                        <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">cliente</th>
-                                        <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">descripcion</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">fecha</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">R.transporte</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">acciones</th>
+                                        <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">Cliente</th>
+                                        <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">Descripcion</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">F. Atencion Cliente</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">R. Transporte</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">R. Servicio</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
@@ -259,19 +275,18 @@ const totalCount = props.servicios.total;
                                         <tr v-for="(servicio, i) in filteredServicio" :key="servicio.id" class="bg-white text-gray-900 border-b border-gray-400 dark:border-white font-bold dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 hover:text-white cursor-pointer">
                                             <td class="px-6 py-4 text-center">
                                                 <div :class="{
-                                                    'bg-blue-600': servicio.estado === 'Visitado',
-                                                    'bg-yellow-600': servicio.estado === 'Cotizado',
-                                                    'bg-red-600': servicio.estado === 'Pendiente',
-                                                    'bg-green-600': servicio.estado === 'Finalizado'
-                                                }" class="text-white inline-block px-2 py-1 rounded font-bold">
-                                                    {{ servicio.estado }}
+                                                    'bg-red-600': servicio.estado === 'no atendido',
+                                                    'bg-green-600': servicio.estado === 'atendido'
+                                                }" class="inline-block px-2 py-1 rounded">
+                                                    <b>{{ servicio.estado }}</b>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.n_informe }}</td>
                                             <td class="px-6 py-4 text-left whitespace-normal">{{ servicio.cliente ? servicio.cliente.razonSocial : 'Sin marca' }}</td>
                                             <td class="px-6 py-4 text-left whitespace-nowrap">{{ servicio.descripcion }}</td>
                                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ formatDate(servicio.fecha) }} a las {{ formatTime(servicio.hora) }}</td>
-                                            <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.user ? servicio.user.name : 'Sin usuario' }}</td>
+                                            <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.user ? `${servicio.user.name}  ${servicio.user.apellidopat}` : 'Por Asignar' }}</td>
+                                            <td class="px-6 py-4 text-center whitespace-nowrap">{{ servicio.e_servicio ? `${servicio.e_servicio}` : 'Por Asignar' }}</td>
                                             <td class="p-3 text-center whitespace-nowrap">
                                                 <button @click="redirectToCreate(servicio)"
                                                     class="bg-blue-600 hover:bg-blue-400 text-white px-2 py-1 rounded mx-1">

@@ -13,7 +13,7 @@ use Inertia\Inertia;
 
 class SalidasController extends Controller
 {
-    const Numero_de_items_pagina =25;
+    const Numero_de_items_pagina = 50;
     public function index(Request $request)
     {
         $productoId = $request->query('producto_id');

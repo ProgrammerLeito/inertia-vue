@@ -41,7 +41,6 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('/categories', CategoryController::class);
 
     Route::resource('/clientes', ClienteController::class);
-    Route::post('/comprobarEliminacionCli', [ClienteController::class , 'comprobarEliminacionCli']);
 
     Route::resource('/roles', RoleController::class);
     Route::resource('/productos', ProductoController::class);
@@ -76,7 +75,6 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('observaciones',ObservacioneController::class);
     Route::resource('documentos',DocumentoController::class);
     Route::resource('recomendaciones',RecomendacioneController::class);
-
     //Consulta para consumir la api de sunat
     Route::get('/consultar-reniec', function (Request $request) {
         $numeroDocumento = $request->query('numero');

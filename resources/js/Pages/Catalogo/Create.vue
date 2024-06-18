@@ -348,7 +348,7 @@ const ok4 = (msj) => {
                                 <div>
                                     <InputLabel for="modelo" class="block text-xs font-medium text-gray-700">Modelo
                                     </InputLabel>
-                                    <TextInput type="text" id="modelo" v-model="form.modelo" required
+                                    <TextInput type="text" id="modelo" v-model="form.modelo"
                                         placeholder="Escribe un modelo"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.modelo" class="mt-2" />
@@ -357,7 +357,7 @@ const ok4 = (msj) => {
                                 <div>
                                     <InputLabel for="medida" class="block text-xs font-medium text-gray-700">Medida
                                     </InputLabel>
-                                    <TextInput type="text" id="medida" v-model="form.medida" required
+                                    <TextInput type="text" id="medida" v-model="form.medida"
                                         placeholder="Escribe la medida"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.medida" class="mt-2" />
@@ -379,7 +379,7 @@ const ok4 = (msj) => {
                                     <InputLabel for="precio_min" class="block text-xs font-medium text-gray-700">
                                         Precio_minim
                                     </InputLabel>
-                                    <TextInput type="number" id="precio_min" v-model="form.precio_min" required
+                                    <TextInput type="number" id="precio_min" v-model="form.precio_min"
                                         placeholder="escribe solo numeros"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.precio_min" class="mt-2" />
@@ -389,7 +389,7 @@ const ok4 = (msj) => {
                                     <InputLabel for="precio_max" value="Precio_maximo"
                                         class="block text-xs font-medium text-gray-700">
                                     </InputLabel>
-                                    <TextInput type="number" id="precio_max" v-model="form.precio_max" required
+                                    <TextInput type="number" id="precio_max" v-model="form.precio_max"
                                         placeholder="escribe solo numeros"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.precio_max" class="mt-2" />

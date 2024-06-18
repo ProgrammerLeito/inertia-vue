@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class EntradaController extends Controller
 {
-    const Numero_de_items_pagina =25;
+    const Numero_de_items_pagina =50;
     public function index(Request $request)
     {
         $productos = Producto::all();

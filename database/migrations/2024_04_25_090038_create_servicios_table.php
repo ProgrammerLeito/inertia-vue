@@ -17,13 +17,15 @@ return new class extends Migration
             $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
             $table->string('direccion');
             $table->foreignId('dato_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('n_guia');
             $table->string('fecha');
             $table->string('hora');
             $table->string('tecnico')->nullable();
             $table->string('descripcion');
             $table->string('estado')->nullable();
+            $table->binary('pdf')->nullable();
+            $table->string('e_servicio')->nullable();
             $table->timestamps();
         });
           // Agregamos un evento para autoincrementar el campo 'n_informe'

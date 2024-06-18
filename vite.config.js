@@ -7,7 +7,8 @@ export default defineConfig({
         laravel({
             input: ['resources/js/app.js',
             'resources/css/app.css',
-            'resources/js/Pages/Cotizas/Create.vue'
+            'resources/js/Pages/Cotizas/Create.vue',
+            'resources/js/Pages/C_Servicio/Create.vue',
         ],
             refresh: true,
         }),

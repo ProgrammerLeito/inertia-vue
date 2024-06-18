@@ -63,13 +63,16 @@ const deleteTbproducto = (id, modelo) => {
     });
 }
  
- 
 watchEffect(() => {
     filteredTbproductos.value = props.tbproductos.data.filter(tbproducto => {
-        return (tbproducto.modelo.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                tbproducto.id.toString().includes(searchQuery.value.toLowerCase())) &&
-                (selectedCategoria.value === '' || tbproducto.tbcategoria_id === selectedCategoria.value) &&
-                (selectedSubcategoria.value === '' || tbproducto.tbsubcategoria_id === selectedSubcategoria.value);
+        const searchLowerCase = searchQuery.value.toLowerCase();
+        return (
+            (tbproducto.modelo.toLowerCase().includes(searchLowerCase) ||
+             tbproducto.tbcategoria.nombre.toLowerCase().includes(searchLowerCase) ||
+             tbproducto.tbsubcategoria.nombre.toLowerCase().includes(searchLowerCase)) &&
+            (selectedCategoria.value === '' || tbproducto.tbcategoria_id === selectedCategoria.value) &&
+            (selectedSubcategoria.value === '' || tbproducto.tbsubcategoria_id === selectedSubcategoria.value)
+        );
     });
 });
 
@@ -134,6 +137,8 @@ watchEffect(() => {
                                     <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                         <tr>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Codigo</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 hidden">Cat</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 hidden">SubCat</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Marca</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Modelo</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
@@ -142,13 +147,15 @@ watchEffect(() => {
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_Min</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_Max</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_List</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2" v-if="$page.props.user.permissions.includes('Acciones Administrador')">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(tbproducto, i) in filteredTbproductos" :key="tbproducto.id" class="bg-white text-black dark:bg-gray-700 dark:text-white">
                                             <!-- <td class="px-6 py-4 text-center"><b>{{ i + 1 }}</b></td> -->
                                             <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.codigo }}</td>
+                                            <td class="px-6 py-4 text-center border-r border-b hidden">{{ tbproducto.tbcategoria.nombre }}</td>
+                                            <td class="px-6 py-4 text-center border-r border-b hidden">{{ tbproducto.tbsubcategoria.nombre }}</td>
                                             <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }} </td>
                                             <td class="px-6 py-4 text-center border-r border-b"><b>{{ tbproducto.modelo }}</b></td>
                                             <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.capacidades }}</td>
@@ -175,10 +182,10 @@ watchEffect(() => {
                                                     :src="'/storage/' + tbproducto.foto" alt="Foto"
                                                     style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
                                             </td>
-                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.moneda }} {{ tbproducto.precio_min }} </td>
-                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.moneda }} {{ tbproducto.precio_max }} </td>
-                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.moneda }} {{ tbproducto.precio_list }} </td>
-                                            <td class="p-3 text-center border-b">
+                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_min ? `${tbproducto.moneda} ${tbproducto.precio_min}` : 'Por asignar' }} </td>
+                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_max ? `${tbproducto.moneda} ${tbproducto.precio_max}` : 'Por asignar' }} </td>
+                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_list ? `${tbproducto.moneda} ${tbproducto.precio_list}` : 'Por asignar' }} </td>
+                                            <td class="p-3 text-center border-b" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
                                                 <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })"
                                                     class="py-1 p-1 bg-green-500 dark:hover:bg-white dark:text-white dark:hover:text-green-500 rounded">
                                                     <i class="bi bi-pencil-square"></i>

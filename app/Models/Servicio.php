@@ -19,6 +19,8 @@ class Servicio extends Model
         'tecnico',
         'estado',
         'descripcion',
+        'pdf',
+        'e_servicio',
     ];
     protected static function boot()
     {

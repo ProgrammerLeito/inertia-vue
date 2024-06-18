@@ -110,6 +110,7 @@ const submitForm = () => {
     });
 }
 </script>
+
 <template>
     <AppLayout title="Actualizar H-servicio ">
         <template #header>
@@ -155,14 +156,14 @@ const submitForm = () => {
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
-                                    <InputLabel for="fecha" value="Fecha"
+                                    <InputLabel for="fecha" value="Fecha de atencion al cliente"
                                         class="block text-md font-medium text-gray-700 " />
                                     <TextInput v-model="form.fecha" type="date" id="fecha"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="form.errors.fecha" class="mt-2"></InputError>
                                 </div>
                                 <div>
-                                    <InputLabel for="hora" value="Hora"
+                                    <InputLabel for="hora" value="Hora de atencion al cliente"
                                         class="block text-md font-medium text-gray-700 " />
                                     <TextInput v-model="form.hora" type="time" id="fecha"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
@@ -190,12 +191,19 @@ const submitForm = () => {
                                 <div>
                                     <InputLabel for="user_id" value="Responsable del Transporte"
                                         class="block text-md font-medium text-gray-700" />
-                                    <select id="user_id" v-model="form.user_id" required
+                                    <select id="user_id" v-model="form.user_id"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Seleccione un usuario</option>
-                                        <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}
+                                        <option v-for="user in users" :key="user.id" :value="user.id">{{ `${user.name}  ${user.apellidopat}`}}
                                         </option>
                                     </select>
+                                </div>
+                                <div>
+                                    <InputLabel for="e_servicio" value="Encargado del Servicio (Tecnico evaluador)"
+                                        class="block text-md font-medium text-gray-700 " />
+                                    <TextInput v-model="form.e_servicio" type="text" id="e_servicio"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="form.errors.e_servicio" class="mt-2"></InputError>
                                 </div>
                             </div>
                             <div class="d-flex mt-4">

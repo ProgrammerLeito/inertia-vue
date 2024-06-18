@@ -29,24 +29,6 @@ class ClienteController extends Controller
         return inertia::render('Clientes/Create', compact('tbprovincias'));
     }
 
-    public function comprobarEliminacionCli(Request $request)
-    {
-        $idTec = 3; // ID fijo del usuario que verifica la eliminación
-        $passwordconfirmacion = $request->input('passwordconfirmacion');
-
-        // Obtener el usuario por su ID
-        $usuario = User::find($idTec);
-
-        if (!$usuario) {
-            return response()->json(['siexisteusuario' => false]);
-        }
-
-        // Verificar la contraseña utilizando Hash::check()
-        $contraseñaCorrecta = Hash::check($passwordconfirmacion, $usuario->password);
-
-        return response()->json(['siexisteusuario' => $contraseñaCorrecta]);
-    }
-
     public function store(ClienteRequest $request)
     {
         $asesor = Auth::user()->name;

@@ -23,6 +23,16 @@ class ServicioController extends Controller
 
     public function create()
     {
+        $ultimoServicio = Servicio::latest()->first();
+
+        // Verificar si hay algún registro
+        if ($ultimoServicio) {
+            // Obtener el valor de n_cotizacion del último registro
+            $nInforme = str_pad($ultimoServicio->n_informe + 1, 9, '0', STR_PAD_LEFT);
+        } else {
+            // En caso de que no haya registros, asignar un valor predeterminado
+            $nInforme = '000000001'; // Puedes asignar cualquier valor aquí
+        }
         $clientes = Cliente::all();
         $datos = Dato::all();
         $users=User::all();
@@ -30,14 +40,14 @@ class ServicioController extends Controller
             $datos = Dato::where('cliente_id', request()->cliente_id)->get();
         }
 
-        return Inertia::render('Servicios/Create', compact('clientes','datos','users'));
+        return Inertia::render('Servicios/Create', compact('clientes','datos','users','nInforme'));
     }
 
     public function store(CreateServicioRequest $request){
         $tecnico = Auth::user()->name;
         $validatedData= $request->validated();
         $validatedData['tecnico'] = $tecnico;
-        $validatedData['estado'] = 'Pendiente';
+        $validatedData['estado'] = 'no atendido';
         $servicios= Servicio::create($validatedData);
         $servicios->save();
         return redirect()->route('servicios.index');
@@ -75,7 +85,7 @@ class ServicioController extends Controller
         // Validar la solicitud
         $request->validate([
             'servicio_id' => 'required|exists:servicios,id',
-            'estado' => 'required|in:Visitado,Cotizado,Pendiente,Finalizado',
+            'estado' => 'required|in:atendido,no atendido',
         ]);
 
         // Obtener el servicio
