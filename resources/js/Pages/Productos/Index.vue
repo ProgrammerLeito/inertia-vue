@@ -5,7 +5,8 @@ export default {
         return {
             searchQuery: '',
             modalOpen: false, // Estado del modal
-            modalImageUrl: '' // URL de la imagen para mostrar en el modal
+            modalImageUrl: '', // URL de la imagen para mostrar en el modal
+            nombreCategoria: '',
         };
     },
     computed: {
@@ -18,21 +19,26 @@ export default {
             });
         },
     },
+    mounted() {
+        // Recuperar el nombre de la categoría desde localStorage al montar el componente
+        this.nombreCategoria = localStorage.getItem('nombre_categoria') || 'No definido';
+    },
     methods: {
         // Método para abrir el modal con la imagen seleccionada
         openModal(imageUrl) {
             this.modalImageUrl = imageUrl; // Establece la URL de la imagen
             this.modalOpen = true; // Abre el modal
         },
-        // constante para manejar la seleccion automatica del producto
-        guardarProductoId(producto_id) {
+        // Constante para manejar la selección automática del producto
+        guardarProductoId(producto_id, name) {
             // Guardar el producto_id en localStorage
             localStorage.setItem('producto_id', producto_id);
+            localStorage.setItem('nombre_categoria', name);
         },
         redirectToSalidas(productoId) {
             // Redirigir a la página de salidas con el mismo enlace que el botón de visualización de salidas
-            window.location.href = this.route('salidas.index', { producto_id: productoId });
-        },
+            this.$inertia.visit(route('salidas.index', { producto_id: productoId }));
+        }
     }
 }
 </script>
@@ -154,7 +160,7 @@ const totalCount = props.productos.total;
                         </Link>
                     </div>
                     <div class="md:mt-2 mt-4">
-                        <div class="font-semibold text-center dark:text-white">Categoria || {{ filteredProductos.length > 0 ? filteredProductos[0].name : 'Sin Productos' }}</div>
+                        <div class="font-semibold text-center dark:text-white">Categoria || {{ nombreCategoria }}</div>
                     </div>
                     <div class="mt-4 overflow-auto">
                         <div class="pb-4 bg-white dark:bg-gray-800">

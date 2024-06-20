@@ -145,16 +145,15 @@ const razonSocial = ref('');
 
 onMounted(() => {
     const cliente_id = localStorage.getItem('cliente_id');
-    razonSocial.value = localStorage.getItem('razonSocial');
-    idHojasCliente.value = cliente_id; // Asigna el valor de servicio_id a idHojasServicio
+    const storedRazonSocial = localStorage.getItem('razonSocial');
+    if (cliente_id) {
+        form.cliente_id = cliente_id;
+    }
+    if (storedRazonSocial) {
+    razonSocial.value = storedRazonSocial;
+  }
 });
 
-onMounted(() => {
-    const cliente_id = localStorage.getItem('cliente_id');
-        if (cliente_id) {
-            form.cliente_id = cliente_id;
-        }
-});
 const formPage = useForm({});
 const onPageClick = (event) => {
     formPage.get(route('datos.index', { page: event }));
@@ -189,13 +188,13 @@ const totalCount = props.datos.total;
                 <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
                         <ButtonResponsive @click="() => openModal(1)" class="font-normal">
-                            <i class="fas fa-plus mx-2 font-bold"></i>Registrar Datos
+                            <i class="fa-solid fa-address-card mx-2 font-bold"></i>Registrar Datos
                         </ButtonResponsive>
                         <Link :href="route('clientes.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="fas fa-arrow-left mx-2"></i> Regresar
                         </Link>
                     </div>
-                    <div class="md:mt-0 py-6 hidden">
+                    <div class="md:mt-0 py-6">
                         <div class="font-semibold text-center dark:text-white">CLIENTE || {{ razonSocial }} </div>
                     </div>
                     <div

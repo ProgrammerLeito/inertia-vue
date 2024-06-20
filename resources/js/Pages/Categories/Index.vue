@@ -22,13 +22,14 @@ export default {
         },
     },
     methods: {
-        guardarCategoriaId(categoryId) {
+        guardarCategoriaId(categoryId, name) {
             // Guardar el ID de la categoría en localStorage
             localStorage.setItem('category_id', categoryId);
+            localStorage.setItem('nombre_categoria', name);
         },
         redirectToDetails(categoryId) {
             // Redirigir a la página de detalles usando el mismo enlace que el botón de visualización
-            window.location.href = this.route('productos.index', { category_id: categoryId });
+            this.$inertia.visit(route('productos.index', { category_id: categoryId }));
         }
     }
 };
@@ -190,7 +191,7 @@ const totalCount = props.categories.total;
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer" @dblclick="guardarCategoriaId(category.id); redirectToDetails(category.id)" v-for="category in filteredCategories" :key="category.id">
+                                    <tr class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer" @dblclick="guardarCategoriaId(category.id, category.name); redirectToDetails(category.id)" v-for="category in filteredCategories" :key="category.id">
                                         <td class="px-6 py-4 font-semibold">{{ category.name }}</td>
                                         <td class="p-1 text-center whitespace-nowrap">
                                             <!-- <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link> -->

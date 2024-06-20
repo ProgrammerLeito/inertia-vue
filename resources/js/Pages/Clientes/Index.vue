@@ -248,7 +248,7 @@ const printPDF = async () => {
                                     <div class="relative">
                                         <div
                                             class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true"
+                                            <svg class="w-4 h-4 text-gray-900 dark:text-black" aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                                                 <path stroke="currentColor" stroke-linecap="round"
                                                     stroke-linejoin="round" stroke-width="2"
@@ -256,7 +256,7 @@ const printPDF = async () => {
                                             </svg>
                                         </div>
                                         <input v-model="searchQuery" type="text" id="table-search"
-                                            class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            class="block pt-2.5 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             placeholder="Buscar cliente">
                                     </div>
                                 </div>
@@ -264,7 +264,7 @@ const printPDF = async () => {
                                     <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Ciudad
                                     </InputLabel>
                                     <select v-model="selectedProvincia"
-                                        class="block pt-2 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        class="block pt-2.5 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Buscar cliente">
                                         <option value="" selected disabled>Seleccione por Ciudad</option>
                                         <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id"
@@ -274,13 +274,24 @@ const printPDF = async () => {
                                 <div class="flex flex-col">
                                     <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Asesor
                                     </InputLabel>
-                                    <input v-model="tecnicoQuery" type="text"
-                                        class="block pt-2 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Buscar por asesor">
+                                    <div class="relative">
+                                        <div
+                                            class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                            <svg class="w-4 h-4 text-gray-800 dark:text-black" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                            </svg>
+                                        </div>
+                                        <input v-model="tecnicoQuery" type="text"
+                                            class="block pt-2.5 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="Buscar por asesor">
+                                    </div>
                                 </div>
                                 <div class="flex flex-col 2xl:mt-5 mt-1">
                                     <button @click="printPDF"
-                                        class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                        class="text-white bg-indigo-700 hover:bg-indigo-800 mt-0.5 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                                         <i class="fas fa-print mx-2"></i> Imprimir
                                     </button>
                                 </div>
@@ -301,7 +312,7 @@ const printPDF = async () => {
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
-                                    <tr @dblclick="redirectToClient(cliente.id); guardarClienteId(cliente.id)" v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white border-b-2 dark:border-white border-gray-400 dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
+                                    <tr @dblclick="redirectToClient(cliente.id); guardarClienteId(cliente.id, cliente.razonSocial)" v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white border-b-2 dark:border-white border-gray-400 dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
                                         <td class="px-6 py-4 text-center">{{ cliente.id }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.numeroDocumento }}</td>
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>
@@ -381,12 +392,13 @@ export default {
     methods: {
         redirectToClient(cliente_id) {
             // Redirigir a la página de detalles usando el mismo enlace que el botón de visualización
-            window.location.href = this.route('datos.index', { cliente_id: cliente_id });
+            // window.location.href = this.route('datos.index', { cliente_id: cliente_id });
+            this.$inertia.visit(route('datos.index', { cliente_id: cliente_id }));
         },
-        guardarClienteId(cliente_id) {
-            // Guardar el producto_id en localStorage
+        guardarClienteId(cliente_id, razonSocial) {
+            // Guardar el cliente_id y razonSocial en localStorage
             localStorage.setItem('cliente_id', cliente_id);
-            localStorage.setItem('razonSocial', cliente.razonSocial);
+            localStorage.setItem('razonSocial', razonSocial);
         },
     }
 };
