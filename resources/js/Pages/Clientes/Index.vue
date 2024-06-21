@@ -91,23 +91,21 @@ watchEffect(() => {
 
 
 const openCtgModal = async (cliente) => {
-    const modalTitle = `Calificación del cliente: ${cliente.razonSocial}`;
-
-    const options = {
-        title: modalTitle,
+    const { value: ctg } = await Swal.fire({
+        title: `Calificación del cliente: ${cliente.razonSocial}`,
         input: 'select',
         inputOptions: {
-            '': 'Seleccione una opción 🔽',
             'Vip': 'Vip',
             'Potencial': 'Potencial',
             'Regular': 'Regular',
             'Sin Informacion': 'Sin Informacion',
         },
         customClass: {
-            title: 'text-2xl font-bold tracking-widest',
-            input: 'text-base tracking-widest',
-            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest',
+            title: 'text-2xl font-bold tracking-widest ',
+            input: 'text-base tracking-widest ',
+            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
         },
+        inputPlaceholder: 'Selecciona una opción 🔽',
         showCancelButton: true,
         confirmButtonText: 'Asignar',
         showLoaderOnConfirm: true,
@@ -116,24 +114,49 @@ const openCtgModal = async (cliente) => {
                 return 'Debes seleccionar un tipo de calificación';
             }
         },
-        preConfirm: async (value) => {
-            const response = await Inertia.post(route('clientes.updateCtg'), { cliente_id: cliente.id, ctg: value });
-            if (response && response.status === 200) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Éxito',
-                    text: 'Calificación asignada exitosamente',
-                    timer: 1000,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                });
-            } else {
-                throw new Error(response ? response.statusText : 'Error desconocido');
-            }
-        }
-    };
+    });
 
-    const result = await Swal.fire(options);
+    if (ctg) {
+        try {
+            form.post(route('clientes.updateCtg', cliente.id));
+            const response = await axios.post(route('clientes.updateCtg'), {
+                cliente_id: cliente.id,
+                ctg: ctg
+            });
+            if (response && response.status === 200) {
+                const Toast = Swal.mixin({
+                        toast: true,
+                        position: "bottom-end",
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: 'Éxito',
+                        text: "Calificación asignada exitosamente.",
+                        customClass: {
+                            title: 'text-2xl font-bold tracking-widest ',
+                            icon: 'text-base font-bold tracking-widest ',
+                            text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+                        },
+                    });
+            } else {
+                throw new Error(response ? response.data.message : 'Error desconocido');
+            }
+        } catch (error) {
+            console.error('Error al actualizar la calificación:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al actualizar la calificación del cliente',
+            });
+        }
+    }
 };
 
 const formPage = useForm({});

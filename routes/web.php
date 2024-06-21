@@ -14,6 +14,7 @@ use App\Http\Controllers\CventaController;
 use App\Http\Controllers\DatoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\HmarcaController;
+use App\Http\Controllers\HojaservicioController;
 use App\Http\Controllers\HservicioController;
 use App\Http\Controllers\ObservacioneController;
 use App\Http\Controllers\PermisoController;
@@ -38,11 +39,16 @@ Route::redirect('/', '/login');
 Route::middleware(['auth:web'])->group(function () {
     //rutas autenticadas
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-    Route::resource('/categories', CategoryController::class);
-
+    
+    // Modulo de los clientes - estado
     Route::resource('/clientes', ClienteController::class);
-
-    Route::resource('/roles', RoleController::class);
+    Route::post('/clientes/update-ctg', [ClienteController::class, 'updateCtg'])->name('clientes.updateCtg');
+    Route::post('/datos/{dato}', [DatoController::class, 'update'])->name('datos.update');
+    
+    // Route::resource('/roles', RoleController::class);
+    
+    // Inventario de productos
+    Route::resource('/categories', CategoryController::class);
     Route::resource('/productos', ProductoController::class);
     Route::resource('/salidas', SalidasController::class);
     Route::resource('/entradas', EntradaController::class);
@@ -50,32 +56,37 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/validarstock', [SalidasController::class , 'validarstock']);
     Route::post('/salidas.store', [SalidasController::class , 'store']);
     Route::put('/salidas.update', [SalidasController::class , 'update']);
+
+    // Hojas de Servicio
+    Route::resource('hojasservicios', HojaservicioController::class);
     
+    // Catalago de productos
     Route::post('/tbproductos/{tbproducto}', [TbproductoController::class, 'update'])->name('tbproductos.update');
     Route::resource('/tbproductos', TbproductoController::class);
-
     Route::resource('/tbmarcas', TbmarcaController::class);
     Route::resource('/tbcategorias', TbcategoriaController::class);
     Route::resource('/tbsubcategorias', TbsubcategoriaController::class);
     Route::resource('/sidebar', SidebarController::class);
+
+    // Usuarios - roles - permisos - restore
     Route::get('trashed_users',[UserController::class,'trashed_users'])->name('users.trashed');
     Route::get('restore_users/{id}',[UserController::class,'restore'])->name('users.restore');
     Route::delete('delete_users_deletePermanently/{id}',[UserController::class,'deletePermanently'])->name('users.deletePermanently');
 
+    // Cotizaciones por Servicio
     Route::resource('c_servicos',CServicioController::class);
     Route::post('/cservicios/cambiar_estado', [CServicioController::class, 'cambiarEstado'])->name('cservicios.cambiar_estado');
     Route::post('/cservicios/codigoSunat', [CServicioController::class, 'codigoSunat'])->name('cservicios.codigoSunat');
-
     Route::get('/balanzas', [CServicioController::class, 'balanza'])->name('balanza');
     Route::get('requiere', [CServicioController::class, 'cotiza'])->name('requiere.cotiza');
-
     Route::resource('plantillas',PlantillaController::class);
     Route::resource('trealizados',TrealizadoController::class);
     Route::resource('condiciones',CondicioneController::class);
     Route::resource('observaciones',ObservacioneController::class);
     Route::resource('documentos',DocumentoController::class);
     Route::resource('recomendaciones',RecomendacioneController::class);
-    //Consulta para consumir la api de sunat
+
+    //Consulta para consumir la api de sunat para el modulo de clientes
     Route::get('/consultar-reniec', function (Request $request) {
         $numeroDocumento = $request->query('numero');
         $token = 'apis-token-7907.K0qLm91OLHYP07iBLCqF4INtKqqtu0H6';
@@ -89,22 +100,21 @@ Route::middleware(['auth:web'])->group(function () {
         return $response->json();
     });
     
+    // Modulo de clientes - datos - estado
     Route::resource('datos', DatoController::class);
     Route::resource('/tbprovincias', TbprovinciaController::class);
+    
+    // Cotizaciones por venta
     Route::resource('tenors', TenorController::class);
     Route::resource('/cventas', CventaController::class);
     Route::post('/cventas/cambiar_estado', [CventaController::class, 'cambiarEstado'])->name('cventas.cambiar_estado');
 
-    Route::resource('servicios', ServicioController::class);
-    Route::post('/servicios/cambiar_estado', [ServicioController::class, 'cambiarEstado'])->name('servicios.cambiar_estado');
- 
+    // Hojas de Salida de los servicios
     Route::resource('hservicios',HservicioController::class);
     Route::post('/hservicios/{hservicio}', [HservicioController::class, 'update'])->name('hservicios.update');
- 
     Route::resource('hmarcas',HmarcaController::class);
-
-    Route::post('/clientes/update-ctg', [ClienteController::class, 'updateCtg'])->name('clientes.updateCtg');
-    Route::post('/datos/{dato}', [DatoController::class, 'update'])->name('datos.update');
+    Route::resource('servicios', ServicioController::class);
+    Route::post('/servicios/cambiar_estado', [ServicioController::class, 'cambiarEstado'])->name('servicios.cambiar_estado');
 });
 
 Route::middleware(['auth:web'])->group(function () {

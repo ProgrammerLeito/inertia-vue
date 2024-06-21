@@ -103,20 +103,15 @@ class ClienteController extends Controller
 
     public function updateCtg(Request $request)
     {
-        // Validar la solicitud
         $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'ctg' => 'required|in:Vip,Potencial,Regular,Sin Informacion', // Sin espacios en los valores 'Cliente Potencial' y 'Cliente Regular'
         ]);
 
-        // Obtener el cliente
         $cliente = Cliente::find($request->cliente_id);
 
-        // Asignar el nuevo estado al cliente
         $cliente->ctg = $request->ctg;
         $cliente->save();
-
-        // return response()->json(['message' => 'Estado del cliente cambiado con éxito'], 200);
     }
 
 
