@@ -10,17 +10,26 @@ use Inertia\Inertia;
 class HojaservicioController extends Controller
 {
     public function index (){
-
         $hojaservicios=Hojaservicio::all();
         return Inertia::render('Hojasservicios/Index',compact('hojaservicios'));
-        
     }
 
     public function store(hojaservicioRequest $request){
-
         $data=$request->validated();
         Hojaservicio::create($data);
         return redirect()->back();
+    }
 
+    public function update(hojaservicioRequest $request , $id){
+        $data=$request->validated();
+        $hojaservicio=Hojaservicio::find($id);
+        $hojaservicio->update($data);
+    }
+
+    public function destroy($id)
+    {
+        $hojaservicio = Hojaservicio::find($id);
+        $hojaservicio->delete();
+        return redirect()->back();
     }
 }

@@ -3,17 +3,17 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import InputError from '@/Components/InputError.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
+import { ref } from 'vue';
 const props = defineProps({
     hojaservicios: {
-        type: Object
+        type: Object,
+        required: true,
     }
 });
 const form = useForm({
-
     servicio_a_realizar: '',
     razon_social: '',
     direccion: '',
@@ -27,67 +27,144 @@ const form = useForm({
     trabajos_a_realizar: '',
     // n_informe: '',
 });
+
+const isEditing = ref(false);
+const hojaservicio = ref(null);
+
+const editHojaServicio = (hojaservicio) => {
+    form.id = hojaservicio.id;
+    form.servicio_a_realizar = hojaservicio.servicio_a_realizar;
+    form.razon_social = hojaservicio.razon_social;
+    form.direccion = hojaservicio.direccion;
+    form.contacto = hojaservicio.contacto;
+    form.area_de_contacto = hojaservicio.area_de_contacto;
+    form.telefono_de_contacto = hojaservicio.telefono_de_contacto;
+    form.asesor_encargado = hojaservicio.asesor_encargado;
+    form.hora_del_servicio = hojaservicio.hora_del_servicio;
+    form.cantidad_de_instrumentos = hojaservicio.cantidad_de_instrumentos;
+    form.datos_del_instrumento = hojaservicio.datos_del_instrumento;
+    form.trabajos_a_realizar = hojaservicio.trabajos_a_realizar;
+    isEditing.value = true;
+};
+
 const submitForm = () => {
-    form.post(route('hojasservicios.store'), {
-        onSuccess: () => {
-            form.reset();
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "bottom-end",
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
+    if (!form.id) {
+        form.post(route('hojasservicios.store'), {
+            onSuccess: () => {
+                form.reset();
+                showSuccessMessage('Hoja de servicio creada exitosamente.');
+                form.id = null;
+            },
+        });
+    } else {
+        form.put(route('hojasservicios.update', form.id), {
+            onSuccess: () => {
+                form.reset();
+                showSuccessMessage('Hoja de servicio actualizada exitosamente.');
+                form.id = null;
+                isEditing.value = false;
+            },
+        });
+    }
+};
+
+const showSuccessMessage = (message) => {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+    Toast.fire({
+        icon: "success",
+        title: 'Éxito',
+        text: message,
+        customClass: {
+            title: 'text-2xl font-bold tracking-widest ',
+            text: 'text-2xl font-bold tracking-widest ',
+            icon: 'text-base font-bold tracking-widest ',
+        },
+    });
+};
+
+const form2 = useForm({
+    id: ''
+})
+
+const deleteHojaServicio = (id, razon_social) => {
+    const alerta = Swal.mixin({
+        buttonsStyling: true
+    });
+
+    alerta.fire({
+        title: '¿Estás seguro de eliminar ala hoja de servicio definitivamente : ' + razon_social + '?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
+        customClass: {
+            title: 'text-xl font-bold tracking-widest ',
+            cancelButton: 'text-base tracking-widest ',
+            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+        },
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form2.delete(route('hojasservicios.destroy', id), {
+                onSuccess: () => {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "bottom-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: 'Éxito',
+                        text: "Hoja de servicio eliminado exitosamente.",
+                        customClass: {
+                            title: 'text-2xl font-bold tracking-widest ',
+                            icon: 'text-base font-bold tracking-widest ',
+                            text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+                        },
+                    });
                 }
             });
-            Toast.fire({
-                icon: "success",
-                title: 'Éxito',
-                text: "El hoja de servico se ha registrado correctamente.",
-                customClass: {
-                    title: 'text-2xl font-bold tracking-widest ',
-                    icon: 'text-base font-bold tracking-widest ',
-                    text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
-                },
-            });
-        },
-        onError: (errors) => {
-            if (errors.response && errors.response.status) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error al registrar la hoja de servicio. Por favor, inténtalo de nuevo.'
-                });
-                console.error('Error HTTP:', errors.response.status);
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.'
-                });
-                console.error('Error desconocido:', errors);
-            }
         }
     });
 }
+
 </script>
 <template>
-    <AppLayout title="Hoja de Servicio">
+    <AppLayout>
         <template #header>
-            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Hoja de Servicio</h1>
+            <h2 class="uppercase font-extrabold dark:text-white tracking-widest">HOJA DE SERVICIO</h2>
         </template>
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4  sm:px-6 lg:px-8">
+                <div class="bg-green-600 py-1 rounded-t-md"></div>
                 <div
-                    class="p-6 bg-white border-gray-100 shadow-lg shadow-gray-600 dark:bg-gray-800  dark:shadow-gray-800 rounded-lg">
+                    class="p-6 bg-white border-gray-100 shadow-lg shadow-gray-600 dark:bg-gray-800  dark:shadow-gray-800 rounded-b-lg">
                     <form @submit.prevent="submitForm" class="my-5 uppercase font-bol">
                         <!-- <div class="hidden">
                             <InputLabel>N° informe</InputLabel>
                             <TextInput v-model="form.n_informe" type="text"
                                 class="input mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                         </div> -->
+                        <div class="my-6 tracking-widest font-extrabold text-center">
+                            <h1 class="text-2xl dark:text-white">aqui puedes crear una hoja servicio y actualizar al hacer doble click </h1><hr>
+                        </div>
                         <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                             <div>
                                 <InputLabel for="servicio_a_realizar" value="servicio a realizar"
@@ -99,21 +176,21 @@ const submitForm = () => {
                                     <option value="Calibracion">Calibracion</option>
                                     <option value="Diagnostico">Diagnostico</option>
                                     <option value="Certificacion Balinsa">Certificacion Balinsa</option>
-                                    <option value="Certificacion  total weight">Certificacion  total weight</option>
+                                    <option value="Certificacion  total weight">Certificacion total weight</option>
                                     <option value="Reparacion ">Reparacion</option>
                                     <option value="Entrega">Entrega</option>
                                     <option value="Recojo">Recojo</option>
                                 </select>
                             </div>
                             <div>
-                                <InputLabel for="razon_social" value="razon social *"
+                                <InputLabel for="razon_social" value="razon social"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.razon_social" type="text" id="razon_social" required
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.razon_social" class="mt-2"></InputError>
                             </div>
                             <div>
-                                <InputLabel for="direccion" value="Direccion *"
+                                <InputLabel for="direccion" value="Direccion"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.direccion" type="text" id="direccion" required
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
@@ -122,7 +199,7 @@ const submitForm = () => {
                         </div>
                         <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                             <div>
-                                <InputLabel for="contacto" value="contacto *"
+                                <InputLabel for="contacto" value="contacto"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.contacto" type="text" id="contacto" required
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
@@ -130,16 +207,17 @@ const submitForm = () => {
                             </div>
 
                             <div>
-                                <InputLabel for="area_de_contacto" value="area de contacto *"
+                                <InputLabel for="area_de_contacto" value="area de contacto"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.area_de_contacto" type="text" id="area_de_contacto" required
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.area_de_contacto" class="mt-2"></InputError>
                             </div>
                             <div>
-                                <InputLabel for="telefono_de_contacto" value="telefono de contacto *"
+                                <InputLabel for="telefono_de_contacto" value="telefono de contacto"
                                     class="cruz block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.telefono_de_contacto" type="text" id="telefono_de_contacto" required
+                                <TextInput v-model="form.telefono_de_contacto" type="text" id="telefono_de_contacto"
+                                    required
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.telefono_de_contacto" class="mt-2"></InputError>
                             </div>
@@ -147,21 +225,21 @@ const submitForm = () => {
                         <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
 
                             <div>
-                                <InputLabel for="asesor_encargado" value="asesor encargado *"
+                                <InputLabel for="asesor_encargado" value="asesor encargado"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.asesor_encargado" type="text" id="asesor_encargado"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.asesor_encargado" class="mt-2"></InputError>
                             </div>
                             <div>
-                                <InputLabel for="hora_del_servicio" value="hora del servicio *"
+                                <InputLabel for="hora_del_servicio" value="hora del servicio"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.hora_del_servicio" type="time" id="hora_del_servicio"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.hora_del_servicio" class="mt-2"></InputError>
                             </div>
                             <div>
-                                <InputLabel for="cantidad_de_instrumentos" value="cantidad de instrumentos *"
+                                <InputLabel for="cantidad_de_instrumentos" value="cantidad de instrumentos"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.cantidad_de_instrumentos" type="text"
                                     id="cantidad_de_instrumentos"
@@ -171,7 +249,7 @@ const submitForm = () => {
                         </div>
                         <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 mb-3">
                             <div>
-                                <InputLabel for="datos_del_instrumento" value="datos del instrumento *"
+                                <InputLabel for="datos_del_instrumento" value="datos del instrumento"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <textarea id="datos_del_instrumento" v-model="form.datos_del_instrumento" rows="4"
                                     class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -185,63 +263,65 @@ const submitForm = () => {
                                     placeholder="Escriba las trabajos_a_realizar..."></textarea>
                             </div>
                         </div>
-                        <div class="d-flex mt-4">
+                        <div class="d-flex mt-8">
                             <div class="flex flex-wrap gap-2 justify-end">
-                                <ButtonResponsive>
-                                    Previsualizar Pdf
-                                </ButtonResponsive>
-                                <ButtonResponsive>
-                                    Generar Hoja de Servicio
-                                </ButtonResponsive>
+                                <PrimaryButton
+                                    class="tracking-widest font-extrabold shadow-lg transform hover:translate-y-[-2px] shadow-gray-600 whitespace-nowrap w-full  dark:shadow-gray-800">
+                                    Ver
+                                    PDF</PrimaryButton>
+                                <PrimaryButton v-if="!isEditing" @dblclick="editHojaServicio(hojaservicio)"
+                                    class="inline-block bg-blue-500 text-white transform hover:translate-y-[-2px] font-extrabold shadow-lg shadow-gray-600 dark:shadow-gray-800 py-2 px-4 rounded hover:bg-blue-700 md:w-min whitespace-nowrap w-full text-center">
+                                    GENERAR HOJA DE ESPECIFICACIONES
+                                </PrimaryButton>
+
+                                <PrimaryButton v-if="isEditing" @click="updateHojaServicio()"
+                                    class="inline-block bg-blue-500 text-white transform hover:translate-y-[-2px] font-extrabold shadow-lg shadow-gray-600 dark:shadow-gray-800 py-2 px-4 rounded hover:bg-blue-700 md:w-min whitespace-nowrap w-full text-center">
+                                    ACTUALIZAR HOJA DE SERVICIO
+                                </PrimaryButton>
                             </div>
                         </div>
                     </form>
-                    <div class="mt-4 relative overflow-x-auto shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
+                    <div class="relative overflow-x-auto shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                             <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N° inf</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">razon social</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">razonsocial</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">direccion</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">contacto</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Area de contacto</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">
-                                        <i class="fas fa-phone mx-2"></i> de contacto</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">
-                                        asesor encargado</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">hora del servicio
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">cantidad de instrumentos
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">datos del instrumento
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">trabajos a realizar
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Area decontacto</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2"><i class="fas fa-phone mx-2"></i> de contacto</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">asesorencargado</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">hora delservicio</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">cantidaddeinstrumentos</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">datos delinstrumento</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">trabajosarealizar</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones
                                     </th>
                                 </tr>
                             </thead>
                             <tbody class="text-center text-xs tracking-widest">
-                                <tr v-for="hojaservicio in hojaservicios" :key="hojaservicio.id"
+                                <tr @dblclick="editHojaServicio(hojaservicio)" v-for="hojaservicio in hojaservicios"
+                                    :key="hojaservicio.id"
                                     class="bg-white text-black  hover:text-white border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                     <!-- Mostrar los datos de cada hservicio -->
-                                    <td class="px-6 py-4 text-center">{{ hojaservicio.n_informe}}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{ hojaservicio.razon_social }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{ hojaservicio.direccion }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{ hojaservicio.contacto }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{ hojaservicio.area_de_contacto }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{ hojaservicio.telefono_de_contacto }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{ hojaservicio.asesor_encargado }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{ hojaservicio.hora_del_servicio }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{ hojaservicio.cantidad_de_instrumentos }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{ hojaservicio.datos_del_instrumento }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{ hojaservicio.trabajos_a_realizar}}</td>
-                                    <!-- <td class="px-6 py-3 text-center dark:border-white border-b flex">
-                                        <Link :href="route('hservicios.edit',  hservicio.id)"  class="mx-2 px-1 py-1 bg-green-800 text-white rounded hover:bg-green-400 dark:hover:bg-white dark:hover:text-green-500">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </Link>
-                                        <Button @click="$event => deleteHservicio(hservicio.id,hservicio.modelo)" class=" ml-1 px-1 py-1 bg-red-800 text-white rounded hover:bg-red-400 dark:hover:bg-white dark:hover:text-red-600">
-                                            <i class="bi bi-trash3"></i>
-                                        </Button>
-                                    </td> -->
+                                    <td class="px-6 py-4 text-center">{{ hojaservicio.n_informe }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.razon_social }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.direccion }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.contacto }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.area_de_contacto }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.telefono_de_contacto }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.asesor_encargado }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.hora_del_servicio }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.cantidad_de_instrumentos }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.datos_del_instrumento }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.trabajos_a_realizar }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b flex">
+                                        <button @click="$event => deleteHojaServicio(hojaservicio.id, hojaservicio.razon_social)"
+                                            class="text-center ml-1 text-white shadow-lg shadow-gray-500 dark:shadow-red-600 dark:hover:bg-white dark:hover:text-red-600 bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md"
+                                            title="Eliminar Cliente"><i class="bi bi-trash3"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

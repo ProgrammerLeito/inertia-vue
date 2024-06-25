@@ -190,10 +190,10 @@ const printPDF = async () => {
         compress: true,
     });
 
-    const backgroundImage = '/storage/profile-photos/plantillaclientes.png';
+    // const backgroundImage = '/storage/profile-photos/plantillaclientes.png';
 
     // Agregar la imagen de fondo (simulado, jsPDF no admite imágenes de fondo directamente)
-    doc.addImage(backgroundImage, 'PNG', 0, 0, 210, 297);
+    // doc.addImage(backgroundImage, 'PNG', 0, 0, 210, 297);
     // A4: 210 x 297 mm
 
     // Definir el contenido del PDF

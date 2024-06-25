@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\RoleController;
@@ -115,6 +116,9 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('hmarcas',HmarcaController::class);
     Route::resource('servicios', ServicioController::class);
     Route::post('/servicios/cambiar_estado', [ServicioController::class, 'cambiarEstado'])->name('servicios.cambiar_estado');
+
+    // Carrito de Compras
+    Route::resource('carritos',CarritoController::class);
 });
 
 Route::middleware(['auth:web'])->group(function () {

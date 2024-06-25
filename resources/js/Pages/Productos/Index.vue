@@ -38,6 +38,10 @@ export default {
         redirectToSalidas(productoId) {
             // Redirigir a la página de salidas con el mismo enlace que el botón de visualización de salidas
             this.$inertia.visit(route('salidas.index', { producto_id: productoId }));
+        },
+        redirectToCreate(producto) {
+            localStorage.setItem('productoData', JSON.stringify(producto));
+            this.$inertia.visit(route('carritos.index'));
         }
     }
 }
@@ -211,10 +215,8 @@ const totalCount = props.productos.total;
                                         <td class="px-6 py-4 text-center">{{ formatDate(producto.entrada_maxima == null ? producto.fecha : producto.entrada_maxima) }}</td>
                                         <td class="px-6 py-4 text-center">S/. {{ parseFloat(producto.precio).toFixed(2) }}</td>
                                         <!-- <td class="px-6 py-4 text-left">{{ producto.comentario }}</td> -->
-                                        <td class="p-3 text-center whitespace-nowrap">
-                                            <!-- <Link class="py-1.5 px-3.5 text-black font-semibold bg-yellow-400 rounded-lg border-solid border-2 hover:bg-yellow-500" :href="route('salidas.index', { producto_id: producto.producto_id })" @click="guardarProductoId(producto.producto_id)">
-                                                <i class="bi bi-eye"><label class="ml-2">Salidas</label></i>
-                                            </Link> -->
+                                        <td class="text-center whitespace-nowrap">
+                                            <button @click="redirectToCreate(producto)" class="bg-blue-600 hover:bg-blue-400 text-white px-2.5 py-[7px] rounded-lg mx-4"><i class="fas fa-shopping-cart"></i></button>
                                             <Link class="py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700" :href="route('productos.edit', producto.producto_id)" v-if="$page.props.user.permissions.includes('Acciones Productos')"><i class="bi bi-pencil-square"></i></Link>
                                             <ButtonDelete @click="$event => deleteProducto(producto.producto_id,producto.insumo)" v-if="$page.props.user.permissions.includes('Acciones Productos')">
                                                 <i class="bi bi-trash3 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
@@ -231,7 +233,7 @@ const totalCount = props.productos.total;
                     <div class="flex flex-wrap md:justify-between sm:justify-between justify-center">
                         <div class="flex flex-wrap mt-4 md:justify-between sm:justify-between justify-center gap-4 text-star">
                             <p class="text-gray-700 dark:text-white font-semibold">Registros por página: {{ countPerPage }}</p>
-                            <p class="text-gray-700 dark:text-white font-semibold">Total de Categorias: {{ totalCount }}</p>
+                            <p class="text-gray-700 dark:text-white font-semibold">Total de Productos: {{ totalCount }}</p>
                         </div>
                         <div class="mt-4 sm:text-end text-center">
                             <nav aria-label="Page navigation example mt-4">
