@@ -179,12 +179,12 @@ var totalcompra = 0
                                 <InputError :message="form.errors.precio_t" class="mt-2"></InputError>
                             </div>
                         </div>
-                        <div class="d-flex mt-4">
+                        <div class="flex justify-end w-full gap-6 mt-4">
+                            <button class="text-base py-2 px-5 bg-blue-600 hover:bg-blue-700 text-gray-50 rounded-md w-full md:w-auto flex gap-2 items-center justify-center"><img src="img\whatsapp.png" alt="" class="h-5"> Ir a WhatsApp</button>
                             <div class="flex flex-wrap gap-2 justify-end">
                                 <ButtonResponsive class="uppercase text-sm">
                                     Guardar
                                 </ButtonResponsive>
-
                             </div>
                         </div>
                     </form>

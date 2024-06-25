@@ -23,6 +23,8 @@ class Cliente extends Model
         'estado',
         'ctg',
         'asesor',
+        'fechafactura',
+        'codigofactura',
         'cli_direccion2',
         'cli_observacion',
         'tbprovincia_id',

@@ -31,6 +31,8 @@ class ClienteRequest extends FormRequest
             'estado' => 'required|string',
             'ctg' => '',
             'asesor' => '',
+            'fechafactura' => '',
+            'codigofactura' => '',
             'cli_direccion2' => 'required',
             'cli_observacion' => 'required|string',
             'tbprovincia_id' => 'required',

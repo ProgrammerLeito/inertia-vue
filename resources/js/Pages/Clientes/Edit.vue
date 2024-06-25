@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link, useForm } from '@inertiajs/vue3'
+import { onMounted } from 'vue'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -22,6 +23,14 @@ const { cliente, tbprovincias } = defineProps({
 
 // Lógica del componente
 const form = useForm(cliente);
+
+const setCurrentDate = () => {
+    const today = new Date().toISOString().split('T')[0];
+    form.fechafactura = today;
+}
+onMounted(() => {
+    setCurrentDate();
+});
 
 // Función para enviar el formulario
 const submitForm = () => {
@@ -125,6 +134,17 @@ const submitForm = () => {
                                 <div>
                                     <InputLabel for="cli_direccion2" value="direccion anexa 1"/>
                                     <TextInput v-model="form.cli_direccion2" type="text" id="cli_direccion2" placeholder="Ingrese Direccion Anexa 1" class="mt-2 w-full uppercase"/>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
+                                <div>
+                                    <InputLabel for="fecha" value="Fecha Factura" />
+                                    <TextInput v-model="form.fechafactura" type="date" id="fecha" class="mt-2 w-full" />
+                                    <InputError :message="form.errors.fecha" class="mt-2"></InputError>
+                                </div>
+                                <div>
+                                    <InputLabel value="Codigo Factura" />
+                                    <TextInput v-model="form.codigofactura" type="text" placeholder="Ingrese el codigo de factura" class="mt-2 w-full"/>
                                 </div>
                             </div>
                                 <InputLabel for="cli_observacion" value="Observaciones"/>

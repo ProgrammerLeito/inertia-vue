@@ -208,7 +208,7 @@ const printPDF = async () => {
         cliente.asesor || '',
     ]);
 
-    var eje_y = 40;
+    var eje_y = 10;
 
     // Añadir contenido al PDF
     doc.setFontSize(14);
@@ -248,9 +248,12 @@ const printPDF = async () => {
 <template>
     <AppLayout title="Clientes">
         <template #header>
-            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">
-                Lista de Clientes
-                ({{ $page.props.totalClientes }})</h1>
+            <div class="flex justify-between w-full pr sm:pr-14 ">
+                <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">
+                    Lista de Clientes   ({{ $page.props.totalClientes }})</h1>
+                <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">
+                    Bienvenido(a):  {{ $page.props.auth.user.name }}</h1>
+            </div>
         </template>
 
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
@@ -331,7 +334,8 @@ const printPDF = async () => {
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Ciudad</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Asesor</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Ctg</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Facturacion</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2" v-if="$page.props.user.permissions.includes('Acciones e')">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
@@ -342,7 +346,7 @@ const printPDF = async () => {
                                         <td class="px-6 py-4 text-center">{{ cliente.direccion }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.tbprovincia ? cliente.tbprovincia.prov_nombre : 'Sin ciudad' }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.asesor }}</td>
-                                        <td class="py-4 text-center">
+                                        <td class="py-4 text-center" @contextmenu.prevent="openCtgModal(cliente)">
                                             <div :class="{
                                                 'bg-blue-600 text-white': cliente.ctg === 'Vip',
                                                 'bg-yellow-600 text-white': cliente.ctg === 'Regular',
@@ -352,16 +356,17 @@ const printPDF = async () => {
                                                 <b>{{ cliente.ctg }}</b>
                                             </div>
                                         </td>
-                                        <td class="p-3 text-center whitespace-nowrap">
-                                            <Link class="text-center text-white bg-green-500 hover:bg-green-600 py-1.5 px-2 rounded-md" :href="route('clientes.edit', cliente.id)" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
+                                        <td class="px-4 py-4 text-center">{{ (cliente.fechafactura ? cliente.fechafactura : 'Esperando fecha') + ' || ' + (cliente.codigofactura ? cliente.codigofactura : 'Esperando Codigo') }}</td>
+                                        <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones e')">
+                                            <Link class="text-center text-white bg-green-500 hover:bg-green-600 py-1.5 px-2 rounded-md" :href="route('clientes.edit', cliente.id)">
                                                 <i class="bi bi-pencil-square"></i>
                                             </Link>
-                                            <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="text-center ml-1 text-white bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
+                                            <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="text-center ml-1 text-white bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md">
                                                 <i class="bi bi-trash3"></i>
                                             </button>
-                                            <button @click="openCtgModal(cliente)" class="text-center ml-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded-md">
+                                            <!-- <button @click="openCtgModal(cliente)" class="text-center ml-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded-md">
                                                 <i class="fas fa-star"></i>
-                                            </button>
+                                            </button> -->
                                         </td>
                                     </tr>
                                 </tbody>

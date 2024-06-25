@@ -179,9 +179,6 @@ onMounted(() => {
     setCurrentDate();
 });
 
-
-
-
 const nInformeSeleccionado = computed(() => {
     const servicioSeleccionado = servicios.find(servicio => servicio.id === form.servicio_id);
     return servicioSeleccionado ? servicioSeleccionado.n_informe : '';
