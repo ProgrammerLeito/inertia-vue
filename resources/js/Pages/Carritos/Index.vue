@@ -188,7 +188,7 @@ var totalcompra = 0
                             </div>
                         </div>
                     </form>
-                    <div class="relative overflow-x-auto tracking-widest shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
+                    <div class="relative overflow-x-auto shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                             <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                 <tr>

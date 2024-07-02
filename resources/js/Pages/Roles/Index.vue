@@ -75,7 +75,7 @@ const totalCount = props.roles.total;
     <AppLayout title="Roles">
         <template #header>
             <h2 class="font-semibold text-md tracking-widest uppercase dark:text-white text-gray-800 leading-tight">
-                LISTA DE ROL
+                LISTA DE ROLES
             </h2>
         </template>
 
@@ -84,83 +84,77 @@ const totalCount = props.roles.total;
                 <div class="p-6 bg-white border-gray-100 shadow-2xl dark:bg-gray-800  rounded-lg">
                     <div class="flex flex-wrap py-2 gap-2 justify-between">
                         <Link :href="route('roles.create')"
-                            class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                        <i class="fa fa-plus-circle fa-beat mx-2"></i>registra rol
+                            class="text-white text-base bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <i class="fa fa-plus-circle mx-2"></i>Registrar Rol
                         </Link>
                         <Link :href="route('users.index')"
-                            class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-
-                        <i class="fas fa-arrow-left mx-2"></i>usuarios
+                            class="text-white text-base bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <i class="fas fa-arrow-left mx-2"></i>Usuarios
                         </Link>
                     </div>
                     <div>
                         <div
-                            class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2">
+                            class="relative overflow-x-auto shadow-md md:rounded-lg rounded-xl shadow-gray-400 dark:shadow-gray-500 mt-2">
                             <table
                                 class="w-full text-sm font-bold text-left rtl:text-right text-gray-500 dark:text-white">
-                                <thead class="text-md text-white uppercase bg-green-600 dark:bg-green-600">
+                                <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">#
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">
-                                            nombre</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">
-                                            acciones</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">#</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">nombre</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-md">
                                     <tr v-for="(role, i) in roles.data" :key="role.id"
                                         class="bg-white text-black dark:bg-gray-700 dark:text-white">
-                                        <td class="px-6 py-4 text-center"><b>{{ i + 1 }}</b></td>
-                                        <td class="px-6 py-4 text-center"> {{ role.name }}</td>
-                                        <td class="px-6 py-4 text-center">
+                                        <td class="px-6 py-4 text-center whitespace-nowrap"><b>{{ i + 1 }}</b></td>
+                                        <td class="px-6 py-4 text-center whitespace-nowrap"> {{ role.name }}</td>
+                                        <td class="px-6 py-4 text-center whitespace-nowrap">
                                             <Link :href="route('roles.edit', { role: role.id })"
-                                                class="text-white text-xs bg-yellow-500 hover:bg-indigo-800 py-1 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                                            <i class="fas fa-arrow-right fa-beat mx-1"></i>asigna permisos
+                                                class="text-white text-xs bg-yellow-500 hover:bg-yellow-600 py-1 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                            <i class="fas fa-arrow-right fa-beat mx-1"></i>permisos
                                             </Link>
-
-                                            <ButtonDelete @click="$event => deleteRol(role.id, role.name)"
-                                                class="text-white ml-2 hover:bg-red-600 rounded px-1 text-center">
-                                                <i class="fa-solid fa-trash mr-1 fa-sm"></i>
+                                            <ButtonDelete class="" @click="$event => deleteRol(role.id, role.name)">
+                                                <i class="hover:bg-red-500 px-1 py-1 hover:text-white rounded-md bi bi-trash3 text-red-500"></i>
                                             </ButtonDelete>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="flex flex-wrap justify-between">
-                            <div class="mt-4 text-star">
-                                <p class="text-gray-700 dark:text-white">Registros por página: {{ countPerPage }}
-                                    Total de
-                                    registros: {{
-                                        totalCount }}</p>
-                            </div>
-                            <div class="mt-4 text-end">
-                                <nav aria-label="Page navigation example mt-4">
-                                    <ul class="inline-flex -space-x-px text-sm">
-                                        <li>
-                                            <button @click="previousPage" :disabled="!roles.prev_page_url"
-                                                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                                Previous
-                                            </button>
-                                        </li>
-                                        <li v-for="page in total_pages" :key="page">
-                                            <button @click="goToPage(page)"
-                                                :class="{ 'text-blue-600 border-blue-300 dark:text-gray-800 bg-blue-50 hover:bg-blue-100 hover:text-blue-700': page === current_page, 'text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': page !== current_page }"
-                                                class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                                {{ page }}
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button @click="nextPage" :disabled="!roles.next_page_url"
-                                                class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                                Next
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </nav>
+                        <div class="flex flex-wrap md:justify-between sm:justify-between justify-center">
+                        <div class="hidden sm:block">
+                            <div class="flex flex-wrap mt-4 md:justify-between sm:justify-between justify-center gap-4 text-star">
+                                <p class="text-gray-700 dark:text-white font-semibold">Registros por página: {{ countPerPage }}</p>
+                                <p class="text-gray-700 dark:text-white font-semibold">Total de Roles: {{ totalCount }}</p>
                             </div>
                         </div>
+                        <div class="mt-4 sm:text-end text-center">
+                            <nav aria-label="Page navigation example mt-4">
+                                <ul class="inline-flex -space-x-px text-sm">
+                                    <li>
+                                        <button @click="previousPage" :disabled="!roles.prev_page_url"
+                                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-700 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            Prev
+                                        </button>
+                                    </li>
+                                    <li v-for="page in total_pages" :key="page">
+                                        <button @click="goToPage(page)"
+                                            :class="{ 'text-blue-600 border-blue-300 dark:text-gray-900 bg-blue-50 hover:bg-blue-100 hover:text-blue-700': page === current_page, 'text-gray-900 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': page !== current_page }"
+                                            class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            {{ page }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button @click="nextPage" :disabled="!roles.next_page_url"
+                                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-700 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                            Next
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>

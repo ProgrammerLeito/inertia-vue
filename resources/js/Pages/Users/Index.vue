@@ -68,7 +68,7 @@ const deleteUser = (id, name) => {
                         </Link>
                     </div>
                     <div class="mt-4">
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-200 dark:shadow-gray-500">
+                        <div class="relative overflow-x-auto shadow-md md:rounded-lg rounded-xl shadow-gray-200 dark:shadow-gray-500">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-white uppercase bg-green-600">
                                     <tr>
@@ -84,11 +84,11 @@ const deleteUser = (id, name) => {
                                 <tbody>
                                     <tr class="bg-white text-black dark:bg-gray-700 dark:text-white" v-for="(user, i) in users.data" :key="user.id">
                                         <td class="px-6 py-4 font-semibold text-center">{{ i + 1 }}</td>
-                                        <td class="px-6 py-4 font-semibold text-left">{{ user.name }}</td>
-                                        <td class="px-6 py-4 font-semibold text-center">{{ user.email }}</td>
-                                        <td class="px-6 py-4 font-semibold text-center">{{ user.sexo }}</td>
-                                        <td class="px-6 py-4 font-semibold text-center">{{ user.celular }}</td>
-                                        <td class="px-6 py-4 font-semibold text-center">
+                                        <td class="px-6 py-4 font-semibold text-left whitespace-nowrap">{{ user.name }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center whitespace-nowrap">{{ user.email }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center whitespace-nowrap">{{ user.sexo }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center whitespace-nowrap">{{ user.celular }}</td>
+                                        <td class="px-6 py-4 font-semibold text-center whitespace-nowrap">
                                             <div v-if="user.roles && user.roles.length > 0">
                                                 <span v-for="(role, index) in user.roles" :key="index" class="badge badge-success">
                                                     {{ role.name }}
@@ -98,7 +98,7 @@ const deleteUser = (id, name) => {
                                                 Sin rol
                                             </div>
                                         </td>
-                                        <td class="p-3 text-center">
+                                        <td class="p-3 text-center whitespace-nowrap">
                                             <Link class="py-2 px-4 text-green-500" :href="route('users.edit', { user: user.id })" >
                                                 <i class="bi bi-pencil-square"></i>
                                             </Link>

@@ -3,6 +3,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import InputError from '@/Components/InputError.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -90,10 +91,10 @@ const handleRoleSelection = (role) => {
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
-                    <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="h-full mx-auto px-4 md:py-0 py-2 sm:px-6 lg:px-8">
                        
                         <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                            <div class="grid grid-cols-1 md:gap-y-6 gap-y-4 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <div>
                                     <InputLabel for="name" value="nombre" class="block text-md font-medium text-gray-700"/>
                                     <TextInput v-model="form.name" type="text" id="name" placeholder="Escribe un usuario" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
@@ -110,7 +111,7 @@ const handleRoleSelection = (role) => {
                                     <InputError :message="form.errors.apellidomat" class="mt-2"></InputError>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                            <div class="grid grid-cols-1 md:gap-y-6 gap-y-3 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <div>
                                     <InputLabel for="email" value="Email" class="block text-md font-medium text-gray-700"/>
                                     <TextInput v-model="form.email" type="email" id="email" placeholder="Escribe un correo electrónico" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
@@ -131,7 +132,7 @@ const handleRoleSelection = (role) => {
                                     <InputError :message="form.errors.celular" class="mt-2"></InputError>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                            <div class="grid grid-cols-1 md:gap-y-6 gap-y-4 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <div>
                                     <InputLabel for="password" value="Contraseña" class="block text-md font-medium text-gray-700"/>
                                     <TextInput v-model="form.password" type="password" id="password" placeholder="Escribe una contraseña" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
@@ -160,11 +161,13 @@ const handleRoleSelection = (role) => {
                                 </div>
                                 <InputError :message="form.errors.roles" class="mt-2"></InputError>
                             </div>
-                            <div class="flex justify-end mt-6">
-                                <PrimaryButton :disabled="form.processing">Registrar</PrimaryButton>
-                                <Link :href="route('users.index')" class="ml-5 uppercase text-sm inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
-                                    Cancelar
-                                </Link>
+                            <div class="d-flex mt-4">
+                                <div class="flex flex-wrap gap-2 justify-end">
+                                    <ButtonResponsive class="uppercase" :disabled="form.processing">Registrar</ButtonResponsive>
+                                    <Link :href="route('users.index')" class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
+                                        Cancelar
+                                    </Link>
+                                </div>
                             </div>
                         </form>
                     </div>  

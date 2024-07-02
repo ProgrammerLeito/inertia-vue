@@ -54,10 +54,9 @@ export default {
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
-                    <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-                    
+                    <div class="h-full mx-auto px-4 md:py-0 py-2 sm:px-6 lg:px-8">
                         <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                            <div class="grid grid-cols-1 md:gap-y-6 gap-y-4 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <div>
                                     <label for="name" class="block text-sm font-medium text-gray-700 dark:text-white">Nombre</label>
                                     <input v-model="form.name" type="text" name="name" id="name" class="h-[37.6px] text-sm mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -74,7 +73,7 @@ export default {
                                     <InputError :errors="form.errors.apellidomat" class="mt-2" />
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                            <div class="grid grid-cols-1 md:gap-y-6 gap-y-4 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <div>
                                     <label for="email" class="block text-sm font-medium text-gray-700 dark:text-white">Correo</label>
                                     <input v-model="form.email" type="email" name="email" id="email" class="h-[37.6px] text-sm mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -95,7 +94,7 @@ export default {
                                     <InputError :errors="form.errors.celular" class="mt-2" />
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                            <div class="grid grid-cols-1 md:gap-y-6 gap-y-3 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <div>
                                     <label for="password" class="block text-sm font-medium text-gray-700 dark:text-white">Contraseña</label>
                                     <input v-model="form.password" type="password" name="password" id="password" class="text-sm h-[37.6px] mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -123,10 +122,12 @@ export default {
                                 </div>
                                 <InputError :errors="form.errors.roles" class="mt-2" />
                             </div>
-    
-                            <div class="flex justify-end mt-6">
-                                <PrimaryButton >Actualizar</PrimaryButton>
-                                <Link class="ml-5 uppercase text-sm inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700" :href="route('users.index')">regresar</Link>
+
+                            <div class="d-flex mt-4">
+                                <div class="flex flex-wrap gap-2 justify-end">
+                                    <PrimaryButton class="text-white bg-indigo-700 font-bold hover:bg-indigo-800 py-2 px-4 justify-center rounded md:w-min whitespace-nowrap w-full text-center" >Actualizar</PrimaryButton>
+                                    <Link class="inline-block bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center" :href="route('users.index')">regresar</Link>
+                                </div>
                             </div>
                         </form>
                     </div>

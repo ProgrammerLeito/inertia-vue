@@ -197,8 +197,7 @@ const totalCount = props.datos.total;
                     <div class="md:mt-0 py-6">
                         <div class="font-semibold text-center dark:text-white">CLIENTE || {{ razonSocial }} </div>
                     </div>
-                    <div
-                        class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2">
+                    <div class="relative overflow-x-auto shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                             <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                 <tr>
@@ -225,10 +224,16 @@ const totalCount = props.datos.total;
                                     <td class="px-6 py-4 text-center">{{ dato.telefono }}</td>
                                     <td class="px-6 py-4 text-center">{{ dato.correo }}</td>
                                     <td class="px-0 py-0 text-center flex justify-center">
-                                        <img @click="openModal3('/storage/' + dato.tarjeta)"
-                                            :src="'/storage/' + dato.tarjeta" alt="Foto"
-                                            style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;"
-                                            class="rounded-md py-1"/>
+                                        <template v-if="dato.tarjeta">
+                                            <img @click="openModal3('/storage/' + dato.tarjeta)"
+                                                :src="'/storage/' + dato.tarjeta" alt="Foto"
+                                                style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;"
+                                                class="rounded-md py-1"/>
+                                        </template>
+                                        <template v-else>
+                                            <td class="whitespace-nowrap px-6 py-4 mt-[5.5px] text-end flex justify-end">Sin Imagen</td>
+                                        </template>
+                                            <!-- :src="'/storage/' + dato.tarjeta === null ? 'por asignar' : dato.tarjeta " alt="Foto" -->
                                     </td>
                                     <td class="p-3 text-center whitespace-nowrap">
                                         <Link :href="route('datos.edit', dato.id)" class="py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700"><i class="bi bi-pencil-square"></i></Link>

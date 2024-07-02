@@ -132,7 +132,7 @@ watchEffect(() => {
                                 </div>
                             </div>
  
-                            <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500">
+                            <div class="relative overflow-x-auto shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
                                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                                     <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                         <tr>

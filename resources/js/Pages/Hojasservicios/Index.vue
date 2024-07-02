@@ -3,10 +3,13 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import InputError from '@/Components/InputError.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import { ref } from 'vue';
+import jsPDF from 'jspdf';
+
 const props = defineProps({
     hojaservicios: {
         type: Object,
@@ -145,26 +148,67 @@ const deleteHojaServicio = (id, razon_social) => {
     });
 }
 
+const previewPDF = () => {
+    
+    const doc = new jsPDF();
+
+    let eje_y = 10; // Starting y-coordinate
+
+    doc.setFontSize(12);
+
+    doc.setFont('Helvetica', 'bold');//estilos de texto
+    doc.text("Servicio a realizar: ", 20, eje_y);
+    doc.setFont('Helvetica', 'normal');//estilos de texto
+    doc.text(form.servicio_a_realizar, 59, eje_y);
+    eje_y += 10;
+
+    doc.text("Razón Social: " + form.razon_social, 20, eje_y);
+    eje_y += 10;
+
+    doc.text("Dirección: " + form.direccion, 20, eje_y);
+    eje_y += 10;
+
+    doc.text("Contacto: " + form.contacto, 20, eje_y);
+    eje_y += 10;
+
+    doc.text("Área de Contacto: " + form.area_de_contacto, 20, eje_y);
+    eje_y += 10;
+
+    doc.text("Teléfono de Contacto: " + form.telefono_de_contacto, 20, eje_y);
+    eje_y += 10;
+
+    doc.text("Asesor Encargado: " + form.asesor_encargado, 20, eje_y);
+    eje_y += 10;
+
+    doc.text("Hora del Servicio: " + form.hora_del_servicio, 20, eje_y);
+    eje_y += 10;
+
+    doc.text("Cantidad de Instrumentos: " + form.cantidad_de_instrumentos, 20, eje_y);
+    eje_y += 10;
+
+    doc.text("Datos del Instrumento: " + form.datos_del_instrumento, 20, eje_y);
+    eje_y += 10;
+
+    doc.text("Trabajos a Realizar: " + form.trabajos_a_realizar, 20, eje_y);
+
+    // Vista previa del PDF en una nueva ventana
+    doc.output('dataurlnewwindow');
+};
+
 </script>
 <template>
-    <AppLayout>
+    <AppLayout title="Hoja de Servicio">
         <template #header>
-            <h2 class="uppercase font-extrabold dark:text-white tracking-widest">HOJA DE SERVICIO</h2>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Generar Hoja de Servicio</h1>
         </template>
-        <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
+
+         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4  sm:px-6 lg:px-8">
-                <div class="bg-green-600 py-1 rounded-t-md"></div>
-                <div
-                    class="p-6 bg-white border-gray-100 shadow-lg shadow-gray-600 dark:bg-gray-800  dark:shadow-gray-800 rounded-b-lg">
+                <div class="p-6 bg-white border-gray-100 shadow-lg shadow-gray-600 dark:bg-gray-800  dark:shadow-gray-800 rounded-lg">
+                    <div class="my-1 tracking-widest font-extrabold text-center uppercase">
+                        <h1 class="text-lg dark:text-white">aqui puedes crear una hoja servicio y actualizar al hacer doble click </h1><hr class="dark:border-white border-gray-500">
+                    </div>
                     <form @submit.prevent="submitForm" class="my-5 uppercase font-bol">
-                        <!-- <div class="hidden">
-                            <InputLabel>N° informe</InputLabel>
-                            <TextInput v-model="form.n_informe" type="text"
-                                class="input mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                        </div> -->
-                        <div class="my-6 tracking-widest font-extrabold text-center">
-                            <h1 class="text-2xl dark:text-white">aqui puedes crear una hoja servicio y actualizar al hacer doble click </h1><hr>
-                        </div>
                         <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                             <div>
                                 <InputLabel for="servicio_a_realizar" value="servicio a realizar"
@@ -176,21 +220,21 @@ const deleteHojaServicio = (id, razon_social) => {
                                     <option value="Calibracion">Calibracion</option>
                                     <option value="Diagnostico">Diagnostico</option>
                                     <option value="Certificacion Balinsa">Certificacion Balinsa</option>
-                                    <option value="Certificacion  total weight">Certificacion total weight</option>
+                                    <option value="Certificacion  total weight">Certificacion  total weight</option>
                                     <option value="Reparacion ">Reparacion</option>
                                     <option value="Entrega">Entrega</option>
                                     <option value="Recojo">Recojo</option>
                                 </select>
                             </div>
                             <div>
-                                <InputLabel for="razon_social" value="razon social"
+                                <InputLabel for="razon_social" value="razon social *"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.razon_social" type="text" id="razon_social" required
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.razon_social" class="mt-2"></InputError>
                             </div>
                             <div>
-                                <InputLabel for="direccion" value="Direccion"
+                                <InputLabel for="direccion" value="Direccion *"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.direccion" type="text" id="direccion" required
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
@@ -199,7 +243,7 @@ const deleteHojaServicio = (id, razon_social) => {
                         </div>
                         <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                             <div>
-                                <InputLabel for="contacto" value="contacto"
+                                <InputLabel for="contacto" value="contacto *"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.contacto" type="text" id="contacto" required
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
@@ -207,17 +251,16 @@ const deleteHojaServicio = (id, razon_social) => {
                             </div>
 
                             <div>
-                                <InputLabel for="area_de_contacto" value="area de contacto"
+                                <InputLabel for="area_de_contacto" value="area de contacto *"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.area_de_contacto" type="text" id="area_de_contacto" required
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.area_de_contacto" class="mt-2"></InputError>
                             </div>
                             <div>
-                                <InputLabel for="telefono_de_contacto" value="telefono de contacto"
+                                <InputLabel for="telefono_de_contacto" value="telefono de contacto *"
                                     class="cruz block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.telefono_de_contacto" type="text" id="telefono_de_contacto"
-                                    required
+                                <TextInput v-model="form.telefono_de_contacto" type="text" id="telefono_de_contacto" required
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.telefono_de_contacto" class="mt-2"></InputError>
                             </div>
@@ -225,21 +268,21 @@ const deleteHojaServicio = (id, razon_social) => {
                         <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
 
                             <div>
-                                <InputLabel for="asesor_encargado" value="asesor encargado"
+                                <InputLabel for="asesor_encargado" value="asesor encargado *"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.asesor_encargado" type="text" id="asesor_encargado"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.asesor_encargado" class="mt-2"></InputError>
                             </div>
                             <div>
-                                <InputLabel for="hora_del_servicio" value="hora del servicio"
+                                <InputLabel for="hora_del_servicio" value="hora del servicio *"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.hora_del_servicio" type="time" id="hora_del_servicio"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.hora_del_servicio" class="mt-2"></InputError>
                             </div>
                             <div>
-                                <InputLabel for="cantidad_de_instrumentos" value="cantidad de instrumentos"
+                                <InputLabel for="cantidad_de_instrumentos" value="cantidad de instrumentos *"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.cantidad_de_instrumentos" type="text"
                                     id="cantidad_de_instrumentos"
@@ -249,7 +292,7 @@ const deleteHojaServicio = (id, razon_social) => {
                         </div>
                         <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 mb-3">
                             <div>
-                                <InputLabel for="datos_del_instrumento" value="datos del instrumento"
+                                <InputLabel for="datos_del_instrumento" value="datos del instrumento *"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <textarea id="datos_del_instrumento" v-model="form.datos_del_instrumento" rows="4"
                                     class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -263,21 +306,11 @@ const deleteHojaServicio = (id, razon_social) => {
                                     placeholder="Escriba las trabajos_a_realizar..."></textarea>
                             </div>
                         </div>
-                        <div class="d-flex mt-8">
+                        <div class="d-flex mt-4">
                             <div class="flex flex-wrap gap-2 justify-end">
-                                <PrimaryButton
-                                    class="tracking-widest font-extrabold shadow-lg transform hover:translate-y-[-2px] shadow-gray-600 whitespace-nowrap w-full  dark:shadow-gray-800">
-                                    Ver
-                                    PDF</PrimaryButton>
-                                <PrimaryButton v-if="!isEditing" @dblclick="editHojaServicio(hojaservicio)"
-                                    class="inline-block bg-blue-500 text-white transform hover:translate-y-[-2px] font-extrabold shadow-lg shadow-gray-600 dark:shadow-gray-800 py-2 px-4 rounded hover:bg-blue-700 md:w-min whitespace-nowrap w-full text-center">
-                                    GENERAR HOJA DE ESPECIFICACIONES
-                                </PrimaryButton>
-
-                                <PrimaryButton v-if="isEditing" @click="updateHojaServicio()"
-                                    class="inline-block bg-blue-500 text-white transform hover:translate-y-[-2px] font-extrabold shadow-lg shadow-gray-600 dark:shadow-gray-800 py-2 px-4 rounded hover:bg-blue-700 md:w-min whitespace-nowrap w-full text-center">
-                                    ACTUALIZAR HOJA DE SERVICIO
-                                </PrimaryButton>
+                                <button class="inline-block bg-indigo-700 text-white font-bold py-2 px-4 rounded hover:bg-indigo-800 text-xs uppercase md:w-min whitespace-nowrap w-full text-center" @click.prevent="previewPDF">Ver pdf</button>
+                                <ButtonResponsive v-if="!isEditing" @dblclick="editHojaServicio(hojaservicio)" class="uppercase text-xs">Generar Hoja de Especificaciones</ButtonResponsive>
+                                <ButtonResponsive v-if="isEditing" @click="updateHojaServicio()" class="uppercase text-xs">Actualizar Hoja de Servicio</ButtonResponsive>
                             </div>
                         </div>
                     </form>
@@ -291,11 +324,11 @@ const deleteHojaServicio = (id, razon_social) => {
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">contacto</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Area decontacto</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2"><i class="fas fa-phone mx-2"></i> de contacto</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">asesorencargado</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">asesor encargado</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">hora delservicio</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">cantidaddeinstrumentos</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">datos delinstrumento</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">trabajosarealizar</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">cantidad instrumentos</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">datos instrumento</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">trabajos a realizar</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones
                                     </th>
                                 </tr>

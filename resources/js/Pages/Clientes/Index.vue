@@ -251,8 +251,8 @@ const printPDF = async () => {
             <div class="flex justify-between w-full pr sm:pr-14 ">
                 <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">
                     Lista de Clientes   ({{ $page.props.totalClientes }})</h1>
-                <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">
-                    Bienvenido(a):  {{ $page.props.auth.user.name }}</h1>
+                <!-- <h1 class="font-semibold md:ml-0 ml-20 text-base uppercase text-gray-800 leading-tight dark:text-white">
+                    Bienvenido(a):  {{ $page.props.auth.user.name }}</h1> -->
             </div>
         </template>
 
@@ -266,7 +266,7 @@ const printPDF = async () => {
                     </div>
                     <div>
                         <div class="py-1">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-y-3 sm:gap-x-6 py-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-y-3 sm:gap-x-6 py-2">
                                 <div class="flex flex-col ">
                                     <InputLabel for="table-search"
                                         class="block text-md font-medium text-gray-700 dark:text-white">Buscar
@@ -315,15 +315,15 @@ const printPDF = async () => {
                                             placeholder="Buscar por asesor">
                                     </div>
                                 </div>
-                                <div class="flex flex-col 2xl:mt-5 mt-1">
+                                <div class="flex flex-col justify-end 2xl:mt-5 mt-1">
                                     <button @click="printPDF"
-                                        class="text-white bg-indigo-700 hover:bg-indigo-800 mt-0.5 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                        class="text-white bg-indigo-700 hover:bg-indigo-800 mt-0.5 py-2 px-4 rounded lg:w-min md:w-80 w-full whitespace-nowrap text-center">
                                         <i class="fas fa-print mx-2"></i> Imprimir
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500">
+                        <div class="relative overflow-x-auto shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
@@ -335,7 +335,7 @@ const printPDF = async () => {
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Asesor</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Ctg</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Facturacion</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2" v-if="$page.props.user.permissions.includes('Acciones e')">Acciones</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2" v-if="$page.props.user.permissions.includes('Acciones Administrador')">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
@@ -346,7 +346,7 @@ const printPDF = async () => {
                                         <td class="px-6 py-4 text-center">{{ cliente.direccion }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.tbprovincia ? cliente.tbprovincia.prov_nombre : 'Sin ciudad' }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.asesor }}</td>
-                                        <td class="py-4 text-center" @contextmenu.prevent="openCtgModal(cliente)">
+                                        <td class="py-4 px-2 text-center" @contextmenu.prevent="openCtgModal(cliente)">
                                             <div :class="{
                                                 'bg-blue-600 text-white': cliente.ctg === 'Vip',
                                                 'bg-yellow-600 text-white': cliente.ctg === 'Regular',
@@ -357,7 +357,7 @@ const printPDF = async () => {
                                             </div>
                                         </td>
                                         <td class="px-4 py-4 text-center">{{ (cliente.fechafactura ? cliente.fechafactura : 'Esperando fecha') + ' || ' + (cliente.codigofactura ? cliente.codigofactura : 'Esperando Codigo') }}</td>
-                                        <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones e')">
+                                        <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
                                             <Link class="text-center text-white bg-green-500 hover:bg-green-600 py-1.5 px-2 rounded-md" :href="route('clientes.edit', cliente.id)">
                                                 <i class="bi bi-pencil-square"></i>
                                             </Link>
