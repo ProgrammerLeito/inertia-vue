@@ -269,7 +269,7 @@ const nombreCompleto = obtenerNombreCompleto(user);
 const previewPDF = () => {
     const doc = new jsPDF();
 
-    let plantilla = '/storage/catalago_productos/plantillacotizacion.png';
+    let plantilla = '/img/plantillacotizacion.png';
 
     doc.addImage(plantilla, 'PNG', 1, 1, 208, 295); // Agregar la imagen en las coordenadas fijas
 

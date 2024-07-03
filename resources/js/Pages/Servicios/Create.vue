@@ -260,9 +260,9 @@ const nombreCompleto = obtenerNombreCompleto(user);
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
-                                    <ButtonResponsive class="uppercase tracking-widest mx-2" @click.prevent="generarYPresentarPDF">
+                                    <!-- <ButtonResponsive class="uppercase tracking-widest mx-2" @click.prevent="generarYPresentarPDF">
                                         Ver Pdf
-                                    </ButtonResponsive>
+                                    </ButtonResponsive> -->
                                     <ButtonResponsive class="uppercase">
                                         Generar Hoja de Informe
                                     </ButtonResponsive>

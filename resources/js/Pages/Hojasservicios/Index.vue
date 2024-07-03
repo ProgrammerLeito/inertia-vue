@@ -149,47 +149,167 @@ const deleteHojaServicio = (id, razon_social) => {
 }
 
 const previewPDF = () => {
-    
+
     const doc = new jsPDF();
 
-    let eje_y = 10; // Starting y-coordinate
+    const maxWidth = 150; // Ancho máximo permitido
+    const lineHeight = doc.getLineHeight() / doc.internal.scaleFactor; // Altura de línea para el salto
+    const pageHeight = doc.internal.pageSize.height; // Altura de la página
+
+    const servicio_a_realizar = document.getElementById("servicio_a_realizar").options[document.getElementById("servicio_a_realizar").selectedIndex].text;
+    const razon_social = document.getElementById("razon_social").value;
+    const direccion = document.getElementById("direccion").value;
+    const contacto = document.getElementById("contacto").value;
+    const area_de_contacto = document.getElementById("area_de_contacto").value;
+    const telefono_de_contacto = document.getElementById("telefono_de_contacto").value;
+    const asesor_encargado = document.getElementById("asesor_encargado").value;
+    const cantidad_de_instrumentos = document.getElementById("cantidad_de_instrumentos").value;
+    const hora_del_servicio = document.getElementById("hora_del_servicio").value;
+    const datos_del_instrumento = document.getElementById("datos_del_instrumento").value;
+    const trabajos_a_realizar = document.getElementById("trabajos_a_realizar").value;
+
+    let eje_y = 20; // Starting y-coordinate
+
+    // Función para verificar y cambiar de página si es necesario
+    const checkPageHeight = (lineHeight) => {
+        if (eje_y + lineHeight > pageHeight - 10) { // 10 es un espacio adicional para evitar bordes
+            doc.addPage();
+            eje_y = 20; // Reiniciar en la parte superior de la nueva página
+        }
+    };
 
     doc.setFontSize(12);
 
-    doc.setFont('Helvetica', 'bold');//estilos de texto
+    doc.setFont('Helvetica', 'bold');
+    doc.text("HOJA DE SERVICIO", 85, eje_y);
+    eje_y += 15;
+
+    doc.setFont('Helvetica', 'bold');
     doc.text("Servicio a realizar: ", 20, eje_y);
-    doc.setFont('Helvetica', 'normal');//estilos de texto
-    doc.text(form.servicio_a_realizar, 59, eje_y);
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
+    doc.setFontSize(12);
+    doc.text(`${servicio_a_realizar}`, 60, eje_y);
     eje_y += 10;
 
-    doc.text("Razón Social: " + form.razon_social, 20, eje_y);
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(11.5);
+    doc.text("Empresa por Servir: ", 20, eje_y);
+    doc.setFontSize(10.5);
     eje_y += 10;
 
-    doc.text("Dirección: " + form.direccion, 20, eje_y);
+    doc.setFont('Helvetica', 'bold');
+    doc.text("\u2022 Razon Social: ", 25, eje_y);
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
+    doc.text(`${razon_social}`, 53, eje_y);
     eje_y += 10;
 
-    doc.text("Contacto: " + form.contacto, 20, eje_y);
+    doc.setFont('Helvetica', 'bold');
+    doc.text("\u2022 Dirección: ", 25, eje_y);
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
+    var direccionLines = doc.splitTextToSize(`${direccion}`, maxWidth);
+    // Dibujar cada línea de texto en el PDF
+    for (let line of direccionLines) {
+        checkPageHeight(lineHeight);
+        doc.text(line, 47, eje_y);
+        eje_y += lineHeight;
+    }
+
+    eje_y += 4;
+    doc.setFont('Helvetica', 'bold');
+    doc.text("\u2022 Contacto: ", 25, eje_y);
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
+    doc.text(`${contacto}`, 46, eje_y);
+
+    eje_y += 10;
+    doc.setFont('Helvetica', 'bold');
+    doc.text("\u2022 Área de Contacto: ", 25, eje_y);
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
+    doc.text(`${area_de_contacto}`, 61, eje_y);
+
+    eje_y += 10;
+    doc.setFont('Helvetica', 'bold');
+    doc.text("\u2022 Teléfono de Contacto: ", 25, eje_y);
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
+    doc.text(`${telefono_de_contacto}`, 68, eje_y);
+
+    eje_y += 10;
+    doc.setFont('Helvetica', 'bold');
+    doc.text("\u2022 Asesor Encargado: ", 25, eje_y);
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
+    doc.text(`${asesor_encargado}`, 63, eje_y);
+
+    eje_y += 10;
+    doc.setFont('Helvetica', 'bold');
+    doc.text("\u2022 Hora del Servicio: ", 25, eje_y);
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
+    doc.text(`${hora_del_servicio}`, 60, eje_y);
+
+    eje_y += 10;
+    doc.setFont('Helvetica', 'bold');
+    doc.text("\u2022 Cantidad de Instrumentos: ", 25, eje_y);
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
+    doc.text(`${cantidad_de_instrumentos}`, 76, eje_y);
+
+    eje_y += 10;
+    doc.setFont('Helvetica', 'bold');
+    doc.text("Datos del Instrumento: ", 20, eje_y);
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
     eje_y += 10;
 
-    doc.text("Área de Contacto: " + form.area_de_contacto, 20, eje_y);
+    // Separar el contenido del textarea en líneas
+    const datosInstrumentoLines = `${datos_del_instrumento}`.split('\n');
+
+    // Procesar cada línea
+    datosInstrumentoLines.forEach((line) => {
+        // Dividir la línea en varias líneas si excede el ancho máximo
+        const splitLines = doc.splitTextToSize('\u2022 ' + line, maxWidth);
+        // Añadir cada línea procesada al documento PDF
+        splitLines.forEach((splitLine) => {
+            checkPageHeight(lineHeight);
+            doc.text(splitLine, 27, eje_y);
+            eje_y += lineHeight;
+        });
+        // Añadir un pequeño espacio adicional después de cada línea del textarea
+        eje_y += lineHeight * 0.1;
+    });
+
+    // Aumentar el eje Y para el espacio adecuado antes de "Trabajos a Realizar"
+    eje_y += 5;
+
+    doc.setFont('Helvetica', 'bold');
+    doc.text("Trabajos a Realizar: ", 20, eje_y);
+
+    doc.setFontSize(10.5);
+    doc.setFont('Helvetica', 'normal');
+
     eje_y += 10;
 
-    doc.text("Teléfono de Contacto: " + form.telefono_de_contacto, 20, eje_y);
-    eje_y += 10;
+    // Separar el contenido del textarea en líneas
+    const trabajosARealizarLines = `${trabajos_a_realizar}`.split('\n');
 
-    doc.text("Asesor Encargado: " + form.asesor_encargado, 20, eje_y);
-    eje_y += 10;
-
-    doc.text("Hora del Servicio: " + form.hora_del_servicio, 20, eje_y);
-    eje_y += 10;
-
-    doc.text("Cantidad de Instrumentos: " + form.cantidad_de_instrumentos, 20, eje_y);
-    eje_y += 10;
-
-    doc.text("Datos del Instrumento: " + form.datos_del_instrumento, 20, eje_y);
-    eje_y += 10;
-
-    doc.text("Trabajos a Realizar: " + form.trabajos_a_realizar, 20, eje_y);
+    // Procesar cada línea
+    trabajosARealizarLines.forEach((line) => {
+        // Dividir la línea en varias líneas si excede el ancho máximo
+        const splitLines = doc.splitTextToSize('\u2022 ' + line, maxWidth);
+        // Añadir cada línea procesada al documento PDF
+        splitLines.forEach((splitLine) => {
+            checkPageHeight(lineHeight);
+            doc.text(splitLine, 27, eje_y);
+            eje_y += lineHeight;
+        });
+        // Añadir un pequeño espacio adicional después de cada línea del textarea
+        eje_y += lineHeight * 0.1;
+    });
 
     // Vista previa del PDF en una nueva ventana
     doc.output('dataurlnewwindow');
@@ -205,8 +325,8 @@ const previewPDF = () => {
          <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4  sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-100 shadow-lg shadow-gray-600 dark:bg-gray-800  dark:shadow-gray-800 rounded-lg">
-                    <div class="my-1 tracking-widest font-extrabold text-center uppercase">
-                        <h1 class="text-lg dark:text-white">aqui puedes crear una hoja servicio y actualizar al hacer doble click </h1><hr class="dark:border-white border-gray-500">
+                    <div class="tracking-widest font-extrabold text-center uppercase">
+                        <h1 class="md:text-lg mb-2 text-md dark:text-white">aqui puedes crear una hoja servicio y actualizar al hacer doble click </h1><hr class="dark:border-white border-gray-500">
                     </div>
                     <form @submit.prevent="submitForm" class="my-5 uppercase font-bol">
                         <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
