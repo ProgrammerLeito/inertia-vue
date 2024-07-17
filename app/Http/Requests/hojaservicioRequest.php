@@ -30,6 +30,7 @@ class hojaservicioRequest extends FormRequest
             'area_de_contacto' => '',
             'telefono_de_contacto' => '',
             'asesor_encargado' => '',
+            'tecnico_encargado' => '',
             'hora_del_servicio' => 'nullable|date_format:H:i',
             'cantidad_de_instrumentos' => '',
             'datos_del_instrumento' => '',

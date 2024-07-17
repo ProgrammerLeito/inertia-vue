@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('area_de_contacto')->nullable();
             $table->string('telefono_de_contacto')->nullable();
             $table->string('asesor_encargado')->nullable();
+            $table->string('tecnico_encargado')->nullable();
             $table->time('hora_del_servicio')->nullable();
             $table->integer('cantidad_de_instrumentos')->nullable();
             $table->text('datos_del_instrumento')->nullable();

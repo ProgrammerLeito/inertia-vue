@@ -78,7 +78,7 @@ const form = useForm ({
 const agregarProducto = (producto) => {
     producto.cantidad = 1;
     tbproductosAgregados.value.push(producto);
-    form.subtotal = tbproductosAgregados.value.reduce((acc, curr) => acc + (curr.precio * curr.cantidad), 0);
+    form.subtotal = tbproductosAgregados.value.reduce((acc, curr) => acc + (curr.precio_min * curr.cantidad), 0);
     form.igv = form.subtotal * 0.18;
     form.total = form.subtotal + form.igv;
     toggleModal3();
@@ -94,7 +94,7 @@ const agregarProducto = (producto) => {
  
 const quitarProducto = (index) => {
     tbproductosAgregados.value.splice(index, 1);
-    form.subtotal = tbproductosAgregados.value.reduce((acc, curr) => acc + (curr.precio * curr.cantidad), 0);
+    form.subtotal = tbproductosAgregados.value.reduce((acc, curr) => acc + (curr.precio_min * curr.cantidad), 0);
     form.igv = form.subtotal * 0.18;
     form.total = form.subtotal + form.igv;
 };
@@ -113,7 +113,7 @@ watch(igvEnabled, (newValue) => {
  
 // Watcher para actualizar el subtotal, el IGV y el total cuando se cambia la cantidad de productos
 watch(tbproductosAgregados, (newProductos) => {
-    form.subtotal = newProductos.reduce((acc, curr) => acc + (curr.precio * curr.cantidad), 0);
+    form.subtotal = newProductos.reduce((acc, curr) => acc + (curr.precio_min * curr.cantidad), 0);
     form.igv = igvEnabled.value ? form.subtotal * 0.18 : 0;
     form.total = form.subtotal + form.igv;
 }, { deep: true });
@@ -444,7 +444,7 @@ const previewPDF = () => {
         eje_y += 10;
         doc.setFillColor(255, 255, 0);
         doc.rect(54, eje_y - 7.5, 45, 12, 'F');
-        doc.text(60, eje_y, 'Precio Unitario');
+        doc.text(60, eje_y, 'Precio Total');
 
         let simboloMoneda = '';
         if (moneda.includes('soles')) {
@@ -630,14 +630,16 @@ const previewPDF = () => {
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Marca</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
-                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio sin igv</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Min.</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Max.</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio List.</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Importe</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Quitar</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(tbproducto, i) in tbproductosAgregados" :key="index">
+                                            <tr v-for="(tbproducto, i) in tbproductosAgregados" :key="i">
                                                 <td class="px-3 py-4 text-center border-r border-b">{{ tbproducto.modelo }}</td>
                                                 <td class="px-6 py-3 text-center border-r border-b">
                                                     <img @click="openModal('/storage/' + tbproducto.foto)" :src="'/storage/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
@@ -651,7 +653,7 @@ const previewPDF = () => {
                                                             </dt>
                                                             <dd v-if="activeAccordion === i" class="ml-4">
                                                                 <ul class="list-disc px-6 py-4 text-left">
-                                                                    <li v-for="(item, index) in tbproducto.especificaciones.split('\n')" :key="index">{{ item }}</li>
+                                                                    <li v-for="(item, i) in tbproducto.especificaciones.split('\n')" :key="i">{{ item }}</li>
                                                                 </ul>
                                                             </dd>
                                                         </dl>
@@ -659,14 +661,16 @@ const previewPDF = () => {
                                                 </td>
                                                 <td class="px-3 py-3 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
                                                 <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap">
-                                                    <ul class="list-disc px-6 py-4 text-left -translate-y-1">
-                                                        <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
+                                                    <ul class="list-disc px-4 py-2 text-left -translate-y-1">
+                                                        <li v-for="(capacidad, i) in tbproducto.capacidades.split('\n')" :key="i">{{ capacidad }}</li>
                                                     </ul>
                                                 </td>
-                                                <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio).toFixed(2) }} / {{ parseFloat(tbproducto.precio_max).toFixed(2) }}</td>
+                                                <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_min ? tbproducto.precio_min : 0 ).toFixed(2) }} </td>
+                                                <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : 0 ).toFixed(2) }} </td>
+                                                <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_list ? tbproducto.precio_list : 0 ).toFixed(2) }} </td>
                                                 <td class="px-3 py-3 text-center border-r border-b"><input class="text-center dark:bg-gray-800 bg-white text-black border-white dark:border-gray-800 dark:text-white w-16" type="number" v-model="tbproducto.cantidad"></td>
-                                                <td class="px-3 py-3 text-center border-r border-b">s/{{ tbproducto.precio * tbproducto.cantidad }}</td>
-                                                <td class="px-3 py-3 text-center border-r border-b"><button @click.prevent="quitarProducto(index)"><i class="bi bi-trash3 text-red-500"></i></button></td>
+                                                <td class="px-3 py-3 text-center border-r border-b">s/{{ tbproducto.precio_min * tbproducto.cantidad }}</td>
+                                                <td class="px-3 py-3 text-center border-r border-b"><button @click.prevent="quitarProducto(i)"><i class="bi bi-trash3 text-red-500"></i></button></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -778,9 +782,10 @@ const previewPDF = () => {
             </div>
         </ModalResponsive>
  
-        <div v-if="modal3" class="fixed inset-0 overflow-y-auto z-50 bg-gray-200/40 flex justify-center items-center" style="backdrop-filter: blur(5px);" @click.self="toggleModal3">
-            <div class="modal-content bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-2xl max-w-7xl w-full sm:max-w-4xl md:max-w-3xl lg:max-w-4xl xl:max-w-6xl">
-                <button @click="toggleModal3" class="close absolute top-0.5 right-0.5 p-2 text-gray-500 hover:text-gray-700">
+        <div v-if="modal3" class="fixed inset-0 overflow-y-auto z-1 overflow-hidden bg-gray-200/40 flex justify-center items-center md:px-0 px-2" style="backdrop-filter: blur(2px);" @click.self="toggleModal3">
+            <div class=" min-w-[calc(100vw-60px)] md:ml-[50px] md:px-4">
+                <div class="modal-content bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-2xl p-2">
+                    <button @click="toggleModal3" class="close absolute top-0.5 right-0.5 p-2 text-gray-500 hover:text-gray-700">
                     &times;
                 </button>
                 <div class="px-2 py-2 dark:text-white">
@@ -788,7 +793,7 @@ const previewPDF = () => {
                     <p class="text-sm">Seleccione los productos a cotizar</p>
                     <hr class="my-1">
                 </div>
-                <div class="py-0 px-2">
+                <!-- <div class="py-0 px-2">
                     <div class="py-0">
                         <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-8 mb-3">
                             <div class="flex flex-col">
@@ -818,7 +823,7 @@ const previewPDF = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="py-3 px-2">
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 max-h-80 overflow-y-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-black dark:text-white">
@@ -829,7 +834,9 @@ const previewPDF = () => {
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Especificaciones</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Marca</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Capacidades</th>
-                                    <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio sin igv</th>
+                                    <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio Min.</th>
+                                    <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio Max.</th>
+                                    <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio Lis.</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Agregar</th>
                                 </tr>
                             </thead>
@@ -856,11 +863,13 @@ const previewPDF = () => {
                                     </td>
                                     <td class="px-6 py-3 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
                                     <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap">
-                                        <ul class="list-disc px-6 py-4 text-left -translate-y-1">
+                                        <ul class="list-disc px-2 py-2 text-left -translate-y-1">
                                             <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
                                         </ul>
                                     </td>
-                                    <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio).toFixed(2) }} / {{ parseFloat(tbproducto.precio_max).toFixed(2) }}</td>
+                                    <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_min ? tbproducto.precio_min : 0 ).toFixed(2) }} </td>
+                                    <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : 0 ).toFixed(2) }} </td>
+                                    <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_list ? tbproducto.precio_list : 0 ).toFixed(2) }} </td>
                                     <td class="px-6 py-3 text-center border-r border-b">
                                         <button @click="agregarProducto(tbproducto)" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:bg-green-700">
                                             Agregar
@@ -873,6 +882,7 @@ const previewPDF = () => {
                             No se encontraron datos.
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>

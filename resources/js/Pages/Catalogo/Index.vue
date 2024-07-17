@@ -158,26 +158,27 @@ watchEffect(() => {
                                             <td class="px-6 py-4 text-center border-r border-b hidden">{{ tbproducto.tbsubcategoria.nombre }}</td>
                                             <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }} </td>
                                             <td class="px-6 py-4 text-center border-r border-b"><b>{{ tbproducto.modelo }}</b></td>
-                                            <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.capacidades }}</td>
+                                            <td class="px-6 py-2 text-center border-r border-b whitespace-nowrap">
+                                                <ul class="list-disc px-6 py-4 text-left -translate-y-1">
+                                                    <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
+                                                </ul>
+                                            </td>
                                             <td class="px-6 py-4 text-center border-r border-b whitespace-nowrap">
                                                 <div class="accordions">
                                                     <dl>
-                                                        <dt @click="toggleAccordion(i)"
-                                                            class="cursor-pointer normal-case">
+                                                        <dt @click="toggleAccordion(i)" class="cursor-pointer normal-case">
                                                             Especificaciones
-                                                            <i
-                                                                :class="{ 'fa-solid fa-arrow-up-long ml-2': activeAccordion === i, 'fa-solid fa-arrow-down-long ml-2': activeAccordion !== i }"></i>
+                                                            <i :class="{'fa-solid fa-arrow-up-long ml-2': isActive(i), 'fa-solid fa-arrow-down-long ml-2': !isActive(i)}"></i>
                                                         </dt>
-                                                        <dd v-if="activeAccordion === i" class="ml-4">
+                                                        <dd v-if="isActive(i)" class="ml-4">
                                                             <ul class="list-disc px-6 py-4 text-left">
-                                                                <li v-for="(item, index) in tbproducto.especificaciones.split('\n')"
-                                                                    :key="index">{{ item }}</li>
+                                                                <li v-for="(item, index) in tbproducto.especificaciones.split('\n')" :key="index">{{ item }}</li>
                                                             </ul>
                                                         </dd>
                                                     </dl>
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 text-center border-r border-b">
+                                            <td class="md:px-4 px-2 py-4 text-center border-r border-b">
                                                 <img @click="openModal('/storage/' + tbproducto.foto)"
                                                     :src="'/storage/' + tbproducto.foto" alt="Foto"
                                                     style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
@@ -185,7 +186,7 @@ watchEffect(() => {
                                             <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_min ? `${tbproducto.moneda} ${tbproducto.precio_min}` : 'Por asignar' }} </td>
                                             <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_max ? `${tbproducto.moneda} ${tbproducto.precio_max}` : 'Por asignar' }} </td>
                                             <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_list ? `${tbproducto.moneda} ${tbproducto.precio_list}` : 'Por asignar' }} </td>
-                                            <td class="p-3 text-center border-b" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
+                                            <!-- <td class="p-3 text-center border-b" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
                                                 <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })"
                                                     class="py-1 p-1 bg-green-500 dark:hover:bg-white dark:text-white dark:hover:text-green-500 rounded">
                                                     <i class="bi bi-pencil-square"></i>
@@ -194,6 +195,14 @@ watchEffect(() => {
                                                     class="ml-1 bg-red-600 dark:hover:bg-white dark:hover:text-red-600 py-1 px-1 font-extrabold dark:text-white rounded cursor-pointer text-white">
                                                     <i class="bi bi-trash3"></i>
                                                 </Button>
+                                            </td> -->
+                                            <td class="p-3 text-center border-b" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
+                                                <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })" class="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md mr-2">
+                                                    <i class='bx bxs-edit text-base text-white'></i>
+                                                </Link>
+                                                <button @click="$event => deleteTbproducto(tbproducto.id, tbproducto.modelo)" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                                    <i class='bx bxs-trash text-base text-white'></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -224,14 +233,13 @@ watchEffect(() => {
 </template>
  
 <script>
-import Nl2br from 'vue3-nl2br'
 
 export default {
     data() {
         return {
             modalOpen: false, // Estado del modal
             modalImageUrl: '', // URL de la imagen para mostrar en el modal
-            activeAccordion: []
+            activeAccordion: [] // Array para manejar múltiples acordeones activos
         };
     },
     methods: {
@@ -250,10 +258,12 @@ export default {
                 // Si ya está, quítalo
                 this.activeAccordion.splice(indexPosition, 1);
             }
+        },
+        isActive(index) {
+            // Método para verificar si un acordeón está activo
+            return this.activeAccordion.includes(index);
         }
-    },
-    components: {
-        Nl2br,
     }
 }
+
 </script>

@@ -176,13 +176,21 @@ onMounted(() => {
                                         <td class="px-6 py-4 font-semibold">{{ entrada.producto?.insumo }}</td>
                                         <td class="px-6 py-4">{{ entrada.cantidad }}</td>
                                         <td class="px-6 py-4">{{ entrada.fecha }}</td>
-                                        <td class="p-3 text-center" v-if="$page.props.user.permissions.includes('Acciones Entradas')">
+                                        <!-- <td class="p-3 text-center" v-if="$page.props.user.permissions.includes('Acciones Entradas')">
                                             <ButtonEdit @click="$event => openModal(2,entrada.cantidad,entrada.fecha,entrada.producto_id,entrada.id)">
                                                 <i class="bi bi-pencil-square py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700"></i>
                                             </ButtonEdit>
                                             <ButtonDelete @click="$event => deleteEntrada(entrada.id, entrada.producto?.insumo)">
                                                 <i class="bi bi-trash3 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
                                             </ButtonDelete>
+                                        </td> -->
+                                        <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Entradas')">
+                                            <button @click="$event => openModal(2,entrada.cantidad,entrada.fecha,entrada.producto_id,entrada.id)" class="inline-flex mx-3 items-center justify-center bg-amber-500 hover:bg-amber-600 px-1.5 py-0.5 rounded-md">
+                                                <i class='bx bxs-edit text-base text-white'></i>
+                                            </button>
+                                            <button @click="$event => deleteEntrada(entrada.id, entrada.producto?.insumo)" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                                <i class='bx bxs-trash text-base text-white'></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -215,7 +223,7 @@ onMounted(() => {
                 <div class="p-1 mx-2">
                     <label for="producto_id" class="block text-sm font-medium text-black dark:text-white">Productos:</label>
                     <select id="producto_id" v-model="form.producto_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-                        <option value="">Seleccionar una Producto</option>
+                        <option disabled value="">Seleccionar una Producto</option>
                         <option v-for="producto in productos" :key="producto.id" :value="producto.id" class="text-gray-900">{{ producto.insumo }}</option>
                     </select>
                     <InputError :message="form.errors.producto_id" class="mt-2"></InputError>

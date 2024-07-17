@@ -10,7 +10,7 @@ use Inertia\Inertia;
 class HojaservicioController extends Controller
 {
     public function index (){
-        $hojaservicios=Hojaservicio::all();
+        $hojaservicios = Hojaservicio::orderBy('created_at', 'desc')->get();
         return Inertia::render('Hojasservicios/Index',compact('hojaservicios'));
     }
 

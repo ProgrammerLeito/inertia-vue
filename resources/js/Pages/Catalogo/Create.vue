@@ -439,7 +439,7 @@ const ok4 = (msj) => {
                                     <InputError :message="$page.props.errors.foto" class="mt-2" />
                                     <div class="mt-2 " v-if="form.foto !== ''">
                                         <img :src="imagePreview1" alt="Vista previa de la foto"
-                                            class="h-32 mx-auto rounded">
+                                            class="h-32 dark:text-white text-black mx-auto rounded">
                                     </div>
                                 </div>
                             </div>

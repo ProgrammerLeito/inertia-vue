@@ -60,7 +60,11 @@ const openModal = (op,dato) => {
 
 const closeModal = () => {
     modal.value = false;
-    form.reset();
+    form.nombre = '';
+    form.cargo = '';
+    form.telefono = '';
+    form.correo = '';
+    form.tarjeta = '';
 }
 
 const save = () => {
@@ -70,14 +74,19 @@ const save = () => {
         });
     }
 }
+
 const ok = (msj) => {
-    form.reset();
+    form.nombre = '';
+    form.cargo = '';
+    form.telefono = '';
+    form.correo = '';
+    form.tarjeta = '';
     closeModal();
     const Toast = Swal.mixin({
         toast: true,
         position: "bottom-end",
         showConfirmButton: false,
-        timer: 1500,
+        timer: 2000,
         timerProgressBar: true,
         didOpen: (toast) => {
             toast.onmouseenter = Swal.stopTimer;
@@ -86,11 +95,13 @@ const ok = (msj) => {
     });
     Toast.fire({
         icon: "success",
-        title: msj,
+        title: 'Éxito',
+        text: "Datos del cliente guardados exitosamente.",
         customClass: {
-                title: 'text-2xl font-bold tracking-widest ',
-                icon: 'text-base font-bold tracking-widest ',
-            },
+            title: 'text-2xl font-bold tracking-widest ',
+            icon: 'text-base font-bold tracking-widest ',
+            text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+        },
     });
 };
 
@@ -235,11 +246,19 @@ const totalCount = props.datos.total;
                                         </template>
                                             <!-- :src="'/storage/' + dato.tarjeta === null ? 'por asignar' : dato.tarjeta " alt="Foto" -->
                                     </td>
-                                    <td class="p-3 text-center whitespace-nowrap">
+                                    <!-- <td class="p-3 text-center whitespace-nowrap">
                                         <Link :href="route('datos.edit', dato.id)" class="py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700"><i class="bi bi-pencil-square"></i></Link>
                                         <ButtonDelete @click="deleteDatos(dato.id, dato.nombre)" v-if="$page.props.user.permissions.includes('Acciones Productos')">
                                             <i class="bi bi-trash3 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
                                         </ButtonDelete>
+                                    </td> -->
+                                    <td class="p-3 text-center whitespace-nowrap">
+                                        <Link :href="route('datos.edit', dato.id)" class="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md mr-2">
+                                            <i class='bx bxs-edit text-base text-white'></i>
+                                        </Link>
+                                        <button @click="deleteDatos(dato.id, dato.nombre)" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                            <i class='bx bxs-trash text-base text-white'></i>
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>

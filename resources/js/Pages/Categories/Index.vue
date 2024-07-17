@@ -193,14 +193,13 @@ const totalCount = props.categories.total;
                                 <tbody>
                                     <tr class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer" @dblclick="guardarCategoriaId(category.id, category.name); redirectToDetails(category.id)" v-for="category in filteredCategories" :key="category.id">
                                         <td class="px-6 py-4 font-semibold">{{ category.name }}</td>
-                                        <td class="p-1 text-center whitespace-nowrap">
-                                            <!-- <Link class="py-2 px-4 text-yellow-500" :href="route('productos.index', { category_id: category.id })"><i class="bi bi-eye"></i></Link> -->
-                                            <ButtonEdit @click="$event => openModal(2, category.name, category.id)" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
-                                            <i class="bi bi-pencil-square py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700"></i>
-                                            </ButtonEdit>
-                                            <ButtonDelete @click="$event => deleteEmployee(category.id, category.name)" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
-                                            <i class="bi bi-trash3 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
-                                            </ButtonDelete>
+                                        <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
+                                            <button @click="$event => openModal(2, category.name, category.id)" class="inline-flex mx-1 items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md">
+                                                <i class='bx bxs-edit text-base text-white'></i>
+                                            </button>
+                                            <button @click="$event => deleteEmployee(category.id, category.name)" class="inline-flex mx-1 items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                                <i class='bx bxs-trash text-base text-white'></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>

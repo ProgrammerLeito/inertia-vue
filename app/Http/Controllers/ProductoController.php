@@ -41,7 +41,7 @@ class ProductoController extends Controller
                             DB::raw('(SELECT COALESCE((SELECT cantidad FROM entradas WHERE entradas.producto_id = productos.id ORDER BY id DESC LIMIT 1), 0)) as ultima_cantidad_entrada')
                         )
                         ->where('categories.id', '=', $categoryId)->orderBy('id', 'DESC')
-                        ->paginate(100);
+                        ->paginate(1000);
 
         $productos->appends(['category_id' => $categoryId]);
 

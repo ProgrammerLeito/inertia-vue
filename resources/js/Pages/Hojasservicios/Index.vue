@@ -24,6 +24,7 @@ const form = useForm({
     area_de_contacto: '',
     telefono_de_contacto: '',
     asesor_encargado: '',
+    tecnico_encargado: '',
     hora_del_servicio: '',
     cantidad_de_instrumentos: '',
     datos_del_instrumento: '',
@@ -43,6 +44,7 @@ const editHojaServicio = (hojaservicio) => {
     form.area_de_contacto = hojaservicio.area_de_contacto;
     form.telefono_de_contacto = hojaservicio.telefono_de_contacto;
     form.asesor_encargado = hojaservicio.asesor_encargado;
+    form.tecnico_encargado = hojaservicio.tecnico_encargado;
     form.hora_del_servicio = hojaservicio.hora_del_servicio;
     form.cantidad_de_instrumentos = hojaservicio.cantidad_de_instrumentos;
     form.datos_del_instrumento = hojaservicio.datos_del_instrumento;
@@ -163,6 +165,7 @@ const previewPDF = () => {
     const area_de_contacto = document.getElementById("area_de_contacto").value;
     const telefono_de_contacto = document.getElementById("telefono_de_contacto").value;
     const asesor_encargado = document.getElementById("asesor_encargado").value;
+    const tecnico_encargado = document.getElementById("tecnico_encargado").value;
     const cantidad_de_instrumentos = document.getElementById("cantidad_de_instrumentos").value;
     const hora_del_servicio = document.getElementById("hora_del_servicio").value;
     const datos_del_instrumento = document.getElementById("datos_del_instrumento").value;
@@ -193,71 +196,72 @@ const previewPDF = () => {
     eje_y += 10;
 
     doc.setFont('Helvetica', 'bold');
-    doc.setFontSize(11.5);
-    doc.text("Empresa por Servir: ", 20, eje_y);
-    doc.setFontSize(10.5);
-    eje_y += 10;
-
-    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(11);
     doc.text("\u2022 Razon Social: ", 25, eje_y);
-    doc.setFontSize(10.5);
     doc.setFont('Helvetica', 'normal');
-    doc.text(`${razon_social}`, 53, eje_y);
+    doc.text(`${razon_social}`, 54, eje_y);
     eje_y += 10;
 
     doc.setFont('Helvetica', 'bold');
     doc.text("\u2022 Dirección: ", 25, eje_y);
-    doc.setFontSize(10.5);
+    doc.setFontSize(11);
     doc.setFont('Helvetica', 'normal');
     var direccionLines = doc.splitTextToSize(`${direccion}`, maxWidth);
     // Dibujar cada línea de texto en el PDF
     for (let line of direccionLines) {
         checkPageHeight(lineHeight);
-        doc.text(line, 47, eje_y);
+        doc.text(line, 48, eje_y);
         eje_y += lineHeight;
     }
 
     eje_y += 4;
     doc.setFont('Helvetica', 'bold');
     doc.text("\u2022 Contacto: ", 25, eje_y);
-    doc.setFontSize(10.5);
+    doc.setFontSize(11);
     doc.setFont('Helvetica', 'normal');
-    doc.text(`${contacto}`, 46, eje_y);
+    doc.text(`${contacto}`, 47, eje_y);
 
     eje_y += 10;
     doc.setFont('Helvetica', 'bold');
     doc.text("\u2022 Área de Contacto: ", 25, eje_y);
-    doc.setFontSize(10.5);
+    doc.setFontSize(11);
     doc.setFont('Helvetica', 'normal');
-    doc.text(`${area_de_contacto}`, 61, eje_y);
+    doc.text(`${area_de_contacto}`, 62, eje_y);
 
     eje_y += 10;
     doc.setFont('Helvetica', 'bold');
     doc.text("\u2022 Teléfono de Contacto: ", 25, eje_y);
-    doc.setFontSize(10.5);
+    doc.setFontSize(11);
     doc.setFont('Helvetica', 'normal');
-    doc.text(`${telefono_de_contacto}`, 68, eje_y);
+    doc.text(`${telefono_de_contacto}`, 70, eje_y);
 
     eje_y += 10;
     doc.setFont('Helvetica', 'bold');
     doc.text("\u2022 Asesor Encargado: ", 25, eje_y);
-    doc.setFontSize(10.5);
+    doc.setFontSize(11);
     doc.setFont('Helvetica', 'normal');
-    doc.text(`${asesor_encargado}`, 63, eje_y);
+    doc.text(`${asesor_encargado}`, 65, eje_y);
+
+    eje_y += 10;
+    doc.setFont('Helvetica', 'bold');
+    doc.text("\u2022 Tecnico Encargado: ", 25, eje_y);
+    doc.setFontSize(11);
+    doc.setFont('Helvetica', 'normal');
+    doc.text(`${tecnico_encargado}`, 66, eje_y);
 
     eje_y += 10;
     doc.setFont('Helvetica', 'bold');
     doc.text("\u2022 Hora del Servicio: ", 25, eje_y);
-    doc.setFontSize(10.5);
+    doc.setFontSize(11);
     doc.setFont('Helvetica', 'normal');
-    doc.text(`${hora_del_servicio}`, 60, eje_y);
+    doc.text(`${hora_del_servicio}`, 62, eje_y);
 
     eje_y += 10;
     doc.setFont('Helvetica', 'bold');
     doc.text("\u2022 Cantidad de Instrumentos: ", 25, eje_y);
-    doc.setFontSize(10.5);
+    doc.setFontSize(11);
     doc.setFont('Helvetica', 'normal');
-    doc.text(`${cantidad_de_instrumentos}`, 76, eje_y);
+    doc.text(`${cantidad_de_instrumentos}`, 78, eje_y);
 
     eje_y += 10;
     doc.setFont('Helvetica', 'bold');
@@ -286,7 +290,8 @@ const previewPDF = () => {
     // Aumentar el eje Y para el espacio adecuado antes de "Trabajos a Realizar"
     eje_y += 5;
 
-    doc.setFont('Helvetica', 'bold');
+    doc.setFont('Helvetica', 'bold');4
+    doc.setFontSize(11);
     doc.text("Trabajos a Realizar: ", 20, eje_y);
 
     doc.setFontSize(10.5);
@@ -326,10 +331,10 @@ const previewPDF = () => {
             <div class="h-full mx-auto px-4  sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-100 shadow-lg shadow-gray-600 dark:bg-gray-800  dark:shadow-gray-800 rounded-lg">
                     <div class="tracking-widest font-extrabold text-center uppercase">
-                        <h1 class="md:text-lg mb-2 text-md dark:text-white">aqui puedes crear una hoja servicio y actualizar al hacer doble click </h1><hr class="dark:border-white border-gray-500">
+                        <h1 class="md:text-lg mb-2 text-md dark:text-white underline decoration-solid underline-offset-8">aqui puedes crear una hoja servicio y actualizar al hacer doble click</h1>
                     </div>
                     <form @submit.prevent="submitForm" class="my-5 uppercase font-bol">
-                        <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                        <div class="grid grid-cols-1 md:gap-y-6 gap-y-3 md:grid-cols-3 sm:gap-x-8 mb-3">
                             <div>
                                 <InputLabel for="servicio_a_realizar" value="servicio a realizar"
                                     class="cruz block text-md font-medium text-gray-700" />
@@ -361,7 +366,7 @@ const previewPDF = () => {
                                 <InputError :message="form.errors.direccion" class="mt-2"></InputError>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
+                        <div class="grid grid-cols-1 md:gap-y-6 gap-y-3 md:grid-cols-3 sm:gap-x-8 mb-3">
                             <div>
                                 <InputLabel for="contacto" value="contacto *"
                                     class="cruz block text-md font-medium text-gray-700 " />
@@ -385,14 +390,20 @@ const previewPDF = () => {
                                 <InputError :message="form.errors.telefono_de_contacto" class="mt-2"></InputError>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
-
+                        <div class="grid grid-cols-1 md:gap-y-6 gap-y-3 md:grid-cols-4 sm:gap-x-8 mb-3">
                             <div>
                                 <InputLabel for="asesor_encargado" value="asesor encargado *"
                                     class="cruz block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.asesor_encargado" type="text" id="asesor_encargado"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.asesor_encargado" class="mt-2"></InputError>
+                            </div>
+                            <div>
+                                <InputLabel for="tecnico_encargado" value="tecnico encargado *"
+                                    class="cruz block text-md font-medium text-gray-700 " />
+                                <TextInput v-model="form.tecnico_encargado" type="text" id="tecnico_encargado"
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                <InputError :message="form.errors.tecnico_encargado" class="mt-2"></InputError>
                             </div>
                             <div>
                                 <InputLabel for="hora_del_servicio" value="hora del servicio *"
@@ -410,7 +421,7 @@ const previewPDF = () => {
                                 <InputError :message="form.errors.cantidad_de_instrumentos" class="mt-2"></InputError>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 mb-3">
+                        <div class="grid grid-cols-1 md:gap-y-6 gap-y-3 sm:grid-cols-2 sm:gap-x-8 mb-3">
                             <div>
                                 <InputLabel for="datos_del_instrumento" value="datos del instrumento *"
                                     class="cruz block text-md font-medium text-gray-700 " />
@@ -434,17 +445,21 @@ const previewPDF = () => {
                             </div>
                         </div>
                     </form>
+                    <div class="tracking-widest font-extrabold text-center uppercase">
+                        <h1 class="md:text-lg mb-3 text-md dark:text-white underline decoration-wavy">Historial de Hojas de Servicio </h1>
+                    </div>
                     <div class="relative overflow-x-auto shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                             <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N° inf</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 hidden">N° inf</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">razonsocial</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">direccion</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">contacto</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Area decontacto</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2"><i class="fas fa-phone mx-2"></i> de contacto</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">asesor encargado</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">tecnico encargado</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">hora delservicio</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">cantidad instrumentos</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">datos instrumento</th>
@@ -458,18 +473,19 @@ const previewPDF = () => {
                                     :key="hojaservicio.id"
                                     class="bg-white text-black  hover:text-white border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                     <!-- Mostrar los datos de cada hservicio -->
-                                    <td class="px-6 py-4 text-center">{{ hojaservicio.n_informe }}</td>
+                                    <td class="px-6 py-4 text-center hidden">{{ hojaservicio.n_informe }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.razon_social }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.direccion }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.contacto }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.area_de_contacto }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.telefono_de_contacto }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.asesor_encargado }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.tecnico_encargado }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.hora_del_servicio }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.cantidad_de_instrumentos }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.datos_del_instrumento }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.trabajos_a_realizar }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b flex">
+                                    <td class="px-6 py-3 justify-center dark:border-white flex">
                                         <button @click="$event => deleteHojaServicio(hojaservicio.id, hojaservicio.razon_social)"
                                             class="text-center ml-1 text-white shadow-lg shadow-gray-500 dark:shadow-red-600 dark:hover:bg-white dark:hover:text-red-600 bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md"
                                             title="Eliminar Cliente"><i class="bi bi-trash3"></i>

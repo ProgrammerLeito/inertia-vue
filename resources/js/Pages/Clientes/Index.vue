@@ -38,7 +38,7 @@ const deleteCliente = (id, razonSocial) => {
     });
 
     alerta.fire({
-        title: '¿Estás seguro de eliminar al cliente: ' + razonSocial + '?' + '¡Este cliente se eliminará definitivamente de la base de datos. Esta acción no se puede deshacer.!',
+        title: '¿Estás seguro de eliminar al cliente: ' + razonSocial + '?\n¡Este cliente se eliminará definitivamente de la base de datos. Esta acción no se puede deshacer!',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -46,23 +46,34 @@ const deleteCliente = (id, razonSocial) => {
         confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
         customClass: {
-            title: 'text-xl font-bold tracking-widest ',
-            cancelButton: 'text-base tracking-widest ',
-            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+            title: 'text-xl font-bold tracking-wide ',
+            cancelButton: 'text-base tracking-wide ',
+            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-wide ',
         },
     }).then((result) => {
         if (result.isConfirmed) {
                     form.delete(route('clientes.destroy', id), {
                         onSuccess: () => {
-                            Swal.fire({
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: "bottom-end",
+                                showConfirmButton: false,
+                                timer: 1000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.onmouseenter = Swal.stopTimer;
+                                    toast.onmouseleave = Swal.resumeTimer;
+                                }
+                            });
+                            Toast.fire({
                                 icon: "success",
-                                title: 'Éxito',
-                                text: "Cliente eliminado exitosamente.",
+                                title: "Exito",
+                                text: "Cliente Eliminado Exitosamente",
                                 customClass: {
                                     title: 'text-2xl font-bold tracking-widest ',
                                     icon: 'text-base font-bold tracking-widest ',
                                     text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
-                                },
+                                    },
                             });
                         }
                     });
@@ -260,7 +271,7 @@ const printPDF = async () => {
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
-                        <Link :href="route('clientes.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <Link :href="route('clientes.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 transform hover:translate-y-[-2px] py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="bi bi-person-plus mx-1"></i> Registrar Cliente
                         </Link>
                     </div>
@@ -339,7 +350,7 @@ const printPDF = async () => {
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
-                                    <tr @dblclick="redirectToClient(cliente.id); guardarClienteId(cliente.id, cliente.razonSocial)" v-for="(cliente, i) in filteredClients" :key="cliente.id" class="bg-white border-b-2 dark:border-white border-gray-400 dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
+                                    <tr @dblclick="redirectToClient(cliente.id); guardarClienteId(cliente.id, cliente.razonSocial)" v-for="(cliente) in filteredClients" :key="cliente.id" class="bg-white border-b-2 dark:border-white border-gray-400 dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
                                         <td class="px-6 py-4 text-center">{{ cliente.id }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.numeroDocumento }}</td>
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>
@@ -358,16 +369,24 @@ const printPDF = async () => {
                                         </td>
                                         <td class="px-4 py-4 text-center">{{ (cliente.fechafactura ? cliente.fechafactura : 'Esperando fecha') + ' || ' + (cliente.codigofactura ? cliente.codigofactura : 'Esperando Codigo') }}</td>
                                         <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
-                                            <Link class="text-center text-white bg-green-500 hover:bg-green-600 py-1.5 px-2 rounded-md" :href="route('clientes.edit', cliente.id)">
+                                            <Link :href="route('clientes.edit', cliente.id)" class="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md mr-2">
+                                                <i class='bx bxs-edit text-base text-white'></i>
+                                            </Link>
+                                            <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                                <i class='bx bxs-trash text-base text-white'></i>
+                                            </button>
+                                        </td>
+                                        <!-- <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Administrador')"> -->
+                                            <!-- <Link class="text-center text-white bg-green-500 hover:bg-green-600 py-1.5 px-2 rounded-md" :href="route('clientes.edit', cliente.id)">
                                                 <i class="bi bi-pencil-square"></i>
                                             </Link>
                                             <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="text-center ml-1 text-white bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md">
                                                 <i class="bi bi-trash3"></i>
-                                            </button>
+                                            </button> -->
                                             <!-- <button @click="openCtgModal(cliente)" class="text-center ml-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded-md">
                                                 <i class="fas fa-star"></i>
                                             </button> -->
-                                        </td>
+                                        <!-- </td> -->
                                     </tr>
                                 </tbody>
                             </table>

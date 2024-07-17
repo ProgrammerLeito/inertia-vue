@@ -215,12 +215,23 @@ const totalCount = props.productos.total;
                                         <td class="px-6 py-4 text-center">{{ formatDate(producto.entrada_maxima == null ? producto.fecha : producto.entrada_maxima) }}</td>
                                         <td class="px-6 py-4 text-center">S/. {{ parseFloat(producto.precio).toFixed(2) }}</td>
                                         <!-- <td class="px-6 py-4 text-left">{{ producto.comentario }}</td> -->
-                                        <td class="text-center whitespace-nowrap">
+                                        <!-- <td class="text-center whitespace-nowrap">
                                             <button @click="redirectToCreate(producto)" class="bg-blue-600 hover:bg-blue-400 text-white px-2.5 py-[7px] rounded-lg mx-4"><i class="fas fa-shopping-cart"></i></button>
                                             <Link class="py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700" :href="route('productos.edit', producto.producto_id)" v-if="$page.props.user.permissions.includes('Acciones Productos')"><i class="bi bi-pencil-square"></i></Link>
                                             <ButtonDelete @click="$event => deleteProducto(producto.producto_id,producto.insumo)" v-if="$page.props.user.permissions.includes('Acciones Productos')">
                                                 <i class="bi bi-trash3 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
                                             </ButtonDelete>
+                                        </td> -->
+                                        <td class="px-2 py-5 text-center whitespace-nowrap" style="display: flex; justify-content: center; align-items: center;">
+                                            <button @click="redirectToCreate(producto)" class="inline-flex items-center justify-center mx-2 bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded-md">
+                                                <i class='fas fa-shopping-cart text-sm text-white'></i>
+                                            </button>
+                                            <Link :href="route('productos.edit', producto.producto_id)" v-if="$page.props.user.permissions.includes('Acciones Productos')" class="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-2 py-[0.1px] rounded-md mx-2">
+                                                <i class='bx bxs-edit text-lg text-white'></i>
+                                            </Link>
+                                            <button @click="$event => deleteProducto(producto.producto_id,producto.insumo)" v-if="$page.props.user.permissions.includes('Acciones Productos')" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-2 py-[0.1px] rounded-md mx-2">
+                                                <i class='bx bxs-trash text-lg text-white'></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>

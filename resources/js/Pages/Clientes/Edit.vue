@@ -138,12 +138,12 @@ const submitForm = () => {
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
-                                    <InputLabel for="fecha" value="Fecha Factura" />
+                                    <InputLabel for="fecha" value="Fecha Factura Emitida" />
                                     <TextInput v-model="form.fechafactura" type="date" id="fecha" class="mt-2 w-full" />
                                     <InputError :message="form.errors.fecha" class="mt-2"></InputError>
                                 </div>
                                 <div>
-                                    <InputLabel value="Codigo Factura" />
+                                    <InputLabel value="N° Factura" />
                                     <TextInput v-model="form.codigofactura" type="text" placeholder="Ingrese el codigo de factura" class="mt-2 w-full"/>
                                 </div>
                             </div>

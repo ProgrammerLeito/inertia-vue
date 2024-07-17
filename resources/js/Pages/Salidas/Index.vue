@@ -158,11 +158,19 @@ const formatTime = (timeString) => {
                                             </div>
                                         </td>
                                         <td class="hidden px-6 py-4">{{ salida.devolucion }}</td>
-                                        <td class="p-3 border-b whitespace-nowrap text-center dark:border-gray-400" v-if="$page.props.user.permissions.includes('Acciones Salidas')">
+                                        <!-- <td class="p-3 border-b whitespace-nowrap text-center dark:border-gray-400" v-if="$page.props.user.permissions.includes('Acciones Salidas')">
                                             <Link class="py-2 px-3 rounded-lg text-white bg-green-600 hover:bg-green-700" :href="route('salidas.edit', salida.id)"><i class="bi bi-pencil-square"></i></Link>
                                             <ButtonDelete @click="$event => deleteSalidas(salida.id,salida.empresa)" class="ml-1">
                                                 <i class="bi bi-trash3 ml-2 py-2 px-3 rounded-lg text-white bg-red-600 hover:bg-red-700"></i>
                                             </ButtonDelete>
+                                        </td> -->
+                                        <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Salidas')">
+                                            <Link :href="route('salidas.edit', salida.id)" class="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md mr-2">
+                                                <i class='bx bxs-edit text-base text-white'></i>
+                                            </Link>
+                                            <button @click="$event => deleteSalidas(salida.id,salida.empresa)" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                                <i class='bx bxs-trash text-base text-white'></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>

@@ -9,7 +9,7 @@ class TenorController extends Controller
 {
     public function store(Request $request){
         $validatedData = $request->validate([
-            'name'=>'required',
+            'name'=>'required|unique:tenors',
         ]);
         $tenor=Tenor::create($validatedData);
         return redirect()->back();

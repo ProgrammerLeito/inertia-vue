@@ -35,7 +35,8 @@ watch(precio_t, (newVal) => {
 const submitForm = () => {
     form.post(route('carritos.store'), {
         onSuccess: () => {
-            form.reset();
+            form.cantidad = '';
+            form.precio_t = '0.00';
             const Toast = Swal.mixin({
                 toast: true,
                 position: "bottom-end",
@@ -137,6 +138,40 @@ onMounted(() => {
 
 var totalcompra = 0 
 
+const generarArchivoTxt = () => {
+    let contenido = '';
+
+    // Encabezado personalizado
+    const encabezado = 'Lista de Productos a Comprar\n\n';
+
+    // Recorrer cada fila (tr) en el tbody
+    const tbodyRows = document.querySelectorAll('tbody tr');
+    tbodyRows.forEach((row, index) => {
+        const rowData = [];
+        // Recoger los datos de cada celda (td)
+        const cells = row.querySelectorAll('td');
+        cells.forEach(cell => {
+            rowData.push(cell.textContent.trim());
+        });
+        // Unir los datos de la fila con un separador (por ejemplo, tabulador)
+        contenido += rowData.join('\t') + '\n \n';
+    });
+
+    // Construir el contenido final con encabezado
+    contenido = encabezado + contenido;
+
+    // Generar el archivo de texto
+    const blob = new Blob([contenido], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'compras.txt'; // Nombre del archivo
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
 </script>
 <template>
     <AppLayout title="Lista de Compra de Productos">
@@ -179,13 +214,13 @@ var totalcompra = 0
                                 <InputError :message="form.errors.precio_t" class="mt-2"></InputError>
                             </div>
                         </div>
-                        <div class="flex justify-end w-full gap-6 mt-4">
-                            <button class="text-base py-2 px-5 bg-blue-600 hover:bg-blue-700 text-gray-50 rounded-md w-full md:w-auto flex gap-2 items-center justify-center"><img src="img\whatsapp.png" alt="" class="h-5"> Ir a WhatsApp</button>
-                            <div class="flex flex-wrap gap-2 justify-end">
-                                <ButtonResponsive class="uppercase text-sm">
-                                    Guardar
-                                </ButtonResponsive>
-                            </div>
+                        <div class="flex flex-wrap gap-2 justify-end md:mt-0 mt-4">
+                            <a href="https://api.whatsapp.com/send/?phone=51960269942&text=Hola+estoy+interesado+mas+informacion+a%3A+detalle&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" @click="generarArchivoTxt" class="text-sm font-bold py-2 px-5 bg-indigo-700 hover:bg-indigo-600 text-gray-50 rounded-md w-full md:w-auto flex gap-2 items-center justify-center">
+                                <img src="img/whatsapp.png" alt="" class="h-5"> Ir a WhatsApp
+                            </a>
+                            <ButtonResponsive class="uppercase text-sm">
+                                Guardar
+                            </ButtonResponsive>
                         </div>
                     </form>
                     <div class="relative overflow-x-auto shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
@@ -203,7 +238,7 @@ var totalcompra = 0
                             </thead>
                             <tbody class="text-center text-xs tracking-widest">
                                 <p class="px-6 py-3 text-center dark:border-white border-b hidden">{{ totalcompra = 0 }}</p>
-                                <tr v-for="carrito in carritos":key="carrito.id"
+                                <tr v-for="carrito in carritos" :key="carrito.id"
                                     class="bg-white text-black  hover:text-white border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                     <!-- Mostrar los datos de cada hservicio -->
                                     <!-- <td class="px-6 py-4 text-center">{{ carrito.id }}</td> -->
@@ -212,11 +247,10 @@ var totalcompra = 0
                                     <td class="px-6 py-3 text-center dark:border-white border-b hidden">{{ totalcompra += ( parseFloat(carrito.precio_u) * parseInt(carrito.cantidad)) }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{carrito.moneda}} {{ carrito.precio_u }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{carrito.moneda}} {{ parseFloat(carrito.precio_u) * parseInt(carrito.cantidad)  }}</td>
-                                    <td class="px-6 py-3 text-center items-center justify-center dark:border-white flex">
-                                        <Button @click="$event => deleteCarrito(carrito.id, carrito.materiales)"
-                                            class="text-center ml-1 text-white shadow-lg shadow-gray-500 dark:shadow-red-600 dark:hover:bg-white dark:hover:text-red-600 bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md"
-                                            title="Eliminar Cliente"><i class="bi bi-trash3"></i>
-                                        </Button>
+                                    <td class="p-3 text-center whitespace-nowrap">
+                                        <button @click="$event => deleteCarrito(carrito.id, carrito.materiales)" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                            <i class='bx bxs-trash text-base text-white'></i>
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr class="bg-white text-black hover:text-white border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
