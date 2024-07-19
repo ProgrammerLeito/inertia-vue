@@ -13,7 +13,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = DB::table('categories')
-                        ->select('id', 'name') // Selecciona los campos que desees
+                        ->select('id', 'name', 'descripcion') // Selecciona los campos que desees
                         ->paginate(20);
 
         return inertia('Categories/Index', compact('categories'));

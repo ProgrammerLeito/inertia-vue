@@ -46,7 +46,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ButtonEdit from '@/Components/ButtonEdit.vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
 import DangerButton from '@/Components/DangerButton.vue';
-import ModalResponsive from '@/Components/ModalResponsive.vue';
+import ModalCategoria from '@/Components/ModalCategoria.vue';
 import Swal from 'sweetalert2';
 import { nextTick, ref } from 'vue';
  
@@ -64,10 +64,11 @@ const props = defineProps({
 });
  
 const form = useForm ({
-    name: ''
+    name: '',
+    descripcion: ''
 })
  
-const openModal = (op,name,category)=>{
+const openModal = (op,name,descripcion,category)=>{
     modal.value = true;
     nextTick( () => nameInput.value.focus());
     operation.value = op;
@@ -78,6 +79,7 @@ const openModal = (op,name,category)=>{
     else{
         title.value = 'Actualizar categoria';
         form.name=name;
+        form.descripcion=descripcion;
     }
 }
  
@@ -191,10 +193,10 @@ const totalCount = props.categories.total;
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer" @dblclick="guardarCategoriaId(category.id, category.name); redirectToDetails(category.id)" v-for="category in filteredCategories" :key="category.id">
-                                        <td class="px-6 py-4 font-semibold">{{ category.name }}</td>
+                                    <tr class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer" @dblclick="guardarCategoriaId(category.id, category.name, category.descripcion); redirectToDetails(category.id)" v-for="category in filteredCategories" :key="category.id">
+                                        <td class="px-6 py-4 font-extrabold uppercase text-md">{{ category.name }} <a class="font-medium normal-case text-sm">({{ category.descripcion ? category.descripcion : "S/N" }})</a></td>
                                         <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
-                                            <button @click="$event => openModal(2, category.name, category.id)" class="inline-flex mx-1 items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md">
+                                            <button @click="$event => openModal(2, category.name, category.descripcion,category.id)" class="inline-flex mx-1 items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md">
                                                 <i class='bx bxs-edit text-base text-white'></i>
                                             </button>
                                             <button @click="$event => deleteEmployee(category.id, category.name)" class="inline-flex mx-1 items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
@@ -245,7 +247,7 @@ const totalCount = props.categories.total;
                 </div>
             </div>
         </div>
-        <ModalResponsive :show="modal" @close="closeModal">
+        <ModalCategoria :show="modal" @close="closeModal">
             <div class="p-4">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-white text-center uppercase mb-4">{{ title }}</h2>
                 <div class="p-3 ">
@@ -253,6 +255,12 @@ const totalCount = props.categories.total;
                     <TextInput id="cantnameidad" ref="nameInput" v-model="form.name" type="text" class="w-full"
                         placeholder="Nombre de la categoria"></TextInput>
                     <InputError :message="form.errors.name" class="mt-2"></InputError>
+                </div>
+                <div class="p-3 ">
+                    <InputLabel for="descripcion" value="DESCRIPCION:" class="mb-2"></InputLabel>
+                    <TextInput id="descripcion" ref="nameInput" v-model="form.descripcion" type="text" class="w-full"
+                        placeholder="Descipcion de la categoria"></TextInput>
+                    <InputError :message="form.errors.descripcion" class="mt-2"></InputError>
                 </div>
                 <div class="p-3 flex justify-center">
                     <PrimaryButton :disabled="form.processing" @click="save">
@@ -265,6 +273,6 @@ const totalCount = props.categories.total;
                 </div>
                 <!-- Agrega más campos según sea necesario -->
             </div>
-        </ModalResponsive>
+        </ModalCategoria>
     </AppLayout>
 </template>

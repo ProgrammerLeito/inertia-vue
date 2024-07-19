@@ -75,6 +75,7 @@ class SalidasController extends Controller
 
         $tecnico_salidas = DB::table('users')
             ->select('id','name','password')
+            ->whereNull('deleted_at')
             ->get();
             
         return inertia('Salidas/Create', ['salidas' => $salidas, 'tecnico_salidas' => $tecnico_salidas, 'productos' => $productos]);

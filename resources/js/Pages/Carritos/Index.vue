@@ -8,6 +8,7 @@ import { Link, useForm, usePage } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import { ref,onMounted,computed,watch } from 'vue';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
+import * as XLSX from 'xlsx';
 
 const props=defineProps({
     carritos:{
@@ -138,38 +139,72 @@ onMounted(() => {
 
 var totalcompra = 0 
 
-const generarArchivoTxt = () => {
-    let contenido = '';
+const generarArchivoExcel = () => {
+    const encabezado = [['Lista de Productos a Comprar']];
+    const datos = encabezado.concat([['Materiales', 'Cantidad', 'Precio Unitario', 'Precio Total']]);
 
-    // Encabezado personalizado
-    const encabezado = 'Lista de Productos a Comprar\n\n';
-
-    // Recorrer cada fila (tr) en el tbody
     const tbodyRows = document.querySelectorAll('tbody tr');
-    tbodyRows.forEach((row, index) => {
+    tbodyRows.forEach((row) => {
         const rowData = [];
-        // Recoger los datos de cada celda (td)
-        const cells = row.querySelectorAll('td');
+        const cells = row.querySelectorAll('td:not(.hidden)');
         cells.forEach(cell => {
             rowData.push(cell.textContent.trim());
         });
-        // Unir los datos de la fila con un separador (por ejemplo, tabulador)
-        contenido += rowData.join('\t') + '\n \n';
+        datos.push(rowData);
     });
 
-    // Construir el contenido final con encabezado
-    contenido = encabezado + contenido;
+    const worksheet = XLSX.utils.aoa_to_sheet(datos);
 
-    // Generar el archivo de texto
-    const blob = new Blob([contenido], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'compras.txt'; // Nombre del archivo
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Aplica estilos a las celdas
+    const rango = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let R = rango.s.r; R <= rango.e.r; ++R) {
+        for (let C = rango.s.c; C <= rango.e.c; ++C) {
+            const cell_address = { c: C, r: R };
+            const cell_ref = XLSX.utils.encode_cell(cell_address);
+
+            if (!worksheet[cell_ref]) continue;
+
+            worksheet[cell_ref].s = {
+                font: {
+                    name: 'Arial',
+                    sz: 12,
+                    bold: R === 0,
+                    color: { rgb: R === 0 ? 'FFFFFF' : '000000' }
+                },
+                fill: {
+                    fgColor: { rgb: R === 0 ? '4F81BD' : 'FFFFFF' }
+                },
+                alignment: {
+                    vertical: 'center',
+                    horizontal: 'center'
+                },
+                border: {
+                    top: { style: 'thin', color: { rgb: '000000' } },
+                    bottom: { style: 'thin', color: { rgb: '000000' } },
+                    left: { style: 'thin', color: { rgb: '000000' } },
+                    right: { style: 'thin', color: { rgb: '000000' } }
+                }
+            };
+
+            // Ajusta el ancho de las celdas específicas
+            worksheet['!cols'] = worksheet['!cols'] || [];
+            if (C === 1 || C === 2 || C === 3) {
+                worksheet['!cols'][C] = { wpx: 95 };  // Ancho de la celda en píxeles
+            }
+            if (R === 0 && C === 0) {
+                worksheet['!cols'][C] = { wpx: 250 };  // Ancho de la celda "Materiales" en píxeles
+            }
+        }
+    }
+
+    worksheet['!rows'] = worksheet['!rows'] || [];
+    for (let R = rango.s.r; R <= rango.e.r; ++R) {
+        worksheet['!rows'][R] = { hpx: 20 };  // Alto de la celda en píxeles
+    }
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Productos');
+    XLSX.writeFile(workbook, 'compras.xlsx');
 }
 
 </script>
@@ -215,7 +250,7 @@ const generarArchivoTxt = () => {
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-2 justify-end md:mt-0 mt-4">
-                            <a href="https://api.whatsapp.com/send/?phone=51960269942&text=Hola+estoy+interesado+mas+informacion+a%3A+detalle&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" @click="generarArchivoTxt" class="text-sm font-bold py-2 px-5 bg-indigo-700 hover:bg-indigo-600 text-gray-50 rounded-md w-full md:w-auto flex gap-2 items-center justify-center">
+                            <a href="https://api.whatsapp.com/send/?phone=51960269942&text=Hola+estoy+interesado+mas+informacion+a%3A+detalle&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" @click="generarArchivoExcel" class="text-sm font-bold py-2 px-5 bg-indigo-700 hover:bg-indigo-600 text-gray-50 rounded-md w-full md:w-auto flex gap-2 items-center justify-center">
                                 <img src="img/whatsapp.png" alt="" class="h-5"> Ir a WhatsApp
                             </a>
                             <ButtonResponsive class="uppercase text-sm">
