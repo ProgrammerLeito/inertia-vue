@@ -38,6 +38,7 @@ class TbproductoRequest extends FormRequest
             'capacidades' => '',
             'especificaciones' => '',
             'foto' => 'nullable',
+            'garantia' => '',
         ];
     }
     public function messages(): array

@@ -23,7 +23,8 @@ class Tbproducto extends Model
         'codigo',
         'capacidades',
         'especificaciones',
-        'foto'
+        'foto',
+        'garantia'
     ];
 
     public function tbcategoria()

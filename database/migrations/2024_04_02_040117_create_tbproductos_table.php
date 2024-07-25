@@ -27,6 +27,7 @@ return new class extends Migration
             $table->text('capacidades')->nullable();
             $table->text('especificaciones')->nullable();
             $table->string('foto')->nullable();
+            $table->string('garantia');
             $table->timestamps();
         });
     }

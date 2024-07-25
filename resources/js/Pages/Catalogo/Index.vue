@@ -144,9 +144,10 @@ watchEffect(() => {
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_List</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_Min</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_Max</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_List</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Garantia</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2" v-if="$page.props.user.permissions.includes('Acciones Administrador')">Acciones</th>
                                         </tr>
                                     </thead>
@@ -183,9 +184,10 @@ watchEffect(() => {
                                                     :src="'/storage/' + tbproducto.foto" alt="Foto"
                                                     style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
                                             </td>
+                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_list ? `${tbproducto.moneda} ${tbproducto.precio_list}` : 'Por asignar' }} </td>
                                             <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_min ? `${tbproducto.moneda} ${tbproducto.precio_min}` : 'Por asignar' }} </td>
                                             <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_max ? `${tbproducto.moneda} ${tbproducto.precio_max}` : 'Por asignar' }} </td>
-                                            <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_list ? `${tbproducto.moneda} ${tbproducto.precio_list}` : 'Por asignar' }} </td>
+                                            <td class="px-6 py-4 text-center border-r border-b text-red-500 dark:text-white font-bold"> {{ tbproducto.garantia }} </td>
                                             <!-- <td class="p-3 text-center border-b" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
                                                 <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })"
                                                     class="py-1 p-1 bg-green-500 dark:hover:bg-white dark:text-white dark:hover:text-green-500 rounded">

@@ -630,11 +630,12 @@ const previewPDF = () => {
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Marca</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio List.</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Min.</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Max.</th>
-                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio List.</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Importe</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Garantia</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Quitar</th>
                                             </tr>
                                         </thead>
@@ -665,11 +666,12 @@ const previewPDF = () => {
                                                         <li v-for="(capacidad, i) in tbproducto.capacidades.split('\n')" :key="i">{{ capacidad }}</li>
                                                     </ul>
                                                 </td>
-                                                <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_min ? tbproducto.precio_min : 0 ).toFixed(2) }} </td>
-                                                <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : 0 ).toFixed(2) }} </td>
-                                                <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_list ? tbproducto.precio_list : 0 ).toFixed(2) }} </td>
-                                                <td class="px-3 py-3 text-center border-r border-b"><input class="text-center dark:bg-gray-800 bg-white text-black border-white dark:border-gray-800 dark:text-white w-16" type="number" v-model="tbproducto.cantidad"></td>
-                                                <td class="px-3 py-3 text-center border-r border-b">s/{{ tbproducto.precio_min * tbproducto.cantidad }}</td>
+                                                <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2) }}</td>
+                                                <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2) }} </td>
+                                                <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2) }} </td>
+                                                <td class="px-3 py-3 text-center border-r whitespace-nowrap border-b"><input class="text-center dark:bg-gray-800 bg-white text-black border-white dark:border-gray-800 dark:text-white w-16" type="number" v-model="tbproducto.cantidad"></td>
+                                                <td class="px-3 py-3 text-center border-r border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_min * tbproducto.cantidad).toFixed(2) }}</td>
+                                                <td class="px-3 py-4 text-center border-r border-b">{{ tbproducto.garantia }}</td>
                                                 <td class="px-3 py-3 text-center border-r border-b"><button @click.prevent="quitarProducto(i)"><i class="bi bi-trash3 text-red-500"></i></button></td>
                                             </tr>
                                         </tbody>
@@ -834,9 +836,10 @@ const previewPDF = () => {
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Especificaciones</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Marca</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Capacidades</th>
+                                    <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio Lis.</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio Min.</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio Max.</th>
-                                    <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio Lis.</th>
+                                    <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Garantia</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Agregar</th>
                                 </tr>
                             </thead>
@@ -867,9 +870,10 @@ const previewPDF = () => {
                                             <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
                                         </ul>
                                     </td>
-                                    <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_min ? tbproducto.precio_min : 0 ).toFixed(2) }} </td>
-                                    <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : 0 ).toFixed(2) }} </td>
-                                    <td class="px-6 py-4 text-center border-r border-b">{{ parseFloat(tbproducto.precio_list ? tbproducto.precio_list : 0 ).toFixed(2) }} </td>
+                                    <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2) }}</td>
+                                    <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2) }} </td>
+                                    <td class="px-6 py-4 text-center border-r border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2) }} </td>
+                                    <td class="px-3 py-4 text-center border-r border-b">{{ tbproducto.garantia }}</td>
                                     <td class="px-6 py-3 text-center border-r border-b">
                                         <button @click="agregarProducto(tbproducto)" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:bg-green-700">
                                             Agregar

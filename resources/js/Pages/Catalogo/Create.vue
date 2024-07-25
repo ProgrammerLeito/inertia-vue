@@ -77,6 +77,7 @@ const initialvalues = {
     capacidades: '',
     especificaciones: '',
     foto: null,
+    garantia: ''
 };
 
 const form = useForm(initialvalues);
@@ -412,6 +413,20 @@ const ok4 = (msj) => {
                                         placeholder="escribe solo numeros"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.stock" class="mt-2" />
+                                </div>
+
+                                <div>
+                                    <InputLabel for="garantia" class="block text-xs font-medium text-gray-700">Garantia
+                                    </InputLabel>
+                                    <select id="garantia" v-model="form.garantia" required
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="" disabled selected >Selecciona una opcion</option>
+                                        <option value="3 meses">3 meses</option>
+                                        <option value="6 meses">6 meses</option>
+                                        <option value="1 año">1 año</option>
+                                        <option value="sin garantia">Sin garantia</option>
+                                    </select>
+                                    <InputError :message="$page.props.errors.garantia" class="mt-2" />
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 gap-y-4 md:grid-cols-2 lg:grid-cols-3 sm:gap-x-8 mt-2">
