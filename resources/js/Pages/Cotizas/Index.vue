@@ -201,8 +201,8 @@ const totalCount = props.cventas.total;
                                         <td class="px-6 py-4 text-center">{{ cventa.tenor ? cventa.tenor.name : 'Sin codigo' }}
                                         </td>
                                         <td class="px-6 py-4 text-center">{{ cventa.fecha }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.subtotal }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.total }}</td>
+                                        <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.subtotal }}</td>
+                                        <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.total }}</td>
                                         <td class="px-6 py-4 text-center">
                                             <div :class="{
                                                 'bg-blue-600': cventa.estado === 'Por Enviar',

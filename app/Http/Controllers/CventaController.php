@@ -29,13 +29,24 @@ class CventaController extends Controller
 
     public function create()
     {
+        $ultimaCotizacion = Cventa::latest()->first();
+
+        // Verificar si hay algún registro
+        if ($ultimaCotizacion) {
+            // Obtener el valor de n_cotizacion del último registro
+            $nCotizacion = str_pad($ultimaCotizacion->n_cotizacion + 1, 10, '0', STR_PAD_LEFT);
+        } else {
+            // En caso de que no haya registros, asignar un valor predeterminado
+            $nCotizacion = '0000000001'; // Puedes asignar cualquier valor aquí
+        }
+
         $clientes = Cliente::all();
         $tenors = Tenor::all();
-        $tbproductos = Tbproducto::with('tbcategoria','tbsubcategoria','tbmarca')->get();
-        $tbcategorias=Tbcategoria::with('tbsubcategorias')->get();
-        $tbsubcategorias=Tbsubcategoria::all();
-        $tbmarcas=Tbmarca::all();
-        return Inertia::render('Cotizas/Create', compact('clientes', 'tenors', 'tbproductos', 'tbcategorias','tbsubcategorias','tbmarcas'));
+        $tbproductos = Tbproducto::with('tbcategoria', 'tbsubcategoria', 'tbmarca')->get();
+        $tbcategorias = Tbcategoria::with('tbsubcategorias')->get();
+        $tbsubcategorias = Tbsubcategoria::all();
+        $tbmarcas = Tbmarca::all();
+        return Inertia::render('Cotizas/Create', compact('clientes', 'tenors', 'tbproductos', 'tbcategorias', 'tbsubcategorias', 'tbmarcas', 'nCotizacion'));
     }
 
 

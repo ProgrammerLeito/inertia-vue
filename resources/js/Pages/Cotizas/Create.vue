@@ -28,7 +28,7 @@ const toggleModal3 = () => {
     modal3.value = !modal3.value;
 };
  
-defineProps({
+const { clientes, tenors, tbproductos, tbsubcategorias, tbcategorias, tbmarcas, nCotizacion } = defineProps({
     clientes: {
         type : Object,
         required: true
@@ -52,6 +52,10 @@ defineProps({
     tbmarcas: {
         type : Object,
         required: true
+    },
+    nCotizacion: {
+        type: String,
+        required: true
     }
  
 });
@@ -59,6 +63,7 @@ defineProps({
 const form2 = useForm({
     name: '',
 });
+
 const form = useForm ({
     cliente_id: '',
     tenor_id:'',
@@ -70,7 +75,66 @@ const form = useForm ({
     igv: 0,
     total: 0,
     igvEnabled: false,
+    n_cotizacion: nCotizacion
 });
+
+const searchTerm = ref('');
+const searchTermCodigoCli = ref('');
+const filteredClientes = ref([]);
+const selectedIndex = ref(-1);
+const activeAccordion = ref([]);
+
+const onInput = () => {
+    selectedIndex.value = -1;
+    if (searchTerm.value.length > 0) {
+        filteredClientes.value = props.clientes.filter(cliente =>
+            cliente.razonSocial.toLowerCase().includes(searchTerm.value.toLowerCase())
+        );
+    } else {
+        filteredClientes.value = [];
+    }
+};
+
+const onKeydown = (event) => {
+    if (filteredClientes.value.length > 0) {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            selectedIndex.value = (selectedIndex.value + 1) % filteredClientes.value.length;
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            selectedIndex.value = (selectedIndex.value - 1 + filteredClientes.value.length) % filteredClientes.value.length;
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            if (selectedIndex.value >= 0) {
+                selectCliente(filteredClientes.value[selectedIndex.value]);
+            }
+        }
+    }
+};
+
+const updateSelection = (index) => {
+    selectedIndex.value = index;
+};
+
+const selectCliente = (cliente) => {
+    searchTerm.value = cliente.razonSocial;
+    searchTermCodigoCli.value = cliente.id;
+    form.cliente_id = searchTermCodigoCli.value;
+    filteredClientes.value = [];
+};
+
+const toggleAccordion = (index) => {
+    const indexPosition = activeAccordion.value.indexOf(index);
+    if (indexPosition === -1) {
+        activeAccordion.value.push(index);
+    } else {
+        activeAccordion.value.splice(indexPosition, 1);
+    }
+};
+
+const isActive = (index) => {
+    return activeAccordion.value.includes(index);
+};
  
  
 // llenan automaticamente cuando se agregan productos y se activa o desactiva el igv
@@ -202,17 +266,6 @@ watch(tbproductosAgregados, (newProductos) => {
     }, 50);
 }, { deep: true });
  
-// Computed para deshabilitar el campo de IGV si no hay productos agregados
-const igvDisabled = computed(() => tbproductosAgregados.value.length === 0);
- 
-const calcularTotal = () => {
-    if (form.moneda === 'dolares $') {
-        form.total = (form.subtotal + form.igv) * form.tipoCambio;
-    } else {
-        form.total = form.subtotal + form.igv;
-    }
-};
- 
 //modal para ve la imagen
 const modalOpen = ref(false);
 const modalImageUrl = ref('');
@@ -221,7 +274,6 @@ const openModal = (imageUrl) => {
     modalImageUrl.value = imageUrl;
     modalOpen.value = true;
 };
- 
  
 watch(() => form.moneda, (newValue) => {
     if (newValue === 'dolares $') {
@@ -266,9 +318,9 @@ watch(() => form.moneda, (newValue) => {
         }).then((result) => {
             if (result.isConfirmed) {
                 const tipoCambio = result.value;
-                form.subtotal = parseFloat((form.subtotal / tipoCambio).toFixed(2));
-                form.igv = parseFloat((form.igv / tipoCambio).toFixed(2));
-                form.total = parseFloat((form.total / tipoCambio).toFixed(2));
+                form.subtotal = parseFloat((form.subtotal * tipoCambio).toFixed(2));
+                form.igv = parseFloat((form.igv * tipoCambio).toFixed(2));
+                form.total = parseFloat((form.total * tipoCambio).toFixed(2));
                 form.tipoCambio = tipoCambio;
 
                 console.log('Tipo de cambio ingresado:', tipoCambio);
@@ -402,7 +454,7 @@ const previewPDF = () => {
         var eje_r = 30;
         var eje_x = 20;
 
-        const numeroCotizacion = 1
+        const numeroCotizacion = form.n_cotizacion
         const numeroCotizacionFormateado = numeroCotizacion.toString().padStart(8, '0');
         const anchoPagina = doc.internal.pageSize.width;
         const margenDerecho = 20;
@@ -529,7 +581,7 @@ const previewPDF = () => {
                 doc.text(20, eje_y, 'Especificaciones Técnicas :');
                 doc.setFont('Helvetica', 'normal');
                 doc.setFontSize(10);
-                eje_y += 5;
+                eje_y += 10;
 
                 const especificacionesDivididas = doc.splitTextToSize(especificaciones, 160);
                 especificacionesDivididas.forEach((fragmento, index) => {
@@ -574,7 +626,7 @@ const previewPDF = () => {
                 doc.setFont('Helvetica', 'bold');
                 doc.setFontSize(14);
 
-                const texto = `Precio Unitario  :  ${moneda.toUpperCase()} ${importe} + IGV`;
+                const texto = `Precio Unitario  :  ${moneda.toUpperCase()} ${parseFloat(importe).toFixed(2)} + IGV`;
                 const anchoTexto = doc.getTextWidth(texto);
                 const anchoRectangulo = anchoTexto + 20;
                 const eje_x2 = (doc.internal.pageSize.width - anchoRectangulo) / 2;
@@ -601,6 +653,12 @@ const previewPDF = () => {
         const addPriceUnit = () => {
             let precioProducto = total;
 
+            const precioFormateado = parseFloat(precioProducto).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                useGrouping: true
+            });
+
             doc.setFont('Helvetica', 'bold');
             doc.setFontSize(18);
             eje_y += 25;
@@ -616,7 +674,7 @@ const previewPDF = () => {
             doc.setFillColor(255, 255, 0);
 
             if (igvEnabled) {
-                const texto = `Precio Total  :  ${simboloMoneda} ${precioProducto}`;
+                const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado}`;
                 const anchoTexto = doc.getTextWidth(texto);
                 const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
 
@@ -629,7 +687,7 @@ const previewPDF = () => {
                 doc.setFontSize(14);
                 doc.text(eje_x3+5, eje_y + 8, igvText);
             }else{
-                const texto = `Precio Total  :  ${simboloMoneda} ${precioProducto} + IGV`;
+                const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado} + IGV`;
                 const anchoTexto = doc.getTextWidth(texto);
                 const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
                 const anchoRectangulo = anchoTexto + 20;
@@ -662,66 +720,33 @@ const previewPDF = () => {
             doc.text(texto, startX, startY);
             doc.line(startX, startY + 1, startX + textWidth, startY + 1);
 
-            // doc.setTextColor(0,0,0);//Color de texto
-            // doc.setFontSize(10);//Tamaño de texto
-            // doc.setFont('Helvetica', 'bold');//estilos de texto
-            // eje_r += 8; // vale 133
-            // doc.text(20, eje_r, 'Garantia');
-
-            // doc.setTextColor(0,0,0);//Color de texto
-            // doc.setFontSize(10.5);//Tamaño de texto
-            // doc.setFont('Helvetica', 'normal');//estilos de texto
-            // doc.text(55, eje_r, ': ' + `${garantia}`);
-
-            // doc.setTextColor(0,0,0);//Color de texto
-            // doc.setFontSize(10);//Tamaño de texto
-            // doc.setFont('Helvetica', 'bold');//estilos de texto
-            // eje_r += 5; // vale 138
-            // doc.text(20, eje_r, 'Plazo de Entrega');
-
-            // doc.setTextColor(0,0,0);//Color de texto
-            // doc.setFontSize(10.5);//Tamaño de texto
-            // doc.setFont('Helvetica', 'normal');//estilos de texto
-            // doc.text(55, eje_r, ': ' + `${dias_entrega}` + ' Dias');
-
-            // doc.setTextColor(0,0,0);//Color de texto
-            // doc.setFontSize(10);//Tamaño de texto
-            // doc.setFont('Helvetica', 'bold');//estilos de texto
-            // eje_r += 5; // vale 143
-            // doc.text(20, eje_r, 'Forma de Pago');
-
-            // doc.setTextColor(0,0,0);//Color de texto
-            // doc.setFontSize(10.5);//Tamaño de texto
-            // doc.setFont('Helvetica', 'normal');//estilos de texto
-            // doc.text(55, eje_r, ': ' + `${forma_pago}`);
-
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(12);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
             eje_r += 8; // vale 148
-            doc.text(20, eje_r, 'Deposito a cuenta de Ahorros');
+            doc.text(20, eje_r, 'Deposito a Cuenta de Ahorros');
 
             doc.setTextColor(0,0,255);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
             eje_r += 5; // vale 153
-            doc.text(20, eje_r, 'BBVA : ');
+            doc.text(20, eje_r, 'BBVA');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(35, eje_r, 'SOLES: 0011 0267 0201320316  /  CCI: 011 267 000201320316 27');
+            doc.text(32, eje_r, ': SOLES: 0011 0267 0201320316  |  CCI: 011 267 000201320316 27');
 
             doc.setTextColor(255,0,0);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
             eje_r += 5; // vale 158
-            doc.text(20, eje_r, 'BCP : ');
+            doc.text(20, eje_r, 'BCP');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(32, eje_r, 'SOLES: 475-2156367-0-62 / DOLARES: 475-2156380-1-04');
+            doc.text(32, eje_r, ': SOLES: 475-2156367-0-62  |  DOLARES: 475-2156380-1-04');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(11);//Tamaño de texto
@@ -736,7 +761,7 @@ const previewPDF = () => {
             doc.text(20, eje_r, 'Servicio gratuito dentro del tiempo de garantia');
 
             doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(11);//Tamaño de texto
+            doc.setFontSize(12);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
             eje_r += 5; // vale 173
             doc.text(20, eje_r, 'A la espera de su orden');
@@ -745,22 +770,20 @@ const previewPDF = () => {
             doc.setFontSize(12); // Tamaño de texto
             doc.setFont('Helvetica', 'bold'); // Estilos de texto
 
-            // Supongamos que el punto central es 120
-            let centerX = 140;
+            const anchoPagina = doc.internal.pageSize.width;
+            const margenDerecho = 20;
+            const anchoTextoNombre = doc.getTextWidth(nombreCompleto);
+            const eje_x_left = anchoPagina - anchoTextoNombre - margenDerecho;
 
-            // Calcular el ancho del texto del nombre completo
-            let nombreCompletoWidth = doc.getTextWidth(nombreCompleto);
             // Calcular el ancho del texto de los roles
-            let rolesWidth = doc.getTextWidth(roles);
+            const rolesWidth = doc.getTextWidth(roles);
+            const eje_x_roles = eje_x_left + ((anchoTextoNombre / 2) - (rolesWidth / 2));
 
-            // Calcular las posiciones x para centrar los textos
-            let nombreCompletoX = centerX - (nombreCompletoWidth / 2);
-            let rolesX = centerX - (rolesWidth / 2);
-
-            eje_r += 150; // vale 173
-            doc.text(nombreCompletoX, eje_r, nombreCompleto);
+            eje_r += 160; // vale 173
+            doc.text(eje_x_left, eje_r, nombreCompleto);
             eje_r += 5; // vale 173
-            doc.text(rolesX, eje_r, roles);
+            doc.setFontSize(10);
+            doc.text(eje_x_roles, eje_r, roles);
 
             accordions.forEach((accordion, index) => {
             // Si el acordeón está abierto, simula un clic para cerrarlo
@@ -815,6 +838,9 @@ document.addEventListener('input', function(event) {
                 }
             }
         });
+
+        form.subtotal = total
+        form.total = total
 
         document.getElementById('subtotal').value = total.toFixed(2);
         document.getElementById('total').value = total.toFixed(2);
@@ -1047,15 +1073,15 @@ console.log(listarClientes);
                                         <label for="igvCheckbox" class="ms-2 text-xs font-medium text-black dark:text-white">Aplicar IGV (18%)</label>
                                     </div>
                                     <InputLabel class="ml-6 py-1 hidden" for="igv" :value="'IGV (18%) (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'" v-if="igvEnabled"></InputLabel>
-                                    <TextInput id="igv" v-model="form.igv" type="number" class="mt-2 w-full uppercase" :disabled="!igvEnabled"></TextInput>
+                                    <TextInput id="igv" v-model="form.igv" type="text" class="mt-2 w-full uppercase" :disabled="!igvEnabled"></TextInput>
                                 </div>
                                 <div>
                                     <InputLabel class="text-xs" for="subtotal" :value="'Subtotal (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
-                                    <TextInput id="subtotal" v-model="form.subtotal" type="number" class="mt-2 w-full uppercase"></TextInput>
+                                    <TextInput id="subtotal" v-model="form.subtotal" type="text" class="mt-2 w-full uppercase"></TextInput>
                                 </div>
                                 <div>
                                     <InputLabel class="text-xs" for="total" :value="'Total (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
-                                    <TextInput id="total" v-model="form.total" type="number" class="mt-2 w-full bg-green-400 uppercase" disabled></TextInput>
+                                    <TextInput id="total" v-model="form.total" type="text" class="mt-2 w-full bg-green-400 uppercase" disabled></TextInput>
                                 </div>
                             </div>
                             <div class="d-flex mt-4">
@@ -1098,8 +1124,8 @@ console.log(listarClientes);
             </div>
         </ModalResponsive>
  
-        <div v-if="modal3" class="fixed inset-0 overflow-y-auto z-1 overflow-hidden bg-gray-200/40 flex justify-center items-center md:px-0 px-2" style="backdrop-filter: blur(2px);" @click.self="toggleModal3">
-            <div class=" min-w-[calc(100vw-60px)] md:ml-[50px] md:px-6">
+        <div v-if="modal3" class="fixed inset-0 overflow-y-auto z-1 pt-[110px] overflow-hidden bg-gray-200/40 flex justify-center items-center md:px-0 px-2" style="backdrop-filter: blur(2px);" @click.self="toggleModal3">
+            <div class=" min-w-[calc(100vw-60px)] md:ml-[50px] md:px-6 max-h-[90%]">
                 <div class="modal-content bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-2xl p-2">
                     <button @click="toggleModal3" class="close absolute top-0.5 right-0.5 p-2 text-gray-500 hover:text-gray-700">
                     &times;
@@ -1224,7 +1250,7 @@ console.log(listarClientes);
     </AppLayout>
 </template>
 
-<script>
+<!-- <script>
 export default {
     props: {
         clientes: {
@@ -1235,9 +1261,13 @@ export default {
     data() {
         return {
             searchTerm: '',
+            searchTermCodigoCli: '',
             filteredClientes: [],
             selectedIndex: -1,
             activeAccordion: [],
+            form: {
+                cliente_id: ''
+            }
         };
     },
     methods: {
@@ -1272,6 +1302,8 @@ export default {
         },
         selectCliente(cliente) {
             this.searchTerm = cliente.razonSocial;
+            this.searchTermCodigoCli = cliente.id;
+            this.form.cliente_id = this.searchTermCodigoCli;
             this.filteredClientes = [];
         },
         toggleAccordion(index) {
@@ -1285,6 +1317,6 @@ export default {
         isActive(index) {
             return this.activeAccordion.includes(index);
         },
-    },
+    },
 };
-</script>
+</script> -->

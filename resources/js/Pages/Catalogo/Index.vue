@@ -179,10 +179,10 @@ watchEffect(() => {
                                                     </dl>
                                                 </div>
                                             </td>
-                                            <td class="md:px-4 px-2 py-4 text-center border-r border-b">
+                                            <td class="md:px-2 px-2 py-2 text-center border-r border-b">
                                                 <img @click="openModal('/productos_img/' + tbproducto.foto)"
                                                     :src="'/productos_img/' + tbproducto.foto" alt="Foto"
-                                                    style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
+                                                    style="max-width: 90px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
                                             </td>
                                             <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_list ? `${tbproducto.moneda} ${tbproducto.precio_list}` : 'Por asignar' }} </td>
                                             <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_min ? `${tbproducto.moneda} ${tbproducto.precio_min}` : 'Por asignar' }} </td>
