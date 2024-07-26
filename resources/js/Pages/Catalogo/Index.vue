@@ -161,7 +161,7 @@ watchEffect(() => {
                                             <td class="px-6 py-4 text-center border-r border-b"><b>{{ tbproducto.modelo }}</b></td>
                                             <td class="px-6 py-2 text-center border-r border-b whitespace-nowrap">
                                                 <ul class="list-disc px-6 py-4 text-left -translate-y-1">
-                                                    <li v-for="(capacidad, index) in tbproducto.capacidades.split('\n')" :key="index">{{ capacidad }}</li>
+                                                    <li v-for="(capacidad, index) in (tbproducto.capacidades || '').split('\n')" :key="index">{{ capacidad }}</li>
                                                 </ul>
                                             </td>
                                             <td class="px-6 py-4 text-center border-r border-b whitespace-nowrap">
@@ -173,15 +173,15 @@ watchEffect(() => {
                                                         </dt>
                                                         <dd v-if="isActive(i)" class="ml-4">
                                                             <ul class="list-disc px-6 py-4 text-left">
-                                                                <li v-for="(item, index) in tbproducto.especificaciones.split('\n')" :key="index">{{ item }}</li>
+                                                                <li v-for="(item, index) in (tbproducto.especificaciones || '').split('\n')" :key="index">{{ item }}</li>
                                                             </ul>
                                                         </dd>
                                                     </dl>
                                                 </div>
                                             </td>
                                             <td class="md:px-4 px-2 py-4 text-center border-r border-b">
-                                                <img @click="openModal('/storage/' + tbproducto.foto)"
-                                                    :src="'/storage/' + tbproducto.foto" alt="Foto"
+                                                <img @click="openModal('/productos_img/' + tbproducto.foto)"
+                                                    :src="'/productos_img/' + tbproducto.foto" alt="Foto"
                                                     style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
                                             </td>
                                             <td class="px-6 py-4 text-center border-r border-b"> {{ tbproducto.precio_list ? `${tbproducto.moneda} ${tbproducto.precio_list}` : 'Por asignar' }} </td>

@@ -20,13 +20,13 @@ return new class extends Migration
             $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
             $table->foreignId('tenor_id')->constrained()->onDelete('cascade');
             $table->date('fecha');
-            $table->string('moneda', 10);
-            $table->string('garantia');
-            $table->string('forma_pago');
-            $table->integer('dias_entrega');
-            $table->decimal('subtotal', 10, 2);
-            $table->decimal('igv', 10, 2);
-            $table->decimal('total', 10, 2);
+            $table->string('moneda', 10)->nullable();
+            $table->string('garantia')->nullable();
+            $table->string('forma_pago')->nullable();
+            $table->integer('dias_entrega')->nullable();
+            $table->decimal('subtotal', 10, 2)->nullable();
+            $table->decimal('igv', 10, 2)->nullable();
+            $table->decimal('total', 10, 2)->nullable();
             $table->timestamps();
         });
     }

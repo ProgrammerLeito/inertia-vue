@@ -23,15 +23,15 @@ class CventaRequest extends FormRequest
     {
         return [
             'cliente_id' => 'required',
-            'tenor_id' => 'required',
+            'tenor_id' => 'nullable',
             'fecha' => 'required|date',
-            'moneda' => 'required|string',
-            'garantia' => 'required|string',
-            'forma_pago' => 'required|string',
-            'dias_entrega' => 'required|integer',
+            'moneda' => 'nullable',
+            'garantia' => 'nullable',
+            'forma_pago' => 'nullable',
+            'dias_entrega' => 'nullable',
             'subtotal' => 'required|numeric',
-            'igv' => 'required|numeric',
-            'total' => 'required|numeric',
+            'igv' => 'nullable',
+            'total' => 'nullable',
 
             'modelo' => 'nullable|string',
             'foto' => 'nullable|string',

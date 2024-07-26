@@ -28,7 +28,7 @@ class TbproductoRequest extends FormRequest
             'tbsubcategoria_id' => 'required',
             'tbmarca_id' => 'required',
             'modelo' => 'required',
-            'medida' => 'required',
+            'medida' => 'nullable',
             'moneda' => 'required',
             'precio_min' => '',
             'precio_max' => '',

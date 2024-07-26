@@ -18,7 +18,7 @@ class TbproductoController extends Controller
 
     public function index()
     {
-        $tbproductos=Tbproducto::with('tbcategoria','tbsubcategoria','tbmarca')->orderBy('id', 'DESC')->paginate(8);
+        $tbproductos=Tbproducto::with('tbcategoria','tbsubcategoria','tbmarca')->orderBy('id', 'DESC')->paginate(100);
         $tbcategorias=Tbcategoria::with('tbsubcategorias')->get();
         $tbsubcategorias=Tbsubcategoria::all();
         $tbmarcas=Tbmarca::all();
@@ -38,11 +38,12 @@ class TbproductoController extends Controller
     {
         $data = $request->except('foto');
 
-        if($request->hasFile('foto')){
-            $file= $request->file('foto');
-            $routeName= $file->store('fotos',['disk'=>'public']);
-            $data['foto']=$routeName;
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $routeName = $file->store('', ['disk' => 'productos_img']);
+            $data['foto'] = $routeName;
         }
+
         Tbproducto::create($data);
         return redirect()->route('tbproductos.index');
     }
@@ -55,22 +56,23 @@ class TbproductoController extends Controller
         return Inertia::render('Catalogo/Edit', compact('tbproducto','tbmarcas','tbcategorias','tbsubcategorias'));
     }
 
-    public function update(UpdateTbproductoRequest $request,Tbproducto $tbproducto)
+    public function update(UpdateTbproductoRequest $request, Tbproducto $tbproducto)
     {
         $data = $request->except('foto');
 
-        if($request->hasFile('foto')){
-            $file= $request->file('foto');
-            $routeName= $file->store('fotos',['disk'=>'public']);
-            $data['foto']=$routeName;
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $routeName = $file->store('', ['disk' => 'productos_img']);
+            $data['foto'] = $routeName;
 
-            if($tbproducto->foto){
-                Storage::disk('public')->delete($tbproducto->foto);
+            // Eliminar la imagen antigua si existe
+            if ($tbproducto->foto) {
+                Storage::disk('productos_img')->delete($tbproducto->foto);
             }
         }
+
         $tbproducto->update($data);
         return redirect()->route('tbproductos.index');
-
     }
 
 

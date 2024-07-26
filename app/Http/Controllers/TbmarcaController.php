@@ -11,7 +11,7 @@ class TbmarcaController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'nombre' => 'required|string|max:255|unique:tbmarcas',
+            'nombre' => 'required|string|max:255',
             'tbsubcategoria_id' => 'required|exists:tbsubcategorias,id',
             // Aquí puedes agregar más reglas de validación según tus necesidades
         ]);

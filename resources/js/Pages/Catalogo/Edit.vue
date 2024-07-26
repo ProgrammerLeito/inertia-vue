@@ -31,11 +31,25 @@ const { tbproducto, tbmarcas, tbcategorias, tbsubcategorias } = defineProps({
 // Lógica del componente
 const form = useForm(tbproducto);
 
-const onSelectFoto= (e) =>{
+const imagePreview2 = ref('');
+const onSelectFoto2 = (e, fieldName) => {
     const files = e.target.files;
-    if(files.length){
-        form.foto= files[0]
-    }
+    if (files.length) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            switch (fieldName) {
+                case 'foto':
+                    imagePreview2.value = e.target.result;
+                    break;
+            }
+        };
+        reader.readAsDataURL(files[0]);
+        switch (fieldName) {
+            case 'foto':
+                form.foto = files[0];
+                break;
+        }
+    }
 }
 
 const filteredSubcategorias = ref([]);
@@ -260,14 +274,27 @@ const submitForm = () => {
                                 </div>
  
                                 <div>
-                                    <InputLabel for="foto" value="Foto"
-                                        class="block text-xs font-medium text-gray-700" />
-                                    <FileInput name="foto" @change="onSelectFoto" />
+                                    <InputLabel for="foto" value="Foto" class="block text-xs font-medium text-gray-700" />
+                                    <FileInput name="foto" @change="(e) => onSelectFoto2(e, 'foto')"  />
                                     <InputError :message="$page.props.errors.foto" class="mt-2" />
-                                    <img class="h-32 mt-2 rounded shadow" :src="'/storage/' + tbproducto.foto"
-                                        alt="Foto actual">
- 
-                                </div>
+
+                                    <div class="mt-4 flex space-x-4 justify-between items-center">
+                                        <!-- Foto Actual -->
+                                        <div class="text-center dark:text-white">
+                                            <img class="h-32 rounded shadow" :src="'/productos_img/' + tbproducto.foto" alt="Foto actual">
+                                            <p class="text-sm dark:text-white text-gray-900 mt-1">Foto actual</p>
+                                        </div>
+                                        <div>
+                                            <i class="fa-solid fa-right-left dark:text-white text-gray-900 text-4xl"></i>
+                                        </div>
+                                        
+                                        <!-- Vista Previa de la Nueva Foto -->
+                                        <div v-if="imagePreview2" class="text-center dark:text-white">
+                                            <img :src="imagePreview2" alt="Vista previa de la foto" class="h-32 rounded shadow">
+                                            <p class="text-sm dark:text-white text-gray-900 mt-1">Nueva Foto</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
