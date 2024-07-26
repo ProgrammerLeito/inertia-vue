@@ -64,7 +64,6 @@ const form = useForm ({
     tenor_id:'',
     fecha:'',
     moneda:'',
-    garantia:'',
     forma_pago:'',
     dias_entrega:'',
     subtotal: 0,
@@ -90,18 +89,46 @@ const agregarProducto = (producto) => {
         showConfirmButton: false
     });
     setTimeout(() => {
-        let total = 0;
-        const elements = document.querySelectorAll('.inputImporte');
+        const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
+        const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
         
-        elements.forEach(function(element) {
-            const value = parseFloat(element.textContent);
-            if (!isNaN(value)) {
-                total += value;
+        
+        let total = 0;
+        const rows = document.querySelectorAll('tr'); // Selecciona todas las filas de la tabla
+
+        rows.forEach(function(row) {
+            const importeCell = row.querySelector('.inputImporte');
+            const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
+            if (importeCell && monedaCell) {
+                if(moneda == "Soles"){
+                    const value = parseFloat(importeCell.textContent);
+                    const moneda = monedaCell.textContent.trim();
+    
+                    if (!isNaN(value)) {
+                        if (moneda === "$") {
+                            total += value * parseFloat(tipoCambio);
+                        } else {
+                            total += value;
+                        }
+                    }
+                }else if(moneda == "Dólares"){
+                    const value = parseFloat(importeCell.textContent);
+                    const moneda = monedaCell.textContent.trim();
+    
+                    if (!isNaN(value)) {
+                        if (moneda === "s/") {
+                            total += value / parseFloat(tipoCambio);
+                        } else {
+                            total += value;
+                        }
+                    }
+                }
             }
         });
 
-        document.getElementById('subtotal').value = total;
-        document.getElementById('total').value = total;
+        document.getElementById('subtotal').value = total.toFixed(2);
+        document.getElementById('total').value = total.toFixed(2);
+        
     }, 300);
 };
  
@@ -117,12 +144,13 @@ const igvEnabled = ref(false);
  
 // Watcher para actualizar el total cuando se cambia el estado del IGV
 watch(igvEnabled, (newValue) => {
+    const rTotal = document.getElementById('subtotal').value; 
     if (newValue) {
-        form.igv = form.subtotal * 0.18;
+        form.igv = parseFloat(rTotal) * 0.18;
     } else {
         form.igv = 0;
     }
-    form.total = form.subtotal + form.igv;
+    form.total = parseFloat(rTotal) + form.igv;
 });
  
 // Watcher para actualizar el subtotal, el IGV y el total cuando se cambia la cantidad de productos
@@ -130,6 +158,48 @@ watch(tbproductosAgregados, (newProductos) => {
     form.subtotal = newProductos.reduce((acc, curr) => acc + (curr.precio_min * curr.cantidad), 0);
     form.igv = igvEnabled.value ? form.subtotal * 0.18 : 0;
     form.total = form.subtotal + form.igv;
+    setTimeout(() => {
+        const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
+        const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
+        
+        
+        let total = 0;
+        const rows = document.querySelectorAll('tr'); // Selecciona todas las filas de la tabla
+
+        rows.forEach(function(row) {
+            const importeCell = row.querySelector('.inputImporte');
+            const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
+            if (importeCell && monedaCell) {
+                if(moneda == "Soles"){
+                    const value = parseFloat(importeCell.textContent);
+                    const moneda = monedaCell.textContent.trim();
+    
+                    if (!isNaN(value)) {
+                        if (moneda === "$") {
+                            total += value * parseFloat(tipoCambio);
+                        } else {
+                            total += value;
+                        }
+                    }
+                }else if(moneda == "Dólares"){
+                    const value = parseFloat(importeCell.textContent);
+                    const moneda = monedaCell.textContent.trim();
+    
+                    if (!isNaN(value)) {
+                        if (moneda === "s/") {
+                            total += value / parseFloat(tipoCambio);
+                        } else {
+                            total += value;
+                        }
+                    }
+                }
+            }
+        });
+
+        document.getElementById('subtotal').value = total.toFixed(2);
+        document.getElementById('total').value = total.toFixed(2);
+        
+    }, 50);
 }, { deep: true });
  
 // Computed para deshabilitar el campo de IGV si no hay productos agregados
@@ -174,15 +244,38 @@ watch(() => form.moneda, (newValue) => {
                 form.igv = parseFloat((form.igv / tipoCambio).toFixed(2));
                 form.total = parseFloat((form.total / tipoCambio).toFixed(2));
                 form.tipoCambio = tipoCambio;
+
+                console.log('Tipo de cambio ingresado:', tipoCambio);
             } else {
                 form.moneda = '';
             }
         });
-    } else if (newValue === 'soles s/' && form.tipoCambio) {
-        form.subtotal = form.subtotal * form.tipoCambio;
-        form.igv = form.igv * form.tipoCambio;
-        form.total = form.total * form.tipoCambio;
-        form.tipoCambio = null;
+    } else if (newValue === 'soles s/') {
+        Swal.fire({
+            title: 'Tipo de Cambio',
+            input: 'number',
+            inputLabel: 'Ingresa el tipo de cambio de soles',
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Debes ingresar el tipo de cambio del dólar';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const tipoCambio = result.value;
+                form.subtotal = parseFloat((form.subtotal / tipoCambio).toFixed(2));
+                form.igv = parseFloat((form.igv / tipoCambio).toFixed(2));
+                form.total = parseFloat((form.total / tipoCambio).toFixed(2));
+                form.tipoCambio = tipoCambio;
+
+                console.log('Tipo de cambio ingresado:', tipoCambio);
+            } else {
+                form.moneda = '';
+            }
+        });
     }
 });
  
@@ -292,9 +385,11 @@ const previewPDF = () => {
         const opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric' };
         const fechaFormateada = fecha.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }).replace(/(\d{1,2} de )([a-záéíóúñ]+)/, (match, p1, p2) => p1 + p2.charAt(0).toUpperCase() + p2.slice(1));
     
-        const cliente = document.getElementById("cliente_id").options[document.getElementById("cliente_id").selectedIndex].text;
+        const cliente = document.getElementById("cliente_id").value;
         // const descripcion = document.getElementById("tenor_id").options[document.getElementById("tenor_id").selectedIndex].text;
         const moneda = document.getElementById("moneda").options[document.getElementById("moneda").selectedIndex].text;
+        const igvEnabled = document.getElementById("igvCheckbox").checked;
+        // const igvValue = document.getElementById("igv").value;
         // const garantia = document.getElementById("garantia").options[document.getElementById("garantia").selectedIndex].text;
         // const forma_pago = document.getElementById("forma_pago").options[document.getElementById("forma_pago").selectedIndex].text;
         // const dias_entrega = document.getElementById("dias_entrega").value;
@@ -375,44 +470,15 @@ const previewPDF = () => {
             const img = new Image();
             img.src = foto;
 
-            function pluralize(word) {
-                // Manejar casos comunes de pluralización
-                if (word.endsWith('z')) {
-                    return word.slice(0, -1) + 'ces'; // balanza -> balanzas
-                } else if (word.endsWith('ón')) {
-                    return word.slice(0, -2) + 'ones'; // camión -> camiones
-                } else if (word.endsWith('s') || word.endsWith('x')) {
-                    return word; // Palabras que ya terminan en 's' o 'x' no cambian (e.g., análisis, fax)
-                } else {
-                    return word + 's'; // Caso general
-                }
-            }
-
-            function singularize(word) {
-                // Manejar casos comunes de singularización
-                if (word.endsWith('ces')) {
-                    return word.slice(0, -3) + 'z'; // balanzas -> balanza
-                } else if (word.endsWith('ones')) {
-                    return word.slice(0, -4) + 'ón'; // camiones -> camión
-                } else if (word.endsWith('s') && !word.endsWith('es')) {
-                    return word.slice(0, -1); // casos generales, solo si no termina en 'es' (e.g., libros -> libro)
-                } else {
-                    return word; // Si no es un caso específico, retornamos la palabra original
-                }
-            }
+            const categoriaText = cantidad === "1"
+            ? (categoria.toLowerCase().endsWith("es") ? categoria.slice(0, -2)
+            : (categoria.toLowerCase().endsWith("s") ? categoria.slice(0, -1)
+            : categoria))
+            : categoria;
 
             eje_y += 5;
             doc.setFont('Helvetica', 'bold');
             doc.setFontSize(12);
-
-            let categoriaText = categoria;
-            if (cantidad == 1) {
-                // Si la cantidad es 1, la palabra que contenga categoria debería convertirse en singular
-                categoriaText = singularize(categoria);
-            } else if (cantidad > 1) {
-                // Si la cantidad es mayor a 1, la palabra que contenga categoria debería convertirse en plural
-                categoriaText = pluralize(categoria);
-            }
 
             img.onload = () => {
                 if (yPos + 150 > doc.internal.pageSize.height) {
@@ -424,7 +490,7 @@ const previewPDF = () => {
                 doc.addImage(img, 'JPEG', 135, yPos + 10, 40, 40);
                 yPos += 150;
 
-                doc.text(20, eje_y, 'Venta de ' + categoriaText + ' de las siguientes características:');
+                doc.text(20, eje_y, `Venta de ${cantidad} ${categoriaText.charAt(0).toUpperCase() + categoriaText.slice(1).toLowerCase()} de las siguientes características:`);
 
                 doc.setTextColor(0,0,0);
                 doc.setFontSize(10);
@@ -534,32 +600,42 @@ const previewPDF = () => {
 
         const addPriceUnit = () => {
             let precioProducto = total;
-            let precioProducto1 = parseFloat(precioProducto).toLocaleString('es-ES', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                useGrouping: true
-            });
-            let precioProducto2 = precioProducto1.padStart(11);
 
             doc.setFont('Helvetica', 'bold');
             doc.setFontSize(18);
             eje_y += 25;
 
             let simboloMoneda = '';
-            if (moneda.includes('soles')) {
+            if (moneda == "Soles") {
                 simboloMoneda = 'S/.';
-            } else if (moneda.includes('dolares')) {
+            } else if (moneda == "Dólares") {
                 simboloMoneda = '$';
             }
 
-            const texto = `Precio Total  :  ${simboloMoneda}  ${precioProducto2} + IGV`;
-            const anchoTexto = doc.getTextWidth(texto);
-            const anchoRectangulo = anchoTexto + 20;
-            const eje_x2 = (doc.internal.pageSize.width - anchoRectangulo) / 2;
-            doc.setFillColor(255, 255, 0); // Color de fondo amarillo (RGB)
-            doc.rect(eje_x2, eje_y - 7.5, anchoRectangulo, 12, 'F'); // Ajusta las dimensiones y posición del rectángulo según sea necesario
             doc.setTextColor(0, 0, 0); // Color del texto (negro)
-            doc.text(eje_x2 + 10, eje_y, texto);
+            doc.setFillColor(255, 255, 0);
+
+            if (igvEnabled) {
+                const texto = `Precio Total  :  ${simboloMoneda} ${precioProducto}`;
+                const anchoTexto = doc.getTextWidth(texto);
+                const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
+
+                const igvText = "INCLUIDO IGV";
+                const anchoTexto2 = doc.getTextWidth(igvText);
+                const eje_x3 = (doc.internal.pageSize.width - anchoTexto2) / 2;
+                const anchoRectangulo = anchoTexto + 20;
+                doc.rect(eje_x2 - 10, eje_y - 7, anchoRectangulo, 18, 'F');
+                doc.text(eje_x2, eje_y, texto);
+                doc.setFontSize(14);
+                doc.text(eje_x3+5, eje_y + 8, igvText);
+            }else{
+                const texto = `Precio Total  :  ${simboloMoneda} ${precioProducto} + IGV`;
+                const anchoTexto = doc.getTextWidth(texto);
+                const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
+                const anchoRectangulo = anchoTexto + 20;
+                doc.rect(eje_x2 - 10, eje_y - 8, anchoRectangulo, 12, 'F');
+                doc.text(eje_x2, eje_y, texto);
+            }
 
             addGeneralConditions();
         };
@@ -665,13 +741,26 @@ const previewPDF = () => {
             eje_r += 5; // vale 173
             doc.text(20, eje_r, 'A la espera de su orden');
 
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(11);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
+            doc.setTextColor(0, 0, 0); // Color de texto
+            doc.setFontSize(12); // Tamaño de texto
+            doc.setFont('Helvetica', 'bold'); // Estilos de texto
+
+            // Supongamos que el punto central es 120
+            let centerX = 140;
+
+            // Calcular el ancho del texto del nombre completo
+            let nombreCompletoWidth = doc.getTextWidth(nombreCompleto);
+            // Calcular el ancho del texto de los roles
+            let rolesWidth = doc.getTextWidth(roles);
+
+            // Calcular las posiciones x para centrar los textos
+            let nombreCompletoX = centerX - (nombreCompletoWidth / 2);
+            let rolesX = centerX - (rolesWidth / 2);
+
+            eje_r += 150; // vale 173
+            doc.text(nombreCompletoX, eje_r, nombreCompleto);
             eje_r += 5; // vale 173
-            doc.text(20, eje_r, nombreCompleto);
-            eje_r += 5; // vale 173
-            doc.text(20, eje_r, roles);
+            doc.text(rolesX, eje_r, roles);
 
             accordions.forEach((accordion, index) => {
             // Si el acordeón está abierto, simula un clic para cerrarlo
@@ -690,20 +779,46 @@ const previewPDF = () => {
 };
 
 document.addEventListener('input', function(event) {
+    const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
+    const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
+    
     if (event.target.classList.contains('inputImporte')) {
         let total = 0;
-        const elements = document.querySelectorAll('.inputImporte');
-        
-        elements.forEach(function(element) {
-            const value = parseFloat(element.textContent);
-            if (!isNaN(value)) {
-                total += value;
+        const rows = document.querySelectorAll('tr'); // Selecciona todas las filas de la tabla
+
+        rows.forEach(function(row) {
+            const importeCell = row.querySelector('.inputImporte');
+            const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
+            if (importeCell && monedaCell) {
+                if(moneda == "Soles"){
+                    const value = parseFloat(importeCell.textContent);
+                    const moneda = monedaCell.textContent.trim();
+    
+                    if (!isNaN(value)) {
+                        if (moneda === "$") {
+                            total += value * parseFloat(tipoCambio);
+                        } else {
+                            total += value;
+                        }
+                    }
+                }else if(moneda == "Dólares"){
+                    const value = parseFloat(importeCell.textContent);
+                    const moneda = monedaCell.textContent.trim();
+    
+                    if (!isNaN(value)) {
+                        if (moneda === "s/") {
+                            total += value / parseFloat(tipoCambio);
+                        } else {
+                            total += value;
+                        }
+                    }
+                }
             }
         });
 
-        document.getElementById('subtotal').value = total;
-        document.getElementById('total').value = total;
-       }
+        document.getElementById('subtotal').value = total.toFixed(2);
+        document.getElementById('total').value = total.toFixed(2);
+    }
 });
 
 const searchQuery = ref('');
@@ -758,19 +873,25 @@ console.log(listarClientes);
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                
                         <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-3 sm:gap-x-8 mb-3 sm:py-0 py-2">
+                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-4 sm:gap-x-8 mb-3 sm:py-0 py-2">
                                 <!-- cliente -->
                                 <div class="w-full">
                                     <InputLabel for="cliente_id" class="text-xs">Cliente</InputLabel>
-                                    <!-- <select id="cliente_id" v-model="form.cliente_id" required
-
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="" disabled selected>Seleccione un cliente</option>
-                                        <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{ cliente.razonSocial }}</option>
-                                    </select> -->
-                                    <TextInput v-model="form.cliente_id" type="text" id="cliente_id"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                </div>
+                                    <div class="relative">
+                                        <TextInput v-model="searchTerm" autocomplete="off" type="text" id="cliente_id" @input="onInput" placeholder="Ingresa razon social"
+                                            @keydown="onKeydown"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                        <div id="contenedorDeClientes"
+                                            class="w-full z-50 max-h-60 border border-gray-300 rounded-lg absolute overflow-auto text-sm divide-y divide-gray-200 bg-white dark:bg-gray-800"
+                                            v-show="filteredClientes.length > 0">
+                                            <div v-for="(cliente, index) in filteredClientes" :key="cliente.id"
+                                                :class="['text-gray-800 text-sm dark:text-white font-medium cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis dark:hover:bg-gray-700 hover:bg-gray-200 option p-2', { 'bg-gray-200 dark:bg-gray-700': index === selectedIndex }]"
+                                                @click="selectCliente(cliente)" @mouseover="updateSelection(index)">
+                                                {{ cliente.razonSocial }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <!-- tenor -->
                                 <!-- <div class="flex flex-col items-start">
                                     <InputLabel for="tenor_id" class="block text-xs font-medium text-gray-700">Descripcion</InputLabel>
@@ -791,6 +912,21 @@ console.log(listarClientes);
                                     <TextInput type="date" id="fecha" v-model="form.fecha" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.fecha" class="mt-2"/>
+                                </div>
+                                <div>
+                                    <div>
+                                        <InputLabel for="moneda" class="block text-xs font-medium text-gray-900">Moneda</InputLabel>
+                                        <select id="moneda" v-model="form.moneda" required
+                                                class="h-10 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            <option value="" disabled selected>Selecciona una moneda</option>
+                                            <option value="soles s/">Soles</option>
+                                            <option value="dolares $">Dólares</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <InputLabel class="text-xs" for="tipoCambio" :value="'tipo Cambio (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
+                                    <TextInput id="tipoCambio" v-model="form.tipoCambio" type="number" class="w-full bg-green-400 uppercase" disabled></TextInput>
                                 </div>
                             </div>
                             <div class="text-end">
@@ -871,29 +1007,19 @@ console.log(listarClientes);
                             </div>
                             <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
                                 <!-- garantia -->
-                                <div>
-                                    <InputLabel for="garantia" class="block text-xs font-medium text-gray-700">Garantia</InputLabel>
+                                <!-- <div>
+                                    <InputLabel for="garantia" class="block ml-2 text-xs font-medium text-gray-900">Garantia</InputLabel>
                                     <select id="garantia" v-model="form.garantia" required
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            class="mt-2.5 h-10 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="" disabled selected >Selecciona una opcion</option>
                                         <option value="3 meses">3 meses</option>
                                         <option value="6 meses">6 meses</option>
                                         <option value="1 año">1 año</option>
                                         <option value="sin garantia">Sin garantia</option>
                                     </select>
-                                </div>
+                                </div> -->
                                 <!-- Moneda -->
-                                <div>
-                                    <div>
-                                        <InputLabel for="moneda" class="block text-xs font-medium text-gray-700">Moneda</InputLabel>
-                                        <select id="moneda" v-model="form.moneda" required
-                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="" disabled selected>Selecciona una moneda</option>
-                                            <option value="soles s/">Soles</option>
-                                            <option value="dolares $">Dólares</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                
  
                                 <!-- Forma pago -->
                                 <!-- <div>
@@ -916,6 +1042,14 @@ console.log(listarClientes);
                                     </select>
                                 </div> -->
                                 <div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="igvCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="igvEnabled">
+                                        <label for="igvCheckbox" class="ms-2 text-xs font-medium text-black dark:text-white">Aplicar IGV (18%)</label>
+                                    </div>
+                                    <InputLabel class="ml-6 py-1 hidden" for="igv" :value="'IGV (18%) (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'" v-if="igvEnabled"></InputLabel>
+                                    <TextInput id="igv" v-model="form.igv" type="number" class="mt-2 w-full uppercase" :disabled="!igvEnabled"></TextInput>
+                                </div>
+                                <div>
                                     <InputLabel class="text-xs" for="subtotal" :value="'Subtotal (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
                                     <TextInput id="subtotal" v-model="form.subtotal" type="number" class="mt-2 w-full uppercase"></TextInput>
                                 </div>
@@ -923,16 +1057,6 @@ console.log(listarClientes);
                                     <InputLabel class="text-xs" for="total" :value="'Total (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
                                     <TextInput id="total" v-model="form.total" type="number" class="mt-2 w-full bg-green-400 uppercase" disabled></TextInput>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 py-2 card sm:gap-x-8">
-                                <!-- <div>
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="igvCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="igvEnabled">
-                                        <label for="igvCheckbox" class="ms-2 text-xs font-medium text-black dark:text-white">Aplicar IGV (18%)</label>
-                                    </div>
-                                    <InputLabel class="ml-6 py-1 hidden" for="igv" :value="'IGV (18%) (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'" v-if="igvEnabled"></InputLabel>
-                                    <TextInput id="igv" v-model="form.igv" type="number" class="mt-2 w-full uppercase" disabled></TextInput>
-                                </div> -->
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
@@ -1102,37 +1226,65 @@ console.log(listarClientes);
 
 <script>
 export default {
+    props: {
+        clientes: {
+            type: Array,
+            required: true,
+        },
+    },
     data() {
         return {
+            searchTerm: '',
+            filteredClientes: [],
+            selectedIndex: -1,
             activeAccordion: [],
-            // searchQuery: '', // Agregar el data para el search query
         };
     },
-    // computed: {
-    //     filteredProductos() {
-    //         // Filtrar productos basados en el search query
-    //         return this.tbproductos.filter(producto => {
-    //             // Filtrar por modelo o cualquier otro criterio que desees
-    //             return producto.modelo.toLowerCase().includes(this.searchQuery.toLowerCase());
-    //         });
-    //     }
-    // },
     methods: {
+        onInput() {
+            this.selectedIndex = -1;
+            if (this.searchTerm.length > 0) {
+                this.filteredClientes = this.clientes.filter(cliente =>
+                    cliente.razonSocial.toLowerCase().includes(this.searchTerm.toLowerCase())
+                );
+            } else {
+                this.filteredClientes = [];
+            }
+        },
+        onKeydown(event) {
+            if (this.filteredClientes.length > 0) {
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    this.selectedIndex = (this.selectedIndex + 1) % this.filteredClientes.length;
+                } else if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    this.selectedIndex = (this.selectedIndex - 1 + this.filteredClientes.length) % this.filteredClientes.length;
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    if (this.selectedIndex >= 0) {
+                        this.selectCliente(this.filteredClientes[this.selectedIndex]);
+                    }
+                }
+            }
+        },
+        updateSelection(index) {
+            this.selectedIndex = index;
+        },
+        selectCliente(cliente) {
+            this.searchTerm = cliente.razonSocial;
+            this.filteredClientes = [];
+        },
         toggleAccordion(index) {
-            // Verifica si el índice está en el array de acordeones activos
             const indexPosition = this.activeAccordion.indexOf(index);
             if (indexPosition === -1) {
-                // Si no está, agrégalo
                 this.activeAccordion.push(index);
             } else {
-                // Si ya está, quítalo
                 this.activeAccordion.splice(indexPosition, 1);
             }
         },
         isActive(index) {
-            // Método para verificar si un acordeón está activo
             return this.activeAccordion.includes(index);
-        }
-    }
-}
+        },
+    },
+};
 </script>
