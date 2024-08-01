@@ -1,13 +1,10 @@
-
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { defineProps , onMounted} from 'vue';
-import {useForm} from '@inertiajs/vue3';
-
 
 const tbproductosAgregados = [];
 const props = defineProps({
@@ -83,7 +80,6 @@ onMounted(() => {
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-xs shadow-lg bg-white dark:bg-gray-800 rounded-lg">
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
-               
                         <form @submit.prevent="submitForm">
                             <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8 mb-3">
                                 <!-- cliente -->
@@ -95,19 +91,7 @@ onMounted(() => {
                                         <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{ cliente.razonSocial }}</option>
                                     </select>
                                 </div>
-
-                                <!-- tenor -->
                                 <div>
-                                    <InputLabel for="tenor_id" class="mb-2 text-xs">Tenor</InputLabel>
-                                    <select id="tenor_id" v-model="form.tenor_id" required
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
-                                        <option value="" disabled selected>Seleccione un tenor</option>
-                                        <!-- Iterar sobre las marcas -->
-                                        <option v-for="tenor in tenors" :key="tenor.id" :value="tenor.id">{{ tenor.name }}</option>
-                                    </select>
-                                </div>
-                                 <!-- fecha -->
-                                 <div>
                                     <InputLabel for="fecha" class="block text-xs font-medium text-gray-700">Fecha</InputLabel>
                                     <TextInput type="date" id="fecha" v-model="form.fecha" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
@@ -147,56 +131,6 @@ onMounted(() => {
                                     </table>
                                 </div>
                            </div>
-                            
-                            < <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-8">
-                               
-                               <!-- Medida -->
-                               <div>
-                                   <InputLabel for="garantia" class="block text-xs font-medium text-gray-700">Garantia</InputLabel>
-                                   <select id="garantia" v-model="form.garantia" required
-                                           class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                       <option value="" disabled selected >Selecciona una opcion</option>
-                                       <option value="3 meses">3 meses</option>
-                                       <option value="6 meses">6 meses</option>
-                                       <option value="1 año">1 año</option>
-                                       <option value="sin garantia">Sin garantia</option>
-                                   </select>
-                               </div>
-                               <!-- Moneda -->
-                               <div>
-                                   <div>
-                                       <InputLabel for="moneda" class="block text-xs font-medium text-gray-700">Moneda</InputLabel>
-                                       <select id="moneda" v-model="form.moneda" required
-                                               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                           <option value="" disabled selected>Selecciona una moneda</option>
-                                           <option value="sol">Sol</option>
-                                           <option value="dolares">Dólares</option>
-                                       </select>
-                                   </div>
-                               </div>
-
-                               <!-- Forma pago -->
-                               <div>
-                                   <InputLabel for="forma_pago" class="block text-xs font-medium text-gray-700">Forma de pago</InputLabel>
-                                   <select id="forma_pago" v-model="form.forma_pago" required
-                                           class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                       <option value="" disabled selected>Selecciona una forma de pago</option>
-                                       <option value="Al contado">Al contado</option>
-                                       <option value="Credito 15 dias">Credito 15 dias</option>
-                                       <option value="Credito 30 dias">Credito 30 dias</option>
-                                       <option value="Credito 60 dias">Credito 60 dias</option>
-                                   </select>
-                               </div>
-                               <div>
-                                   <InputLabel for="dias_entrega" class="block text-xs font-medium text-gray-700">Días de entrega</InputLabel>
-                                   <select id="dias_entrega" v-model="form.dias_entrega" required
-                                           class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                       <option value="" disabled selected>Selecciona días de entrega</option>
-                                       <!-- Generar opciones del 1 al 31 -->
-                                       <option v-for="dia in 31" :key="dia" :value="dia">{{ dia }} día{{ dia > 1 ? 's' : '' }}</option>
-                                   </select>
-                               </div>
-                           </div>
                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 py-2 card sm:gap-x-8">
                                 <div>
                                     <InputLabel for="subtotal" :value="'Subtotal (' + (form.moneda === 'sol' ? 'S/' : '$') + '):'"></InputLabel>
@@ -214,13 +148,10 @@ onMounted(() => {
                                     <InputLabel for="total" :value="'Total (' + (form.moneda === 'sol' ? 'S/' : '$') + '):'"></InputLabel>
                                     <TextInput v-model="form.total" type="number" class="mt-2 w-full bg-green-400 uppercase" disabled></TextInput>
                                 </div>
-
                             </div>
-
-                            <!-- Botones -->
                             <div class="flex justify-end">
                                 <Button type="submit" class="bg-green-600 py-2 px-4 text-white uppercase text-xs font-semibold rounded-md hover:bg-green-700 mr-2">Actualizar</Button>
-                                <Link :href="route('cotizas.index')" class="text-white uppercase ml-1 bg-red-700 hover:bg-red-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                <Link :href="route('cventas.index')" class="text-white uppercase ml-1 bg-red-700 hover:bg-red-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                                     Cancelar
                                 </Link>
                             </div>

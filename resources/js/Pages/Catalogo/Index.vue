@@ -144,7 +144,7 @@ watchEffect(() => {
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_List</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">P_Proveedor</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_Min</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_Max</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Garantia</th>

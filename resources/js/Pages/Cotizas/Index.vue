@@ -19,13 +19,16 @@ const form = useForm({
     id: ''
 })
  
-const deleteCotizacion = (id, cliente_id) => {
+const deleteCotizacion = (id, cliente_id, cventa) => {
     const alerta = Swal.mixin({
         buttonsStyling: true
     });
- 
+
+    // Verificar si cventa y cventa.cliente están definidos antes de acceder a razonSocial
+    const razonSocial = cventa && cventa.cliente ? cventa.cliente.razonSocial : 'Cliente desconocido';
+    
     alerta.fire({
-        title: '¿Estás seguro de eliminar ' + cliente_id + '?',
+        title: `¿Estás seguro de eliminar la cotización de ${razonSocial}?`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
@@ -37,10 +40,22 @@ const deleteCotizacion = (id, cliente_id) => {
                     alerta.fire({
                         icon: 'success',
                         title: 'Éxito',
-                        text: 'cotizacion eliminado exitosamente',
+                        text: 'Cotización eliminada exitosamente',
                         timer: 1000,
                         timerProgressBar: true,
                         showConfirmButton: false
+                    });
+                },
+                onError: () => {
+                    alerta.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hubo un problema al eliminar la cotización',
+                        customClass: {
+                            title: 'text-2xl font-bold tracking-widest ',
+                            icon: 'text-base font-bold tracking-widest ',
+                            text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+                        },
                     });
                 }
             });
@@ -203,7 +218,7 @@ const totalCount = props.cventas.total;
                                         <td class="px-6 py-4 text-center">{{ cventa.fecha }}</td>
                                         <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.subtotal }}</td>
                                         <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.total }}</td>
-                                        <td class="px-6 py-4 text-center">
+                                        <td class="px-6 py-4 text-center text-white">
                                             <div :class="{
                                                 'bg-blue-600': cventa.estado === 'Por Enviar',
                                                 'bg-yellow-600': cventa.estado === 'Enviado',
@@ -222,7 +237,7 @@ const totalCount = props.cventas.total;
                                                 class=" bg-green-500 p-1 dark:hover:bg-white py-1 px-2  dark:hover:text-green-500 rounded">
                                             <i class="bi bi-pencil-square"></i>
                                             </Link>
-                                            <Button @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id)"
+                                            <Button @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id, cventa)"
                                                 class="ml-1 bg-red-600 dark:hover:bg-white dark:hover:text-red-600 py-1 px-2 font-extrabold dark:text-white rounded cursor-pointer text-white">
                                                 <i class="bi bi-trash3"></i>
                                             </Button>

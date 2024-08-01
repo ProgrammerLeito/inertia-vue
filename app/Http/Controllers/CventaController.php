@@ -49,8 +49,6 @@ class CventaController extends Controller
         return Inertia::render('Cotizas/Create', compact('clientes', 'tenors', 'tbproductos', 'tbcategorias', 'tbsubcategorias', 'tbmarcas', 'nCotizacion'));
     }
 
-
-
     public function store(CventaRequest $request)
     {
         $tecnico = Auth::user()->name;
@@ -78,7 +76,6 @@ class CventaController extends Controller
         return redirect()->route('cventas.index');
     }
 
-
     public function edit(Cventa $cventa)
     {
         $clientes = Cliente::all();
@@ -91,9 +88,6 @@ class CventaController extends Controller
         return Inertia::render('Cotizas/Edit', compact('cventa', 'clientes', 'tenors', 'tbproductos', 'tbmarcas', 'tbproductosAgregados'));
     }
 
-
-
-
     public function update(Request $request, Cventa $cventa)
     {
         // Actualiza el objeto Cventa con los datos del formulario
@@ -103,14 +97,13 @@ class CventaController extends Controller
         return redirect()->route('cventas.index');
     }
 
-
-
     public function destroy($id)
     {
         $cventa = Cventa::findOrFail($id);
         $cventa->delete();
         return redirect()->back();
     }
+
     public function cambiarEstado(Request $request)
     {
         // Validar la solicitud

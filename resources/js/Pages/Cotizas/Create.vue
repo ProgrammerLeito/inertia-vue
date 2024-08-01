@@ -10,24 +10,23 @@ import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
 import { onMounted , watch , computed , ref , nextTick, watchEffect } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
- 
+
 import jsPDF from 'jspdf';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
- 
+
 const nameInput2 = ref(null);
 const modal2 = ref(false);
 const title2 = ref('');
 const operation2 = ref(1);
 const id2 = ref('');
- 
+
 const modal3 = ref(false);
 const tbproductosAgregados = ref([]);
- 
- 
+
 const toggleModal3 = () => {
     modal3.value = !modal3.value;
 };
- 
+
 const { clientes, tenors, tbproductos, tbsubcategorias, tbcategorias, tbmarcas, nCotizacion } = defineProps({
     clientes: {
         type : Object,
@@ -75,6 +74,7 @@ const form = useForm ({
     igv: 0,
     total: 0,
     igvEnabled: false,
+    precioTotalEnabled: false,
     n_cotizacion: nCotizacion
 });
 
@@ -135,8 +135,7 @@ const toggleAccordion = (index) => {
 const isActive = (index) => {
     return activeAccordion.value.includes(index);
 };
- 
- 
+
 // llenan automaticamente cuando se agregan productos y se activa o desactiva el igv
 const agregarProducto = (producto) => {
     producto.cantidad = 1;
@@ -163,6 +162,23 @@ const agregarProducto = (producto) => {
         rows.forEach(function(row) {
             const importeCell = row.querySelector('.inputImporte');
             const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
+            const cantidadCell = row.children[9]; // Asegúrate de que este índice es correcto
+            let valorInput = 1;
+            if (cantidadCell) {
+                // Intenta seleccionar el <input> dentro de esa celda
+                const input = cantidadCell.querySelector('input');
+
+                // Verifica si input no es null
+                if (input) {
+                    // Obtén el valor del <input>
+                    valorInput = input.value;
+                    // console.log("Valor del input en la celda 10:", valorInput);
+                } else {
+                    // console.log('No se encontró el <input> en la celda 10.');
+                }
+            } else {
+                // console.log('No se encontró la celda en la posición 10.');
+            }
             if (importeCell && monedaCell) {
                 if(moneda == "Soles"){
                     const value = parseFloat(importeCell.textContent);
@@ -170,9 +186,9 @@ const agregarProducto = (producto) => {
     
                     if (!isNaN(value)) {
                         if (moneda === "$") {
-                            total += value * parseFloat(tipoCambio);
+                            total += (value * parseFloat(tipoCambio)) * valorInput;
                         } else {
-                            total += value;
+                            total += value * valorInput;
                         }
                     }
                 }else if(moneda == "Dólares"){
@@ -181,9 +197,9 @@ const agregarProducto = (producto) => {
     
                     if (!isNaN(value)) {
                         if (moneda === "s/") {
-                            total += value / parseFloat(tipoCambio);
+                            total += (value / parseFloat(tipoCambio)) * valorInput;
                         } else {
-                            total += value;
+                            total += value * valorInput;
                         }
                     }
                 }
@@ -195,8 +211,7 @@ const agregarProducto = (producto) => {
         
     }, 300);
 };
- 
- 
+
 const quitarProducto = (index) => {
     tbproductosAgregados.value.splice(index, 1);
     form.subtotal = tbproductosAgregados.value.reduce((acc, curr) => acc + (curr.precio_min * curr.cantidad), 0);
@@ -233,6 +248,23 @@ watch(tbproductosAgregados, (newProductos) => {
         rows.forEach(function(row) {
             const importeCell = row.querySelector('.inputImporte');
             const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
+            const cantidadCell = row.children[9]; // Asegúrate de que este índice es correcto
+            let valorInput = 1;
+            if (cantidadCell) {
+                // Intenta seleccionar el <input> dentro de esa celda
+                const input = cantidadCell.querySelector('input');
+
+                // Verifica si input no es null
+                if (input) {
+                    // Obtén el valor del <input>
+                    valorInput = input.value;
+                    // console.log("Valor del input en la celda 10:", valorInput);
+                } else {
+                    // console.log('No se encontró el <input> en la celda 10.');
+                }
+            } else {
+                // console.log('No se encontró la celda en la posición 10.');
+            }
             if (importeCell && monedaCell) {
                 if(moneda == "Soles"){
                     const value = parseFloat(importeCell.textContent);
@@ -240,9 +272,9 @@ watch(tbproductosAgregados, (newProductos) => {
     
                     if (!isNaN(value)) {
                         if (moneda === "$") {
-                            total += value * parseFloat(tipoCambio);
+                            total += (value * parseFloat(tipoCambio)) * valorInput;
                         } else {
-                            total += value;
+                            total += value * valorInput;
                         }
                     }
                 }else if(moneda == "Dólares"){
@@ -251,9 +283,9 @@ watch(tbproductosAgregados, (newProductos) => {
     
                     if (!isNaN(value)) {
                         if (moneda === "s/") {
-                            total += value / parseFloat(tipoCambio);
+                            total += (value / parseFloat(tipoCambio)) * valorInput;
                         } else {
-                            total += value;
+                            total += value * valorInput;
                         }
                     }
                 }
@@ -297,7 +329,7 @@ watch(() => form.moneda, (newValue) => {
                 form.total = parseFloat((form.total / tipoCambio).toFixed(2));
                 form.tipoCambio = tipoCambio;
 
-                console.log('Tipo de cambio ingresado:', tipoCambio);
+                // console.log('Tipo de cambio ingresado:', tipoCambio);
             } else {
                 form.moneda = '';
             }
@@ -323,7 +355,7 @@ watch(() => form.moneda, (newValue) => {
                 form.total = parseFloat((form.total * tipoCambio).toFixed(2));
                 form.tipoCambio = tipoCambio;
 
-                console.log('Tipo de cambio ingresado:', tipoCambio);
+                // console.log('Tipo de cambio ingresado:', tipoCambio);
             } else {
                 form.moneda = '';
             }
@@ -377,27 +409,71 @@ onMounted(() => {
     form.fecha = today;
 });
  
-const submitForm = (event) => {
+// Función para recolectar los datos de la tabla
+const recolectarDatosTabla = () => {
+    if (!Array.isArray(tbproductosAgregados.value)) {
+        console.error('tbproductosAgregados no es un array:', tbproductosAgregados.value);
+        return [];
+    }
+
+    let datosTabla = [];
+
+    tbproductosAgregados.value.forEach(tbproducto => {
+        datosTabla.push({
+            categoria: tbproducto.tbcategoria ? tbproducto.tbcategoria.nombre : '',
+            modelo: tbproducto.modelo,
+            foto: tbproducto.foto,
+            especificaciones: tbproducto.especificaciones,
+            marca: tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca',
+            capacidades: tbproducto.capacidades.split('\n'),
+            precioProveedor: parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2),
+            precioMin: parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2),
+            precioMax: parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2),
+            cantidad: tbproducto.cantidad,
+            importe: parseFloat(tbproducto.precio_min).toFixed(2),
+            garantia: tbproducto.garantia,
+            diasEntrega: tbproducto.diasEntrega,
+            formaPago: tbproducto.formaPago,
+            moneda: tbproducto.moneda
+        });
+    });
+
+    return datosTabla;
+};
+
+// Función para enviar el formulario con los datos de la tabla
+const submitForm = async (event) => {
     if (event) {
         event.preventDefault();
     }
 
-    form.post(route('cventas.store'), {
-        onSuccess: () => {
-            form.reset();
-            Swal.fire({
-                title: 'Cotización guardada',
-                text: 'La cotización se ha guardado exitosamente.',
-                icon: 'success',
-                timer: 1500,
-                showConfirmButton: false
-            });
-            Inertia.visit(route('cventas.index'));
-        },
-        onError: (errors) => {
-            console.error(errors);
-        }
-    });
+    // Recolectar los datos de la tabla
+    const datosTabla = recolectarDatosTabla();
+
+    // Loguear los datos y detener la ejecución para inspeccionarlos
+    console.log('Datos a enviar:', datosTabla);
+    return; // Esto detendrá la ejecución del script
+
+    try {
+        await form.post(route('cventas.store'), {
+            onSuccess: () => {
+                form.reset();
+                Swal.fire({
+                    title: 'Cotización guardada',
+                    text: 'La cotización se ha guardado exitosamente.',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                Inertia.visit(route('cventas.index'));
+            },
+            onError: (errors) => {
+                console.error(errors);
+            }
+        });
+    } catch (error) {
+        console.error('Error al enviar el formulario:', error);
+    }
 };
 
 const { props } = usePage();
@@ -410,6 +486,7 @@ const obtenerNombreCompleto = (user) => {
     }
     return '';
 };
+
 const nombreCompleto = obtenerNombreCompleto(user);
 
 const previewPDF = () => {
@@ -434,19 +511,13 @@ const previewPDF = () => {
         // Parsear la fecha para formatearla
         const partesFecha = fechaValor.split('-');
         const fecha = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
-        const opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric' };
         const fechaFormateada = fecha.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }).replace(/(\d{1,2} de )([a-záéíóúñ]+)/, (match, p1, p2) => p1 + p2.charAt(0).toUpperCase() + p2.slice(1));
     
         const cliente = document.getElementById("cliente_id").value;
-        // const descripcion = document.getElementById("tenor_id").options[document.getElementById("tenor_id").selectedIndex].text;
         const moneda = document.getElementById("moneda").options[document.getElementById("moneda").selectedIndex].text;
         const igvEnabled = document.getElementById("igvCheckbox").checked;
-        // const igvValue = document.getElementById("igv").value;
-        // const garantia = document.getElementById("garantia").options[document.getElementById("garantia").selectedIndex].text;
-        // const forma_pago = document.getElementById("forma_pago").options[document.getElementById("forma_pago").selectedIndex].text;
-        // const dias_entrega = document.getElementById("dias_entrega").value;
+        const precioTotalEnabled = document.getElementById("precioTotalCheckbox").checked;
         const subtotal = document.getElementById("subtotal").value;
-        // const igv = document.getElementById("igv").value;
         const total = document.getElementById("total").value;
     
         var eje_y = 50;
@@ -508,15 +579,32 @@ const previewPDF = () => {
             const foto = row.querySelector('td:nth-child(3) img').src;
             const especificaciones = row.querySelector('td:nth-child(4) ul').innerText.trim();
             const marca = row.querySelector('td:nth-child(5)').innerText.trim();
-            const capacidades = row.querySelector('td:nth-child(6) ul').innerText.trim();
+
+            let capacidadesSeleccionadas = [];
+            const checkboxes = row.querySelectorAll('td:nth-child(6) input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                capacidadesSeleccionadas.push(checkbox.value);
+                }
+            });
+
             const precioList = row.querySelector('td:nth-child(7)').innerText.trim();
             const precioMin = row.querySelector('td:nth-child(8)').innerText.trim();
             const precioMax = row.querySelector('td:nth-child(9)').innerText.trim();
             const cantidad = row.querySelector('td:nth-child(10) input').value.trim();
             const importe = row.querySelector('td:nth-child(11)').innerText.trim();
-            const garantia = row.querySelector('td:nth-child(12)').innerText.trim();
-            const diasEntrega = row.querySelector('td:nth-child(13)').innerText.trim();
-            const formaPago = row.querySelector('td:nth-child(14)').innerText.trim();
+            let igvMostrarUnitario = parseFloat(importe) * 0.18;
+            let precioTotalUnitario = parseFloat(importe) + parseFloat(igvMostrarUnitario);
+
+            const garantiaSelect = row.querySelector('td:nth-child(12) select'); // Selecciona el <select> en la 12ª columna
+            const garantia = garantiaSelect.value; // Obtiene el valor seleccionado
+
+            const diasEntregaSelect = row.querySelector('td:nth-child(13) select'); // Selecciona el <select> en la 13ª columna
+            const diasEntrega = diasEntregaSelect.value; // Obtiene el valor seleccionado
+            // const diasEntrega = row.querySelector('td:nth-child(13)').innerText.trim();
+            const formaPagoSelect = row.querySelector('td:nth-child(14) select'); // Selecciona el <select> en la 14ª columna
+            const formaPago = formaPagoSelect.value; // Obtiene el valor seleccionado
+            
             const moneda = row.querySelector('td:nth-child(15)').innerText.trim();
             
             const img = new Image();
@@ -533,13 +621,23 @@ const previewPDF = () => {
             doc.setFontSize(12);
 
             img.onload = () => {
+                const originalWidth = img.width;
+                const originalHeight = img.height;
+                const fixedWidth = 40;
+
+                // Calcula la nueva altura manteniendo la relación de aspecto
+                const aspectRatio = originalHeight / originalWidth;
+                const newHeight = fixedWidth * aspectRatio;
+
                 if (yPos + 150 > doc.internal.pageSize.height) {
                     doc.addPage();
                     doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
                     yPos = 40;
                     eje_y = 50;
                 }
-                doc.addImage(img, 'JPEG', 135, yPos + 10, 40, 40);
+                
+                // Usa el nuevo alto calculado para añadir la imagen
+                doc.addImage(img, 'PNG', 135, yPos + 10, fixedWidth, newHeight);
                 yPos += 150;
 
                 doc.text(20, eje_y, `Venta de ${cantidad} ${categoriaText.charAt(0).toUpperCase() + categoriaText.slice(1).toLowerCase()} de las siguientes características:`);
@@ -565,10 +663,9 @@ const previewPDF = () => {
                 doc.setFont('Helvetica', 'bold');
                 doc.setFontSize(10);
                 doc.text(eje_x, eje_y, 'Capacidades');
-                const capacidadesDivididas = doc.splitTextToSize(capacidades, 70);
-
-                capacidadesDivididas.forEach((linea, indice) => {
-                    const texto = (indice === 0) ? ': ' + linea : '  ' + linea;
+                
+                capacidadesSeleccionadas.forEach((capacidad, indice) => {
+                    const texto = `: ${capacidad}`;
                     doc.setFont('Helvetica', 'normal');
                     doc.setFontSize(10.5);
                     doc.text(50, eje_y, texto);
@@ -626,7 +723,13 @@ const previewPDF = () => {
                 doc.setFont('Helvetica', 'bold');
                 doc.setFontSize(14);
 
-                const texto = `Precio Unitario  :  ${moneda.toUpperCase()} ${parseFloat(importe).toFixed(2)} + IGV`;
+                const precioTotalUnitarioFormateado = parseFloat(precioTotalUnitario).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                    useGrouping: true
+                });
+
+                const texto = `Precio Unitario  :  ${moneda.toUpperCase()} ${parseFloat(importe).toFixed(2)} + IGV(${igvMostrarUnitario.toFixed(2)}) = ${moneda.toUpperCase()} ${precioTotalUnitarioFormateado}`;
                 const anchoTexto = doc.getTextWidth(texto);
                 const anchoRectangulo = anchoTexto + 20;
                 const eje_x2 = (doc.internal.pageSize.width - anchoRectangulo) / 2;
@@ -652,8 +755,16 @@ const previewPDF = () => {
 
         const addPriceUnit = () => {
             let precioProducto = total;
+            let igvMostrar = parseFloat(precioProducto) * 0.18;
+            let precioTotal = parseFloat(precioProducto) + parseFloat(igvMostrar);
 
             const precioFormateado = parseFloat(precioProducto).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                useGrouping: true
+            });
+
+            const precioTotalFormateado = parseFloat(precioTotal).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
                 useGrouping: true
@@ -673,27 +784,33 @@ const previewPDF = () => {
             doc.setTextColor(0, 0, 0); // Color del texto (negro)
             doc.setFillColor(255, 255, 0);
 
-            if (igvEnabled) {
+            if (precioTotalEnabled) {
+                const lineYPosition = eje_y - 14; // Ajusta esta posición según sea necesario
+                doc.setDrawColor(0, 0, 0); // Color de la línea (negro)
+                doc.setLineWidth(1.5); // Establece el grosor de la línea
+                doc.line(10, lineYPosition, doc.internal.pageSize.width - 10, lineYPosition); 
                 const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado}`;
                 const anchoTexto = doc.getTextWidth(texto);
                 const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
-
-                const igvText = "INCLUIDO IGV";
-                const anchoTexto2 = doc.getTextWidth(igvText);
-                const eje_x3 = (doc.internal.pageSize.width - anchoTexto2) / 2;
-                const anchoRectangulo = anchoTexto + 20;
-                doc.rect(eje_x2 - 10, eje_y - 7, anchoRectangulo, 18, 'F');
-                doc.text(eje_x2, eje_y, texto);
-                doc.setFontSize(14);
-                doc.text(eje_x3+5, eje_y + 8, igvText);
-            }else{
-                const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado} + IGV`;
-                const anchoTexto = doc.getTextWidth(texto);
-                const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
-                const anchoRectangulo = anchoTexto + 20;
-                doc.rect(eje_x2 - 10, eje_y - 8, anchoRectangulo, 12, 'F');
-                doc.text(eje_x2, eje_y, texto);
-            }
+                
+                if (igvEnabled) {
+                    const igvText = "INCLUIDO IGV";
+                    const anchoTexto2 = doc.getTextWidth(igvText);
+                    const eje_x3 = (doc.internal.pageSize.width - anchoTexto2) / 2;
+                    const anchoRectangulo = anchoTexto + 20;
+                    doc.rect(eje_x2 - 10, eje_y - 7, anchoRectangulo, 18, 'F');
+                    doc.text(eje_x2, eje_y, texto);
+                    doc.setFontSize(14);
+                    doc.text(eje_x3 + 5, eje_y + 8, igvText);
+                } else {
+                    const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado} + IGV(${igvMostrar.toFixed(2)}) = ${simboloMoneda} ${precioTotalFormateado}`;
+                    const anchoTexto = doc.getTextWidth(texto);
+                    const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
+                    const anchoRectangulo = anchoTexto + 20;
+                    doc.rect(eje_x2 - 10, eje_y - 8, anchoRectangulo, 12, 'F');
+                    doc.text(eje_x2, eje_y, texto);
+                }
+            }
 
             addGeneralConditions();
         };
@@ -701,6 +818,36 @@ const previewPDF = () => {
         const addGeneralConditions = () => {
             doc.addPage();
             doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
+            
+            // Configuración del texto
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(11);//Tamaño de texto
+            doc.setFont('Helvetica', 'bold');//estilos de texto
+            eje_r += 20; // Actualizar la posición vertical
+
+            var texto = 'CONDICIONES GENERALES:';
+            var startX = 20; // Posición X del texto
+            var startY = eje_r; // Posición Y del texto
+
+            var textWidth = doc.getStringUnitWidth(texto) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+            var textHeight = doc.internal.getLineHeight();
+
+            doc.text(texto, startX, startY);
+            doc.setDrawColor(0, 0, 0); // Color de la línea
+            doc.setLineWidth(0.4); // Grosor de la línea
+            doc.line(startX, startY + 1, startX + textWidth, startY + 1);
+
+            eje_r += 7; // vale 173
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.text(25, eje_r, '•   Emitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585');
+
+            eje_r += 5; // vale 173
+            doc.text(25, eje_r, '•   No se realizan cambios ni devoluciones');
+
+            eje_r += 5; // vale 173
+            doc.text(25, eje_r, '•   Orden de compra irrevocable');
+            
             // Establecer el color de la línea
             doc.setDrawColor(0, 0, 0);
 
@@ -711,7 +858,7 @@ const previewPDF = () => {
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 20; // vale 125
+            eje_r += 10; // vale 125
             var texto = 'NUESTRAS CUENTAS :';
             var textWidth = doc.getStringUnitWidth(texto) * doc.internal.getFontSize() / doc.internal.scaleFactor;
             var textHeight = doc.internal.getLineHeight();
@@ -729,13 +876,23 @@ const previewPDF = () => {
             doc.setTextColor(0,0,255);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 5; // vale 153
+            eje_r += 7; // vale 153
             doc.text(20, eje_r, 'BBVA');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(32, eje_r, ': SOLES: 0011 0267 0201320316  |  CCI: 011 267 000201320316 27');
+            doc.text(33, eje_r, ': SOLES: 0011 0267 0201320316 | CCI: 011 267 000201320316 27');
+
+            doc.setTextColor(0,0,255);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'bold');//estilos de texto
+            eje_r += 5; // vale 153
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            doc.text(32, eje_r, '   DOLARES: 0011-0267-0201320324  |  CCI: 01126700020132032421');
 
             doc.setTextColor(255,0,0);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
@@ -746,19 +903,17 @@ const previewPDF = () => {
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(32, eje_r, ': SOLES: 475-2156367-0-62  |  DOLARES: 475-2156380-1-04');
+            doc.text(33, eje_r, ': SOLES: 4752156367062  |  CCI: 00247500215636706225');
+
+            doc.setTextColor(255,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'bold');//estilos de texto
+            eje_r += 5; // vale 158
 
             doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(11);//Tamaño de texto
+            doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_r += 5; // vale 163
-            doc.text(20, eje_r, 'Orden de compra irrevocable');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(11);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_r += 5; // vale 168
-            doc.text(20, eje_r, 'Servicio gratuito dentro del tiempo de garantia');
+            doc.text(32, eje_r, '   DOLARES: 4752156380104  |  CCI: 00247500215638010428');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(12);//Tamaño de texto
@@ -767,11 +922,11 @@ const previewPDF = () => {
             doc.text(20, eje_r, 'A la espera de su orden');
 
             doc.setTextColor(0, 0, 0); // Color de texto
-            doc.setFontSize(12); // Tamaño de texto
+            doc.setFontSize(13); // Tamaño de texto
             doc.setFont('Helvetica', 'bold'); // Estilos de texto
 
             const anchoPagina = doc.internal.pageSize.width;
-            const margenDerecho = 20;
+            const margenDerecho = 80;
             const anchoTextoNombre = doc.getTextWidth(nombreCompleto);
             const eje_x_left = anchoPagina - anchoTextoNombre - margenDerecho;
 
@@ -779,10 +934,10 @@ const previewPDF = () => {
             const rolesWidth = doc.getTextWidth(roles);
             const eje_x_roles = eje_x_left + ((anchoTextoNombre / 2) - (rolesWidth / 2));
 
-            eje_r += 160; // vale 173
+            eje_r += 65;
             doc.text(eje_x_left, eje_r, nombreCompleto);
-            eje_r += 5; // vale 173
-            doc.setFontSize(10);
+            eje_r += 5;
+            doc.setFontSize(11);
             doc.text(eje_x_roles, eje_r, roles);
 
             accordions.forEach((accordion, index) => {
@@ -812,6 +967,23 @@ document.addEventListener('input', function(event) {
         rows.forEach(function(row) {
             const importeCell = row.querySelector('.inputImporte');
             const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
+            const cantidadCell = row.children[9]; // Asegúrate de que este índice es correcto
+            let valorInput = 1;
+            if (cantidadCell) {
+                // Intenta seleccionar el <input> dentro de esa celda
+                const input = cantidadCell.querySelector('input');
+
+                // Verifica si input no es null
+                if (input) {
+                    // Obtén el valor del <input>
+                    valorInput = input.value;
+                    console.log("Valor del input en la celda 10:", valorInput);
+                } else {
+                    console.log('No se encontró el <input> en la celda 10.');
+                }
+            } else {
+                console.log('No se encontró la celda en la posición 10.');
+            }
             if (importeCell && monedaCell) {
                 if(moneda == "Soles"){
                     const value = parseFloat(importeCell.textContent);
@@ -819,9 +991,9 @@ document.addEventListener('input', function(event) {
     
                     if (!isNaN(value)) {
                         if (moneda === "$") {
-                            total += value * parseFloat(tipoCambio);
+                            total += (value * parseFloat(tipoCambio))*valorInput;
                         } else {
-                            total += value;
+                            total += value*valorInput;
                         }
                     }
                 }else if(moneda == "Dólares"){
@@ -830,9 +1002,9 @@ document.addEventListener('input', function(event) {
     
                     if (!isNaN(value)) {
                         if (moneda === "s/") {
-                            total += value / parseFloat(tipoCambio);
+                            total += (value / parseFloat(tipoCambio)) * valorInput;
                         } else {
-                            total += value;
+                            total += value * valorInput;
                         }
                     }
                 }
@@ -883,7 +1055,7 @@ watchEffect(() => {
 });
 
 var listarClientes = props.clientes;
-console.log(listarClientes);
+// console.log(listarClientes);
 
 </script>
  
@@ -905,7 +1077,7 @@ console.log(listarClientes);
                                     <InputLabel for="cliente_id" class="text-xs">Cliente</InputLabel>
                                     <div class="relative">
                                         <TextInput v-model="searchTerm" autocomplete="off" type="text" id="cliente_id" @input="onInput" placeholder="Ingresa razon social"
-                                            @keydown="onKeydown"
+                                            @keydown="onKeydown" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                         <div id="contenedorDeClientes"
                                             class="w-full z-50 max-h-60 border border-gray-300 rounded-lg absolute overflow-auto text-sm divide-y divide-gray-200 bg-white dark:bg-gray-800"
@@ -918,21 +1090,6 @@ console.log(listarClientes);
                                         </div>
                                     </div>
                                 </div>
-                                <!-- tenor -->
-                                <!-- <div class="flex flex-col items-start">
-                                    <InputLabel for="tenor_id" class="block text-xs font-medium text-gray-700">Descripcion</InputLabel>
-                                    <div class="flex w-full">
-                                        <select id="tenor_id" v-model="form.tenor_id" required
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
-                                            <option value="" disabled selected>Seleccione una descripcion</option>
-                                            <option v-for="tenor in tenors" :key="tenor.id" :value="tenor.id">{{ tenor.name }}</option>
-                                        </select>
-                                        <Button @click.prevent="() => openModal2(1)" class="bg-green-600 py-1 text-white mt-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
-                                            <i class="fas fa-plus mx-2"></i>
-                                        </Button>
-                                    </div>
-                                </div> -->
-                                 <!-- fecha -->
                                  <div>
                                     <InputLabel for="fecha" class="block text-xs font-medium text-gray-700">Fecha</InputLabel>
                                     <TextInput type="date" id="fecha" v-model="form.fecha" required
@@ -952,7 +1109,7 @@ console.log(listarClientes);
                                 </div>
                                 <div>
                                     <InputLabel class="text-xs" for="tipoCambio" :value="'tipo Cambio (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
-                                    <TextInput id="tipoCambio" v-model="form.tipoCambio" type="number" class="w-full bg-green-400 uppercase" disabled></TextInput>
+                                    <TextInput id="tipoCambio" v-model="form.tipoCambio" type="number" class="w-full font-semibold text-white bg-blue-600 uppercase" disabled></TextInput>
                                 </div>
                             </div>
                             <div class="text-end">
@@ -970,7 +1127,7 @@ console.log(listarClientes);
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Especificaciones</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Marca</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
-                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio List.</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">P. Proveedor</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Min.</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Max.</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad</th>
@@ -1006,25 +1163,49 @@ console.log(listarClientes);
                                                 </td>
                                                 <td class="px-3 py-3 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
                                                 <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap" contenteditable="true">
-                                                    <ul class="list-disc px-4 py-2 text-left -translate-y-1" >
-                                                        <li v-for="(capacidad, i) in tbproducto.capacidades.split('\n')" :key="i">{{ capacidad }}</li>
-                                                    </ul>
+                                                    <div class="flex flex-col">
+                                                        <label v-for="(capacidad, i) in tbproducto.capacidades.split('\n')" :key="i" class="flex items-center">
+                                                            <input 
+                                                                type="checkbox" 
+                                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
+                                                                :value="capacidad" 
+                                                                ref="capacidadCheckboxes"
+                                                                :checked="tbproducto.capacidades.split('\n').length === 1"
+                                                            >
+                                                            <span class="ml-2">{{ capacidad }}</span>
+                                                        </label>
+                                                    </div>
                                                 </td>
                                                 <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2) }}</td>
                                                 <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2) }} </td>
                                                 <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2) }} </td>
                                                 <td class="px-3 py-3 text-center border-r whitespace-nowrap border-b"><input class="text-center dark:bg-gray-800 bg-white text-black border-white dark:border-gray-800 dark:text-white w-16" type="number" v-model="tbproducto.cantidad"></td>
-                                                <td class="px-3 py-3 text-center border-r border-b inputImporte" contenteditable="true">{{ subtotalfinal = parseFloat(tbproducto.precio_min * tbproducto.cantidad).toFixed(2) }}</td>
-                                                <td class="px-3 py-4 text-center border-r border-b capitalize"  placeholder="" contenteditable="true">{{ tbproducto.garantia }}</td>
-                                                <td class="px-3 py-4 text-center border-r border-b normal-case" placeholder="hola" contenteditable="true">
-                                                    <span class="placeholder-text">1 Día</span>
+                                                <td class="px-3 py-3 text-center border-r border-b inputImporte" contenteditable="true">{{ parseFloat(tbproducto.precio_min).toFixed(2) }}</td>
+                                                <td class="px-3 py-4 text-center border-r border-b capitalize">
+                                                    <select v-model="tbproducto.garantia" class="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-32 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                                        <option v-for="(garantia, index) in garantias" :key="index" :value="garantia">
+                                                            {{ garantia }}
+                                                        </option>
+                                                    </select>
                                                 </td>
-                                                <td class="px-3 py-4 text-center border-r border-b normal-case" placeholder="" contenteditable="true">
-                                                    <span class="placeholder-text">Al contado</span>
+                                                <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap forma-pago-cell">
+                                                    <select v-model="tbproducto.diasEntrega" class="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                                        <option v-for="(dias, i) in diasEntrega" :key="i" :value="dias">
+                                                            {{ dias }}
+                                                        </option>
+                                                    </select>
+                                                </td>
+                                                <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap forma-pago-cell">
+                                                    <select v-model="tbproducto.formaPago" class="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                                        <option v-for="(pago, i) in formaPago" :key="i" :value="pago">
+                                                            {{ pago }}
+                                                        </option>
+                                                    </select>
                                                 </td>
                                                 <td class="px-3 py-4 text-center border-r border-b normal-case hidden">
                                                     <span class="placeholder-text uppercase">{{ tbproducto.moneda }}</span>
                                                 </td>
+                                                <td class="px-3 py-4 text-center border-r border-b normal-case hidden"> {{ tbproducto.foto }} </td>
                                                 <td class="px-3 py-3 text-center border-r border-b"><button @click.prevent="quitarProducto(i)"><i class="bi bi-trash3 text-red-500"></i></button></td>
                                             </tr>
                                         </tbody>
@@ -1032,41 +1213,6 @@ console.log(listarClientes);
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
-                                <!-- garantia -->
-                                <!-- <div>
-                                    <InputLabel for="garantia" class="block ml-2 text-xs font-medium text-gray-900">Garantia</InputLabel>
-                                    <select id="garantia" v-model="form.garantia" required
-                                            class="mt-2.5 h-10 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="" disabled selected >Selecciona una opcion</option>
-                                        <option value="3 meses">3 meses</option>
-                                        <option value="6 meses">6 meses</option>
-                                        <option value="1 año">1 año</option>
-                                        <option value="sin garantia">Sin garantia</option>
-                                    </select>
-                                </div> -->
-                                <!-- Moneda -->
-                                
- 
-                                <!-- Forma pago -->
-                                <!-- <div>
-                                    <InputLabel for="forma_pago" class="block text-xs font-medium text-gray-700">Forma de pago</InputLabel>
-                                    <select id="forma_pago" v-model="form.forma_pago"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="" disabled selected>Selecciona una forma de pago</option>
-                                        <option value="Al contado">Al contado</option>
-                                        <option value="Credito 15 dias">Credito 15 dias</option>
-                                        <option value="Credito 30 dias">Credito 30 dias</option>
-                                        <option value="Credito 60 dias">Credito 60 dias</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <InputLabel for="dias_entrega" class="block text-xs font-medium text-gray-700">Días de entrega</InputLabel>
-                                    <select id="dias_entrega" v-model="form.dias_entrega"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="" disabled selected>Selecciona días de entrega</option>
-                                        <option v-for="dia in 31" :key="dia" :value="dia">{{ dia }} día{{ dia > 1 ? 's' : '' }}</option>
-                                    </select>
-                                </div> -->
                                 <div>
                                     <div class="flex items-center">
                                         <input type="checkbox" id="igvCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="igvEnabled">
@@ -1082,6 +1228,12 @@ console.log(listarClientes);
                                 <div>
                                     <InputLabel class="text-xs" for="total" :value="'Total (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
                                     <TextInput id="total" v-model="form.total" type="text" class="mt-2 w-full bg-green-400 uppercase" disabled></TextInput>
+                                </div>
+                                <div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="precioTotalCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioTotalEnabled">
+                                        <label for="precioTotalCheckbox" class="ms-2 text-xs font-medium text-black dark:text-white">Incluir Precio Total</label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="d-flex mt-4">
@@ -1177,7 +1329,7 @@ console.log(listarClientes);
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Especificaciones</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Marca</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Capacidades</th>
-                                    <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio Lis.</th>
+                                    <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">P. Proveedor</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio Min.</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Precio Max.</th>
                                     <th scope="col" class="px-6 py-3 text-center border-b-2 border-white">Garantia</th>
@@ -1250,73 +1402,36 @@ console.log(listarClientes);
     </AppLayout>
 </template>
 
-<!-- <script>
+<script>
 export default {
-    props: {
-        clientes: {
-            type: Array,
-            required: true,
-        },
-    },
     data() {
         return {
-            searchTerm: '',
-            searchTermCodigoCli: '',
-            filteredClientes: [],
-            selectedIndex: -1,
-            activeAccordion: [],
-            form: {
-                cliente_id: ''
-            }
+            formaPago: ['15 dias', '30 dias', '60 dias'],
+            diasEntrega: ['1 dia', '2 dias', '3 dias', '4 dias', '5 dias'],
+            garantias: ['3 meses', '6 meses', '1 año', 'Sin Garantia'],
+            tbproductosAgregados: [],
+            selectedFormaPago: '15 dias' // Valor predeterminado para formaPago
         };
     },
     methods: {
-        onInput() {
-            this.selectedIndex = -1;
-            if (this.searchTerm.length > 0) {
-                this.filteredClientes = this.clientes.filter(cliente =>
-                    cliente.razonSocial.toLowerCase().includes(this.searchTerm.toLowerCase())
-                );
-            } else {
-                this.filteredClientes = [];
-            }
+        getSelectedCapacidades() {
+            const checkboxes = this.$refs.capacidadCheckboxes;
+            const selectedCapacidades = Array.from(checkboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+            return selectedCapacidades;
         },
-        onKeydown(event) {
-            if (this.filteredClientes.length > 0) {
-                if (event.key === 'ArrowDown') {
-                    event.preventDefault();
-                    this.selectedIndex = (this.selectedIndex + 1) % this.filteredClientes.length;
-                } else if (event.key === 'ArrowUp') {
-                    event.preventDefault();
-                    this.selectedIndex = (this.selectedIndex - 1 + this.filteredClientes.length) % this.filteredClientes.length;
-                } else if (event.key === 'Enter') {
-                    event.preventDefault();
-                    if (this.selectedIndex >= 0) {
-                        this.selectCliente(this.filteredClientes[this.selectedIndex]);
-                    }
+        async mounted() {
+            // Obtener tbproductosAgregados y asignar las garantías y formas de pago seleccionadas
+            this.tbproductosAgregados = await this.fetchTbproductos();
+
+            // Asegurar que cada producto tenga un valor por defecto para formaPago si no está definido
+            this.tbproductosAgregados.forEach(producto => {
+                if (!producto.formaPago) {
+                    producto.formaPago = this.formaPago[0]; // Establecer el primer valor de formaPago como predeterminado
                 }
-            }
-        },
-        updateSelection(index) {
-            this.selectedIndex = index;
-        },
-        selectCliente(cliente) {
-            this.searchTerm = cliente.razonSocial;
-            this.searchTermCodigoCli = cliente.id;
-            this.form.cliente_id = this.searchTermCodigoCli;
-            this.filteredClientes = [];
-        },
-        toggleAccordion(index) {
-            const indexPosition = this.activeAccordion.indexOf(index);
-            if (indexPosition === -1) {
-                this.activeAccordion.push(index);
-            } else {
-                this.activeAccordion.splice(indexPosition, 1);
-            }
-        },
-        isActive(index) {
-            return this.activeAccordion.includes(index);
-        },
-    },
-};
-</script> -->
+            });
+        }
+    }
+}
+</script>
