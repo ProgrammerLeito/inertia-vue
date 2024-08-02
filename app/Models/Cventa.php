@@ -14,7 +14,7 @@ class Cventa extends Model
         'tenor_id',
         'fecha',
         'moneda',
-        'garantia',
+        'tipoCambio',
         'forma_pago',
         'dias_entrega',
         'subtotal',

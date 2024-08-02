@@ -251,8 +251,9 @@ const printPDF = async () => {
             2: { fontStyle: 'bold' }, // Aplicar negrita a la primera columna (N°2)
         },
     });
-    // Abrir el PDF en una nueva ventana para imprimir
-    doc.output('dataurlnewwindow');
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    window.open(url);
 };
 </script>
 

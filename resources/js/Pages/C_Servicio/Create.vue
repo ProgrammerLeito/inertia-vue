@@ -870,7 +870,7 @@ const updateTotal = () => {
                             <div class="text-end">
                                 <iframe ref="pdfPreview" class="hidden" width="100%" height="500"></iframe>
                                 <PrimaryButton class="mt-3 tracking-widest ml-2 mx-2"
-                                    @click.prevent="generarYPresentarPDF">Ver
+                                    >Ver
                                     PDF</PrimaryButton>
                                 <PrimaryButton class="mt-3 tracking-widest">
                                     Generar cotizacion

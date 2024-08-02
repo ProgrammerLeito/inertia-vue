@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('especificaciones')->nullable();
             $table->string('marca')->nullable();
             $table->string('capacidades')->nullable(); 
-            $table->string('precio_prov')->nullable();
+            $table->string('precio_list')->nullable();
             $table->string('precio_min')->nullable();
             $table->string('precio_max')->nullable();
             $table->string('cantidad')->nullable(); 
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('dias_entrega')->nullable(); 
             $table->string('forma_pago')->nullable();
             $table->string('moneda')->nullable();
-            $table->string('url_imagen')->nullable();
+            $table->string('foto')->nullable();
             $table->timestamps();
         });
     }

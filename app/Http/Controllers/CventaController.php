@@ -9,15 +9,12 @@ use App\Models\Tbcategoria;
 use App\Models\Tbmarca;
 use App\Models\Tbproducto;
 use App\Models\Tbsubcategoria;
+use App\Models\TbproductosAgregados;
 use App\Models\Tenor;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\DB;
 
 class CventaController extends Controller
 {
@@ -55,37 +52,55 @@ class CventaController extends Controller
         $validatedData = $request->validated();
         $validatedData['tecnico'] = $tecnico;
         $validatedData['estado'] = 'Por Enviar';
-
+        
         $cventa = Cventa::create($validatedData);
+    }
 
-        if ($request->has('productos')) {
-            foreach ($request->productos as $producto) {
-                $productoNuevo = new Tbproducto([
-                    'modelo' => $producto['modelo'],
-                    'foto' => $producto['foto'],
-                    'especificaciones' => $producto['especificaciones'],
-                    'marca' => $producto['marca'],
-                    'capacidades' => $producto['capacidades'],
-                    'precio' => $producto['precio'],
-                    'cantidad' => $producto['cantidad'],
-                ]);
-                $cventa->productos()->save($productoNuevo);
-            }
+    public function validarIdCot()
+    {
+        $productos = DB::table('cventas')
+                        ->select(DB::raw('MAX(id) as id'))
+                        ->first(); // Usa `first()` para obtener un único resultado en lugar de `get()`
+
+        return response()->json($productos);
+    }
+
+    public function guardarProductosCotizacion(Request $request)
+    {
+        $productos = $request->input('productos');
+
+        foreach ($productos as $producto) {
+            TbproductosAgregados::create([
+                'idCotizacion' => $producto['idCotizacion'], // Asegúrate de pasar este valor
+                'categoria_id' => $producto['categoria_id'],
+                'modelo' => $producto['modelo'],
+                'especificaciones' => $producto['especificaciones'],
+                'marca' => $producto['marca'],
+                'capacidades' => implode('\n', $producto['capacidades']),
+                'precio_list' => $producto['precio_list'],
+                'precio_min' => $producto['precio_min'],
+                'precio_max' => $producto['precio_max'],
+                'cantidad' => $producto['cantidad'],
+                'importe' => $producto['importe'],
+                'garantia' => $producto['garantia'],
+                'dias_entrega' => $producto['dias_entrega'],
+                'forma_pago' => $producto['forma_pago'],
+                'moneda' => $producto['moneda'],
+                'foto' => $producto['foto']
+            ]);
         }
-
-        return redirect()->route('cventas.index');
     }
 
     public function edit(Cventa $cventa)
     {
         $clientes = Cliente::all();
-        $tenors = Tenor::all();
-        $tbproductos = Tbproducto::with('tbmarca')->get();
+        $tbproductos = Tbproducto::with('tbcategoria', 'tbsubcategoria', 'tbmarca')->get();
         $tbmarcas = Tbmarca::all();
-        $tbproductosAgregados = $cventa->productos;
-        // dd($tbproductosAgregados);
+        $tbcategorias = Tbcategoria::with('tbsubcategorias')->get();
+        $idCotizacion = $cventa->id; // Obtener el id de la cotización desde el modelo
+        $tbproductosEditAgregados = TbproductosAgregados::where('idCotizacion', $idCotizacion)->get();
 
-        return Inertia::render('Cotizas/Edit', compact('cventa', 'clientes', 'tenors', 'tbproductos', 'tbmarcas', 'tbproductosAgregados'));
+        return Inertia::render('Cotizas/Edit', compact('cventa', 'clientes', 'tbproductos', 'tbcategorias', 'tbmarcas', 'tbproductosEditAgregados'));
     }
 
     public function update(Request $request, Cventa $cventa)

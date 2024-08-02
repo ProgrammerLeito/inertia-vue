@@ -92,7 +92,7 @@ function warn(event) {
         response = response.data[0]
         // {{ parseInt(producto.stock) + parseInt(producto.total_entradas) + parseInt(producto.total_devolucion) - parseInt(producto.total_salidas) }}    {{ producto.unidad_medida }}
         let stock = parseInt(response.stock) + parseInt(response.total_entradas) + parseInt(response.total_devolucion) - parseInt(response.total_salidas)
-        console.log(stock,cantidad);
+        // console.log(stock,cantidad);
         if (stock < parseInt(cantidad)) {
             // Si hay un error de stock insuficiente, muestra una alerta
             Swal.fire({

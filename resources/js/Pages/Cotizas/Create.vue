@@ -10,6 +10,7 @@ import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
 import { onMounted , watch , computed , ref , nextTick, watchEffect } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
+import axios from "axios";
 
 import jsPDF from 'jspdf';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
@@ -70,6 +71,7 @@ const form = useForm ({
     moneda:'',
     forma_pago:'',
     dias_entrega:'',
+    tipoCambio:'',
     subtotal: 0,
     igv: 0,
     total: 0,
@@ -420,28 +422,27 @@ const recolectarDatosTabla = () => {
 
     tbproductosAgregados.value.forEach(tbproducto => {
         datosTabla.push({
-            categoria: tbproducto.tbcategoria ? tbproducto.tbcategoria.nombre : '',
+            categoria_id: tbproducto.tbcategoria ? tbproducto.tbcategoria.id : '', // Ajusta si 'categoria_id' es diferente
             modelo: tbproducto.modelo,
-            foto: tbproducto.foto,
             especificaciones: tbproducto.especificaciones,
             marca: tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca',
             capacidades: tbproducto.capacidades.split('\n'),
-            precioProveedor: parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2),
-            precioMin: parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2),
-            precioMax: parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2),
+            precio_list: parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2),
+            precio_min: parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2),
+            precio_max: parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2),
             cantidad: tbproducto.cantidad,
             importe: parseFloat(tbproducto.precio_min).toFixed(2),
             garantia: tbproducto.garantia,
-            diasEntrega: tbproducto.diasEntrega,
-            formaPago: tbproducto.formaPago,
-            moneda: tbproducto.moneda
+            dias_entrega: tbproducto.diasEntrega,
+            forma_pago: tbproducto.formaPago,
+            moneda: tbproducto.moneda,
+            foto: tbproducto.foto
         });
     });
 
     return datosTabla;
 };
 
-// Función para enviar el formulario con los datos de la tabla
 const submitForm = async (event) => {
     if (event) {
         event.preventDefault();
@@ -452,29 +453,54 @@ const submitForm = async (event) => {
 
     // Loguear los datos y detener la ejecución para inspeccionarlos
     console.log('Datos a enviar:', datosTabla);
-    return; // Esto detendrá la ejecución del script
 
     try {
-        await form.post(route('cventas.store'), {
-            onSuccess: () => {
-                form.reset();
-                Swal.fire({
-                    title: 'Cotización guardada',
-                    text: 'La cotización se ha guardado exitosamente.',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-                Inertia.visit(route('cventas.index'));
-            },
-            onError: (errors) => {
-                console.error(errors);
-            }
+        // Primera solicitud: Guardar la cotización
+        await form.post(route('cventas.store'));
+
+        await Inertia.post(route('cventas.store'), datosTabla);
+
+        // Segunda solicitud: Validar ID con axios
+        const validationResponse = await axios.post('/validarIdCot');
+
+        // Manejar la respuesta de la solicitud axios
+        console.log('Respuesta de validarIdCot:', validationResponse.data);
+
+        // Obtener el ID de cotización del resultado de validación
+        const idCotizacion = validationResponse.data.id; // Acceder al ID desde la respuesta
+
+        // Agregar el idCotizacion a cada producto
+        datosTabla.forEach(producto => {
+            producto.idCotizacion = idCotizacion;
         });
+
+        // Tercera solicitud: Guardar los productos de la cotización
+        await Inertia.post(route('cventas.guardarProductosCotizacion'), {
+            productos: datosTabla
+        });
+
+        Swal.fire({
+            title: 'Cotización guardada',
+            text: 'La cotización y los productos se han guardado exitosamente.',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+        });
+
+        Inertia.visit(route('cventas.index'));
+
     } catch (error) {
         console.error('Error al enviar el formulario:', error);
+
+        Swal.fire({
+            title: 'Error',
+            text: 'Hubo un error al guardar la cotización.',
+            icon: 'error',
+            showConfirmButton: true
+        });
     }
 };
+
 
 const { props } = usePage();
 const user = props.auth.user;
@@ -867,11 +893,26 @@ const previewPDF = () => {
             doc.text(texto, startX, startY);
             doc.line(startX, startY + 1, startX + textWidth, startY + 1);
 
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(12);//Tamaño de texto
+            doc.setTextColor(255,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 8; // vale 148
-            doc.text(20, eje_r, 'Deposito a Cuenta de Ahorros');
+            eje_r += 9; // vale 158
+            doc.text(20, eje_r, 'BCP');
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            doc.text(33, eje_r, ': SOLES: 4752156367062  |  CCI: 00247500215636706225');
+
+            doc.setTextColor(255,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'bold');//estilos de texto
+            eje_r += 5; // vale 158
+
+            doc.setTextColor(0,0,0);//Color de texto
+            doc.setFontSize(10.5);//Tamaño de texto
+            doc.setFont('Helvetica', 'normal');//estilos de texto
+            doc.text(32, eje_r, '   DOLARES: 4752156380104  |  CCI: 00247500215638010428');
 
             doc.setTextColor(0,0,255);//Color de texto
             doc.setFontSize(10.5);//Tamaño de texto
@@ -893,27 +934,6 @@ const previewPDF = () => {
             doc.setFontSize(10.5);//Tamaño de texto
             doc.setFont('Helvetica', 'normal');//estilos de texto
             doc.text(32, eje_r, '   DOLARES: 0011-0267-0201320324  |  CCI: 01126700020132032421');
-
-            doc.setTextColor(255,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 5; // vale 158
-            doc.text(20, eje_r, 'BCP');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(33, eje_r, ': SOLES: 4752156367062  |  CCI: 00247500215636706225');
-
-            doc.setTextColor(255,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 5; // vale 158
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(32, eje_r, '   DOLARES: 4752156380104  |  CCI: 00247500215638010428');
 
             doc.setTextColor(0,0,0);//Color de texto
             doc.setFontSize(12);//Tamaño de texto
@@ -1096,21 +1116,6 @@ var listarClientes = props.clientes;
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                                     <InputError :message="$page.props.errors.fecha" class="mt-2"/>
                                 </div>
-                                <div>
-                                    <div>
-                                        <InputLabel for="moneda" class="block text-xs font-medium text-gray-900">Moneda</InputLabel>
-                                        <select id="moneda" v-model="form.moneda" required
-                                                class="h-10 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="" disabled selected>Selecciona una moneda</option>
-                                            <option value="soles s/">Soles</option>
-                                            <option value="dolares $">Dólares</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div>
-                                    <InputLabel class="text-xs" for="tipoCambio" :value="'tipo Cambio (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
-                                    <TextInput id="tipoCambio" v-model="form.tipoCambio" type="number" class="w-full font-semibold text-white bg-blue-600 uppercase" disabled></TextInput>
-                                </div>
                             </div>
                             <div class="text-end">
                                 <!-- Botón para abrir el tercer modal -->
@@ -1196,7 +1201,7 @@ var listarClientes = props.clientes;
                                                     </select>
                                                 </td>
                                                 <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap forma-pago-cell">
-                                                    <select v-model="tbproducto.formaPago" class="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                                    <select v-model="tbproducto.formaPago" class="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-28 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                                         <option v-for="(pago, i) in formaPago" :key="i" :value="pago">
                                                             {{ pago }}
                                                         </option>
@@ -1212,7 +1217,26 @@ var listarClientes = props.clientes;
                                     </table>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
+                            <div class="flex w-full md:justify-end justify-start items-center md:pb-4 pb-2.5 pt-2">
+                                <input checked type="checkbox" id="precioTotalCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioTotalEnabled">
+                                <label for="precioTotalCheckbox" class="ms-2 text-base font-extrabold text-black dark:text-white">Incluir Precio Total</label>
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-4 items-end sm:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
+                                <div class="flex">
+                                    <div>
+                                        <InputLabel for="moneda" class="block text-xs font-medium text-gray-900">Moneda</InputLabel>
+                                        <select id="moneda" v-model="form.moneda" required
+                                                class="h-10 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-md">
+                                            <option value="" disabled selected>Selecciona una moneda</option>
+                                            <option value="soles s/">Soles</option>
+                                            <option value="dolares $">Dólares</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <InputLabel class="text-xs" for="tipoCambio" :value="'tipo Cambio (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
+                                        <input id="tipoCambio" v-model="form.tipoCambio" type="number" class="w-28 font-semibold text-center text-white bg-blue-600 uppercase rounded-r-md h-10" disabled/>
+                                    </div>
+                                </div>
                                 <div>
                                     <div class="flex items-center">
                                         <input type="checkbox" id="igvCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="igvEnabled">
@@ -1229,12 +1253,7 @@ var listarClientes = props.clientes;
                                     <InputLabel class="text-xs" for="total" :value="'Total (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
                                     <TextInput id="total" v-model="form.total" type="text" class="mt-2 w-full bg-green-400 uppercase" disabled></TextInput>
                                 </div>
-                                <div>
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="precioTotalCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioTotalEnabled">
-                                        <label for="precioTotalCheckbox" class="ms-2 text-xs font-medium text-black dark:text-white">Incluir Precio Total</label>
-                                    </div>
-                                </div>
+                                
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
@@ -1406,7 +1425,7 @@ var listarClientes = props.clientes;
 export default {
     data() {
         return {
-            formaPago: ['15 dias', '30 dias', '60 dias'],
+            formaPago: ['15 dias', '30 dias', '60 dias', 'Al contado'],
             diasEntrega: ['1 dia', '2 dias', '3 dias', '4 dias', '5 dias'],
             garantias: ['3 meses', '6 meses', '1 año', 'Sin Garantia'],
             tbproductosAgregados: [],

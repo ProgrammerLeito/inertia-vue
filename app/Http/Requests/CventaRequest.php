@@ -26,7 +26,7 @@ class CventaRequest extends FormRequest
             'tenor_id' => 'nullable',
             'fecha' => 'required|date',
             'moneda' => 'nullable',
-            'garantia' => 'nullable',
+            'tipoCambio' => 'nullable',
             'forma_pago' => 'nullable',
             'dias_entrega' => 'nullable',
             'subtotal' => 'required|numeric',
