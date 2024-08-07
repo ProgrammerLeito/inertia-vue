@@ -106,30 +106,39 @@ const onSelectFoto = (e, fieldName) => {
 const filteredSubcategorias = ref(tbsubcategorias);
 const filteredMarcas = ref(tbmarcas);
  
-const updateFilteredSubcategoriasYMarcas = () => {
+const updateFilteredSubcategorias = () => {
     if (form.tbcategoria_id) {
         filteredSubcategorias.value = tbsubcategorias.filter(subcategoria => subcategoria.tbcategoria_id == form.tbcategoria_id);
- 
-        if (form.tbsubcategoria_id) {
-            filteredMarcas.value = tbmarcas.filter(marca => marca.tbsubcategoria_id == form.tbsubcategoria_id);
-        } else {
-            filteredMarcas.value = tbmarcas.filter(marca => filteredSubcategorias.value.some(subcategoria => subcategoria.id == marca.tbsubcategoria_id));
-        }
+        // Reset the subcategoria and marca when categoria changes
+        form.tbsubcategoria_id = '';
+        form.tbmarca_id = '';
+        filteredMarcas.value = [];
     } else {
         filteredSubcategorias.value = tbsubcategorias;
         filteredMarcas.value = tbmarcas;
     }
 };
- 
-watch(() => form.tbcategoria_id, () => {
-    updateFilteredSubcategoriasYMarcas();
-});
- 
-watch(() => form.tbsubcategoria_id, () => {
-    updateFilteredSubcategoriasYMarcas();
-});
-updateFilteredSubcategoriasYMarcas();
 
+const updateFilteredMarcas = () => {
+    if (form.tbsubcategoria_id) {
+        filteredMarcas.value = tbmarcas.filter(marca => marca.tbsubcategoria_id == form.tbsubcategoria_id);
+        // Reset the marca when subcategoria changes
+        form.tbmarca_id = '';
+    } else {
+        filteredMarcas.value = [];
+    }
+};
+
+watch(() => form.tbcategoria_id, () => {
+    updateFilteredSubcategorias();
+});
+
+watch(() => form.tbsubcategoria_id, () => {
+    updateFilteredMarcas();
+});
+
+updateFilteredSubcategorias();
+updateFilteredMarcas();
 
 const submitForm = () => {
     form.post(route('tbproductos.store'), {
@@ -182,7 +191,10 @@ const closeModal3 = () => {
 const save3 = () => {
     if (operation3.value == 1) {
         form3.post(route('tbmarcas.store'), {
-            onSuccess: () => { ok3('marca registrada') }
+            onSuccess: () => { 
+                console.log(response);
+                ok3('marca registrada') 
+            }
         });
     }
 }
@@ -286,7 +298,7 @@ const ok4 = (msj) => {
                                     </InputLabel>
                                     <div class="flex w-full">
                                         <select id="tbcategoria" v-model="form.tbcategoria_id" required
-                                            @change="updateFilteredSubcategoriasYMarcas"
+                                            @change="updateFilteredSubcategorias"
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
                                             <option value="" disabled selected>Seleccione una categoría</option>
                                             <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id"
@@ -304,11 +316,11 @@ const ok4 = (msj) => {
                                     </InputLabel>
                                     <div class="flex w-full">
                                         <select id="tbsubcategoria" v-model="form.tbsubcategoria_id"
+                                            @change="updateFilteredMarcas"
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
                                             <option value="" disabled selected>Seleccione una subcategoría</option>
                                             <option v-for="tbsubcategoria in filteredSubcategorias"
-                                                :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{
-                                                tbsubcategoria.nombre }}</option>
+                                                :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
                                         </select>
                                         <Button @click.prevent="() => openModal2(1)"
                                             class="bg-green-600 mt-1 py-1 text-white w-10 h-[42px] sm:h-[38px] rounded-r-lg">
@@ -334,11 +346,7 @@ const ok4 = (msj) => {
                                         <select id="tbmarca" v-model="form.tbmarca_id" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg">
                                             <option value="" disabled selected>Seleccione una marca</option>
- 
-                                            <option v-for="tbmarca in filteredMarcas" :key="tbmarca.id"
-                                                :value="tbmarca.id">
-                                                {{
-                                                    tbmarca.nombre }}</option>
+                                            <option v-for="tbmarca in filteredMarcas" :key="tbmarca.id" :value="tbmarca.id">{{ tbmarca.nombre }}</option>
                                         </select>
                                         <Button @click.prevent="() => openModal3(1)"
                                             class="bg-green-600 py-1 text-white mt-1 w-10 h-[42px] sm:h-[38px] rounded-r-lg">
@@ -380,7 +388,7 @@ const ok4 = (msj) => {
                                     <InputLabel for="precio_min" class="block text-xs font-medium text-gray-700">
                                         Precio_minim
                                     </InputLabel>
-                                    <TextInput type="number" id="precio_min" v-model="form.precio_min"
+                                    <TextInput type="text" id="precio_min" v-model="form.precio_min"
                                         placeholder="escribe solo numeros"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.precio_min" class="mt-2" />
@@ -390,7 +398,7 @@ const ok4 = (msj) => {
                                     <InputLabel for="precio_max" value="Precio_maximo"
                                         class="block text-xs font-medium text-gray-700">
                                     </InputLabel>
-                                    <TextInput type="number" id="precio_max" v-model="form.precio_max"
+                                    <TextInput type="text" id="precio_max" v-model="form.precio_max"
                                         placeholder="escribe solo numeros"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.precio_max" class="mt-2" />

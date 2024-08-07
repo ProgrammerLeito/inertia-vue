@@ -86,7 +86,8 @@ class CventaController extends Controller
                 'dias_entrega' => $producto['dias_entrega'],
                 'forma_pago' => $producto['forma_pago'],
                 'moneda' => $producto['moneda'],
-                'foto' => $producto['foto']
+                'foto' => $producto['foto'],
+                'requerimientos' => $producto['requerimientos']
             ]);
         }
     }

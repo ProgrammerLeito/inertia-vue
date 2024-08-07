@@ -77,6 +77,7 @@ const form = useForm ({
     total: 0,
     igvEnabled: false,
     precioTotalEnabled: false,
+    precioUnitarioEnabled: false,
     n_cotizacion: nCotizacion
 });
 
@@ -96,6 +97,20 @@ const onInput = () => {
         filteredClientes.value = [];
     }
 };
+
+// Función para recortar el valor a dos decimales
+const recortarADosDecimales = (valor) => {
+const numero = parseFloat(valor);
+if (!isNaN(numero)) {
+    return numero.toFixed(2);
+}
+return valor;
+};
+
+// Verificar y recortar el valor cuando cambia
+watch(() => form.igv, (nuevoValor) => {
+form.igv = recortarADosDecimales(nuevoValor);
+});
 
 const onKeydown = (event) => {
     if (filteredClientes.value.length > 0) {
@@ -208,6 +223,9 @@ const agregarProducto = (producto) => {
             }
         });
 
+        form.subtotal = parseFloat(total).toFixed(2);
+        form.total = parseFloat(total).toFixed(2);
+
         document.getElementById('subtotal').value = total.toFixed(2);
         document.getElementById('total').value = total.toFixed(2);
         
@@ -293,6 +311,9 @@ watch(tbproductosAgregados, (newProductos) => {
                 }
             }
         });
+
+        form.subtotal = parseFloat(total).toFixed(2);
+        form.total = parseFloat(total).toFixed(2);
 
         document.getElementById('subtotal').value = total.toFixed(2);
         document.getElementById('total').value = total.toFixed(2);
@@ -433,10 +454,11 @@ const recolectarDatosTabla = () => {
             cantidad: tbproducto.cantidad,
             importe: parseFloat(tbproducto.precio_min).toFixed(2),
             garantia: tbproducto.garantia,
-            dias_entrega: tbproducto.diasEntrega,
-            forma_pago: tbproducto.formaPago,
+            dias_entrega: tbproducto.diasEntrega ? tbproducto.diasEntrega.trim() : '1 dia',
+            forma_pago: tbproducto.formaPago ? tbproducto.formaPago.trim() : 'Al contado',
             moneda: tbproducto.moneda,
-            foto: tbproducto.foto
+            foto: tbproducto.foto,
+            requerimientos: tbproducto.requerimientos ? tbproducto.requerimientos.trim() : 'Entrega en Planta'
         });
     });
 
@@ -533,6 +555,8 @@ const previewPDF = () => {
         doc.addImage(plantilla, 'PNG', 1, 1, 208, 295); // Agregar la imagen en las coordenadas fijas
 
         const fechaValor = document.getElementById("fecha").value;
+        const monedaTipoCambio = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
+        const valorTipoCambio = document.getElementById("tipoCambio").value;
 
         // Parsear la fecha para formatearla
         const partesFecha = fechaValor.split('-');
@@ -543,6 +567,8 @@ const previewPDF = () => {
         const moneda = document.getElementById("moneda").options[document.getElementById("moneda").selectedIndex].text;
         const igvEnabled = document.getElementById("igvCheckbox").checked;
         const precioTotalEnabled = document.getElementById("precioTotalCheckbox").checked;
+        const precioUnitarioEnabled = document.getElementById("precioUnitarioEnabled").checked;
+        const convertirPrecioEnabled = document.getElementById("convertirPrecioEnabled").checked;
         const subtotal = document.getElementById("subtotal").value;
         const total = document.getElementById("total").value;
     
@@ -619,8 +645,8 @@ const previewPDF = () => {
             const precioMax = row.querySelector('td:nth-child(9)').innerText.trim();
             const cantidad = row.querySelector('td:nth-child(10) input').value.trim();
             const importe = row.querySelector('td:nth-child(11)').innerText.trim();
-            let igvMostrarUnitario = parseFloat(importe) * 0.18;
-            let precioTotalUnitario = parseFloat(importe) + parseFloat(igvMostrarUnitario);
+            let igvMostrarUnitario = 0;
+            let precioTotalUnitario = 0;
 
             const garantiaSelect = row.querySelector('td:nth-child(12) select'); // Selecciona el <select> en la 12ª columna
             const garantia = garantiaSelect.value; // Obtiene el valor seleccionado
@@ -630,9 +656,9 @@ const previewPDF = () => {
             // const diasEntrega = row.querySelector('td:nth-child(13)').innerText.trim();
             const formaPagoSelect = row.querySelector('td:nth-child(14) select'); // Selecciona el <select> en la 14ª columna
             const formaPago = formaPagoSelect.value; // Obtiene el valor seleccionado
-            
             const moneda = row.querySelector('td:nth-child(15)').innerText.trim();
-            
+            const requerimientos = row.querySelector('td:nth-child(17)').innerText.trim();
+                        
             const img = new Image();
             img.src = foto;
 
@@ -743,26 +769,139 @@ const previewPDF = () => {
                 doc.setFont('Helvetica', 'normal');
                 doc.setFontSize(10.5);
                 doc.text(50, eje_y, ': ' + garantia);
+
+                eje_y += 5;
+                doc.setTextColor(0, 0 ,0)
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(10);
+                doc.text(eje_x, eje_y, 'Requerimientos');
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(10.5);
+
+                // Suponiendo que 'requerimientos' es una cadena de texto con ítems separados por saltos de línea
+                const requerimientosArray = requerimientos.split('\n');
+
+                // Iterar sobre los ítems de requerimientos
+                requerimientosArray.forEach((item, index) => {
+                    // Agregar punto para cada ítem
+                    doc.text(50, eje_y, `: ${item}`);
+                    eje_y += 5; // Espacio entre ítems
+                });
                 
                 doc.setTextColor(0, 0 ,0)
-                eje_y += 20;
+                eje_y += 10;
                 doc.setFont('Helvetica', 'bold');
                 doc.setFontSize(14);
 
-                const precioTotalUnitarioFormateado = parseFloat(precioTotalUnitario).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                    useGrouping: true
-                });
+                let importeModificacion = 0;
 
-                const texto = `Precio Unitario  :  ${moneda.toUpperCase()} ${parseFloat(importe).toFixed(2)} + IGV(${igvMostrarUnitario.toFixed(2)}) = ${moneda.toUpperCase()} ${precioTotalUnitarioFormateado}`;
-                const anchoTexto = doc.getTextWidth(texto);
-                const anchoRectangulo = anchoTexto + 20;
-                const eje_x2 = (doc.internal.pageSize.width - anchoRectangulo) / 2;
-                doc.setFillColor(255, 255, 0); // Color de fondo amarillo (RGB)
-                doc.rect(eje_x2, eje_y - 7.5, anchoRectangulo, 12, 'F'); // Ajusta las dimensiones y posición del rectángulo según sea necesario
-                doc.setTextColor(0, 0, 0); // Color del texto (negro)
-                doc.text(eje_x2 + 10, eje_y, texto);
+                if (precioUnitarioEnabled) {
+                    if (convertirPrecioEnabled){
+                        if(monedaTipoCambio == "Soles"){
+                            if (!isNaN(importe)) {
+                                if (moneda === "$") {
+                                    importeModificacion = (importe * parseFloat(valorTipoCambio));
+                                } else {
+                                    importeModificacion = importe;
+                                }
+                            }
+                        }else if(monedaTipoCambio == "Dólares"){
+                            if (!isNaN(importe)) {
+                                if (moneda === "s/") {
+                                    importeModificacion = (importe / parseFloat(valorTipoCambio));
+                                } else {
+                                    importeModificacion = importe;
+                                }
+                            }
+                        }
+                        let simboloMoneda = '';
+                        if (monedaTipoCambio == "Soles") {
+                            simboloMoneda = 'S/.';
+                        } else if (monedaTipoCambio == "Dólares") {
+                            simboloMoneda = '$';
+                        }
+
+                        let igvMostrarUnitario = parseFloat(importeModificacion) * 0.18;
+                        let precioTotalUnitario = parseFloat(importeModificacion) + parseFloat(igvMostrarUnitario);
+                        const precioTotalUnitarioFormateado = parseFloat(precioTotalUnitario).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                            useGrouping: true
+                        });
+
+                        let texto = "";
+                        if (igvEnabled) {
+                            texto = `Precio Unitario  :  ${simboloMoneda} ${parseFloat(importeModificacion).toFixed(2)} + IGV(${igvMostrarUnitario.toFixed(2)}) = ${simboloMoneda} ${precioTotalUnitarioFormateado}`;
+                        } else {
+                            texto = `Precio Unitario  :  ${simboloMoneda} ${parseFloat(importeModificacion).toFixed(2)}`;
+                        }
+                        const anchoTexto = doc.getTextWidth(texto);
+                        const anchoRectangulo = anchoTexto + 20;
+                        const eje_x2 = (doc.internal.pageSize.width - anchoRectangulo) / 2;
+                        doc.setFillColor(255, 255, 0); // Color de fondo amarillo (RGB)
+                        doc.rect(eje_x2, eje_y - 7.5, anchoRectangulo, 12, 'F'); // Ajusta las dimensiones y posición del rectángulo según sea necesario
+                        doc.setTextColor(0, 0, 0); // Color del texto (negro)
+                        doc.text(eje_x2 + 10, eje_y, texto);
+
+                        if (cantidad > 1) {
+                            let importePorCantidad = 0;
+                            if (igvEnabled) {
+                                importePorCantidad = precioTotalUnitario * cantidad;
+                            }else{
+                                importePorCantidad = importe * cantidad;
+                            }
+                            let textoImportePorCantidad = `Importe por ${cantidad} Unidades: ${simboloMoneda} ${importePorCantidad.toFixed(2)}`;
+                            const anchoTextoImporte = doc.getTextWidth(textoImportePorCantidad);
+                            const anchoRectanguloImporte = anchoTextoImporte + 20;
+                            const eje_x3 = (doc.internal.pageSize.width - anchoRectanguloImporte) / 2;
+                            eje_y += 15; // Ajustar eje_y para la nueva línea
+                            doc.setFillColor(255, 255, 0); // Color de fondo amarillo (RGB)
+                            doc.rect(eje_x3, eje_y - 7.5, anchoRectanguloImporte, 12, 'F'); // Ajusta las dimensiones y posición del rectángulo según sea necesario
+                            doc.setTextColor(0, 0, 0); // Color del texto (negro)
+                            doc.text(eje_x3 + 10, eje_y, textoImportePorCantidad);
+                        }
+
+                    } else{ 
+                        let igvMostrarUnitario = parseFloat(importe) * 0.18;
+                        let precioTotalUnitario = parseFloat(importe) + parseFloat(igvMostrarUnitario);
+                        const precioTotalUnitarioFormateado = parseFloat(precioTotalUnitario).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                            useGrouping: true
+                        });
+                        let texto = "";
+                        if (igvEnabled) {
+                            texto = `Precio Unitario  :  ${moneda.toUpperCase()} ${parseFloat(importe).toFixed(2)} + IGV(${igvMostrarUnitario.toFixed(2)}) = ${moneda.toUpperCase()} ${precioTotalUnitarioFormateado}`;
+                        } else {
+                            texto = `Precio Unitario  :  ${moneda.toUpperCase()} ${parseFloat(importe).toFixed(2)}`;
+                        }
+                        const anchoTexto = doc.getTextWidth(texto);
+                        const anchoRectangulo = anchoTexto + 20;
+                        const eje_x2 = (doc.internal.pageSize.width - anchoRectangulo) / 2;
+                        doc.setFillColor(255, 255, 0); // Color de fondo amarillo (RGB)
+                        doc.rect(eje_x2, eje_y - 7.5, anchoRectangulo, 12, 'F'); // Ajusta las dimensiones y posición del rectángulo según sea necesario
+                        doc.setTextColor(0, 0, 0); // Color del texto (negro)
+                        doc.text(eje_x2 + 10, eje_y, texto);
+
+                        if (cantidad > 1) {
+                            let importePorCantidad = 0;
+                            if (igvEnabled) {
+                                importePorCantidad = precioTotalUnitario * cantidad;
+                            }else{
+                                importePorCantidad = importe * cantidad;
+                            }
+                            let textoImportePorCantidad = `Importe por ${cantidad} Unidades: ${moneda.toUpperCase()} ${importePorCantidad.toFixed(2)}`;
+                            const anchoTextoImporte = doc.getTextWidth(textoImportePorCantidad);
+                            const anchoRectanguloImporte = anchoTextoImporte + 20;
+                            const eje_x3 = (doc.internal.pageSize.width - anchoRectanguloImporte) / 2;
+                            eje_y += 15; // Ajustar eje_y para la nueva línea
+                            doc.setFillColor(255, 255, 0); // Color de fondo amarillo (RGB)
+                            doc.rect(eje_x3, eje_y - 7.5, anchoRectanguloImporte, 12, 'F'); // Ajusta las dimensiones y posición del rectángulo según sea necesario
+                            doc.setTextColor(0, 0, 0); // Color del texto (negro)
+                            doc.text(eje_x3 + 10, eje_y, textoImportePorCantidad);
+                        }
+                    }
+                }
 
                 nextPageCallback();
             };
@@ -829,7 +968,7 @@ const previewPDF = () => {
                     doc.setFontSize(14);
                     doc.text(eje_x3 + 5, eje_y + 8, igvText);
                 } else {
-                    const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado} + IGV(${igvMostrar.toFixed(2)}) = ${simboloMoneda} ${precioTotalFormateado}`;
+                    const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado}`;
                     const anchoTexto = doc.getTextWidth(texto);
                     const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
                     const anchoRectangulo = anchoTexto + 20;
@@ -1031,8 +1170,8 @@ document.addEventListener('input', function(event) {
             }
         });
 
-        form.subtotal = total
-        form.total = total
+        form.subtotal = parseFloat(total).toFixed(2);
+        form.total = parseFloat(total).toFixed(2);
 
         document.getElementById('subtotal').value = total.toFixed(2);
         document.getElementById('total').value = total.toFixed(2);
@@ -1141,6 +1280,8 @@ var listarClientes = props.clientes;
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap">D. Entrega</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap">F. Pago</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap hidden">Moneda</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap hidden">URL_IMG</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap">Incluye</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Quitar</th>
                                             </tr>
                                         </thead>
@@ -1211,15 +1352,20 @@ var listarClientes = props.clientes;
                                                     <span class="placeholder-text uppercase">{{ tbproducto.moneda }}</span>
                                                 </td>
                                                 <td class="px-3 py-4 text-center border-r border-b normal-case hidden"> {{ tbproducto.foto }} </td>
+                                                <td class="px-3 py-3 text-center font-bold border-r capitalize border-b text-sm whitespace-nowrap" contenteditable="true">{{ tbproducto.requerimientos ? tbproducto.requerimientos : 'Entrega en Planta' }}</td>
                                                 <td class="px-3 py-3 text-center border-r border-b"><button @click.prevent="quitarProducto(i)"><i class="bi bi-trash3 text-red-500"></i></button></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                            <div class="flex w-full md:justify-end justify-start items-center md:pb-4 pb-2.5 pt-2">
+                            <div class="flex w-full gap-4 md:justify-end justify-start items-center md:pb-4 pb-2.5 pt-2">
+                                <input type="checkbox" id="convertirPrecioEnabled" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="convertirPrecioEnabled">
+                                <label for="convertirPrecioEnabled" class="text-base font-extrabold text-black dark:text-white">Convertir Precio</label>
+                                <input checked type="checkbox" id="precioUnitarioEnabled" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioUnitarioEnabled">
+                                <label for="precioUnitarioEnabled" class="text-base font-extrabold text-black dark:text-white">Incluir Precio Unitario</label>
                                 <input checked type="checkbox" id="precioTotalCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioTotalEnabled">
-                                <label for="precioTotalCheckbox" class="ms-2 text-base font-extrabold text-black dark:text-white">Incluir Precio Total</label>
+                                <label for="precioTotalCheckbox" class="text-base font-extrabold text-black dark:text-white">Incluir Precio Total</label>
                             </div>
                             <div class="grid grid-cols-1 gap-y-4 items-end sm:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
                                 <div class="flex">
@@ -1234,7 +1380,7 @@ var listarClientes = props.clientes;
                                     </div>
                                     <div>
                                         <InputLabel class="text-xs" for="tipoCambio" :value="'tipo Cambio (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
-                                        <input id="tipoCambio" v-model="form.tipoCambio" type="number" class="w-28 font-semibold text-center text-white bg-blue-600 uppercase rounded-r-md h-10" disabled/>
+                                        <input id="tipoCambio" v-model="form.tipoCambio" type="number" class="w-28 font-semibold text-center border-gray-400 dark:border-white border-[1.5px] text-white bg-amber-400 uppercase rounded-r-md h-10" disabled/>
                                     </div>
                                 </div>
                                 <div>

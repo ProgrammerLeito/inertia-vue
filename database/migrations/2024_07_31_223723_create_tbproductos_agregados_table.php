@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('forma_pago')->nullable();
             $table->string('moneda')->nullable();
             $table->string('foto')->nullable();
+            $table->string('requerimientos')->nullable();
             $table->timestamps();
         });
     }

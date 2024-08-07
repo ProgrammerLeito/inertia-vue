@@ -227,7 +227,7 @@ const submitForm = () => {
                                     <InputLabel for="precio_list" class="block text-xs font-medium text-gray-700">
                                         Precio_list
                                     </InputLabel>
-                                    <TextInput type="number" id="precio_list" v-model="form.precio_list"
+                                    <TextInput type="text" id="precio_list" v-model="form.precio_list"
                                         placeholder="Ingrese el precio_list"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.precio_list" class="mt-2" />

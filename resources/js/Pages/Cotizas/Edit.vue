@@ -248,11 +248,6 @@ onMounted(() => {
     }
 });
 
-onMounted(() => {
-    const today = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual y la formatea como yyyy-mm-dd
-    form.fecha = today; 
-});
-
 const isActive = (index) => {
     return activeAccordion.value.includes(index);
 };

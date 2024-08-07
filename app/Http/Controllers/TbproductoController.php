@@ -64,11 +64,6 @@ class TbproductoController extends Controller
             $file = $request->file('foto');
             $routeName = $file->store('', ['disk' => 'productos_img']);
             $data['foto'] = $routeName;
-
-            // // Eliminar la imagen antigua si existe
-            // if ($tbproducto->foto) {
-            //     Storage::disk('productos_img')->delete($tbproducto->foto);
-            // }
         }
 
         $tbproducto->update($data);

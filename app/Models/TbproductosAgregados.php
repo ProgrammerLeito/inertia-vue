@@ -26,5 +26,6 @@ class TbproductosAgregados extends Model
         'forma_pago',
         'moneda',
         'foto',
+        'requerimientos',
     ];
 }
