@@ -11,7 +11,7 @@ class TbproductosAgregados extends Model
 
     protected $fillable=[
         'idCotizacion',
-        'categoria_id',
+        'subcategoria_id',
         'modelo',
         'especificaciones',
         'marca',

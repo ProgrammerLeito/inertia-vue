@@ -18,7 +18,7 @@ class TbproductoController extends Controller
 
     public function index()
     {
-        $tbproductos=Tbproducto::with('tbcategoria','tbsubcategoria','tbmarca')->orderBy('id', 'DESC')->paginate(100);
+        $tbproductos=Tbproducto::with('tbcategoria','tbsubcategoria','tbmarca')->orderBy('id', 'DESC')->paginate(500);
         $tbcategorias=Tbcategoria::with('tbsubcategorias')->get();
         $tbsubcategorias=Tbsubcategoria::all();
         $tbmarcas=Tbmarca::all();

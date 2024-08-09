@@ -522,12 +522,13 @@ watch(tbproductosCombinados, (newProductos) => {
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap">D. Entrega</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap">F. Pago</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap hidden">Moneda</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap">Incluye</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Quitar</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="(tbproducto, i) in tbproductosCombinados" :key="i">
-                                                <td class="px-3 py-4 text-center hidden text-gray-900 dark:text-white">{{ tbproducto.categoria_id ? tbproducto.categoria_id : tbproducto.tbcategoria.nombre }}</td>
+                                                <td class="px-3 py-4 text-center hidden text-gray-900 dark:text-white">{{ tbproducto.subcategoria_id ? tbproducto.subcategoria_id : tbproducto.tbsubcategoria.nombre }}</td>
                                                 <td class="px-3 py-4 text-center text-gray-900 dark:text-white">{{ tbproducto.modelo }}</td>
                                                 <td class="px-4 py-3 text-center text-gray-900 dark:text-white">
                                                     <img @click="openModal('/productos_img/' + tbproducto.foto)" :src="'/productos_img/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
@@ -592,15 +593,20 @@ watch(tbproductosCombinados, (newProductos) => {
                                                     <span class="placeholder-text uppercase">{{ tbproducto.moneda }}</span>
                                                 </td>
                                                 <td class="px-3 py-4 text-center normal-case hidden"> {{ tbproducto.foto }} </td>
+                                                <td class="px-3 py-3 text-center font-bold capitalize text-sm whitespace-nowrap" contenteditable="true">{{ tbproducto.requerimientos ? tbproducto.requerimientos : 'Entrega en Planta' }}</td>
                                                 <td class="px-3 py-3 text-center"><button @click.prevent="quitarProducto(i)"><i class="bi bi-trash3 text-red-500"></i></button></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                            <div class="flex w-full md:justify-end justify-start items-center md:pb-4 pb-2.5 pt-2">
+                            <div class="flex w-full gap-4 md:justify-end justify-start items-center md:pb-4 pb-2.5 pt-2">
+                                <input type="checkbox" id="convertirPrecioEnabled" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="convertirPrecioEnabled">
+                                <label for="convertirPrecioEnabled" class="text-base font-extrabold text-black dark:text-white">Convertir Precio</label>
+                                <input checked type="checkbox" id="precioUnitarioEnabled" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioUnitarioEnabled">
+                                <label for="precioUnitarioEnabled" class="text-base font-extrabold text-black dark:text-white">Incluir Precio Unitario</label>
                                 <input checked type="checkbox" id="precioTotalCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioTotalEnabled">
-                                <label for="precioTotalCheckbox" class="ms-2 text-base font-extrabold text-black dark:text-white">Incluir Precio Total</label>
+                                <label for="precioTotalCheckbox" class="text-base font-extrabold text-black dark:text-white">Incluir Precio Total</label>
                             </div>
                             <div class="grid grid-cols-1 gap-y-4 items-end sm:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
                                 <div class="flex">

@@ -109,7 +109,11 @@ return valor;
 
 // Verificar y recortar el valor cuando cambia
 watch(() => form.igv, (nuevoValor) => {
-form.igv = recortarADosDecimales(nuevoValor);
+    form.igv = recortarADosDecimales(nuevoValor);
+});
+
+watch(() => form.total, (nuevoValor) => {
+    form.total = recortarADosDecimales(nuevoValor);
 });
 
 const onKeydown = (event) => {
@@ -442,24 +446,39 @@ const recolectarDatosTabla = () => {
     let datosTabla = [];
 
     tbproductosAgregados.value.forEach(tbproducto => {
-        datosTabla.push({
-            categoria_id: tbproducto.tbcategoria ? tbproducto.tbcategoria.id : '', // Ajusta si 'categoria_id' es diferente
-            modelo: tbproducto.modelo,
-            especificaciones: tbproducto.especificaciones,
-            marca: tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca',
-            capacidades: tbproducto.capacidades.split('\n'),
-            precio_list: parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2),
-            precio_min: parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2),
-            precio_max: parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2),
-            cantidad: tbproducto.cantidad,
-            importe: parseFloat(tbproducto.precio_min).toFixed(2),
-            garantia: tbproducto.garantia,
-            dias_entrega: tbproducto.diasEntrega ? tbproducto.diasEntrega.trim() : '1 dia',
-            forma_pago: tbproducto.formaPago ? tbproducto.formaPago.trim() : 'Al contado',
-            moneda: tbproducto.moneda,
-            foto: tbproducto.foto,
-            requerimientos: tbproducto.requerimientos ? tbproducto.requerimientos.trim() : 'Entrega en Planta'
+
+        let capacidadesSeleccionadas = [];
+
+        // Recorre cada capacidad de tbproducto
+        tbproducto.capacidades.split('\n').forEach((capacidad, i) => {
+            // Verifica si el checkbox está activado
+            const checkbox = document.querySelector(`input[name="capacidad-${tbproducto.modelo}-${i}"]`);
+            if (checkbox && checkbox.checked) {
+                capacidadesSeleccionadas.push(capacidad);
+            }
         });
+
+        // Solo agrega el producto si hay capacidades seleccionadas
+        if (capacidadesSeleccionadas.length > 0) {
+            datosTabla.push({
+                subcategoria_id: tbproducto.tbsubcategoria ? tbproducto.tbsubcategoria.id : '',
+                modelo: tbproducto.modelo,
+                especificaciones: tbproducto.especificaciones,
+                marca: tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca',
+                capacidades: capacidadesSeleccionadas,
+                precio_list: parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2),
+                precio_min: parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2),
+                precio_max: parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2),
+                cantidad: tbproducto.cantidad,
+                importe: (parseFloat(tbproducto.precio_min) * tbproducto.cantidad).toFixed(2),
+                garantia: tbproducto.garantia,
+                dias_entrega: tbproducto.diasEntrega ? tbproducto.diasEntrega.trim() : '1 dia',
+                forma_pago: tbproducto.formaPago ? tbproducto.formaPago.trim() : 'Al contado',
+                moneda: tbproducto.moneda,
+                foto: tbproducto.foto,
+                requerimientos: tbproducto.requerimientos ? tbproducto.requerimientos.trim() : 'Entrega en Planta'
+            });
+        }
     });
 
     return datosTabla;
@@ -626,7 +645,7 @@ const previewPDF = () => {
 
         const addProductData = (row, index, nextPageCallback) => {
 
-            const categoria = row.querySelector('td:nth-child(1)').innerText.trim();
+            const subcategoriaProductos = row.querySelector('td:nth-child(1)').innerText.trim();
             const modelo = row.querySelector('td:nth-child(2)').innerText.trim();
             const foto = row.querySelector('td:nth-child(3) img').src;
             const especificaciones = row.querySelector('td:nth-child(4) ul').innerText.trim();
@@ -662,11 +681,17 @@ const previewPDF = () => {
             const img = new Image();
             img.src = foto;
 
-            const categoriaText = cantidad === "1"
-            ? (categoria.toLowerCase().endsWith("es") ? categoria.slice(0, -2)
-            : (categoria.toLowerCase().endsWith("s") ? categoria.slice(0, -1)
-            : categoria))
-            : categoria;
+            const subcategoriaText = cantidad === "1"
+            ? subcategoriaProductos
+                .split(" ")
+                .map(word => 
+                    word.endsWith("es") || word.endsWith("ES")
+                        ? word.slice(0, -2)
+                        : (word.endsWith("s") || word.endsWith("S")
+                            ? word.slice(0, -1)
+                            : word))
+                .join(" ")
+            : subcategoriaProductos;
 
             eje_y += 5;
             doc.setFont('Helvetica', 'bold');
@@ -692,7 +717,7 @@ const previewPDF = () => {
                 doc.addImage(img, 'PNG', 135, yPos + 10, fixedWidth, newHeight);
                 yPos += 150;
 
-                doc.text(20, eje_y, `Venta de ${cantidad} ${categoriaText.charAt(0).toUpperCase() + categoriaText.slice(1).toLowerCase()} de las siguientes características:`);
+                doc.text(20, eje_y, `Venta de ${cantidad} ${subcategoriaText} de las siguientes características:`);
 
                 doc.setTextColor(0,0,0);
                 doc.setFontSize(10);
@@ -774,7 +799,7 @@ const previewPDF = () => {
                 doc.setTextColor(0, 0 ,0)
                 doc.setFont('Helvetica', 'bold');
                 doc.setFontSize(10);
-                doc.text(eje_x, eje_y, 'Requerimientos');
+                doc.text(eje_x, eje_y, 'Adicionales');
                 doc.setFont('Helvetica', 'normal');
                 doc.setFontSize(10.5);
 
@@ -968,7 +993,7 @@ const previewPDF = () => {
                     doc.setFontSize(14);
                     doc.text(eje_x3 + 5, eje_y + 8, igvText);
                 } else {
-                    const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado}`;
+                    const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado} + IGV(${igvMostrar.toFixed(2)}) = ${simboloMoneda} ${precioTotalFormateado}`;
                     const anchoTexto = doc.getTextWidth(texto);
                     const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
                     const anchoRectangulo = anchoTexto + 20;
@@ -1287,7 +1312,7 @@ var listarClientes = props.clientes;
                                         </thead>
                                         <tbody>
                                             <tr v-for="(tbproducto, i) in tbproductosAgregados" :key="i">
-                                                <td class="px-6 py-3 text-center border-r border-b hidden">{{ tbproducto.tbcategoria.nombre }}</td>
+                                                <td class="px-6 py-3 text-center border-r border-b hidden">{{ tbproducto.tbsubcategoria.nombre }}</td>
                                                 <td class="px-3 py-4 text-center border-r border-b">{{ tbproducto.modelo }}</td>
                                                 <td class="px-4 py-3 text-center border-r border-b">
                                                     <img @click="openModal('/productos_img/' + tbproducto.foto)" :src="'/productos_img/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
@@ -1315,7 +1340,7 @@ var listarClientes = props.clientes;
                                                                 type="checkbox" 
                                                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
                                                                 :value="capacidad" 
-                                                                ref="capacidadCheckboxes"
+                                                                :name="`capacidad-${tbproducto.modelo}-${i}`"
                                                                 :checked="tbproducto.capacidades.split('\n').length === 1"
                                                             >
                                                             <span class="ml-2">{{ capacidad }}</span>
@@ -1359,17 +1384,23 @@ var listarClientes = props.clientes;
                                     </table>
                                 </div>
                             </div>
-                            <div class="flex w-full gap-4 md:justify-end justify-start items-center md:pb-4 pb-2.5 pt-2">
-                                <input type="checkbox" id="convertirPrecioEnabled" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="convertirPrecioEnabled">
-                                <label for="convertirPrecioEnabled" class="text-base font-extrabold text-black dark:text-white">Convertir Precio</label>
-                                <input checked type="checkbox" id="precioUnitarioEnabled" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioUnitarioEnabled">
-                                <label for="precioUnitarioEnabled" class="text-base font-extrabold text-black dark:text-white">Incluir Precio Unitario</label>
-                                <input checked type="checkbox" id="precioTotalCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioTotalEnabled">
-                                <label for="precioTotalCheckbox" class="text-base font-extrabold text-black dark:text-white">Incluir Precio Total</label>
+                            <div class="flex flex-wrap w-full gap-4 md:justify-end justify-start items-center md:pb-4 pb-2.5 pt-2">
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="convertirPrecioEnabled" class="w-4 h-4 text-orange-500 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="convertirPrecioEnabled">
+                                    <label for="convertirPrecioEnabled" class="text-base font-extrabold text-black dark:text-white whitespace-nowrap">Convertir Moneda</label>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input checked type="checkbox" id="precioUnitarioEnabled" class="w-4 h-4 text-yellow-500 bg-gray-100 border-gray-300 rounded focus:ring-yellow-500 dark:focus:ring-yellow-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioUnitarioEnabled">
+                                    <label for="precioUnitarioEnabled" class="text-base font-extrabold text-black dark:text-white whitespace-nowrap">Incluir Precio Unitario</label>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input checked type="checkbox" id="precioTotalCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioTotalEnabled">
+                                    <label for="precioTotalCheckbox" class="text-base font-extrabold text-black dark:text-white whitespace-nowrap">Incluir Precio Total</label>
+                                </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-4 items-end sm:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
-                                <div class="flex">
-                                    <div>
+                            <div class="grid grid-cols-1 gap-y-4 items-end md:grid-cols-2 xl:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
+                                <div class="flex w-full">
+                                    <div class="w-full">
                                         <InputLabel for="moneda" class="block text-xs font-medium text-gray-900">Moneda</InputLabel>
                                         <select id="moneda" v-model="form.moneda" required
                                                 class="h-10 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-md">
@@ -1579,13 +1610,6 @@ export default {
         };
     },
     methods: {
-        getSelectedCapacidades() {
-            const checkboxes = this.$refs.capacidadCheckboxes;
-            const selectedCapacidades = Array.from(checkboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value);
-            return selectedCapacidades;
-        },
         async mounted() {
             // Obtener tbproductosAgregados y asignar las garantías y formas de pago seleccionadas
             this.tbproductosAgregados = await this.fetchTbproductos();

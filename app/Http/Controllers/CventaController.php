@@ -72,7 +72,7 @@ class CventaController extends Controller
         foreach ($productos as $producto) {
             TbproductosAgregados::create([
                 'idCotizacion' => $producto['idCotizacion'], // Asegúrate de pasar este valor
-                'categoria_id' => $producto['categoria_id'],
+                'subcategoria_id' => $producto['subcategoria_id'],
                 'modelo' => $producto['modelo'],
                 'especificaciones' => $producto['especificaciones'],
                 'marca' => $producto['marca'],

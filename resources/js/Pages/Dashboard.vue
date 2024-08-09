@@ -77,17 +77,20 @@ greeting.value = getGreeting();
         </template>
  
         <div id="fondoLogin" class="relative min-h-[calc(100vh-171px)] h-full flex flex-col justify-center items-center px-2 sm:pt-0 bg-[url('../../public/img/welcome_ini.jpg')] bg-no-repeat bg-cover bg-center">
-            <div class="bg-white rounded-lg shadow-black dark:shadow-white shadow-2xl z-50 h-auto md:h-[350px] px-2 w-auto md:w-[700px]">
-                <div class="flex flex-col p-10 gap-2 md:gap-2 justify-center items-center font">
-                    <video src="../../../public/img/balinsa.mp4" alt="Logooo" style="width: 250px; height: 130px; object-fit: contain;" autoplay muted loop></video>
+            <div class="bg-white rounded-lg shadow-black dark:shadow-white shadow-2xl z-50 h-auto md:h-[450px] px-2 w-auto md:w-[1000px]">
+                <div class="flex flex-col p-4 gap-2 md:gap-2 justify-center items-center font">
+                    <video src="../../../public/img/balinsa.mp4" alt="Logooo" style="width: 700px; height: 300px; object-fit: contain;" autoplay muted loop></video>
                     <!-- <div class="font-bold text-md">
                         ¡{{ greeting }} {{$page.props.auth.user.name}}!
                     </div> -->
-                    <div class="md:text-base text-sm font-medium text-center">
-                        BIENVENIDO AL SISTEMA INTEGRADO DE GESTION ADMINISTRATIVA INDUSTRIAS BALINSA - E.I.R.L.
+                    <div class="md:text-5xl text-sm font-extrabold text-center" id="B_logo">
+                        INDUSTRIAS BALINSA - E.I.R.L.
                     </div>
-                    <div class="md:text-lg text-md font-semibold text-center">
+                    <!-- <div class="md:text-xl text-md font-semibold text-center">
                         {{ motivationalQuote }}
+                    </div> -->
+                    <div class="md:text-xl text-md font-semibold text-center">
+                        Piura - Trujillo - Chimbote
                     </div>
                 </div>
             </div>
@@ -114,5 +117,17 @@ html.dark #fondoLogin::after {
     position: absolute;
     backdrop-filter: blur(4px);
     z-index: 1;
+}
+</style>
+
+<style scoped>
+#nombre_Logo {
+    font-family: "AlphaMaleModern";
+    letter-spacing: 3px;
+}
+
+#B_logo {
+    font-family: "AlphaMaleModern";
+    transform: translateX(2px) translateY(1px);
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect } from 'vue';
+import { ref, watchEffect, computed } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
 import Swal from 'sweetalert2';
@@ -68,6 +68,11 @@ watchEffect(() => {
         const searchLowerCase = searchQuery.value.toLowerCase();
         return (
             (tbproducto.modelo.toLowerCase().includes(searchLowerCase) ||
+             tbproducto.precio_list.toLowerCase().includes(searchLowerCase) ||
+             tbproducto.codigo.toLowerCase().includes(searchLowerCase) ||
+             tbproducto.precio_min.toLowerCase().includes(searchLowerCase) ||
+             tbproducto.precio_max.toLowerCase().includes(searchLowerCase) ||
+             tbproducto.garantia.toLowerCase().includes(searchLowerCase) ||
              tbproducto.tbcategoria.nombre.toLowerCase().includes(searchLowerCase) ||
              tbproducto.tbsubcategoria.nombre.toLowerCase().includes(searchLowerCase)) &&
             (selectedCategoria.value === '' || tbproducto.tbcategoria_id === selectedCategoria.value) &&

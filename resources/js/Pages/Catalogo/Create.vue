@@ -192,7 +192,6 @@ const save3 = () => {
     if (operation3.value == 1) {
         form3.post(route('tbmarcas.store'), {
             onSuccess: () => { 
-                console.log(response);
                 ok3('marca registrada') 
             }
         });
