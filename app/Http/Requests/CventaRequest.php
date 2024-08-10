@@ -22,30 +22,22 @@ class CventaRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'n_cotizacion' => '',
             'cliente_id' => 'required',
-            'tenor_id' => 'nullable',
-            'fecha' => 'required|date',
+            'numeroDocumento' => 'nullable',
+            'direccion' => 'nullable',
+            'codesunat' => 'nullable',
+            'estado' => 'nullable',
+            'tecnico' => 'nullable',
+            'fecha' => 'nullable|date',
             'moneda' => 'nullable',
             'tipoCambio' => 'nullable',
             'forma_pago' => 'nullable',
             'dias_entrega' => 'nullable',
-            'subtotal' => 'required|numeric',
+            'validez_cot' => 'nullable',
+            'subtotal' => 'nullable',
             'igv' => 'nullable',
             'total' => 'nullable',
-
-            'modelo' => 'nullable|string',
-            'foto' => 'nullable|string',
-            'especificaciones' => 'nullable|string',
-            'marca' => 'nullable|string',
-            'capacidades' => 'nullable|string',
-            'precio' => 'nullable|string',
-            'precio_max' => 'nullable|string',
-            'cantidad' => 'nullable|string',
-            'importe' => 'nullable|string',
-            'n_cotizacion' => '',
-            'codesunat' => '',
-            'estado' => '',
-            'tecnico' => '',
         ];
     }
 }

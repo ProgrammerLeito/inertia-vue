@@ -10,30 +10,22 @@ class Cventa extends Model
     use HasFactory;
 
     protected $fillable = [
+        'n_cotizacion',
+        'codesunat',
+        'estado',
+        'tecnico',
         'cliente_id',
-        'tenor_id',
+        'numeroDocumento',
+        'direccion',
         'fecha',
         'moneda',
         'tipoCambio',
         'forma_pago',
         'dias_entrega',
+        'validez_cot',
         'subtotal',
         'igv',
-        'total',
-
-        'modelo',
-        'foto',
-        'especificaciones',
-        'capacidades',
-        'precio',
-        'precio_max',
-        'cantidad',
-        'importe',
-        'marca',
-        'n_cotizacion',
-        'codesunat',
-        'estado',
-        'tecnico',
+        'total'
     ];
     protected static function boot()
     {

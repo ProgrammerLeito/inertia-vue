@@ -19,11 +19,14 @@ return new class extends Migration
             $table->string('tecnico')->nullable();
             $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
             $table->foreignId('tenor_id')->constrained()->onDelete('cascade');
+            $table->string('numeroDocumento')->nullable();
+            $table->string('direccion')->nullable();
             $table->date('fecha');
             $table->string('moneda', 10)->nullable();
             $table->string('garantia')->nullable();
             $table->string('forma_pago')->nullable();
-            $table->integer('dias_entrega')->nullable();
+            $table->string('dias_entrega')->nullable();
+            $table->string('validez_cot')->nullable();
             $table->decimal('subtotal', 10, 2)->nullable();
             $table->decimal('igv', 10, 2)->nullable();
             $table->decimal('total', 10, 2)->nullable();

@@ -13,6 +13,7 @@ import { Inertia } from '@inertiajs/inertia';
 import axios from "axios";
 
 import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 
 const nameInput2 = ref(null);
@@ -66,9 +67,12 @@ const form2 = useForm({
 
 const form = useForm ({
     cliente_id: '',
+    numeroDocumento: '',
+    direccion: '',
     tenor_id:'',
     fecha:'',
     moneda:'',
+    validez_cot:'',
     forma_pago:'',
     dias_entrega:'',
     tipoCambio:'',
@@ -141,6 +145,8 @@ const selectCliente = (cliente) => {
     searchTerm.value = cliente.razonSocial;
     searchTermCodigoCli.value = cliente.id;
     form.cliente_id = searchTermCodigoCli.value;
+    form.direccion = cliente.direccion;
+    form.numeroDocumento = cliente.numeroDocumento;
     filteredClientes.value = [];
 };
 
@@ -438,45 +444,60 @@ onMounted(() => {
  
 // Función para recolectar los datos de la tabla
 const recolectarDatosTabla = () => {
-    if (!Array.isArray(tbproductosAgregados.value)) {
-        console.error('tbproductosAgregados no es un array:', tbproductosAgregados.value);
-        return [];
-    }
+    const datosTabla = [];
+    
+    const rows = document.querySelectorAll('.relative table tbody tr');
 
-    let datosTabla = [];
+    rows.forEach(row => {
+        const capacidadesSeleccionadas = [];
 
-    tbproductosAgregados.value.forEach(tbproducto => {
+        const subcategoria = row.querySelector('td:nth-child(1)')?.innerText.trim() || '';
+        const modelo = row.querySelector('td:nth-child(2)')?.innerText.trim() || '';
+        
+        // Extraer especificaciones del acordeón
+        const especificacionesElement = row.querySelector('td:nth-child(4) ul');
+        const especificaciones = especificacionesElement ? 
+            Array.from(especificacionesElement.querySelectorAll('li')).map(li => li.innerText.trim()).join('\n') 
+            : '';
 
-        let capacidadesSeleccionadas = [];
-
-        // Recorre cada capacidad de tbproducto
-        tbproducto.capacidades.split('\n').forEach((capacidad, i) => {
-            // Verifica si el checkbox está activado
-            const checkbox = document.querySelector(`input[name="capacidad-${tbproducto.modelo}-${i}"]`);
-            if (checkbox && checkbox.checked) {
-                capacidadesSeleccionadas.push(capacidad);
+        const marca = row.querySelector('td:nth-child(5)')?.innerText.trim() || '';
+        
+        row.querySelectorAll('td:nth-child(6) input[type="checkbox"]').forEach(checkbox => {
+            if (checkbox.checked) {
+                capacidadesSeleccionadas.push(checkbox.value);
             }
         });
 
-        // Solo agrega el producto si hay capacidades seleccionadas
+        const precioList = parseFloat(row.querySelector('td:nth-child(7)')?.innerText.trim().replace(/[^0-9.,]/g, '') || 0);
+        const precioMin = parseFloat(row.querySelector('td:nth-child(8)')?.innerText.trim().replace(/[^0-9.,]/g, '') || 0);
+        const precioMax = parseFloat(row.querySelector('td:nth-child(9)')?.innerText.trim().replace(/[^0-9.,]/g, '') || 0);
+        const cantidad = parseFloat(row.querySelector('td:nth-child(10) input')?.value.trim() || 0);
+        const importe = parseFloat(row.querySelector('td:nth-child(11)')?.innerText.trim().replace(/[^0-9.,]/g, '') || (precioMin * cantidad).toFixed(2));
+        const garantia = row.querySelector('td:nth-child(12) select')?.value.trim() || '';
+        const diasEntrega = row.querySelector('td:nth-child(13) select')?.value.trim() || '';
+        const formaPago = row.querySelector('td:nth-child(14) select')?.value.trim() || '';
+        const moneda = row.querySelector('td:nth-child(15)')?.innerText.trim() || '';
+        const foto = row.querySelector('td:nth-child(16)')?.innerText.trim() || '';
+        const requerimientos = row.querySelector('td:nth-child(17)')?.innerText.trim() || '';
+
         if (capacidadesSeleccionadas.length > 0) {
             datosTabla.push({
-                subcategoria_id: tbproducto.tbsubcategoria ? tbproducto.tbsubcategoria.id : '',
-                modelo: tbproducto.modelo,
-                especificaciones: tbproducto.especificaciones,
-                marca: tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca',
-                capacidades: capacidadesSeleccionadas,
-                precio_list: parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2),
-                precio_min: parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2),
-                precio_max: parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2),
-                cantidad: tbproducto.cantidad,
-                importe: (parseFloat(tbproducto.precio_min) * tbproducto.cantidad).toFixed(2),
-                garantia: tbproducto.garantia,
-                dias_entrega: tbproducto.diasEntrega ? tbproducto.diasEntrega.trim() : '1 dia',
-                forma_pago: tbproducto.formaPago ? tbproducto.formaPago.trim() : 'Al contado',
-                moneda: tbproducto.moneda,
-                foto: tbproducto.foto,
-                requerimientos: tbproducto.requerimientos ? tbproducto.requerimientos.trim() : 'Entrega en Planta'
+                subcategoria_id: subcategoria,
+                modelo: modelo,
+                especificaciones: especificaciones,
+                marca: marca,
+                capacidades: capacidadesSeleccionadas.join('\n'),
+                precio_list: precioList.toFixed(2),
+                precio_min: precioMin.toFixed(2),
+                precio_max: precioMax.toFixed(2),
+                cantidad: cantidad,
+                importe: importe.toFixed(2),
+                garantia: garantia,
+                dias_entrega: diasEntrega,
+                forma_pago: formaPago,
+                moneda: moneda,
+                foto: foto,
+                requerimientos: requerimientos
             });
         }
     });
@@ -1140,6 +1161,410 @@ const previewPDF = () => {
     }, 300); 
 };
 
+const previewPDF2 = () => {
+    const doc = new jsPDF();
+    // const doc = new jsPDF('landscape'); // Horizontal
+    const accordions = document.querySelectorAll('.accordions dt');
+    accordions.forEach((accordion, index) => {
+        if (!accordion.classList.contains('active')) {
+            accordion.click();
+        }
+    });
+
+    setTimeout(() => {
+        const datosTabla = recolectarDatosTabla();
+        const fechaEncabezadoCotizacion = new Date();
+        const añoCotizacion = fechaEncabezadoCotizacion.getFullYear();
+        const razonSocial = document.getElementById("cliente_id").value;
+        const monedaTipoCambio = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
+        const valorTipoCambio = document.getElementById("tipoCambio").value;
+
+        const forma_pago = document.getElementById("forma_pago").options[document.getElementById("forma_pago").selectedIndex].text;
+        const validez_cot = document.getElementById("validez_cot").options[document.getElementById("validez_cot").selectedIndex].text;
+        const dias_entrega = document.getElementById("dias_entrega").options[document.getElementById("dias_entrega").selectedIndex].text;
+        const direccion = document.getElementById("direccion").value;
+        const ruc = document.getElementById("numeroDocumento").value;
+
+        const numeroCotizacion = form.n_cotizacion
+        const numeroCotizacionFormateado = numeroCotizacion.toString().padStart(8, '0');
+        let simboloMoneda = "";
+
+        if (monedaTipoCambio == "Soles") {
+            simboloMoneda = 'S/.';
+        } else if (monedaTipoCambio == "Dólares") {
+            simboloMoneda = '$';
+        }
+
+        // Función para obtener el nombre del día de la semana en español
+        function getNombreDia(dia) {
+            const dias = [
+                'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
+            ];
+            return dias[dia];
+        }
+
+        // Función para obtener el nombre del mes en español
+        function getNombreMes(mes) {
+            const meses = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            return meses[mes];
+        }
+
+        // Función para formatear la fecha en el formato deseado
+        function obtenerFechaFormateada() {
+            const fecha = new Date();
+
+            const diaSemana = getNombreDia(fecha.getDay());
+            const dia = fecha.getDate().toString().padStart(2, '0');
+            const mes = getNombreMes(fecha.getMonth());
+            const año = fecha.getFullYear();
+
+            return `${diaSemana} ${dia} de ${mes} del ${año}`;
+        }
+
+        const accordions = document.querySelectorAll('.accordions dt');
+        accordions.forEach((accordion, index) => {
+            if (accordion.classList.contains('active')) {
+                accordion.click();
+            }
+        });
+
+        const fechaFormateada = obtenerFechaFormateada();
+    
+        let subtotal = 0;
+        datosTabla.forEach(product => {
+            if(monedaTipoCambio == "Soles"){
+                if (!isNaN(product.importe)) {
+                    if (product.moneda === "$") {
+                        product.importe = (product.importe * parseFloat(valorTipoCambio));
+                    } else {
+                        product.importe = product.importe;
+                    }
+                }
+            }else if(monedaTipoCambio == "Dólares"){
+                if (!isNaN(product.importe)) {
+                    if (product.moneda === "s/") {
+                        product.importe = (product.importe / parseFloat(valorTipoCambio));
+                    } else {
+                        product.importe = product.importe;
+                    }
+                }
+            }
+            product.subtotal = product.cantidad * product.importe;
+            subtotal += product.subtotal;
+        });
+    
+        let igv = subtotal * 0.18;
+        let total = subtotal + igv;
+    
+        let eje_y = 10;
+        let eje_x = 10;
+        let margenDerecho = 10;
+        let anchoPagina = doc.internal.pageSize.width;
+    
+        const backgroundImg = '/img/logo_ini.png';
+        doc.addImage(backgroundImg, 'JPEG', eje_x, eje_y, 80, 25);
+        
+        eje_y += 5;
+    
+        doc.setTextColor(0,0,0);
+        doc.setFontSize(9);
+        doc.setFont('Helvetica', 'normal'); // Estilos de texto
+
+        function fn_dibujarEncabezado(texto){
+            const anchoTexto = doc.getTextWidth(texto);
+            const eje_x_left = anchoPagina - anchoTexto - margenDerecho;
+            doc.text(eje_x_left, eje_y, texto);
+        }
+
+        fn_dibujarEncabezado("Av. Separadora Mz A LT 8 Sector 28 de Julio");
+        eje_y += 5;
+        fn_dibujarEncabezado("Telf: 955571986 - 924808237 - 934094721");
+        eje_y += 5;
+        fn_dibujarEncabezado("Correo: ventas@balinsa.com");
+        eje_y += 5;
+        fn_dibujarEncabezado("www.balinsa.com");
+        eje_y += 5;
+        fn_dibujarEncabezado("RUC: 20608165585");
+
+        eje_y += 10;
+
+        doc.setFontSize(12);
+        doc.setFont('Helvetica', 'bold'); // Estilos de texto
+        fn_dibujarEncabezado(`COTIZACION : N° ${añoCotizacion} - ${numeroCotizacionFormateado}`);
+
+        doc.autoTable({
+            body: [
+                [
+                    'Razón Social',
+                    razonSocial
+                ],
+                [
+                    'RUC',
+                    ruc
+                ],
+                [
+                    'Direccion',
+                    direccion
+                ]
+            ],
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: { top: 30 , left: 10 , right: 10},
+            startY: 50,
+            columnStyles: {
+                0: {
+                    cellWidth: 40,
+                    fontStyle: 'bold'
+                }
+            },
+        });
+        
+        doc.autoTable({
+            body: [
+                [
+                    'Moneda',
+                    monedaTipoCambio,
+                    'Fecha',
+                    fechaFormateada
+
+                ]
+            ],
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY,
+            columnStyles: {
+                0: {
+                    cellWidth: 40,
+                    fontStyle: 'bold'
+                },
+                1: {
+                    cellWidth: 55
+                },
+                2: {
+                    cellWidth: 30,
+                    fontStyle: 'bold'
+                }
+            },
+        });
+
+        doc.autoTable({
+            body: [
+                [
+                    { content: 'CONDICIONES :', styles: { halign: 'left' , fontStyle: 'bold'} }
+                ]
+            ],
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY + 5
+        });
+
+        const lineYPosition = doc.lastAutoTable.finalY;
+
+        doc.autoTable({
+            body: [
+                [
+                    { content: `Validez de la Cotización     : ${validez_cot}\n\nPago                                     : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}`, styles: { halign: 'left' , fontStyle: 'bold'} }
+                ],
+            ],
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY
+        });
+
+        doc.setDrawColor(255, 255, 255); // Color de la línea (negro)
+        doc.setLineWidth(1); // Establece el grosor de la línea
+        doc.line(10.1, lineYPosition, doc.internal.pageSize.width - 10.1, lineYPosition); 
+
+        const lineYPosition2 = doc.lastAutoTable.finalY;
+
+        doc.autoTable({
+            body: [
+                [
+                    { content: `Los precios unitarios NO incluyen IGV`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [255, 0, 0] } }
+                ],
+            ],
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY
+        });
+
+        doc.setDrawColor(255, 255, 255); // Color de la línea (negro)
+        doc.setLineWidth(1); // Establece el grosor de la línea
+        doc.line(10.1, lineYPosition2, doc.internal.pageSize.width - 10.1, lineYPosition2); 
+
+        const lineYPosition3 = doc.lastAutoTable.finalY;
+
+        doc.autoTable({
+            body: [
+                [
+                    { content: `Asistencia tecnica en industriasbalinsa.gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}\n\nEmitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585\n\nNo se realizan cambios ni devoluciones\n\nOrden de compra irrevocable`, styles: { halign: 'left' , fontStyle: 'bold' } }
+                ],
+            ],
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY
+        });
+
+        doc.setDrawColor(255, 255, 255); // Color de la línea (negro)
+        doc.setLineWidth(1); // Establece el grosor de la línea
+        doc.line(10.1, lineYPosition3, doc.internal.pageSize.width - 10.1, lineYPosition3); 
+    
+        // Generar la tabla de productos
+        doc.autoTable({
+            head: [['Modelo', 'Marca', 'Capacidades', 'Especificaciones', 'Cantidad', 'Precio', 'SubTotal', 'Imagen']],
+            body: [
+                ...datosTabla.map(product => [
+                    product.modelo,
+                    product.marca,
+                    product.capacidades,
+                    product.especificaciones,
+                    product.cantidad,
+                    parseFloat(product.importe).toFixed(2),
+                    parseFloat(product.subtotal).toFixed(2),
+                    {
+                        content: '', 
+                        styles: { cellWidth: 20, minCellHeight: 20 },
+                        image: product.foto
+                    }
+                ]),
+                [
+                    { content: 'Sub Total', colSpan: 6, styles: { halign: 'right' , fontStyle: 'bold'} },
+                    { content: `${simboloMoneda} ${subtotal.toFixed(2)}`, colSpan: 2, styles: { halign: 'center' } }
+                ],
+                [
+                    { content: 'IGV % 18', colSpan: 6, styles: { halign: 'right' , fontStyle: 'bold'} },
+                    { content: `${simboloMoneda} ${igv.toFixed(2)}`, colSpan: 2, styles: { halign: 'center' } }
+                ],
+                [
+                    { content: 'Total', colSpan: 6, styles: { halign: 'right' , fontStyle: 'bold'} },
+                    { content: `${simboloMoneda} ${total.toFixed(2)}`, colSpan: 2, styles: { halign: 'center' } }
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            didDrawCell: function (data) {
+                if (data.column.index === 7 && data.cell.section === 'body') {
+                    if (data.row.index < datosTabla.length) {
+                        const product = datosTabla[data.row.index];
+                        if (product && product.foto) {
+                            const imageUrl = "/productos_img/" + product.foto;
+
+                            const containerWidth = 20;
+                            const containerHeight = 20;
+
+                            const reductionFactor = 0.8;
+
+                            const imgWidth = containerWidth * reductionFactor;
+                            const imgHeight = containerHeight * reductionFactor;
+
+                            const x = data.cell.x + (containerWidth - imgWidth) / 2;
+                            const y = data.cell.y + (containerHeight - imgHeight) / 2;
+
+                            doc.addImage(imageUrl, 'JPEG', x, y, imgWidth, imgHeight);
+                        }
+                    }
+                }
+            },
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY + 5,
+        });
+
+        doc.autoTable({
+            head: [['Banco', 'Tipo de Cuenta', 'Moneda', 'Cuenta', 'Cuenta CCI']],
+            body: [
+                [
+                    { content: 'BCP', styles: { halign: 'left' , fontStyle: 'bold'} },
+                    { content: 'AHORROS', styles: { halign: 'left' } },
+                    { content: 'SOLES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                    { content: '4752156367062', styles: { halign: 'left' } },
+                    { content: '00247500215636706225', styles: { halign: 'left' } },
+                ],
+                [
+                    { content: 'BCP', styles: { halign: 'left' , fontStyle: 'bold'} },
+                    { content: 'AHORROS', styles: { halign: 'left' } },
+                    { content: 'DOLARES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                    { content: '4752156380104', styles: { halign: 'left' } },
+                    { content: '00247500215638010428', styles: { halign: 'left' } },
+                ],
+                [
+                    { content: 'BBVA', styles: { halign: 'left' , fontStyle: 'bold'} },
+                    { content: 'AHORROS', styles: { halign: 'left' } },
+                    { content: 'SOLES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                    { content: '0011 0267 0201320316', styles: { halign: 'left' } },
+                    { content: '011 267 000201320316 27', styles: { halign: 'left' } },
+                ],
+                [
+                    { content: 'BBVA', styles: { halign: 'left' , fontStyle: 'bold'} },
+                    { content: 'AHORROS', styles: { halign: 'left' } },
+                    { content: 'DOLARES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                    { content: '0011-0267-0201320324', styles: { halign: 'left' } },
+                    { content: '01126700020132032421', styles: { halign: 'left' } },
+                ],
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY + 5,
+        });
+    
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+        window.open(url);
+    }, 300);
+}
+
 document.addEventListener('input', function(event) {
     const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
     const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
@@ -1274,7 +1699,21 @@ var listarClientes = props.clientes;
                                         </div>
                                     </div>
                                 </div>
-                                 <div>
+                                <div class="hidden">
+                                    <InputLabel for="direccion" value="Direccion"
+                                        class="block text-xs font-medium text-black"/>
+                                    <TextInput v-model="form.direccion" type="text" id="direccion"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="form.errors.direccion" class="mt-2"></InputError>
+                                </div>
+                                <div class="hidden">
+                                    <InputLabel for="numeroDocumento" value="numero Documento"
+                                        class="block text-xs font-medium text-black"/>
+                                    <TextInput v-model="form.numeroDocumento" type="text" id="numeroDocumento"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="form.errors.numeroDocumento" class="mt-2"></InputError>
+                                </div>
+                                <div>
                                     <InputLabel for="fecha" class="block text-xs font-medium text-gray-700">Fecha</InputLabel>
                                     <TextInput type="date" id="fecha" v-model="form.fecha" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"/>
@@ -1320,7 +1759,7 @@ var listarClientes = props.clientes;
                                                 <td class="px-6 py-4 text-center border-r border-b whitespace-nowrap">
                                                     <div class="accordions">
                                                         <dl>
-                                                            <dt @click="toggleAccordion(i)" class="cursor-pointer normal-case">
+                                                            <dt @click="toggleAccordion(i)" :class="{'cursor-pointer normal-case active': isActive(i), 'cursor-pointer normal-case': !isActive(i)}">
                                                                 Especificaciones
                                                                 <i :class="{'fa-solid fa-arrow-up-long ml-2': isActive(i), 'fa-solid fa-arrow-down-long ml-2': !isActive(i)}"></i>
                                                             </dt>
@@ -1398,6 +1837,38 @@ var listarClientes = props.clientes;
                                     <label for="precioTotalCheckbox" class="text-base font-extrabold text-black dark:text-white whitespace-nowrap">Incluir Precio Total</label>
                                 </div>
                             </div>
+                            <div class="grid grid-cols-1 gap-y-4 items-end sm:grid-cols-4 sm:gap-x-8 sm:py-2 py-1">
+                                <div>
+                                    <InputLabel for="validez_cot" class="block text-xs font-medium text-black dark:text-white">Validez de la Cotización</InputLabel>
+                                    <select id="validez_cot" v-model="form.validez_cot"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="" disabled selected>Selecciona validez Cotización</option>
+                                        <option value="15 dias">15 dias</option>
+                                        <option value="30 dias">30 dias</option>
+                                        <option value="60 dias">60 dias</option>
+                                        <option value="Sin Vigencia">Sin Vigencia</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <InputLabel for="forma_pago" class="block text-xs font-medium text-black dark:text-white">Forma de pago</InputLabel>
+                                    <select id="forma_pago" v-model="form.forma_pago"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="" disabled selected>Selecciona una forma de pago</option>
+                                        <option value="Credito 15 dias">Credito 15 dias</option>
+                                        <option value="Credito 30 dias">Credito 30 dias</option>
+                                        <option value="Credito 60 dias">Credito 60 dias</option>
+                                        <option value="Al contado">Al contado</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <InputLabel for="dias_entrega" class="block text-xs font-medium text-black dark:text-white">Días de entrega</InputLabel>
+                                    <select id="dias_entrega" v-model="form.dias_entrega"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="" disabled selected>Selecciona días de entrega</option>
+                                        <option v-for="dia in 31" :key="dia" :value="dia">{{ dia }} día{{ dia > 1 ? 's' : '' }}</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="grid grid-cols-1 gap-y-4 items-end md:grid-cols-2 xl:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
                                 <div class="flex w-full">
                                     <div class="w-full">
@@ -1434,7 +1905,8 @@ var listarClientes = props.clientes;
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
-                                    <button class="inline-block bg-green-700 text-white font-bold py-2 px-4 rounded hover:bg-green-800 md:w-min whitespace-nowrap w-full text-center" @click.prevent="previewPDF">PREVISUALIZAR PDF</button>
+                                    <!-- <button class="inline-block bg-green-700 text-white font-bold py-2 px-4 rounded hover:bg-green-800 md:w-min whitespace-nowrap w-full text-center" @click.prevent="previewPDF">PREVISUALIZAR PDF</button> -->
+                                    <button class="inline-block bg-green-700 text-white font-bold py-2 px-4 rounded hover:bg-green-800 md:w-min whitespace-nowrap w-full text-center" @click.prevent="previewPDF2">PREVISUALIZAR PDF</button>
                                     <ButtonResponsive class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                                         Generar Cotizacion
                                     </ButtonResponsive>

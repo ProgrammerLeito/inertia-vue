@@ -198,7 +198,7 @@ const totalCount = props.cventas.total;
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N°</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">C | Factura</th>
                                         <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">Cliente</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Referencia</th>
+                                        <!-- <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Referencia</th> -->
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Emision</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Neto</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Total</th>
@@ -213,8 +213,8 @@ const totalCount = props.cventas.total;
                                         <td class="px-1 py-4 text-center">
                                             {{ cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente' }}
                                         </td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.tenor ? cventa.tenor.name : 'Sin codigo' }}
-                                        </td>
+                                        <!-- <td class="px-6 py-4 text-center">{{ cventa.tenor ? cventa.tenor.name : 'Sin codigo' }}
+                                        </td> -->
                                         <td class="px-6 py-4 text-center">{{ cventa.fecha }}</td>
                                         <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.subtotal }}</td>
                                         <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.total }}</td>

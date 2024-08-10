@@ -74,9 +74,9 @@ class CventaController extends Controller
                 'idCotizacion' => $producto['idCotizacion'], // Asegúrate de pasar este valor
                 'subcategoria_id' => $producto['subcategoria_id'],
                 'modelo' => $producto['modelo'],
-                'especificaciones' => $producto['especificaciones'],
+                'especificaciones' => $producto['especificaciones'], // Asegúrate de pasar las especificaciones correctamente
                 'marca' => $producto['marca'],
-                'capacidades' => implode('\n', $producto['capacidades']),
+                'capacidades' => $producto['capacidades'], // Asegúrate de pasar las capacidades correctamente
                 'precio_list' => $producto['precio_list'],
                 'precio_min' => $producto['precio_min'],
                 'precio_max' => $producto['precio_max'],
