@@ -158,6 +158,11 @@ const total_pages = props.cventas.last_page;
 const current_page = props.cventas.current_page;
 const countPerPage = props.cventas.data.length;
 const totalCount = props.cventas.total;
+
+$(document).on('dblclick', ".previsualizarPfd", function(event) {
+    console.log('Se hizo doble clic en un elemento con la clase "previsualizarPfd"');
+});
+
 </script>
  
 <template>
@@ -207,7 +212,7 @@ const totalCount = props.cventas.total;
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
-                                    <tr v-for="(cventa, index) in cventas.data" :key="cventa.id" class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer">
+                                    <tr v-for="(cventa, index) in cventas.data" :key="cventa.id" class="bg-white previsualizarPfd text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer">
                                         <td class="px-1 py-4 text-center">{{ cventa.n_cotizacion }}</td>
                                         <td class="px-1 py-4 text-center fa-fade font-semibold">s|codigo</td>
                                         <td class="px-1 py-4 text-center">

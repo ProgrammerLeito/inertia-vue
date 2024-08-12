@@ -473,12 +473,12 @@ const recolectarDatosTabla = () => {
         const precioMax = parseFloat(row.querySelector('td:nth-child(9)')?.innerText.trim().replace(/[^0-9.,]/g, '') || 0);
         const cantidad = parseFloat(row.querySelector('td:nth-child(10) input')?.value.trim() || 0);
         const importe = parseFloat(row.querySelector('td:nth-child(11)')?.innerText.trim().replace(/[^0-9.,]/g, '') || (precioMin * cantidad).toFixed(2));
-        const garantia = row.querySelector('td:nth-child(12) select')?.value.trim() || '';
-        const diasEntrega = row.querySelector('td:nth-child(13) select')?.value.trim() || '';
-        const formaPago = row.querySelector('td:nth-child(14) select')?.value.trim() || '';
+        const garantia = row.querySelector('td:nth-child(12) select')?.value.trim() || 'Sin Garantia';
+        const diasEntrega = row.querySelector('td:nth-child(13) select')?.value.trim() || '1 dia';
+        const formaPago = row.querySelector('td:nth-child(14) select')?.value.trim() || 'Al contado';
         const moneda = row.querySelector('td:nth-child(15)')?.innerText.trim() || '';
         const foto = row.querySelector('td:nth-child(16)')?.innerText.trim() || '';
-        const requerimientos = row.querySelector('td:nth-child(17)')?.innerText.trim() || '';
+        const requerimientos = row.querySelector('td:nth-child(17)')?.innerText.trim() || 'Entrega En Planta';
 
         if (capacidadesSeleccionadas.length > 0) {
             datosTabla.push({
@@ -510,13 +510,17 @@ const submitForm = async (event) => {
         event.preventDefault();
     }
 
-    // Recolectar los datos de la tabla
-    const datosTabla = recolectarDatosTabla();
-
-    // Loguear los datos y detener la ejecución para inspeccionarlos
-    console.log('Datos a enviar:', datosTabla);
-
     try {
+        // Desplegar todos los acordeones
+        const accordions = document.querySelectorAll('.accordions dt');
+        accordions.forEach(accordion => accordion.click());
+
+        // Esperar un breve momento para asegurarse de que los acordeones se desplieguen completamente
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Recolectar los datos de la tabla
+        const datosTabla = recolectarDatosTabla();
+
         // Primera solicitud: Guardar la cotización
         await form.post(route('cventas.store'));
 
@@ -524,11 +528,6 @@ const submitForm = async (event) => {
 
         // Segunda solicitud: Validar ID con axios
         const validationResponse = await axios.post('/validarIdCot');
-
-        // Manejar la respuesta de la solicitud axios
-        console.log('Respuesta de validarIdCot:', validationResponse.data);
-
-        // Obtener el ID de cotización del resultado de validación
         const idCotizacion = validationResponse.data.id; // Acceder al ID desde la respuesta
 
         // Agregar el idCotizacion a cada producto
@@ -541,6 +540,7 @@ const submitForm = async (event) => {
             productos: datosTabla
         });
 
+        // Mostrar mensaje de éxito
         Swal.fire({
             title: 'Cotización guardada',
             text: 'La cotización y los productos se han guardado exitosamente.',
@@ -549,6 +549,7 @@ const submitForm = async (event) => {
             showConfirmButton: false
         });
 
+        // Redirigir al índice de cotizaciones
         Inertia.visit(route('cventas.index'));
 
     } catch (error) {
@@ -562,6 +563,7 @@ const submitForm = async (event) => {
         });
     }
 };
+
 
 
 const { props } = usePage();
@@ -1162,8 +1164,6 @@ const previewPDF = () => {
 };
 
 const previewPDF2 = () => {
-    const doc = new jsPDF();
-    // const doc = new jsPDF('landscape'); // Horizontal
     const accordions = document.querySelectorAll('.accordions dt');
     accordions.forEach((accordion, index) => {
         if (!accordion.classList.contains('active')) {
@@ -1190,9 +1190,9 @@ const previewPDF2 = () => {
         let simboloMoneda = "";
 
         if (monedaTipoCambio == "Soles") {
-            simboloMoneda = 'S/.';
+            simboloMoneda = 'S/';
         } else if (monedaTipoCambio == "Dólares") {
-            simboloMoneda = '$';
+            simboloMoneda = 'US$';
         }
 
         // Función para obtener el nombre del día de la semana en español
@@ -1222,6 +1222,64 @@ const previewPDF2 = () => {
             const año = fecha.getFullYear();
 
             return `${diaSemana} ${dia} de ${mes} del ${año}`;
+        }
+
+        // Función para formatear la moneda 
+        function fn_formatearMonedaLocal(importe){
+            const importeFormateado = parseFloat(importe).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                useGrouping: true
+            });
+
+            return importeFormateado;
+        }
+
+        function convertirNumeroAPalabras(numero) {
+            const unidades = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
+            const decenas = ['diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve'];
+            const decenasD = ['veinte', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'];
+            const centenas = ['cien', 'ciento', 'doscientos', 'trescientos', 'cuatrocientos', 'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos'];
+
+            function convertirParteEntera(numero) {
+                if (numero < 10) return unidades[numero];
+                else if (numero < 20) return decenas[numero - 10];
+                else if (numero < 100) {
+                    let unidad = numero % 10;
+                    let decena = Math.floor(numero / 10);
+                    return decenasD[decena - 2] + (unidad > 0 ? ` y ${unidades[unidad]}` : '');
+                } else if (numero < 1000) {
+                    let centena = Math.floor(numero / 100);
+                    let resto = numero % 100;
+                    if (centena === 1 && resto === 0) {
+                        return 'cien';
+                    } else {
+                        return centenas[centena] + (resto > 0 ? ` ${convertirParteEntera(resto)}` : '');
+                    }
+                } else if (numero < 1000000) {
+                    let miles = Math.floor(numero / 1000);
+                    let resto = numero % 1000;
+                    if (miles === 1) {
+                        return `mil${resto > 0 ? ` ${convertirParteEntera(resto)}` : ''}`;
+                    } else {
+                        return `${convertirParteEntera(miles)} mil${resto > 0 ? ` ${convertirParteEntera(resto)}` : ''}`;
+                    }
+                } else {
+                    return '';
+                }
+            }
+
+            function convertirParteDecimal(numero) {
+                return convertirParteEntera(numero);
+            }
+
+            const [parteEntera, parteDecimal] = numero.toString().split('.').map(Number);
+
+            const palabrasEntero = convertirParteEntera(parteEntera);
+            const palabrasDecimal = parseFloat(parteDecimal) != 0 && parteDecimal ? ` con ${convertirParteDecimal(parteDecimal)}` : "";
+            const palabraMoneda = simboloMoneda === "S/" ? "Soles" : "Dólares Americanos";
+
+            return `${palabrasEntero}${palabrasDecimal} ${palabraMoneda}`.trim();
         }
 
         const accordions = document.querySelectorAll('.accordions dt');
@@ -1258,26 +1316,445 @@ const previewPDF2 = () => {
     
         let igv = subtotal * 0.18;
         let total = subtotal + igv;
-    
-        let eje_y = 10;
-        let eje_x = 10;
-        let margenDerecho = 10;
-        let anchoPagina = doc.internal.pageSize.width;
-    
-        const backgroundImg = '/img/logo_ini.png';
-        doc.addImage(backgroundImg, 'JPEG', eje_x, eje_y, 80, 25);
-        
-        eje_y += 5;
-    
-        doc.setTextColor(0,0,0);
-        doc.setFontSize(9);
-        doc.setFont('Helvetica', 'normal'); // Estilos de texto
+
+        // ========== Inicia Función Dibujar Encabezado ==========
 
         function fn_dibujarEncabezado(texto){
             const anchoTexto = doc.getTextWidth(texto);
             const eje_x_left = anchoPagina - anchoTexto - margenDerecho;
             doc.text(eje_x_left, eje_y, texto);
         }
+
+        // ========== Termina Función Dibujar Encabezado ==========
+
+        // ========== Inicia Función Dibujar Datos del Cliente ==========
+
+        function fn_dibujarDatosClientes(inicioTabla){
+            doc.autoTable({
+                body: [
+                    [
+                        'Razón Social',
+                        razonSocial
+                    ],
+                    [
+                        'RUC',
+                        ruc
+                    ],
+                    [
+                        'Direccion',
+                        direccion
+                    ]
+                ],
+                theme: 'grid',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { top: 30 , left: 10 , right: 10},
+                startY: inicioTabla,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold'
+                    }
+                },
+            });
+            
+            doc.autoTable({
+                body: [
+                    [
+                        'Moneda',
+                        monedaTipoCambio,
+                        'Fecha',
+                        fechaFormateada
+    
+                    ]
+                ],
+                theme: 'grid',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: {left: 10 , right: 10},
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold'
+                    },
+                    1: {
+                        cellWidth: 55
+                    },
+                    2: {
+                        cellWidth: 30,
+                        fontStyle: 'bold'
+                    }
+                },
+            });
+        }
+
+        // ========== Termina Función Dibujar Datos del Cliente ==========
+
+        // ========== Inicia Función Dibujar Condiciones ==========
+
+        function fn_dibujarCondiciones(){
+            doc.autoTable({
+                body: [
+                    [
+                        { content: 'CONDICIONES :', styles: { halign: 'left' , fontStyle: 'bold'} }
+                    ]
+                ],
+                theme: 'grid',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: {left: 10 , right: 10},
+                startY: doc.lastAutoTable.finalY + 5
+            });
+    
+            const lineYPosition = doc.lastAutoTable.finalY;
+    
+            doc.autoTable({
+                body: [
+                    [
+                        { content: `Validez de la Cotización     : ${validez_cot}\n\nPago                                     : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}`, styles: { halign: 'left' , fontStyle: 'bold'} }
+                    ],
+                ],
+                theme: 'grid',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: {left: 10 , right: 10},
+                startY: doc.lastAutoTable.finalY
+            });
+    
+            doc.setDrawColor(255, 255, 255);
+            doc.setLineWidth(1);
+            doc.line(10.1, lineYPosition, doc.internal.pageSize.width - 10.1, lineYPosition); 
+    
+            const lineYPosition2 = doc.lastAutoTable.finalY;
+    
+            doc.autoTable({
+                body: [
+                    [
+                        { content: `Los precios unitarios NO incluyen IGV`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [255, 0, 0] } }
+                    ],
+                ],
+                theme: 'grid',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: {left: 10 , right: 10},
+                startY: doc.lastAutoTable.finalY
+            });
+    
+            doc.setDrawColor(255, 255, 255);
+            doc.setLineWidth(1);
+            doc.line(10.1, lineYPosition2, doc.internal.pageSize.width - 10.1, lineYPosition2); 
+    
+            const lineYPosition3 = doc.lastAutoTable.finalY;
+    
+            doc.autoTable({
+                body: [
+                    [
+                        { content: `Asistencia tecnica en industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}\n\nEmitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585\n\nNo se realizan cambios ni devoluciones\n\nOrden de compra irrevocable`, styles: { halign: 'left' , fontStyle: 'bold' } }
+                    ],
+                ],
+                theme: 'grid',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: {left: 10 , right: 10},
+                startY: doc.lastAutoTable.finalY
+            });
+
+            doc.setDrawColor(255, 255, 255);
+            doc.setLineWidth(1);
+            doc.line(10.1, lineYPosition3, doc.internal.pageSize.width - 10.1, lineYPosition3); 
+
+            doc.autoTable({
+                body: [
+                    [
+                        { content: 'Remitir Orden de Compra/Servicio a nombre de INDUSTRIAS BALINSA EIRL via correo electronico a industriasbalinsa@gmail.com', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                    ],
+                    [
+                        { content: 'Hacer deposito bancario a nombre de INDUSTRIAS BALINSA EIRL segun:', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: 1,
+                    lineWidth: 0.30,
+                    lineColor: [255, 255, 255]
+                },
+                headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+                margin: {left: 10 , right: 10},
+                startY: doc.lastAutoTable.finalY + 5,
+            });
+        }
+
+        // ========== Termina Función Dibujar Condiciones ==========
+
+        // ========== Inicia Función Dibujar Productos ==========
+
+        function fn_dibujarProductos(){
+            doc.autoTable({
+                head: [['Modelo', 'Marca', 'Capacidades', 'Especificaciones', 'Cantidad', 'Precio Unitario', 'SubTotal', 'Imagen']],
+                body: [
+                    ...datosTabla.map(product => {
+                        let especificacionesList = product.especificaciones
+                            .split('\n')
+                            .map(line => `- ${line}`)
+                            .join('\n');
+                        
+                        return [
+                            product.modelo,
+                            product.marca,
+                            product.capacidades,
+                            especificacionesList,
+                            product.cantidad,
+                            parseFloat(product.importe).toFixed(2),
+                            parseFloat(product.subtotal).toFixed(2),
+                            {
+                                content: '', 
+                                styles: { cellWidth: 20, minCellHeight: 20 },
+                                image: product.foto
+                            }
+                        ];
+                    }),
+                ],
+                rowPageBreak: 'avoid',
+                didDrawCell: function (data) {
+                    if (data.column.index === 7 && data.cell.section === 'body') {
+                        if (data.row.index < datosTabla.length) {
+                            const product = datosTabla[data.row.index];
+                            if (product && product.foto) {
+                                const imageUrl = "/productos_img/" + product.foto;
+
+                                const containerWidth = 20;
+                                const containerHeight = 20;
+
+                                const reductionFactor = 0.8;
+
+                                const imgWidth = containerWidth * reductionFactor;
+                                const imgHeight = containerHeight * reductionFactor;
+
+                                const x = data.cell.x + (containerWidth - imgWidth) / 2;
+                                const y = data.cell.y + (containerHeight - imgHeight) / 2;
+
+                                doc.addImage(imageUrl, 'JPEG', x, y, imgWidth, imgHeight);
+                            }
+                        }
+                    }
+                },
+                theme: 'grid',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+                columnStyles: {
+                    5: {
+                        cellWidth: 25,
+                    },
+                    6: {
+                        cellWidth: 25,
+                    },
+                    7: {
+                        cellWidth: 20,
+                    },
+                },
+                margin: {left: 10 , right: 10},
+                startY: doc.lastAutoTable.finalY + 5,
+            });
+
+            const anchoTablaTotal = 50
+            const inicioTablaTotal = anchoPagina - anchoTablaTotal - 30;
+
+            eje_y = doc.lastAutoTable.finalY + 5;
+            doc.text(eje_x, eje_y, `SON :`);
+            doc.setTextColor(255,0,0);
+            const totalAPalabra = `${(convertirNumeroAPalabras(total.toFixed(2)).toUpperCase())}`;
+            const totalAPalabraSplit = doc.splitTextToSize(totalAPalabra, 100);
+            let comaIndex = totalAPalabraSplit.indexOf(',');
+            if (comaIndex !== -1) {
+                let primeraParte = totalAPalabraSplit.substring(0, comaIndex).trim();
+                let segundaParte = totalAPalabraSplit.substring(comaIndex + 1).trim();
+                doc.text(eje_x + 10, eje_y, primeraParte);
+                doc.text(eje_x + 10, eje_y + 5, segundaParte);
+            } else {
+                doc.text(eje_x + 10, eje_y, totalAPalabraSplit);
+            }
+            doc.setTextColor(0,0,0);
+
+            doc.autoTable({
+                body: [
+                [
+                    { content: 'Sub Total', styles: { halign: 'right' , fontStyle: 'bold'} },
+                    { content: `${fn_formatearMonedaLocal(subtotal)}`, styles: { halign: 'center' } }
+                ],
+                [
+                    { content: 'IGV % 18', styles: { halign: 'right' , fontStyle: 'bold'} },
+                    { content: `${fn_formatearMonedaLocal(igv)}`, styles: { halign: 'center' } }
+                ],
+                [
+                    { content: `Total ${simboloMoneda}`, styles: { halign: 'right' , fontStyle: 'bold'} },
+                    { content: `${fn_formatearMonedaLocal(total)}`, styles: { halign: 'center' } }
+                ]
+                ],
+                startY: doc.lastAutoTable.finalY,
+                margin: { left: inicioTablaTotal },
+                columnStyles: {
+                    0: { cellWidth: 25 },
+                    1: { cellWidth: 25 },
+                },
+                styles: {
+                    fontSize: 8, 
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                theme: 'grid'
+            });
+        }
+
+        // ========== Termina Función Dibujar Productos ==========
+
+        // ========== Inicia Función Dibujar Cuentas ==========
+
+        function fn_dibujarCuentas(){
+            doc.autoTable({
+                head: [['Banco', 'Moneda', 'Tipo de Cuenta', 'Cuenta', 'Cuenta CCI']],
+                body: [
+                    [
+                        { content: 'BCP', styles: { halign: 'left' , fontStyle: 'bold'} },
+                        { content: 'SOLES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                        { content: 'AHORROS', styles: { halign: 'left' } },
+                        { content: '4752156367062', styles: { halign: 'left' } },
+                        { content: '00247500215636706225', styles: { halign: 'left' } },
+                    ],
+                    [
+                        { content: 'BCP', styles: { halign: 'left' , fontStyle: 'bold'} },
+                        { content: 'DOLARES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                        { content: 'AHORROS', styles: { halign: 'left' } },
+                        { content: '4752156380104', styles: { halign: 'left' } },
+                        { content: '00247500215638010428', styles: { halign: 'left' } },
+                    ],
+                    [
+                        { content: 'BBVA', styles: { halign: 'left' , fontStyle: 'bold'} },
+                        { content: 'SOLES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                        { content: 'AHORROS', styles: { halign: 'left' } },
+                        { content: '0011 0267 0201320316', styles: { halign: 'left' } },
+                        { content: '011 267 000201320316 27', styles: { halign: 'left' } },
+                    ],
+                    [
+                        { content: 'BBVA', styles: { halign: 'left' , fontStyle: 'bold'} },
+                        { content: 'DOLARES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                        { content: 'AHORROS', styles: { halign: 'left' } },
+                        { content: '0011-0267-0201320324', styles: { halign: 'left' } },
+                        { content: '01126700020132032421', styles: { halign: 'left' } },
+                    ],
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+                margin: {left: 10 , right: 10},
+                startY: doc.lastAutoTable.finalY + 5,
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        { content: 'Posteriormente enviar ticket o certificado de deposito correspondiente a ventas@balinsa.com haciendo referencia al Nº de orden', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                    ],
+                    [
+                        { content: 'Compra/Servicio', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                    ],
+                    [
+                        { content: 'Para despachos a provincias enviar instrucciones precisando:', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                    ],
+                    [
+                        { content: '1. Ciudad Destino :', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                    ],
+                    [
+                        { content: '2. Empresa de transporte :', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                    ],
+                    [
+                        { content: '3. Nombre y DNI de la persona que recogera el envio :', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                    ],
+                    [
+                        { content: 'Sin otro particular quedamos de ustedes a la espera de sus gratas ordenes.', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                    ],
+                    [
+                        { content: 'Atentamente,', styles: { halign: 'left' , fontStyle: 'bold', textColor: [ 0, 0, 0 ]} },
+                    ],
+                    [
+                        { content: `${nombreCompleto}`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [ 0, 0, 0 ], fontSize: 9, cellPadding: {top: 20, right: 4, bottom: 0, left: 1} } },
+                    ],
+                    [
+                        { content: `${roles}`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [ 0, 0, 0 ], fontSize: 10, cellPadding: {top: 2, right: 0, bottom: 0, left: 1} } },
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: 1,
+                    lineWidth: 0.30,
+                    lineColor: [255, 255, 255]
+                },
+                headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+                margin: {left: 10 , right: 10},
+                startY: doc.lastAutoTable.finalY + 5,
+            });
+        }
+
+        // ========== Termina Función Dibujar Cuentas ==========
+
+        // ========== Inicia Construción de PDF ==========
+
+        const doc = new jsPDF();
+        // const doc = new jsPDF('landscape'); // Horizontal
+
+        let eje_y = 10;
+        let eje_x = 10;
+        let margenDerecho = 10;
+        let anchoPagina = doc.internal.pageSize.width;
+
+        doc.setTextColor(0,0,0);
+        doc.setFontSize(9);
+        doc.setFont('Helvetica', 'normal');
+
+        const backgroundImg = '/img/logo_ini.png';
+        doc.addImage(backgroundImg, 'JPEG', eje_x, eje_y, 80, 25);
+        
+        eje_y += 5;
 
         fn_dibujarEncabezado("Av. Separadora Mz A LT 8 Sector 28 de Julio");
         eje_y += 5;
@@ -1292,272 +1769,23 @@ const previewPDF2 = () => {
         eje_y += 10;
 
         doc.setFontSize(12);
-        doc.setFont('Helvetica', 'bold'); // Estilos de texto
+        doc.setFont('Helvetica', 'bold');
         fn_dibujarEncabezado(`COTIZACION : N° ${añoCotizacion} - ${numeroCotizacionFormateado}`);
 
-        doc.autoTable({
-            body: [
-                [
-                    'Razón Social',
-                    razonSocial
-                ],
-                [
-                    'RUC',
-                    ruc
-                ],
-                [
-                    'Direccion',
-                    direccion
-                ]
-            ],
-            theme: 'grid',
-            styles: { 
-                fontSize: 8, 
-                cellPadding: 2,
-                lineWidth: 0.30,
-                lineColor: [0, 0, 0]
-            },
-            margin: { top: 30 , left: 10 , right: 10},
-            startY: 50,
-            columnStyles: {
-                0: {
-                    cellWidth: 40,
-                    fontStyle: 'bold'
-                }
-            },
-        });
+        const inicioTabla = 50;
+
+        fn_dibujarDatosClientes(inicioTabla);
+
+        doc.setFontSize(8);
+        doc.setFont('Helvetica', 'bold');
+        fn_dibujarProductos();
         
-        doc.autoTable({
-            body: [
-                [
-                    'Moneda',
-                    monedaTipoCambio,
-                    'Fecha',
-                    fechaFormateada
+        fn_dibujarCondiciones();
 
-                ]
-            ],
-            theme: 'grid',
-            styles: { 
-                fontSize: 8, 
-                cellPadding: 2,
-                lineWidth: 0.30,
-                lineColor: [0, 0, 0]
-            },
-            margin: {left: 10 , right: 10},
-            startY: doc.lastAutoTable.finalY,
-            columnStyles: {
-                0: {
-                    cellWidth: 40,
-                    fontStyle: 'bold'
-                },
-                1: {
-                    cellWidth: 55
-                },
-                2: {
-                    cellWidth: 30,
-                    fontStyle: 'bold'
-                }
-            },
-        });
+        doc.setFont('Helvetica', 'normal');
+        fn_dibujarCuentas();
 
-        doc.autoTable({
-            body: [
-                [
-                    { content: 'CONDICIONES :', styles: { halign: 'left' , fontStyle: 'bold'} }
-                ]
-            ],
-            theme: 'grid',
-            styles: { 
-                fontSize: 8, 
-                cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
-                lineWidth: 0.30,
-                lineColor: [0, 0, 0]
-            },
-            margin: {left: 10 , right: 10},
-            startY: doc.lastAutoTable.finalY + 5
-        });
-
-        const lineYPosition = doc.lastAutoTable.finalY;
-
-        doc.autoTable({
-            body: [
-                [
-                    { content: `Validez de la Cotización     : ${validez_cot}\n\nPago                                     : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}`, styles: { halign: 'left' , fontStyle: 'bold'} }
-                ],
-            ],
-            theme: 'grid',
-            styles: { 
-                fontSize: 8, 
-                cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
-                lineWidth: 0.30,
-                lineColor: [0, 0, 0]
-            },
-            margin: {left: 10 , right: 10},
-            startY: doc.lastAutoTable.finalY
-        });
-
-        doc.setDrawColor(255, 255, 255); // Color de la línea (negro)
-        doc.setLineWidth(1); // Establece el grosor de la línea
-        doc.line(10.1, lineYPosition, doc.internal.pageSize.width - 10.1, lineYPosition); 
-
-        const lineYPosition2 = doc.lastAutoTable.finalY;
-
-        doc.autoTable({
-            body: [
-                [
-                    { content: `Los precios unitarios NO incluyen IGV`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [255, 0, 0] } }
-                ],
-            ],
-            theme: 'grid',
-            styles: { 
-                fontSize: 8, 
-                cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
-                lineWidth: 0.30,
-                lineColor: [0, 0, 0]
-            },
-            margin: {left: 10 , right: 10},
-            startY: doc.lastAutoTable.finalY
-        });
-
-        doc.setDrawColor(255, 255, 255); // Color de la línea (negro)
-        doc.setLineWidth(1); // Establece el grosor de la línea
-        doc.line(10.1, lineYPosition2, doc.internal.pageSize.width - 10.1, lineYPosition2); 
-
-        const lineYPosition3 = doc.lastAutoTable.finalY;
-
-        doc.autoTable({
-            body: [
-                [
-                    { content: `Asistencia tecnica en industriasbalinsa.gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}\n\nEmitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585\n\nNo se realizan cambios ni devoluciones\n\nOrden de compra irrevocable`, styles: { halign: 'left' , fontStyle: 'bold' } }
-                ],
-            ],
-            theme: 'grid',
-            styles: { 
-                fontSize: 8, 
-                cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
-                lineWidth: 0.30,
-                lineColor: [0, 0, 0]
-            },
-            margin: {left: 10 , right: 10},
-            startY: doc.lastAutoTable.finalY
-        });
-
-        doc.setDrawColor(255, 255, 255); // Color de la línea (negro)
-        doc.setLineWidth(1); // Establece el grosor de la línea
-        doc.line(10.1, lineYPosition3, doc.internal.pageSize.width - 10.1, lineYPosition3); 
-    
-        // Generar la tabla de productos
-        doc.autoTable({
-            head: [['Modelo', 'Marca', 'Capacidades', 'Especificaciones', 'Cantidad', 'Precio', 'SubTotal', 'Imagen']],
-            body: [
-                ...datosTabla.map(product => [
-                    product.modelo,
-                    product.marca,
-                    product.capacidades,
-                    product.especificaciones,
-                    product.cantidad,
-                    parseFloat(product.importe).toFixed(2),
-                    parseFloat(product.subtotal).toFixed(2),
-                    {
-                        content: '', 
-                        styles: { cellWidth: 20, minCellHeight: 20 },
-                        image: product.foto
-                    }
-                ]),
-                [
-                    { content: 'Sub Total', colSpan: 6, styles: { halign: 'right' , fontStyle: 'bold'} },
-                    { content: `${simboloMoneda} ${subtotal.toFixed(2)}`, colSpan: 2, styles: { halign: 'center' } }
-                ],
-                [
-                    { content: 'IGV % 18', colSpan: 6, styles: { halign: 'right' , fontStyle: 'bold'} },
-                    { content: `${simboloMoneda} ${igv.toFixed(2)}`, colSpan: 2, styles: { halign: 'center' } }
-                ],
-                [
-                    { content: 'Total', colSpan: 6, styles: { halign: 'right' , fontStyle: 'bold'} },
-                    { content: `${simboloMoneda} ${total.toFixed(2)}`, colSpan: 2, styles: { halign: 'center' } }
-                ]
-            ],
-            rowPageBreak: 'avoid',
-            didDrawCell: function (data) {
-                if (data.column.index === 7 && data.cell.section === 'body') {
-                    if (data.row.index < datosTabla.length) {
-                        const product = datosTabla[data.row.index];
-                        if (product && product.foto) {
-                            const imageUrl = "/productos_img/" + product.foto;
-
-                            const containerWidth = 20;
-                            const containerHeight = 20;
-
-                            const reductionFactor = 0.8;
-
-                            const imgWidth = containerWidth * reductionFactor;
-                            const imgHeight = containerHeight * reductionFactor;
-
-                            const x = data.cell.x + (containerWidth - imgWidth) / 2;
-                            const y = data.cell.y + (containerHeight - imgHeight) / 2;
-
-                            doc.addImage(imageUrl, 'JPEG', x, y, imgWidth, imgHeight);
-                        }
-                    }
-                }
-            },
-            theme: 'grid',
-            styles: { 
-                fontSize: 8, 
-                cellPadding: 2,
-                lineWidth: 0.30,
-                lineColor: [0, 0, 0]
-            },
-            headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
-            margin: {left: 10 , right: 10},
-            startY: doc.lastAutoTable.finalY + 5,
-        });
-
-        doc.autoTable({
-            head: [['Banco', 'Tipo de Cuenta', 'Moneda', 'Cuenta', 'Cuenta CCI']],
-            body: [
-                [
-                    { content: 'BCP', styles: { halign: 'left' , fontStyle: 'bold'} },
-                    { content: 'AHORROS', styles: { halign: 'left' } },
-                    { content: 'SOLES', styles: { halign: 'left' , fontStyle: 'bold'} },
-                    { content: '4752156367062', styles: { halign: 'left' } },
-                    { content: '00247500215636706225', styles: { halign: 'left' } },
-                ],
-                [
-                    { content: 'BCP', styles: { halign: 'left' , fontStyle: 'bold'} },
-                    { content: 'AHORROS', styles: { halign: 'left' } },
-                    { content: 'DOLARES', styles: { halign: 'left' , fontStyle: 'bold'} },
-                    { content: '4752156380104', styles: { halign: 'left' } },
-                    { content: '00247500215638010428', styles: { halign: 'left' } },
-                ],
-                [
-                    { content: 'BBVA', styles: { halign: 'left' , fontStyle: 'bold'} },
-                    { content: 'AHORROS', styles: { halign: 'left' } },
-                    { content: 'SOLES', styles: { halign: 'left' , fontStyle: 'bold'} },
-                    { content: '0011 0267 0201320316', styles: { halign: 'left' } },
-                    { content: '011 267 000201320316 27', styles: { halign: 'left' } },
-                ],
-                [
-                    { content: 'BBVA', styles: { halign: 'left' , fontStyle: 'bold'} },
-                    { content: 'AHORROS', styles: { halign: 'left' } },
-                    { content: 'DOLARES', styles: { halign: 'left' , fontStyle: 'bold'} },
-                    { content: '0011-0267-0201320324', styles: { halign: 'left' } },
-                    { content: '01126700020132032421', styles: { halign: 'left' } },
-                ],
-            ],
-            rowPageBreak: 'avoid',
-            theme: 'grid',
-            styles: { 
-                fontSize: 8, 
-                cellPadding: 2,
-                lineWidth: 0.30,
-                lineColor: [0, 0, 0]
-            },
-            headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
-            margin: {left: 10 , right: 10},
-            startY: doc.lastAutoTable.finalY + 5,
-        });
+        // ========== Finaliza Construción de PDF ==========
     
         const blob = doc.output('blob');
         const url = URL.createObjectURL(blob);
@@ -1586,9 +1814,9 @@ document.addEventListener('input', function(event) {
                 if (input) {
                     // Obtén el valor del <input>
                     valorInput = input.value;
-                    console.log("Valor del input en la celda 10:", valorInput);
+                    // console.log("Valor del input en la celda 10:", valorInput);
                 } else {
-                    console.log('No se encontró el <input> en la celda 10.');
+                    // console.log('No se encontró el <input> en la celda 10.');
                 }
             } else {
                 console.log('No se encontró la celda en la posición 10.');
@@ -1823,7 +2051,7 @@ var listarClientes = props.clientes;
                                     </table>
                                 </div>
                             </div>
-                            <div class="flex flex-wrap w-full gap-4 md:justify-end justify-start items-center md:pb-4 pb-2.5 pt-2">
+                            <!-- <div class="flex flex-wrap w-full gap-4 md:justify-end justify-start items-center md:pb-4 pb-2.5 pt-2">
                                 <div class="flex items-center gap-2">
                                     <input type="checkbox" id="convertirPrecioEnabled" class="w-4 h-4 text-orange-500 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="convertirPrecioEnabled">
                                     <label for="convertirPrecioEnabled" class="text-base font-extrabold text-black dark:text-white whitespace-nowrap">Convertir Moneda</label>
@@ -1836,11 +2064,11 @@ var listarClientes = props.clientes;
                                     <input checked type="checkbox" id="precioTotalCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="precioTotalEnabled">
                                     <label for="precioTotalCheckbox" class="text-base font-extrabold text-black dark:text-white whitespace-nowrap">Incluir Precio Total</label>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="grid grid-cols-1 gap-y-4 items-end sm:grid-cols-4 sm:gap-x-8 sm:py-2 py-1">
                                 <div>
                                     <InputLabel for="validez_cot" class="block text-xs font-medium text-black dark:text-white">Validez de la Cotización</InputLabel>
-                                    <select id="validez_cot" v-model="form.validez_cot"
+                                    <select id="validez_cot" v-model="form.validez_cot" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="" disabled selected>Selecciona validez Cotización</option>
                                         <option value="15 dias">15 dias</option>
@@ -1851,7 +2079,7 @@ var listarClientes = props.clientes;
                                 </div>
                                 <div>
                                     <InputLabel for="forma_pago" class="block text-xs font-medium text-black dark:text-white">Forma de pago</InputLabel>
-                                    <select id="forma_pago" v-model="form.forma_pago"
+                                    <select id="forma_pago" v-model="form.forma_pago"required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="" disabled selected>Selecciona una forma de pago</option>
                                         <option value="Credito 15 dias">Credito 15 dias</option>
@@ -1862,7 +2090,7 @@ var listarClientes = props.clientes;
                                 </div>
                                 <div>
                                     <InputLabel for="dias_entrega" class="block text-xs font-medium text-black dark:text-white">Días de entrega</InputLabel>
-                                    <select id="dias_entrega" v-model="form.dias_entrega"
+                                    <select id="dias_entrega" v-model="form.dias_entrega" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="" disabled selected>Selecciona días de entrega</option>
                                         <option v-for="dia in 31" :key="dia" :value="dia">{{ dia }} día{{ dia > 1 ? 's' : '' }}</option>

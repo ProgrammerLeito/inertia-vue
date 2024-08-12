@@ -351,9 +351,9 @@ document.addEventListener('input', function(event) {
                 if (input) {
                     // Obtén el valor del <input>
                     valorInput = input.value;
-                    console.log("Valor del input en la celda 10:", valorInput);
+                    // console.log("Valor del input en la celda 10:", valorInput);
                 } else {
-                    console.log('No se encontró el <input> en la celda 10.');
+                    // console.log('No se encontró el <input> en la celda 10.');
                 }
             } else {
                 console.log('No se encontró la celda en la posición 10.');

@@ -27,6 +27,6 @@
         <div class="overflow-hidden">
         </div>
         {{-- <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.6/b-3.0.2/b-html5-3.0.2/r-3.0.2/datatables.min.js"></script> --}}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> --}}
     </body>
 </html>
