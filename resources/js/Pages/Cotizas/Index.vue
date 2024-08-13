@@ -4,6 +4,7 @@ import { Link } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
+import axios from "axios";
  
 const props = defineProps({
     cventas: {
@@ -160,7 +161,47 @@ const countPerPage = props.cventas.data.length;
 const totalCount = props.cventas.total;
 
 $(document).on('dblclick', ".previsualizarPfd", function(event) {
-    console.log('Se hizo doble clic en un elemento con la clase "previsualizarPfd"');
+    const $this = $(this);
+    const cventaId = $this.data('id');
+    const tbagregadoId = $this.data('id');
+
+    // Verificar si la solicitud ya ha sido realizada
+    if ($this.data('clicked')) {
+        console.log('La solicitud ya ha sido realizada para este elemento.');
+        return; // Salir de la función si la solicitud ya se ha realizado
+    }
+
+    // Marcar el elemento como clickeado
+    $this.data('clicked', true);
+
+    // Primera consulta: Datos de cotización
+    axios.post('/consultarDatosCot', { id: cventaId }, {
+        headers: {
+            'X-Inertia': false // Esto indica que no estás esperando una respuesta de Inertia.
+        }
+    })
+    .then(response => {
+        console.log('Datos de cotización:', response.data);
+        // Aquí puedes realizar acciones adicionales con los datos de cotización recibidos.
+
+        // Segunda consulta: Datos de productos agregados
+        return axios.post('/consultarDatosProductosCot', { id: tbagregadoId }, {
+            headers: {
+                'X-Inertia': false // Esto indica que no estás esperando una respuesta de Inertia.
+            }
+        });
+    })
+    .then(response => {
+        console.log('Datos de productos agregados:', response.data);
+        // Aquí puedes realizar acciones adicionales con los datos de productos agregados recibidos.
+    })
+    .catch(error => {
+        console.error('Error al consultar datos:', error);
+    })
+    .finally(() => {
+        // Restablecer el estado después de un breve periodo de tiempo
+        setTimeout(() => $this.data('clicked', false), 1000); // Ajusta el tiempo según sea necesario
+    });
 });
 
 </script>
@@ -212,7 +253,8 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
-                                    <tr v-for="(cventa, index) in cventas.data" :key="cventa.id" class="bg-white previsualizarPfd text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer">
+                                    <tr v-for="(cventa, index) in cventas.data" :key="cventa.id" :data-id="cventa.id" class="bg-white previsualizarPfd text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer">
+                                        <td class="px-1 py-4 text-center hidden">{{ cventa.id }}</td>
                                         <td class="px-1 py-4 text-center">{{ cventa.n_cotizacion }}</td>
                                         <td class="px-1 py-4 text-center fa-fade font-semibold">s|codigo</td>
                                         <td class="px-1 py-4 text-center">

@@ -53,7 +53,8 @@ class CventaController extends Controller
         $validatedData['tecnico'] = $tecnico;
         $validatedData['estado'] = 'Por Enviar';
         
-        $cventa = Cventa::create($validatedData);
+        Cventa::create($validatedData);
+        return to_route('cventas.index');
     }
 
     public function validarIdCot()
@@ -92,6 +93,75 @@ class CventaController extends Controller
         }
     }
 
+    public function consultarDatosCot(Request $request)
+    {
+        $cventasId = $request->input('id');
+
+        $cventas = DB::table('cventas')
+            ->select(
+                'id',
+                'n_cotizacion',
+                'codesunat',
+                'estado',
+                'tecnico',
+                'cliente_id',
+                'numeroDocumento',
+                'direccion',
+                'fecha',
+                'moneda',
+                'tipoCambio',
+                'forma_pago',
+                'dias_entrega',
+                'validez_cot',
+                'subtotal',
+                'igv',
+                'total'
+            )
+            ->where('id', '=', $cventasId)
+            ->get();
+
+        // Retornar los datos como JSON
+        return response()->json([
+            'cventas' => $cventas,
+            'cventasId' => $cventasId,
+        ]);
+    }
+
+
+    public function consultarDatosProductosCot(Request $request)
+    {
+        $tbagregadoId = $request->input('id');
+
+        $tbproductos_agregados = DB::select("
+            SELECT
+                id,
+                idCotizacion,
+                subcategoria_id,
+                modelo,
+                especificaciones,
+                marca,
+                capacidades,
+                precio_list,
+                precio_min,
+                precio_max,
+                cantidad,
+                importe,
+                garantia,
+                dias_entrega,
+                forma_pago,
+                moneda,
+                foto,
+                requerimientos
+            FROM tbproductos_agregados
+            WHERE id = ?
+        ", [$tbagregadoId]);
+
+        return response()->json([
+            'tbproductos_agregados' => $tbproductos_agregados,
+            'tbagregadoId' => $tbagregadoId,
+        ]);
+    }
+    
     public function edit(Cventa $cventa)
     {
         $clientes = Cliente::all();

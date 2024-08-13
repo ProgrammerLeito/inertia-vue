@@ -110,6 +110,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('/cventas', CventaController::class);
     Route::post('/guardarProductosCotizacion', [CventaController::class, 'guardarProductosCotizacion'])->name('cventas.guardarProductosCotizacion');
     Route::post('/validarIdCot', [CventaController::class, 'validarIdCot']);
+    Route::post('/consultarDatosCot', [CventaController::class, 'consultarDatosCot']);
+    Route::post('/consultarDatosProductosCot', [CventaController::class, 'consultarDatosProductosCot']);
     Route::post('/cventas/cambiar_estado', [CventaController::class, 'cambiarEstado'])->name('cventas.cambiar_estado');
 
     // Hojas de Salida de los servicios

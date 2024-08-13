@@ -68,10 +68,6 @@ const consultarReniec = async () => {
   }
 };
 
-// const submitForm = () => {
-
-// };
-
 const submitForm = () => {
     form.post(route('clientes.store'), {
         onSuccess: () => {

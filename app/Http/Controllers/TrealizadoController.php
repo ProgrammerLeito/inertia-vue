@@ -13,7 +13,7 @@ class TrealizadoController extends Controller
             'ctrabajo_id'=>'required',
             'descripcion'=>'required'
         ]);
-        $trealizado=Trealizado::create($validateData);
+        Trealizado::create($validateData);
         return redirect()->back();
     }
     public function update(Request $request, Trealizado $trealizado)

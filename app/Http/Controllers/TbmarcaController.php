@@ -14,7 +14,7 @@ class TbmarcaController extends Controller
             'nombre' => 'required|string|max:255',
             'tbsubcategoria_id' => 'required|exists:tbsubcategorias,id',
         ]);
-        $marca = Tbmarca::create($validatedData);
+        Tbmarca::create($validatedData);
         $tbmarcas=Tbmarca::all();
 
         return redirect()->back()->with('success', 'Marca creada correctamente.', $tbmarcas);

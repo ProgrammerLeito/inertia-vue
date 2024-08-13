@@ -362,6 +362,69 @@ watch(() => form.moneda, (newValue) => {
                 form.total = parseFloat((form.total / tipoCambio).toFixed(2));
                 form.tipoCambio = tipoCambio;
 
+                setTimeout(() => {
+                    const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
+                    const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
+                    
+                    
+                    let total = 0;
+                    const rows = document.querySelectorAll('tr'); // Selecciona todas las filas de la tabla
+
+                    rows.forEach(function(row) {
+                        const importeCell = row.querySelector('.inputImporte');
+                        const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
+                        const cantidadCell = row.children[9]; // Asegúrate de que este índice es correcto
+                        let valorInput = 1;
+                        if (cantidadCell) {
+                            // Intenta seleccionar el <input> dentro de esa celda
+                            const input = cantidadCell.querySelector('input');
+
+                            // Verifica si input no es null
+                            if (input) {
+                                // Obtén el valor del <input>
+                                valorInput = input.value;
+                                // console.log("Valor del input en la celda 10:", valorInput);
+                            } else {
+                                // console.log('No se encontró el <input> en la celda 10.');
+                            }
+                        } else {
+                            // console.log('No se encontró la celda en la posición 10.');
+                        }
+                        if (importeCell && monedaCell) {
+                            if(moneda == "Soles"){
+                                const value = parseFloat(importeCell.textContent);
+                                const moneda = monedaCell.textContent.trim();
+                
+                                if (!isNaN(value)) {
+                                    if (moneda === "$") {
+                                        total += (value * parseFloat(tipoCambio)) * valorInput;
+                                    } else {
+                                        total += value * valorInput;
+                                    }
+                                }
+                            }else if(moneda == "Dólares"){
+                                const value = parseFloat(importeCell.textContent);
+                                const moneda = monedaCell.textContent.trim();
+                
+                                if (!isNaN(value)) {
+                                    if (moneda === "s/") {
+                                        total += (value / parseFloat(tipoCambio)) * valorInput;
+                                    } else {
+                                        total += value * valorInput;
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    form.subtotal = parseFloat(total).toFixed(2);
+                    form.total = parseFloat(total).toFixed(2);
+
+                    document.getElementById('subtotal').value = total.toFixed(2);
+                    document.getElementById('total').value = total.toFixed(2);
+                    
+                }, 50);
+
                 // console.log('Tipo de cambio ingresado:', tipoCambio);
             } else {
                 form.moneda = '';
@@ -387,6 +450,69 @@ watch(() => form.moneda, (newValue) => {
                 form.igv = parseFloat((form.igv * tipoCambio).toFixed(2));
                 form.total = parseFloat((form.total * tipoCambio).toFixed(2));
                 form.tipoCambio = tipoCambio;
+
+                setTimeout(() => {
+                    const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
+                    const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
+                    
+                    
+                    let total = 0;
+                    const rows = document.querySelectorAll('tr'); // Selecciona todas las filas de la tabla
+
+                    rows.forEach(function(row) {
+                        const importeCell = row.querySelector('.inputImporte');
+                        const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
+                        const cantidadCell = row.children[9]; // Asegúrate de que este índice es correcto
+                        let valorInput = 1;
+                        if (cantidadCell) {
+                            // Intenta seleccionar el <input> dentro de esa celda
+                            const input = cantidadCell.querySelector('input');
+
+                            // Verifica si input no es null
+                            if (input) {
+                                // Obtén el valor del <input>
+                                valorInput = input.value;
+                                // console.log("Valor del input en la celda 10:", valorInput);
+                            } else {
+                                // console.log('No se encontró el <input> en la celda 10.');
+                            }
+                        } else {
+                            // console.log('No se encontró la celda en la posición 10.');
+                        }
+                        if (importeCell && monedaCell) {
+                            if(moneda == "Soles"){
+                                const value = parseFloat(importeCell.textContent);
+                                const moneda = monedaCell.textContent.trim();
+                
+                                if (!isNaN(value)) {
+                                    if (moneda === "$") {
+                                        total += (value * parseFloat(tipoCambio)) * valorInput;
+                                    } else {
+                                        total += value * valorInput;
+                                    }
+                                }
+                            }else if(moneda == "Dólares"){
+                                const value = parseFloat(importeCell.textContent);
+                                const moneda = monedaCell.textContent.trim();
+                
+                                if (!isNaN(value)) {
+                                    if (moneda === "s/") {
+                                        total += (value / parseFloat(tipoCambio)) * valorInput;
+                                    } else {
+                                        total += value * valorInput;
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    form.subtotal = parseFloat(total).toFixed(2);
+                    form.total = parseFloat(total).toFixed(2);
+
+                    document.getElementById('subtotal').value = total.toFixed(2);
+                    document.getElementById('total').value = total.toFixed(2);
+                    
+                }, 50);
 
                 // console.log('Tipo de cambio ingresado:', tipoCambio);
             } else {
@@ -524,19 +650,19 @@ const submitForm = async (event) => {
         // Primera solicitud: Guardar la cotización
         await form.post(route('cventas.store'));
 
-        await Inertia.post(route('cventas.store'), datosTabla);
+        // await Inertia.post(route('cventas.store'), datosTabla);
 
         // Segunda solicitud: Validar ID con axios
         const validationResponse = await axios.post('/validarIdCot');
         const idCotizacion = validationResponse.data.id; // Acceder al ID desde la respuesta
 
-        // Agregar el idCotizacion a cada producto
+        // // Agregar el idCotizacion a cada producto
         datosTabla.forEach(producto => {
             producto.idCotizacion = idCotizacion;
         });
 
         // Tercera solicitud: Guardar los productos de la cotización
-        await Inertia.post(route('cventas.guardarProductosCotizacion'), {
+        await axios.post(route('cventas.guardarProductosCotizacion'), {
             productos: datosTabla
         });
 
@@ -549,8 +675,6 @@ const submitForm = async (event) => {
             showConfirmButton: false
         });
 
-        // Redirigir al índice de cotizaciones
-        Inertia.visit(route('cventas.index'));
 
     } catch (error) {
         console.error('Error al enviar el formulario:', error);
@@ -563,8 +687,6 @@ const submitForm = async (event) => {
         });
     }
 };
-
-
 
 const { props } = usePage();
 const user = props.auth.user;
@@ -1345,6 +1467,7 @@ const previewPDF2 = () => {
                         direccion
                     ]
                 ],
+                rowPageBreak: 'avoid',
                 theme: 'grid',
                 styles: { 
                     fontSize: 8, 
@@ -1367,11 +1490,12 @@ const previewPDF2 = () => {
                     [
                         'Moneda',
                         monedaTipoCambio,
-                        'Fecha',
-                        fechaFormateada
+                        'Asesor',
+                        nombreCompleto
     
                     ]
                 ],
+                rowPageBreak: 'avoid',
                 theme: 'grid',
                 styles: { 
                     fontSize: 8, 
@@ -1408,6 +1532,7 @@ const previewPDF2 = () => {
                         { content: 'CONDICIONES :', styles: { halign: 'left' , fontStyle: 'bold'} }
                     ]
                 ],
+                rowPageBreak: 'avoid',
                 theme: 'grid',
                 styles: { 
                     fontSize: 8, 
@@ -1427,6 +1552,7 @@ const previewPDF2 = () => {
                         { content: `Validez de la Cotización     : ${validez_cot}\n\nPago                                     : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}`, styles: { halign: 'left' , fontStyle: 'bold'} }
                     ],
                 ],
+                rowPageBreak: 'avoid',
                 theme: 'grid',
                 styles: { 
                     fontSize: 8, 
@@ -1450,6 +1576,7 @@ const previewPDF2 = () => {
                         { content: `Los precios unitarios NO incluyen IGV`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [255, 0, 0] } }
                     ],
                 ],
+                rowPageBreak: 'avoid',
                 theme: 'grid',
                 styles: { 
                     fontSize: 8, 
@@ -1470,9 +1597,10 @@ const previewPDF2 = () => {
             doc.autoTable({
                 body: [
                     [
-                        { content: `Asistencia tecnica en industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}\n\nEmitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585\n\nNo se realizan cambios ni devoluciones\n\nOrden de compra irrevocable`, styles: { halign: 'left' , fontStyle: 'bold' } }
+                        { content: `Asistencia al correo de área de ventas industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}\n\nEmitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585\n\nNo se realizan cambios ni devoluciones\n\nOrden de compra irrevocable`, styles: { halign: 'left' , fontStyle: 'bold' } }
                     ],
                 ],
+                rowPageBreak: 'avoid',
                 theme: 'grid',
                 styles: { 
                     fontSize: 8, 
@@ -1491,16 +1619,13 @@ const previewPDF2 = () => {
             doc.autoTable({
                 body: [
                     [
-                        { content: 'Remitir Orden de Compra/Servicio a nombre de INDUSTRIAS BALINSA EIRL via correo electronico a industriasbalinsa@gmail.com', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
-                    ],
-                    [
                         { content: 'Hacer deposito bancario a nombre de INDUSTRIAS BALINSA EIRL segun:', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
                     ]
                 ],
                 rowPageBreak: 'avoid',
                 theme: 'grid',
                 styles: { 
-                    fontSize: 8, 
+                    fontSize: 9.5, 
                     cellPadding: 1,
                     lineWidth: 0.30,
                     lineColor: [255, 255, 255]
@@ -1565,6 +1690,7 @@ const previewPDF2 = () => {
                         }
                     }
                 },
+                rowPageBreak: 'avoid',
                 theme: 'grid',
                 styles: { 
                     fontSize: 8, 
@@ -1694,31 +1820,7 @@ const previewPDF2 = () => {
                         { content: 'Posteriormente enviar ticket o certificado de deposito correspondiente a ventas@balinsa.com haciendo referencia al Nº de orden', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
                     ],
                     [
-                        { content: 'Compra/Servicio', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
-                    ],
-                    [
-                        { content: 'Para despachos a provincias enviar instrucciones precisando:', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
-                    ],
-                    [
-                        { content: '1. Ciudad Destino :', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
-                    ],
-                    [
-                        { content: '2. Empresa de transporte :', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
-                    ],
-                    [
-                        { content: '3. Nombre y DNI de la persona que recogera el envio :', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
-                    ],
-                    [
                         { content: 'Sin otro particular quedamos de ustedes a la espera de sus gratas ordenes.', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
-                    ],
-                    [
-                        { content: 'Atentamente,', styles: { halign: 'left' , fontStyle: 'bold', textColor: [ 0, 0, 0 ]} },
-                    ],
-                    [
-                        { content: `${nombreCompleto}`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [ 0, 0, 0 ], fontSize: 9, cellPadding: {top: 20, right: 4, bottom: 0, left: 1} } },
-                    ],
-                    [
-                        { content: `${roles}`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [ 0, 0, 0 ], fontSize: 10, cellPadding: {top: 2, right: 0, bottom: 0, left: 1} } },
                     ]
                 ],
                 rowPageBreak: 'avoid',
@@ -2071,9 +2173,9 @@ var listarClientes = props.clientes;
                                     <select id="validez_cot" v-model="form.validez_cot" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="" disabled selected>Selecciona validez Cotización</option>
-                                        <option value="15 dias">15 dias</option>
-                                        <option value="30 dias">30 dias</option>
-                                        <option value="60 dias">60 dias</option>
+                                        <option value="15 dias">3 dias</option>
+                                        <option value="30 dias">7 dias</option>
+                                        <option value="60 dias">15 dias</option>
                                         <option value="Sin Vigencia">Sin Vigencia</option>
                                     </select>
                                 </div>

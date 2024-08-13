@@ -12,7 +12,7 @@ class TbprovinciaController extends Controller
         $validatedData = $request->validate([
             'prov_nombre' => 'required|string|max:255|unique:tbprovincias',
         ]); 
-        $tbprovincia = Tbprovincias::create($validatedData);
+        Tbprovincias::create($validatedData);
 
         return redirect()->back()->with('success', 'Marca creada correctamente.');
     }

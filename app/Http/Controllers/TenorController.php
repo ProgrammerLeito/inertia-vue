@@ -11,7 +11,7 @@ class TenorController extends Controller
         $validatedData = $request->validate([
             'name'=>'required|unique:tenors',
         ]);
-        $tenor=Tenor::create($validatedData);
+        Tenor::create($validatedData);
         return redirect()->back();
     }
 }
