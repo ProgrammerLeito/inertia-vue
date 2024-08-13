@@ -97,36 +97,45 @@ class CventaController extends Controller
     {
         $cventasId = $request->input('id');
 
-        $cventas = DB::table('cventas')
-            ->select(
-                'id',
-                'n_cotizacion',
-                'codesunat',
-                'estado',
-                'tecnico',
-                'cliente_id',
-                'numeroDocumento',
-                'direccion',
-                'fecha',
-                'moneda',
-                'tipoCambio',
-                'forma_pago',
-                'dias_entrega',
-                'validez_cot',
-                'subtotal',
-                'igv',
-                'total'
-            )
-            ->where('id', '=', $cventasId)
-            ->get();
+        if (!$cventasId) {
+            return response()->json(['error' => 'ID is required'], 400);
+        }
 
-        // Retornar los datos como JSON
+        $cventas = DB::select(
+            'SELECT 
+                cventas.id,
+                cventas.n_cotizacion,
+                cventas.codesunat,
+                cventas.estado,
+                cventas.tecnico,
+                cventas.cliente_id,
+                clientes.numeroDocumento,
+                clientes.direccion,
+                cventas.fecha,
+                cventas.moneda,
+                cventas.tipoCambio,
+                cventas.forma_pago,
+                cventas.dias_entrega,
+                cventas.validez_cot,
+                cventas.subtotal,
+                cventas.igv,
+                cventas.total,
+                clientes.razonSocial
+            FROM cventas
+            JOIN clientes ON cventas.cliente_id = clientes.id
+            WHERE cventas.id = :id',
+            ['id' => $cventasId]
+        );
+
+        if (!$cventas) {
+            return response()->json(['error' => 'Record not found'], 404);
+        }
+
         return response()->json([
-            'cventas' => $cventas,
+            'cventas' => $cventas[0], // Access the first item in the result array
             'cventasId' => $cventasId,
         ]);
     }
-
 
     public function consultarDatosProductosCot(Request $request)
     {
@@ -153,7 +162,7 @@ class CventaController extends Controller
                 foto,
                 requerimientos
             FROM tbproductos_agregados
-            WHERE id = ?
+            WHERE idCotizacion = ?
         ", [$tbagregadoId]);
 
         return response()->json([

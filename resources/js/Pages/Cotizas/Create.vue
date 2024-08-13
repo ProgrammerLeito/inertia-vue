@@ -701,590 +701,6 @@ const obtenerNombreCompleto = (user) => {
 
 const nombreCompleto = obtenerNombreCompleto(user);
 
-const previewPDF = () => {
-    const accordions = document.querySelectorAll('.accordions dt');
-    accordions.forEach((accordion, index) => {
-        // Simula un clic en cada acordeón para abrirlo
-        if (accordion) {
-        accordion.click();
-        }
-    });
-
-    setTimeout(() => {
-
-        const doc = new jsPDF();
-
-        let plantilla = '/img/plantillacotizacion.png';
-
-        doc.addImage(plantilla, 'PNG', 1, 1, 208, 295); // Agregar la imagen en las coordenadas fijas
-
-        const fechaValor = document.getElementById("fecha").value;
-        const monedaTipoCambio = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
-        const valorTipoCambio = document.getElementById("tipoCambio").value;
-
-        // Parsear la fecha para formatearla
-        const partesFecha = fechaValor.split('-');
-        const fecha = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
-        const fechaFormateada = fecha.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }).replace(/(\d{1,2} de )([a-záéíóúñ]+)/, (match, p1, p2) => p1 + p2.charAt(0).toUpperCase() + p2.slice(1));
-    
-        const cliente = document.getElementById("cliente_id").value;
-        const moneda = document.getElementById("moneda").options[document.getElementById("moneda").selectedIndex].text;
-        const igvEnabled = document.getElementById("igvCheckbox").checked;
-        const precioTotalEnabled = document.getElementById("precioTotalCheckbox").checked;
-        const precioUnitarioEnabled = document.getElementById("precioUnitarioEnabled").checked;
-        const convertirPrecioEnabled = document.getElementById("convertirPrecioEnabled").checked;
-        const subtotal = document.getElementById("subtotal").value;
-        const total = document.getElementById("total").value;
-    
-        var eje_y = 50;
-        var yPos = 0;
-        var eje_r = 30;
-        var eje_x = 20;
-
-        const numeroCotizacion = form.n_cotizacion
-        const numeroCotizacionFormateado = numeroCotizacion.toString().padStart(8, '0');
-        const anchoPagina = doc.internal.pageSize.width;
-        const margenDerecho = 20;
-
-        doc.setTextColor(255,0,0);//Color de texto
-        doc.setFontSize(12);//Tamaño de texto
-        doc.setFont('Helvetica', 'bold'); // Estilos de texto
-        const texto = `COTIZACION N° - ${numeroCotizacionFormateado}`;
-        const anchoTexto = doc.getTextWidth(texto);
-        const eje_x_left = anchoPagina - anchoTexto - margenDerecho;
-        doc.text(eje_x_left, eje_y, texto);
-        eje_y += 5; // vale 15
-
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFont('Helvetica', 'bold');//estilos de texto
-        doc.setFontSize(10.5);//Tamaño de texto
-        const texto2 = `${fechaFormateada}`;
-        const anchoTexto2 = doc.getTextWidth(texto2);
-        const eje_x_left2 = anchoPagina - anchoTexto2 - margenDerecho;
-        doc.text(eje_x_left2, eje_y, texto2);
-        eje_y += 5; // vale 15
-
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(10);//Tamaño de texto
-        doc.setFont('Helvetica', 'normal');//estilos de texto
-        doc.text(20, eje_y, 'Señores:');
-        doc.setFont('Helvetica', 'bold');//estilos de texto
-        doc.setFontSize(10.5);//Tamaño de texto
-        eje_y += 5; // vale 15
-        doc.text(eje_x, eje_y, `${cliente}`);
-
-        doc.setTextColor(0,0,0);//Color de texto
-        doc.setFontSize(10);//Tamaño de texto
-        doc.setFont('Helvetica', 'normal');//estilos de texto
-        eje_y += 10; // vale 25
-        doc.text(eje_x, eje_y, 'Estimados Señores:');
-        var splitten = doc.splitTextToSize('En atención a su solicitud nos es grato dirigirnos a Ustedes, para presentarles la mejor propuesta del mercado:', 160);
-        eje_y += 5; // vale 30
-        doc.text(eje_x, eje_y, splitten);
-
-        eje_y += 10;
-        yPos = eje_y;
-
-        // Obtener los datos de la tabla
-        const rows = document.querySelectorAll('.relative table tbody tr');
-
-        const addProductData = (row, index, nextPageCallback) => {
-
-            const subcategoriaProductos = row.querySelector('td:nth-child(1)').innerText.trim();
-            const modelo = row.querySelector('td:nth-child(2)').innerText.trim();
-            const foto = row.querySelector('td:nth-child(3) img').src;
-            const especificaciones = row.querySelector('td:nth-child(4) ul').innerText.trim();
-            const marca = row.querySelector('td:nth-child(5)').innerText.trim();
-
-            let capacidadesSeleccionadas = [];
-            const checkboxes = row.querySelectorAll('td:nth-child(6) input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                capacidadesSeleccionadas.push(checkbox.value);
-                }
-            });
-
-            const precioList = row.querySelector('td:nth-child(7)').innerText.trim();
-            const precioMin = row.querySelector('td:nth-child(8)').innerText.trim();
-            const precioMax = row.querySelector('td:nth-child(9)').innerText.trim();
-            const cantidad = row.querySelector('td:nth-child(10) input').value.trim();
-            const importe = row.querySelector('td:nth-child(11)').innerText.trim();
-            let igvMostrarUnitario = 0;
-            let precioTotalUnitario = 0;
-
-            const garantiaSelect = row.querySelector('td:nth-child(12) select'); // Selecciona el <select> en la 12ª columna
-            const garantia = garantiaSelect.value; // Obtiene el valor seleccionado
-
-            const diasEntregaSelect = row.querySelector('td:nth-child(13) select'); // Selecciona el <select> en la 13ª columna
-            const diasEntrega = diasEntregaSelect.value; // Obtiene el valor seleccionado
-            // const diasEntrega = row.querySelector('td:nth-child(13)').innerText.trim();
-            const formaPagoSelect = row.querySelector('td:nth-child(14) select'); // Selecciona el <select> en la 14ª columna
-            const formaPago = formaPagoSelect.value; // Obtiene el valor seleccionado
-            const moneda = row.querySelector('td:nth-child(15)').innerText.trim();
-            const requerimientos = row.querySelector('td:nth-child(17)').innerText.trim();
-                        
-            const img = new Image();
-            img.src = foto;
-
-            const subcategoriaText = cantidad === "1"
-            ? subcategoriaProductos
-                .split(" ")
-                .map(word => 
-                    word.endsWith("es") || word.endsWith("ES")
-                        ? word.slice(0, -2)
-                        : (word.endsWith("s") || word.endsWith("S")
-                            ? word.slice(0, -1)
-                            : word))
-                .join(" ")
-            : subcategoriaProductos;
-
-            eje_y += 5;
-            doc.setFont('Helvetica', 'bold');
-            doc.setFontSize(12);
-
-            img.onload = () => {
-                const originalWidth = img.width;
-                const originalHeight = img.height;
-                const fixedWidth = 40;
-
-                // Calcula la nueva altura manteniendo la relación de aspecto
-                const aspectRatio = originalHeight / originalWidth;
-                const newHeight = fixedWidth * aspectRatio;
-
-                if (yPos + 150 > doc.internal.pageSize.height) {
-                    doc.addPage();
-                    doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
-                    yPos = 40;
-                    eje_y = 50;
-                }
-                
-                // Usa el nuevo alto calculado para añadir la imagen
-                doc.addImage(img, 'PNG', 135, yPos + 10, fixedWidth, newHeight);
-                yPos += 150;
-
-                doc.text(20, eje_y, `Venta de ${cantidad} ${subcategoriaText} de las siguientes características:`);
-
-                doc.setTextColor(0,0,0);
-                doc.setFontSize(10);
-                doc.setFont('Helvetica', 'bold');
-                eje_y += 15;
-                doc.text(eje_x, eje_y, 'Marca');
-                doc.setFont('Helvetica', 'normal');
-                doc.setFontSize(10.5);
-                doc.text(50, eje_y, ': ' + marca);
-
-                eje_y += 5;
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(10);
-                doc.text(eje_x, eje_y, 'Modelo');
-                doc.setFont('Helvetica', 'normal');
-                doc.setFontSize(10.5);
-                doc.text(50, eje_y, ': ' + modelo);
-
-                eje_y += 5;
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(10);
-                doc.text(eje_x, eje_y, 'Capacidades');
-                
-                capacidadesSeleccionadas.forEach((capacidad, indice) => {
-                    const texto = `: ${capacidad}`;
-                    doc.setFont('Helvetica', 'normal');
-                    doc.setFontSize(10.5);
-                    doc.text(50, eje_y, texto);
-                    eje_y += 5;
-                });
-
-                eje_y += 10;
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(10);
-                doc.text(20, eje_y, 'Especificaciones Técnicas :');
-                doc.setFont('Helvetica', 'normal');
-                doc.setFontSize(10);
-                eje_y += 10;
-
-                const especificacionesDivididas = doc.splitTextToSize(especificaciones, 160);
-                especificacionesDivididas.forEach((fragmento, index) => {
-                    if (eje_y > doc.internal.pageSize.height - 40) {
-                        doc.addPage();
-                        doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
-                        eje_y = 40;
-                    }
-                    const prefijo = "- ";
-                    doc.text(eje_x, eje_y, `${prefijo}${fragmento}`);
-                    eje_y += 5;
-                });
-
-                eje_y += 5;
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(10);
-                doc.text(eje_x, eje_y, 'Plazo de entrega');
-                doc.setFont('Helvetica', 'normal');
-                doc.setFontSize(10.5);
-                doc.text(50, eje_y, ': ' + diasEntrega);
-
-                
-                eje_y += 5;
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(10);
-                doc.text(eje_x, eje_y, 'Forma de Pago');
-                doc.setFont('Helvetica', 'normal');
-                doc.setFontSize(10.5);
-                doc.text(50, eje_y, ': ' + formaPago);
-                
-                eje_y += 5;
-                doc.setTextColor(255, 0 ,0)
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(10);
-                doc.text(eje_x, eje_y, 'Garantia');
-                doc.setFont('Helvetica', 'normal');
-                doc.setFontSize(10.5);
-                doc.text(50, eje_y, ': ' + garantia);
-
-                eje_y += 5;
-                doc.setTextColor(0, 0 ,0)
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(10);
-                doc.text(eje_x, eje_y, 'Adicionales');
-                doc.setFont('Helvetica', 'normal');
-                doc.setFontSize(10.5);
-
-                // Suponiendo que 'requerimientos' es una cadena de texto con ítems separados por saltos de línea
-                const requerimientosArray = requerimientos.split('\n');
-
-                // Iterar sobre los ítems de requerimientos
-                requerimientosArray.forEach((item, index) => {
-                    // Agregar punto para cada ítem
-                    doc.text(50, eje_y, `: ${item}`);
-                    eje_y += 5; // Espacio entre ítems
-                });
-                
-                doc.setTextColor(0, 0 ,0)
-                eje_y += 10;
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(14);
-
-                let importeModificacion = 0;
-
-                if (precioUnitarioEnabled) {
-                    if (convertirPrecioEnabled){
-                        if(monedaTipoCambio == "Soles"){
-                            if (!isNaN(importe)) {
-                                if (moneda === "$") {
-                                    importeModificacion = (importe * parseFloat(valorTipoCambio));
-                                } else {
-                                    importeModificacion = importe;
-                                }
-                            }
-                        }else if(monedaTipoCambio == "Dólares"){
-                            if (!isNaN(importe)) {
-                                if (moneda === "s/") {
-                                    importeModificacion = (importe / parseFloat(valorTipoCambio));
-                                } else {
-                                    importeModificacion = importe;
-                                }
-                            }
-                        }
-                        let simboloMoneda = '';
-                        if (monedaTipoCambio == "Soles") {
-                            simboloMoneda = 'S/.';
-                        } else if (monedaTipoCambio == "Dólares") {
-                            simboloMoneda = '$';
-                        }
-
-                        let igvMostrarUnitario = parseFloat(importeModificacion) * 0.18;
-                        let precioTotalUnitario = parseFloat(importeModificacion) + parseFloat(igvMostrarUnitario);
-                        const precioTotalUnitarioFormateado = parseFloat(precioTotalUnitario).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                            useGrouping: true
-                        });
-
-                        let texto = "";
-                        if (igvEnabled) {
-                            texto = `Precio Unitario  :  ${simboloMoneda} ${parseFloat(importeModificacion).toFixed(2)} + IGV(${igvMostrarUnitario.toFixed(2)}) = ${simboloMoneda} ${precioTotalUnitarioFormateado}`;
-                        } else {
-                            texto = `Precio Unitario  :  ${simboloMoneda} ${parseFloat(importeModificacion).toFixed(2)}`;
-                        }
-                        const anchoTexto = doc.getTextWidth(texto);
-                        const anchoRectangulo = anchoTexto + 20;
-                        const eje_x2 = (doc.internal.pageSize.width - anchoRectangulo) / 2;
-                        doc.setFillColor(255, 255, 0); // Color de fondo amarillo (RGB)
-                        doc.rect(eje_x2, eje_y - 7.5, anchoRectangulo, 12, 'F'); // Ajusta las dimensiones y posición del rectángulo según sea necesario
-                        doc.setTextColor(0, 0, 0); // Color del texto (negro)
-                        doc.text(eje_x2 + 10, eje_y, texto);
-
-                        if (cantidad > 1) {
-                            let importePorCantidad = 0;
-                            if (igvEnabled) {
-                                importePorCantidad = precioTotalUnitario * cantidad;
-                            }else{
-                                importePorCantidad = importe * cantidad;
-                            }
-                            let textoImportePorCantidad = `Importe por ${cantidad} Unidades: ${simboloMoneda} ${importePorCantidad.toFixed(2)}`;
-                            const anchoTextoImporte = doc.getTextWidth(textoImportePorCantidad);
-                            const anchoRectanguloImporte = anchoTextoImporte + 20;
-                            const eje_x3 = (doc.internal.pageSize.width - anchoRectanguloImporte) / 2;
-                            eje_y += 15; // Ajustar eje_y para la nueva línea
-                            doc.setFillColor(255, 255, 0); // Color de fondo amarillo (RGB)
-                            doc.rect(eje_x3, eje_y - 7.5, anchoRectanguloImporte, 12, 'F'); // Ajusta las dimensiones y posición del rectángulo según sea necesario
-                            doc.setTextColor(0, 0, 0); // Color del texto (negro)
-                            doc.text(eje_x3 + 10, eje_y, textoImportePorCantidad);
-                        }
-
-                    } else{ 
-                        let igvMostrarUnitario = parseFloat(importe) * 0.18;
-                        let precioTotalUnitario = parseFloat(importe) + parseFloat(igvMostrarUnitario);
-                        const precioTotalUnitarioFormateado = parseFloat(precioTotalUnitario).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                            useGrouping: true
-                        });
-                        let texto = "";
-                        if (igvEnabled) {
-                            texto = `Precio Unitario  :  ${moneda.toUpperCase()} ${parseFloat(importe).toFixed(2)} + IGV(${igvMostrarUnitario.toFixed(2)}) = ${moneda.toUpperCase()} ${precioTotalUnitarioFormateado}`;
-                        } else {
-                            texto = `Precio Unitario  :  ${moneda.toUpperCase()} ${parseFloat(importe).toFixed(2)}`;
-                        }
-                        const anchoTexto = doc.getTextWidth(texto);
-                        const anchoRectangulo = anchoTexto + 20;
-                        const eje_x2 = (doc.internal.pageSize.width - anchoRectangulo) / 2;
-                        doc.setFillColor(255, 255, 0); // Color de fondo amarillo (RGB)
-                        doc.rect(eje_x2, eje_y - 7.5, anchoRectangulo, 12, 'F'); // Ajusta las dimensiones y posición del rectángulo según sea necesario
-                        doc.setTextColor(0, 0, 0); // Color del texto (negro)
-                        doc.text(eje_x2 + 10, eje_y, texto);
-
-                        if (cantidad > 1) {
-                            let importePorCantidad = 0;
-                            if (igvEnabled) {
-                                importePorCantidad = precioTotalUnitario * cantidad;
-                            }else{
-                                importePorCantidad = importe * cantidad;
-                            }
-                            let textoImportePorCantidad = `Importe por ${cantidad} Unidades: ${moneda.toUpperCase()} ${importePorCantidad.toFixed(2)}`;
-                            const anchoTextoImporte = doc.getTextWidth(textoImportePorCantidad);
-                            const anchoRectanguloImporte = anchoTextoImporte + 20;
-                            const eje_x3 = (doc.internal.pageSize.width - anchoRectanguloImporte) / 2;
-                            eje_y += 15; // Ajustar eje_y para la nueva línea
-                            doc.setFillColor(255, 255, 0); // Color de fondo amarillo (RGB)
-                            doc.rect(eje_x3, eje_y - 7.5, anchoRectanguloImporte, 12, 'F'); // Ajusta las dimensiones y posición del rectángulo según sea necesario
-                            doc.setTextColor(0, 0, 0); // Color del texto (negro)
-                            doc.text(eje_x3 + 10, eje_y, textoImportePorCantidad);
-                        }
-                    }
-                }
-
-                nextPageCallback();
-            };
-        };
-
-        const addAllProducts = (rows, index) => {
-            if (index >= rows.length) {
-                addPriceUnit();
-                return;
-            }
-            
-            addProductData(rows[index], index, () => {
-                addAllProducts(rows, index + 1);
-            });
-        };
-
-        const addPriceUnit = () => {
-            let precioProducto = total;
-            let igvMostrar = parseFloat(precioProducto) * 0.18;
-            let precioTotal = parseFloat(precioProducto) + parseFloat(igvMostrar);
-
-            const precioFormateado = parseFloat(precioProducto).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                useGrouping: true
-            });
-
-            const precioTotalFormateado = parseFloat(precioTotal).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                useGrouping: true
-            });
-
-            doc.setFont('Helvetica', 'bold');
-            doc.setFontSize(18);
-            eje_y += 25;
-
-            let simboloMoneda = '';
-            if (moneda == "Soles") {
-                simboloMoneda = 'S/.';
-            } else if (moneda == "Dólares") {
-                simboloMoneda = '$';
-            }
-
-            doc.setTextColor(0, 0, 0); // Color del texto (negro)
-            doc.setFillColor(255, 255, 0);
-
-            if (precioTotalEnabled) {
-                const lineYPosition = eje_y - 14; // Ajusta esta posición según sea necesario
-                doc.setDrawColor(0, 0, 0); // Color de la línea (negro)
-                doc.setLineWidth(1.5); // Establece el grosor de la línea
-                doc.line(10, lineYPosition, doc.internal.pageSize.width - 10, lineYPosition); 
-                const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado}`;
-                const anchoTexto = doc.getTextWidth(texto);
-                const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
-                
-                if (igvEnabled) {
-                    const igvText = "INCLUIDO IGV";
-                    const anchoTexto2 = doc.getTextWidth(igvText);
-                    const eje_x3 = (doc.internal.pageSize.width - anchoTexto2) / 2;
-                    const anchoRectangulo = anchoTexto + 20;
-                    doc.rect(eje_x2 - 10, eje_y - 7, anchoRectangulo, 18, 'F');
-                    doc.text(eje_x2, eje_y, texto);
-                    doc.setFontSize(14);
-                    doc.text(eje_x3 + 5, eje_y + 8, igvText);
-                } else {
-                    const texto = `Precio Total  :  ${simboloMoneda} ${precioFormateado} + IGV(${igvMostrar.toFixed(2)}) = ${simboloMoneda} ${precioTotalFormateado}`;
-                    const anchoTexto = doc.getTextWidth(texto);
-                    const eje_x2 = (doc.internal.pageSize.width - anchoTexto) / 2;
-                    const anchoRectangulo = anchoTexto + 20;
-                    doc.rect(eje_x2 - 10, eje_y - 8, anchoRectangulo, 12, 'F');
-                    doc.text(eje_x2, eje_y, texto);
-                }
-            }
-
-            addGeneralConditions();
-        };
-
-        const addGeneralConditions = () => {
-            doc.addPage();
-            doc.addImage(plantilla, 'PNG', 1, 1, 208, 295);
-            
-            // Configuración del texto
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(11);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 20; // Actualizar la posición vertical
-
-            var texto = 'CONDICIONES GENERALES:';
-            var startX = 20; // Posición X del texto
-            var startY = eje_r; // Posición Y del texto
-
-            var textWidth = doc.getStringUnitWidth(texto) * doc.internal.getFontSize() / doc.internal.scaleFactor;
-            var textHeight = doc.internal.getLineHeight();
-
-            doc.text(texto, startX, startY);
-            doc.setDrawColor(0, 0, 0); // Color de la línea
-            doc.setLineWidth(0.4); // Grosor de la línea
-            doc.line(startX, startY + 1, startX + textWidth, startY + 1);
-
-            eje_r += 7; // vale 173
-            doc.setFont('Helvetica', 'normal');
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.text(25, eje_r, '•   Emitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585');
-
-            eje_r += 5; // vale 173
-            doc.text(25, eje_r, '•   No se realizan cambios ni devoluciones');
-
-            eje_r += 5; // vale 173
-            doc.text(25, eje_r, '•   Orden de compra irrevocable');
-            
-            // Establecer el color de la línea
-            doc.setDrawColor(0, 0, 0);
-
-            // Establecer el grosor de la línea (en este caso, 0.5)
-            doc.setLineWidth(0.4);
-
-            // Dibujar una línea debajo del texto
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 10; // vale 125
-            var texto = 'NUESTRAS CUENTAS :';
-            var textWidth = doc.getStringUnitWidth(texto) * doc.internal.getFontSize() / doc.internal.scaleFactor;
-            var textHeight = doc.internal.getLineHeight();
-            var startX = 20;
-            var startY = eje_r + 2; // Ajustar según el tamaño de la fuente
-            doc.text(texto, startX, startY);
-            doc.line(startX, startY + 1, startX + textWidth, startY + 1);
-
-            doc.setTextColor(255,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 9; // vale 158
-            doc.text(20, eje_r, 'BCP');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(33, eje_r, ': SOLES: 4752156367062  |  CCI: 00247500215636706225');
-
-            doc.setTextColor(255,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 5; // vale 158
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(32, eje_r, '   DOLARES: 4752156380104  |  CCI: 00247500215638010428');
-
-            doc.setTextColor(0,0,255);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 7; // vale 153
-            doc.text(20, eje_r, 'BBVA');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(33, eje_r, ': SOLES: 0011 0267 0201320316 | CCI: 011 267 000201320316 27');
-
-            doc.setTextColor(0,0,255);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'bold');//estilos de texto
-            eje_r += 5; // vale 153
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(10.5);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            doc.text(32, eje_r, '   DOLARES: 0011-0267-0201320324  |  CCI: 01126700020132032421');
-
-            doc.setTextColor(0,0,0);//Color de texto
-            doc.setFontSize(12);//Tamaño de texto
-            doc.setFont('Helvetica', 'normal');//estilos de texto
-            eje_r += 5; // vale 173
-            doc.text(20, eje_r, 'A la espera de su orden');
-
-            doc.setTextColor(0, 0, 0); // Color de texto
-            doc.setFontSize(13); // Tamaño de texto
-            doc.setFont('Helvetica', 'bold'); // Estilos de texto
-
-            const anchoPagina = doc.internal.pageSize.width;
-            const margenDerecho = 80;
-            const anchoTextoNombre = doc.getTextWidth(nombreCompleto);
-            const eje_x_left = anchoPagina - anchoTextoNombre - margenDerecho;
-
-            // Calcular el ancho del texto de los roles
-            const rolesWidth = doc.getTextWidth(roles);
-            const eje_x_roles = eje_x_left + ((anchoTextoNombre / 2) - (rolesWidth / 2));
-
-            eje_r += 65;
-            doc.text(eje_x_left, eje_r, nombreCompleto);
-            eje_r += 5;
-            doc.setFontSize(11);
-            doc.text(eje_x_roles, eje_r, roles);
-
-            accordions.forEach((accordion, index) => {
-            // Si el acordeón está abierto, simula un clic para cerrarlo
-            if (accordion && accordion.querySelector('i').classList.contains('fa-arrow-up-long')) {
-            accordion.click();
-            }
-        });
-
-            const blob = doc.output('blob');
-            const url = URL.createObjectURL(blob);
-            window.open(url);
-        };
-
-        addAllProducts(document.querySelectorAll('.relative table tbody tr'), 0);
-    }, 300); 
-};
-
 const previewPDF2 = () => {
     const accordions = document.querySelectorAll('.accordions dt');
     accordions.forEach((accordion, index) => {
@@ -1549,7 +965,7 @@ const previewPDF2 = () => {
             doc.autoTable({
                 body: [
                     [
-                        { content: `Validez de la Cotización     : ${validez_cot}\n\nPago                                     : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}`, styles: { halign: 'left' , fontStyle: 'bold'} }
+                        { content: `Emitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585\n\nNo se realizan cambios ni devoluciones\n\nOrden de compra irrevocable`, styles: { halign: 'left' , fontStyle: 'bold' } }
                     ],
                 ],
                 rowPageBreak: 'avoid',
@@ -1597,7 +1013,7 @@ const previewPDF2 = () => {
             doc.autoTable({
                 body: [
                     [
-                        { content: `Asistencia al correo de área de ventas industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}\n\nEmitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585\n\nNo se realizan cambios ni devoluciones\n\nOrden de compra irrevocable`, styles: { halign: 'left' , fontStyle: 'bold' } }
+                        { content: `Validez de la Cotización     : ${validez_cot}\n\nForma de Pago                    : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}\n\nAsistencia al correo de área de ventas industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}`, styles: { halign: 'left' , fontStyle: 'bold'} }
                     ],
                 ],
                 rowPageBreak: 'avoid',
@@ -1817,7 +1233,7 @@ const previewPDF2 = () => {
             doc.autoTable({
                 body: [
                     [
-                        { content: 'Posteriormente enviar ticket o certificado de deposito correspondiente a ventas@balinsa.com haciendo referencia al Nº de orden', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                        { content: 'Posteriormente enviar ticket o certificado de deposito correspondiente a industriasbalinsa@gmail.com haciendo referencia al Nº de orden', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
                     ],
                     [
                         { content: 'Sin otro particular quedamos de ustedes a la espera de sus gratas ordenes.', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
@@ -1862,7 +1278,7 @@ const previewPDF2 = () => {
         eje_y += 5;
         fn_dibujarEncabezado("Telf: 955571986 - 924808237 - 934094721");
         eje_y += 5;
-        fn_dibujarEncabezado("Correo: ventas@balinsa.com");
+        fn_dibujarEncabezado("Correo: industriasbalinsa@gmail.com");
         eje_y += 5;
         fn_dibujarEncabezado("www.balinsa.com");
         eje_y += 5;
@@ -1873,6 +1289,7 @@ const previewPDF2 = () => {
         doc.setFontSize(12);
         doc.setFont('Helvetica', 'bold');
         fn_dibujarEncabezado(`COTIZACION : N° ${añoCotizacion} - ${numeroCotizacionFormateado}`);
+        doc.text(eje_x, eje_y, fechaFormateada);
 
         const inicioTabla = 50;
 
@@ -2070,12 +1487,12 @@ var listarClientes = props.clientes;
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Max.</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Importe</th>
-                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Garantia</th>
-                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap">D. Entrega</th>
-                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap">F. Pago</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 hidden">Garantia</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap hidden">D. Entrega</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap hidden">F. Pago</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap hidden">Moneda</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap hidden">URL_IMG</th>
-                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap">Incluye</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 whitespace-nowrap hidden">Incluye</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Quitar</th>
                                             </tr>
                                         </thead>
@@ -2121,21 +1538,21 @@ var listarClientes = props.clientes;
                                                 <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2) }} </td>
                                                 <td class="px-3 py-3 text-center border-r whitespace-nowrap border-b"><input class="text-center dark:bg-gray-800 bg-white text-black border-white dark:border-gray-800 dark:text-white w-16" type="number" v-model="tbproducto.cantidad"></td>
                                                 <td class="px-3 py-3 text-center border-r border-b inputImporte" contenteditable="true">{{ parseFloat(tbproducto.precio_min).toFixed(2) }}</td>
-                                                <td class="px-3 py-4 text-center border-r border-b capitalize">
+                                                <td class="px-3 py-4 text-center border-r border-b capitalize hidden">
                                                     <select v-model="tbproducto.garantia" class="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-32 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                                         <option v-for="(garantia, index) in garantias" :key="index" :value="garantia">
                                                             {{ garantia }}
                                                         </option>
                                                     </select>
                                                 </td>
-                                                <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap forma-pago-cell">
+                                                <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap forma-pago-cell hidden">
                                                     <select v-model="tbproducto.diasEntrega" class="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                                         <option v-for="(dias, i) in diasEntrega" :key="i" :value="dias">
                                                             {{ dias }}
                                                         </option>
                                                     </select>
                                                 </td>
-                                                <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap forma-pago-cell">
+                                                <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap forma-pago-cell hidden">
                                                     <select v-model="tbproducto.formaPago" class="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-28 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                                         <option v-for="(pago, i) in formaPago" :key="i" :value="pago">
                                                             {{ pago }}
@@ -2146,7 +1563,7 @@ var listarClientes = props.clientes;
                                                     <span class="placeholder-text uppercase">{{ tbproducto.moneda }}</span>
                                                 </td>
                                                 <td class="px-3 py-4 text-center border-r border-b normal-case hidden"> {{ tbproducto.foto }} </td>
-                                                <td class="px-3 py-3 text-center font-bold border-r capitalize border-b text-sm whitespace-nowrap" contenteditable="true">{{ tbproducto.requerimientos ? tbproducto.requerimientos : 'Entrega en Planta' }}</td>
+                                                <td class="px-3 py-3 text-center font-bold border-r capitalize border-b text-sm whitespace-nowrap hidden" contenteditable="true">{{ tbproducto.requerimientos ? tbproducto.requerimientos : 'Entrega en Planta' }}</td>
                                                 <td class="px-3 py-3 text-center border-r border-b"><button @click.prevent="quitarProducto(i)"><i class="bi bi-trash3 text-red-500"></i></button></td>
                                             </tr>
                                         </tbody>
@@ -2198,8 +1615,6 @@ var listarClientes = props.clientes;
                                         <option v-for="dia in 31" :key="dia" :value="dia">{{ dia }} día{{ dia > 1 ? 's' : '' }}</option>
                                     </select>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-4 items-end md:grid-cols-2 xl:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
                                 <div class="flex w-full">
                                     <div class="w-full">
                                         <InputLabel for="moneda" class="block text-xs font-medium text-gray-900">Moneda</InputLabel>
@@ -2215,7 +1630,10 @@ var listarClientes = props.clientes;
                                         <input id="tipoCambio" v-model="form.tipoCambio" type="number" class="w-28 font-semibold text-center border-gray-400 dark:border-white border-[1.5px] text-white bg-amber-400 uppercase rounded-r-md h-10" disabled/>
                                     </div>
                                 </div>
-                                <div>
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-4 items-end md:grid-cols-2 xl:grid-cols-4 sm:gap-x-8 sm:py-0 py-1">
+                                
+                                <div class="hidden">
                                     <div class="flex items-center">
                                         <input type="checkbox" id="igvCheckbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" v-model="igvEnabled">
                                         <label for="igvCheckbox" class="ms-2 text-xs font-medium text-black dark:text-white">Aplicar IGV (18%)</label>

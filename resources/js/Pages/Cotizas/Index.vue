@@ -5,6 +5,8 @@ import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
 import axios from "axios";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
  
 const props = defineProps({
     cventas: {
@@ -167,41 +169,654 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
 
     // Verificar si la solicitud ya ha sido realizada
     if ($this.data('clicked')) {
-        console.log('La solicitud ya ha sido realizada para este elemento.');
+        // console.log('La solicitud ya ha sido realizada para este elemento.');
         return; // Salir de la función si la solicitud ya se ha realizado
     }
 
     // Marcar el elemento como clickeado
     $this.data('clicked', true);
 
-    // Primera consulta: Datos de cotización
-    axios.post('/consultarDatosCot', { id: cventaId }, {
+    // Crear promesas para las consultas
+    const consultaDatosCot = axios.post('/consultarDatosCot', { id: cventaId }, {
         headers: {
             'X-Inertia': false // Esto indica que no estás esperando una respuesta de Inertia.
         }
-    })
-    .then(response => {
-        console.log('Datos de cotización:', response.data);
-        // Aquí puedes realizar acciones adicionales con los datos de cotización recibidos.
-
-        // Segunda consulta: Datos de productos agregados
-        return axios.post('/consultarDatosProductosCot', { id: tbagregadoId }, {
-            headers: {
-                'X-Inertia': false // Esto indica que no estás esperando una respuesta de Inertia.
-            }
-        });
-    })
-    .then(response => {
-        console.log('Datos de productos agregados:', response.data);
-        // Aquí puedes realizar acciones adicionales con los datos de productos agregados recibidos.
-    })
-    .catch(error => {
-        console.error('Error al consultar datos:', error);
-    })
-    .finally(() => {
-        // Restablecer el estado después de un breve periodo de tiempo
-        setTimeout(() => $this.data('clicked', false), 1000); // Ajusta el tiempo según sea necesario
     });
+
+    const consultaDatosProductosCot = axios.post('/consultarDatosProductosCot', { id: tbagregadoId }, {
+        headers: {
+            'X-Inertia': false // Esto indica que no estás esperando una respuesta de Inertia.
+        }
+    });
+
+    // Ejecutar ambas consultas en paralelo
+    Promise.all([consultaDatosCot, consultaDatosProductosCot])
+        .then(responses => {
+            // Respuestas de las consultas
+            const datosCotizacion = responses[0].data;
+            const datosProductosAgregados = responses[1].data;
+
+            const arregloCotizacion = datosCotizacion.cventas
+            const arregloProductosAgregados = datosProductosAgregados.tbproductos_agregados
+
+            const razonSocial = arregloCotizacion.razonSocial;
+            const ruc = arregloCotizacion.numeroDocumento;
+            const direccion = arregloCotizacion.direccion;
+            const numeroCotizacion = arregloCotizacion.n_cotizacion;
+            const nombreCompleto = arregloCotizacion.tecnico;
+            const valorTipoCambio = arregloCotizacion.tipoCambio;
+            const forma_pago = arregloCotizacion.forma_pago;
+            const validez_cot = arregloCotizacion.validez_cot;
+            const dias_entrega = arregloCotizacion.dias_entrega;
+            let monedaTipoCambio = arregloCotizacion.moneda;
+            if (monedaTipoCambio == "soles s/") {
+                monedaTipoCambio = 'Soles';
+            } else if (monedaTipoCambio == "dolares $") {
+                monedaTipoCambio = 'Dólares';
+            }
+            let simboloMoneda = "";
+            if (monedaTipoCambio == "Soles") {
+                simboloMoneda = 'S/';
+            } else if (monedaTipoCambio == "Dólares") {
+                simboloMoneda = 'US$';
+            }
+            const numeroCotizacionFormateado = numeroCotizacion.toString().padStart(8, '0');
+
+            const fechaEncabezadoCotizacion = new Date();
+            const añoCotizacion = fechaEncabezadoCotizacion.getFullYear();
+            const datosTabla = arregloProductosAgregados;
+
+            // Función para obtener el nombre del día de la semana en español
+            function getNombreDia(dia) {
+                const dias = [
+                    'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
+                ];
+                return dias[dia];
+            }
+
+            // Función para obtener el nombre del mes en español
+            function getNombreMes(mes) {
+                const meses = [
+                    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+                ];
+                return meses[mes];
+            }
+
+            // Función para formatear la fecha en el formato deseado
+            function obtenerFechaFormateada() {
+                const fechaTexto = arregloCotizacion.fecha;
+                const fecha = new Date(fechaTexto);
+
+                const diaSemana = getNombreDia(fecha.getDay());
+                const dia = fecha.getDate().toString().padStart(2, '0');
+                const mes = getNombreMes(fecha.getMonth());
+                const año = fecha.getFullYear();
+
+                return `${diaSemana} ${dia} de ${mes} del ${año}`;
+            }
+
+            // Función para formatear la moneda 
+            function fn_formatearMonedaLocal(importe){
+                const importeFormateado = parseFloat(importe).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                    useGrouping: true
+                });
+
+                return importeFormateado;
+            }
+
+            function convertirNumeroAPalabras(numero) {
+                const unidades = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
+                const decenas = ['diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve'];
+                const decenasD = ['veinte', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'];
+                const centenas = ['cien', 'ciento', 'doscientos', 'trescientos', 'cuatrocientos', 'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos'];
+
+                function convertirParteEntera(numero) {
+                    if (numero < 10) return unidades[numero];
+                    else if (numero < 20) return decenas[numero - 10];
+                    else if (numero < 100) {
+                        let unidad = numero % 10;
+                        let decena = Math.floor(numero / 10);
+                        return decenasD[decena - 2] + (unidad > 0 ? ` y ${unidades[unidad]}` : '');
+                    } else if (numero < 1000) {
+                        let centena = Math.floor(numero / 100);
+                        let resto = numero % 100;
+                        if (centena === 1 && resto === 0) {
+                            return 'cien';
+                        } else {
+                            return centenas[centena] + (resto > 0 ? ` ${convertirParteEntera(resto)}` : '');
+                        }
+                    } else if (numero < 1000000) {
+                        let miles = Math.floor(numero / 1000);
+                        let resto = numero % 1000;
+                        if (miles === 1) {
+                            return `mil${resto > 0 ? ` ${convertirParteEntera(resto)}` : ''}`;
+                        } else {
+                            return `${convertirParteEntera(miles)} mil${resto > 0 ? ` ${convertirParteEntera(resto)}` : ''}`;
+                        }
+                    } else {
+                        return '';
+                    }
+                }
+
+                function convertirParteDecimal(numero) {
+                    return convertirParteEntera(numero);
+                }
+
+                const [parteEntera, parteDecimal] = numero.toString().split('.').map(Number);
+
+                const palabrasEntero = convertirParteEntera(parteEntera);
+                const palabrasDecimal = parseFloat(parteDecimal) != 0 && parteDecimal ? ` con ${convertirParteDecimal(parteDecimal)}` : "";
+                const palabraMoneda = simboloMoneda === "S/" ? "Soles" : "Dólares Americanos";
+
+                return `${palabrasEntero}${palabrasDecimal} ${palabraMoneda}`.trim();
+            }
+
+            const fechaFormateada = obtenerFechaFormateada();
+    
+            let subtotal = 0;
+            datosTabla.forEach(product => {
+                if(monedaTipoCambio == "Soles"){
+                    if (!isNaN(product.importe)) {
+                        if (product.moneda === "$") {
+                            product.importe = (product.importe * parseFloat(valorTipoCambio));
+                        } else {
+                            product.importe = product.importe;
+                        }
+                    }
+                }else if(monedaTipoCambio == "Dólares"){
+                    if (!isNaN(product.importe)) {
+                        if (product.moneda === "s/") {
+                            product.importe = (product.importe / parseFloat(valorTipoCambio));
+                        } else {
+                            product.importe = product.importe;
+                        }
+                    }
+                }
+                product.subtotal = product.cantidad * product.importe;
+                subtotal += product.subtotal;
+            });
+        
+            let igv = subtotal * 0.18;
+            let total = subtotal + igv;
+
+            // ========== Inicia Función Dibujar Encabezado ==========
+
+            function fn_dibujarEncabezado(texto){
+                const anchoTexto = doc.getTextWidth(texto);
+                const eje_x_left = anchoPagina - anchoTexto - margenDerecho;
+                doc.text(eje_x_left, eje_y, texto);
+            }
+
+            // ========== Termina Función Dibujar Encabezado ==========
+
+            // ========== Inicia Función Dibujar Datos del Cliente ==========
+
+            function fn_dibujarDatosClientes(inicioTabla){
+                doc.autoTable({
+                    body: [
+                        [
+                            'Razón Social',
+                            razonSocial
+                        ],
+                        [
+                            'RUC',
+                            ruc
+                        ],
+                        [
+                            'Direccion',
+                            direccion
+                        ]
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: 2,
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: { top: 30 , left: 10 , right: 10},
+                    startY: inicioTabla,
+                    columnStyles: {
+                        0: {
+                            cellWidth: 40,
+                            fontStyle: 'bold'
+                        }
+                    },
+                });
+                
+                doc.autoTable({
+                    body: [
+                        [
+                            'Moneda',
+                            monedaTipoCambio,
+                            'Asesor',
+                            nombreCompleto
+        
+                        ]
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: 2,
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY,
+                    columnStyles: {
+                        0: {
+                            cellWidth: 40,
+                            fontStyle: 'bold'
+                        },
+                        1: {
+                            cellWidth: 55
+                        },
+                        2: {
+                            cellWidth: 30,
+                            fontStyle: 'bold'
+                        }
+                    },
+                });
+            }
+
+            // ========== Termina Función Dibujar Datos del Cliente ==========
+
+            // ========== Inicia Función Dibujar Condiciones ==========
+
+            function fn_dibujarCondiciones(){
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: 'CONDICIONES :', styles: { halign: 'left' , fontStyle: 'bold'} }
+                        ]
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY + 5
+                });
+        
+                const lineYPosition = doc.lastAutoTable.finalY;
+        
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: `Emitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585\n\nNo se realizan cambios ni devoluciones\n\nOrden de compra irrevocable`, styles: { halign: 'left' , fontStyle: 'bold' } }
+                        ],
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY
+                });
+        
+                doc.setDrawColor(255, 255, 255);
+                doc.setLineWidth(1);
+                doc.line(10.1, lineYPosition, doc.internal.pageSize.width - 10.1, lineYPosition); 
+        
+                const lineYPosition2 = doc.lastAutoTable.finalY;
+        
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: `Los precios unitarios NO incluyen IGV`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [255, 0, 0] } }
+                        ],
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY
+                });
+        
+                doc.setDrawColor(255, 255, 255);
+                doc.setLineWidth(1);
+                doc.line(10.1, lineYPosition2, doc.internal.pageSize.width - 10.1, lineYPosition2); 
+        
+                const lineYPosition3 = doc.lastAutoTable.finalY;
+        
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: `Validez de la Cotización     : ${validez_cot}\n\nForma de Pago                    : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}\n\nAsistencia al correo de área de ventas industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}`, styles: { halign: 'left' , fontStyle: 'bold'} }
+                        ],
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY
+                });
+
+                doc.setDrawColor(255, 255, 255);
+                doc.setLineWidth(1);
+                doc.line(10.1, lineYPosition3, doc.internal.pageSize.width - 10.1, lineYPosition3); 
+
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: 'Hacer deposito bancario a nombre de INDUSTRIAS BALINSA EIRL segun:', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                        ]
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 9.5, 
+                        cellPadding: 1,
+                        lineWidth: 0.30,
+                        lineColor: [255, 255, 255]
+                    },
+                    headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY + 5,
+                });
+            }
+
+            // ========== Termina Función Dibujar Condiciones ==========
+
+            // ========== Inicia Función Dibujar Productos ==========
+
+            function fn_dibujarProductos(){
+                doc.autoTable({
+                    head: [['Modelo', 'Marca', 'Capacidades', 'Especificaciones', 'Cantidad', 'Precio Unitario', 'SubTotal', 'Imagen']],
+                    body: [
+                        ...datosTabla.map(product => {
+                            let especificacionesList = product.especificaciones
+                                .split('\n')
+                                .map(line => `- ${line}`)
+                                .join('\n');
+                            
+                            return [
+                                product.modelo,
+                                product.marca,
+                                product.capacidades,
+                                especificacionesList,
+                                product.cantidad,
+                                parseFloat(product.importe).toFixed(2),
+                                parseFloat(product.subtotal).toFixed(2),
+                                {
+                                    content: '', 
+                                    styles: { cellWidth: 20, minCellHeight: 20 },
+                                    image: product.foto
+                                }
+                            ];
+                        }),
+                    ],
+                    rowPageBreak: 'avoid',
+                    didDrawCell: function (data) {
+                        if (data.column.index === 7 && data.cell.section === 'body') {
+                            if (data.row.index < datosTabla.length) {
+                                const product = datosTabla[data.row.index];
+                                if (product && product.foto) {
+                                    const imageUrl = "/productos_img/" + product.foto;
+
+                                    const containerWidth = 20;
+                                    const containerHeight = 20;
+
+                                    const reductionFactor = 0.8;
+
+                                    const imgWidth = containerWidth * reductionFactor;
+                                    const imgHeight = containerHeight * reductionFactor;
+
+                                    const x = data.cell.x + (containerWidth - imgWidth) / 2;
+                                    const y = data.cell.y + (containerHeight - imgHeight) / 2;
+
+                                    doc.addImage(imageUrl, 'JPEG', x, y, imgWidth, imgHeight);
+                                }
+                            }
+                        }
+                    },
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: 2,
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+                    columnStyles: {
+                        5: {
+                            cellWidth: 25,
+                        },
+                        6: {
+                            cellWidth: 25,
+                        },
+                        7: {
+                            cellWidth: 20,
+                        },
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY + 5,
+                });
+
+                const anchoTablaTotal = 50
+                const inicioTablaTotal = anchoPagina - anchoTablaTotal - 30;
+
+                eje_y = doc.lastAutoTable.finalY + 5;
+                doc.text(eje_x, eje_y, `SON :`);
+                doc.setTextColor(255,0,0);
+                const totalAPalabra = `${(convertirNumeroAPalabras(total.toFixed(2)).toUpperCase())}`;
+                const totalAPalabraSplit = doc.splitTextToSize(totalAPalabra, 100);
+                let comaIndex = totalAPalabraSplit.indexOf(',');
+                if (comaIndex !== -1) {
+                    let primeraParte = totalAPalabraSplit.substring(0, comaIndex).trim();
+                    let segundaParte = totalAPalabraSplit.substring(comaIndex + 1).trim();
+                    doc.text(eje_x + 10, eje_y, primeraParte);
+                    doc.text(eje_x + 10, eje_y + 5, segundaParte);
+                } else {
+                    doc.text(eje_x + 10, eje_y, totalAPalabraSplit);
+                }
+                doc.setTextColor(0,0,0);
+
+                doc.autoTable({
+                    body: [
+                    [
+                        { content: 'Sub Total', styles: { halign: 'right' , fontStyle: 'bold'} },
+                        { content: `${fn_formatearMonedaLocal(subtotal)}`, styles: { halign: 'center' } }
+                    ],
+                    [
+                        { content: 'IGV % 18', styles: { halign: 'right' , fontStyle: 'bold'} },
+                        { content: `${fn_formatearMonedaLocal(igv)}`, styles: { halign: 'center' } }
+                    ],
+                    [
+                        { content: `Total ${simboloMoneda}`, styles: { halign: 'right' , fontStyle: 'bold'} },
+                        { content: `${fn_formatearMonedaLocal(total)}`, styles: { halign: 'center' } }
+                    ]
+                    ],
+                    startY: doc.lastAutoTable.finalY,
+                    margin: { left: inicioTablaTotal },
+                    columnStyles: {
+                        0: { cellWidth: 25 },
+                        1: { cellWidth: 25 },
+                    },
+                    styles: {
+                        fontSize: 8, 
+                        cellPadding: 2,
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    theme: 'grid'
+                });
+            }
+
+            // ========== Termina Función Dibujar Productos ==========
+
+            // ========== Inicia Función Dibujar Cuentas ==========
+
+            function fn_dibujarCuentas(){
+                doc.autoTable({
+                    head: [['Banco', 'Moneda', 'Tipo de Cuenta', 'Cuenta', 'Cuenta CCI']],
+                    body: [
+                        [
+                            { content: 'BCP', styles: { halign: 'left' , fontStyle: 'bold'} },
+                            { content: 'SOLES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                            { content: 'AHORROS', styles: { halign: 'left' } },
+                            { content: '4752156367062', styles: { halign: 'left' } },
+                            { content: '00247500215636706225', styles: { halign: 'left' } },
+                        ],
+                        [
+                            { content: 'BCP', styles: { halign: 'left' , fontStyle: 'bold'} },
+                            { content: 'DOLARES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                            { content: 'AHORROS', styles: { halign: 'left' } },
+                            { content: '4752156380104', styles: { halign: 'left' } },
+                            { content: '00247500215638010428', styles: { halign: 'left' } },
+                        ],
+                        [
+                            { content: 'BBVA', styles: { halign: 'left' , fontStyle: 'bold'} },
+                            { content: 'SOLES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                            { content: 'AHORROS', styles: { halign: 'left' } },
+                            { content: '0011 0267 0201320316', styles: { halign: 'left' } },
+                            { content: '011 267 000201320316 27', styles: { halign: 'left' } },
+                        ],
+                        [
+                            { content: 'BBVA', styles: { halign: 'left' , fontStyle: 'bold'} },
+                            { content: 'DOLARES', styles: { halign: 'left' , fontStyle: 'bold'} },
+                            { content: 'AHORROS', styles: { halign: 'left' } },
+                            { content: '0011-0267-0201320324', styles: { halign: 'left' } },
+                            { content: '01126700020132032421', styles: { halign: 'left' } },
+                        ],
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: 2,
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY + 5,
+                });
+
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: 'Posteriormente enviar ticket o certificado de deposito correspondiente a industriasbalinsa@gmail.com haciendo referencia al Nº de orden', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                        ],
+                        [
+                            { content: 'Sin otro particular quedamos de ustedes a la espera de sus gratas ordenes.', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                        ]
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: 1,
+                        lineWidth: 0.30,
+                        lineColor: [255, 255, 255]
+                    },
+                    headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY + 5,
+                });
+            }
+
+            // ========== Termina Función Dibujar Cuentas ==========
+
+            // ========== Inicia Construción de PDF ==========
+
+            const doc = new jsPDF();
+            // const doc = new jsPDF('landscape'); // Horizontal
+
+            let eje_y = 10;
+            let eje_x = 10;
+            let margenDerecho = 10;
+            let anchoPagina = doc.internal.pageSize.width;
+
+            doc.setTextColor(0,0,0);
+            doc.setFontSize(9);
+            doc.setFont('Helvetica', 'normal');
+
+            const backgroundImg = '/img/logo_ini.png';
+            doc.addImage(backgroundImg, 'JPEG', eje_x, eje_y, 80, 25);
+            
+            eje_y += 5;
+
+            fn_dibujarEncabezado("Av. Separadora Mz A LT 8 Sector 28 de Julio");
+            eje_y += 5;
+            fn_dibujarEncabezado("Telf: 955571986 - 924808237 - 934094721");
+            eje_y += 5;
+            fn_dibujarEncabezado("Correo: industriasbalinsa@gmail.com");
+            eje_y += 5;
+            fn_dibujarEncabezado("www.balinsa.com");
+            eje_y += 5;
+            fn_dibujarEncabezado("RUC: 20608165585");
+
+            eje_y += 10;
+
+            doc.setFontSize(12);
+            doc.setFont('Helvetica', 'bold');
+            fn_dibujarEncabezado(`COTIZACION : N° ${añoCotizacion} - ${numeroCotizacionFormateado}`);
+            doc.text(eje_x, eje_y, fechaFormateada);
+
+            const inicioTabla = 50;
+
+            fn_dibujarDatosClientes(inicioTabla);
+
+            doc.setFontSize(8);
+            doc.setFont('Helvetica', 'bold');
+            fn_dibujarProductos();
+            
+            fn_dibujarCondiciones();
+
+            doc.setFont('Helvetica', 'normal');
+            fn_dibujarCuentas();
+
+            // ========== Finaliza Construción de PDF ==========
+
+            Swal.fire({
+                title: "¿Desea previsualizar la cotización?",
+                text: "A continuación se mostrará una vista previa!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Si, Continuar",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const blob = doc.output('blob');
+                    const url = URL.createObjectURL(blob);
+                    window.open(url);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error al consultar datos:', error);
+        })
+        .finally(() => {
+            // Restablecer el estado después de un breve periodo de tiempo
+            setTimeout(() => $this.data('clicked', false), 1000); // Ajusta el tiempo según sea necesario
+        });
 });
 
 </script>
@@ -242,12 +857,13 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N°</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">C | Factura</th>
-                                        <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">Cliente</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 hidden">C | Factura</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cliente</th>
                                         <!-- <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Referencia</th> -->
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Emision</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Neto</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Total</th>
+                                        <!-- <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Neto</th> -->
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Total</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Asesor</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Estado</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                     </tr>
@@ -256,15 +872,16 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                     <tr v-for="(cventa, index) in cventas.data" :key="cventa.id" :data-id="cventa.id" class="bg-white previsualizarPfd text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer">
                                         <td class="px-1 py-4 text-center hidden">{{ cventa.id }}</td>
                                         <td class="px-1 py-4 text-center">{{ cventa.n_cotizacion }}</td>
-                                        <td class="px-1 py-4 text-center fa-fade font-semibold">s|codigo</td>
+                                        <td class="px-1 py-4 text-center fa-fade font-semibold hidden">s|codigo</td>
                                         <td class="px-1 py-4 text-center">
                                             {{ cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente' }}
                                         </td>
                                         <!-- <td class="px-6 py-4 text-center">{{ cventa.tenor ? cventa.tenor.name : 'Sin codigo' }}
                                         </td> -->
                                         <td class="px-6 py-4 text-center">{{ cventa.fecha }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.subtotal }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.total }}</td>
+                                        <!-- <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.subtotal }}</td> -->
+                                        <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ parseFloat(cventa.total * 1.18).toFixed(2) }}</td>
+                                        <td class="px-6 py-4 text-center">{{ cventa.tecnico }}</td>
                                         <td class="px-6 py-4 text-center text-white">
                                             <div :class="{
                                                 'bg-blue-600': cventa.estado === 'Por Enviar',
@@ -280,10 +897,10 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                             <button @click="openCtgModal(cventa)"
                                                 class="text-center mx-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 dark:hover:bg-white dark:hover:text-blue-600 rounded-md"><i
                                                     class="fas fa-star"></i></button>
-                                            <Link :href="route('cventas.edit', { cventa: cventa.id })"
+                                            <!-- <Link :href="route('cventas.edit', { cventa: cventa.id })"
                                                 class=" bg-green-500 p-1 dark:hover:bg-white py-1 px-2  dark:hover:text-green-500 rounded">
                                             <i class="bi bi-pencil-square"></i>
-                                            </Link>
+                                            </Link> -->
                                             <Button @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id, cventa)"
                                                 class="ml-1 bg-red-600 dark:hover:bg-white dark:hover:text-red-600 py-1 px-2 font-extrabold dark:text-white rounded cursor-pointer text-white">
                                                 <i class="bi bi-trash3"></i>
