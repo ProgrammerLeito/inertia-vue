@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
+import { ref, computed } from 'vue'
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
@@ -18,6 +19,25 @@ const props = defineProps({
         required: true
     }
 });
+
+const searchQuery = ref('');
+
+// Computed property for filtered cventas
+const filteredCVentas = computed(() => {
+    if (!searchQuery.value) return props.cventas.data; // Access cventas via props
+
+    const query = searchQuery.value.toLowerCase().trim();
+
+    return props.cventas.data.filter(cventa => { // Access cventas data via props
+        const nCotizacionMatch = cventa.n_cotizacion.toLowerCase().includes(query);
+        const clienteMatch = cventa.cliente && cventa.cliente.razonSocial.toLowerCase().includes(query);
+        const tecnicoMatch = cventa.tecnico.toLowerCase().includes(query);
+        const estadoMatch = cventa.estado.toLowerCase().includes(query);
+
+        return nCotizacionMatch || clienteMatch || tecnicoMatch || estadoMatch;
+    });
+});
+
 const form = useForm({
     id: ''
 })
@@ -246,7 +266,11 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
             // Función para formatear la fecha en el formato deseado
             function obtenerFechaFormateada() {
                 const fechaTexto = arregloCotizacion.fecha;
-                const fecha = new Date(fechaTexto);
+                // Dividir la cadena de fecha en componentes
+                const [year, month, day] = fechaTexto.split('-');
+                // Crear un objeto Date con los componentes separados
+                const fecha = new Date(year, month - 1, day); // Restar 1 al mes porque los meses en Date comienzan desde 0
+                console.log("fecha", fecha);
 
                 const diaSemana = getNombreDia(fecha.getDay());
                 const dia = fecha.getDate().toString().padStart(2, '0');
@@ -830,7 +854,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
-                    <div class="flex flex-wrap gap-2 justify-between">
+                    <div class="flex flex-wrap gap-2 justify-between" v-if="$page.props.user.permissions.includes('Registrar Cotizacion')">
                         <Link :href="route('cventas.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="bi bi-folder-plus mx-1"></i> Registrar cotizacion
                         </Link>
@@ -869,7 +893,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
-                                    <tr v-for="(cventa, index) in cventas.data" :key="cventa.id" :data-id="cventa.id" class="bg-white previsualizarPfd text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer">
+                                    <tr v-for="(cventa, index) in filteredCVentas" :key="cventa.id" :data-id="cventa.id" class="bg-white previsualizarPfd text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer">
                                         <td class="px-1 py-4 text-center hidden">{{ cventa.id }}</td>
                                         <td class="px-1 py-4 text-center">{{ cventa.n_cotizacion }}</td>
                                         <td class="px-1 py-4 text-center fa-fade font-semibold hidden">s|codigo</td>
@@ -901,7 +925,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                                 class=" bg-green-500 p-1 dark:hover:bg-white py-1 px-2  dark:hover:text-green-500 rounded">
                                             <i class="bi bi-pencil-square"></i>
                                             </Link> -->
-                                            <Button @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id, cventa)"
+                                            <Button v-if="$page.props.user.permissions.includes('Acciones Cotizacion')" @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id, cventa)"
                                                 class="ml-1 bg-red-600 dark:hover:bg-white dark:hover:text-red-600 py-1 px-2 font-extrabold dark:text-white rounded cursor-pointer text-white">
                                                 <i class="bi bi-trash3"></i>
                                             </Button>
@@ -912,6 +936,9 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                     </tr>
                                 </tbody>
                             </table>
+                            <div v-if="filteredCVentas.length === 0" class="text-center py-2 dark:text-white">
+                                No se encontraron datos.
+                            </div>
                         </div>
                         <div class="flex flex-wrap justify-between">
                             <div class="mt-4 text-star">

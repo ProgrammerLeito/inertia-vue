@@ -54,7 +54,7 @@ class CventaController extends Controller
         $validatedData['estado'] = 'Por Enviar';
         
         Cventa::create($validatedData);
-        return to_route('cventas.index');
+        return response()->json(['success' => true], 200);
     }
 
     public function validarIdCot()

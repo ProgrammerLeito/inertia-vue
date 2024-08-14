@@ -642,7 +642,7 @@ const submitForm = async (event) => {
         accordions.forEach(accordion => accordion.click());
 
         // Esperar un breve momento para asegurarse de que los acordeones se desplieguen completamente
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         // Recolectar los datos de la tabla
         const datosTabla = recolectarDatosTabla();
@@ -654,17 +654,22 @@ const submitForm = async (event) => {
 
         // Segunda solicitud: Validar ID con axios
         const validationResponse = await axios.post('/validarIdCot');
-        const idCotizacion = validationResponse.data.id; // Acceder al ID desde la respuesta
+        const idCotizacion = validationResponse.data.id ?? 1; // Acceder al ID desde la respuesta
+        console.log('ID de la cotización:', idCotizacion);
 
         // // Agregar el idCotizacion a cada producto
         datosTabla.forEach(producto => {
             producto.idCotizacion = idCotizacion;
         });
 
+        console.log('Datos que se enviarán:', datosTabla);
+
         // Tercera solicitud: Guardar los productos de la cotización
-        await axios.post(route('cventas.guardarProductosCotizacion'), {
+        const response = await axios.post(route('cventas.guardarProductosCotizacion'), {
             productos: datosTabla
         });
+
+        console.log('Respuesta del servidor:', response);
 
         // Mostrar mensaje de éxito
         Swal.fire({

@@ -262,7 +262,7 @@ const printPDF = async () => {
         <template #header>
             <div class="flex justify-between w-full pr sm:pr-14 ">
                 <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">
-                    Lista de Clientes   ({{ $page.props.totalClientes }})</h1>
+                    Lista de Clientes</h1>
                 <!-- <h1 class="font-semibold md:ml-0 ml-20 text-base uppercase text-gray-800 leading-tight dark:text-white">
                     Bienvenido(a):  {{ $page.props.auth.user.name }}</h1> -->
             </div>
@@ -278,8 +278,8 @@ const printPDF = async () => {
                     </div>
                     <div>
                         <div class="py-1">
-                            <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-y-3 sm:gap-x-6 py-2">
-                                <div class="flex flex-col ">
+                            <div class="flex md:flex-row flex-col md:gap-8 gap-1 w-full md:p-2 p-0">
+                                <div class="flex flex-col w-full">
                                     <InputLabel for="table-search"
                                         class="block text-md font-medium text-gray-700 dark:text-white">Buscar
                                     </InputLabel>
@@ -294,22 +294,22 @@ const printPDF = async () => {
                                             </svg>
                                         </div>
                                         <input v-model="searchQuery" type="text" id="table-search"
-                                            class="block pt-2.5 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            class="block pt-2.5 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             placeholder="Buscar cliente">
                                     </div>
                                 </div>
-                                <div class="flex flex-col">
+                                <div class="flex flex-col w-full">
                                     <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Ciudad
                                     </InputLabel>
                                     <select v-model="selectedProvincia"
-                                        class="block pt-2.5 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        class="block pt-2.5 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Buscar cliente">
                                         <option value="" selected disabled>Seleccione por Ciudad</option>
                                         <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id"
                                             :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
                                     </select>
                                 </div>
-                                <div class="flex flex-col">
+                                <div class="flex flex-col w-full">
                                     <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Asesor
                                     </InputLabel>
                                     <div class="relative">
@@ -323,13 +323,13 @@ const printPDF = async () => {
                                             </svg>
                                         </div>
                                         <input v-model="tecnicoQuery" type="text"
-                                            class="block pt-2.5 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg md:w-80 w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            class="block pt-2.5 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             placeholder="Buscar por asesor">
                                     </div>
                                 </div>
-                                <div class="flex flex-col justify-end 2xl:mt-5 mt-1">
+                                <div class="flex flex-col justify-end 2xl:mt-5 mt-1 w-full">
                                     <button @click="printPDF"
-                                        class="text-white bg-indigo-700 hover:bg-indigo-800 mt-0.5 py-2 px-4 rounded lg:w-min md:w-80 w-full whitespace-nowrap text-center">
+                                        class="text-white bg-indigo-700 hover:bg-indigo-800 mt-0.5 py-2 px-4 rounded lg:w-min w-full whitespace-nowrap text-center">
                                         <i class="fas fa-print mx-2"></i> Imprimir
                                     </button>
                                 </div>
@@ -395,13 +395,13 @@ const printPDF = async () => {
                                 No se encontraron datos.
                             </div>
                         </div>
-                        <div class="flex flex-wrap md:justify-between sm:justify-between justify-center">
-                            <div class="hidden sm:block">
+                        <div class="flex flex-wrap justify-end">
+                            <!-- <div class="hidden sm:block">
                                 <div class="flex flex-wrap mt-4 md:justify-between sm:justify-between justify-center gap-4 text-star">
                                     <p class="text-gray-700 dark:text-white font-semibold">Registros por página: {{ countPerPage }}</p>
                                     <p class="text-gray-700 dark:text-white font-semibold">Total de Clientes: {{ totalCount }}</p>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="mt-4 sm:text-end text-center">
                                 <nav aria-label="Page navigation example mt-4">
                                     <ul class="inline-flex -space-x-px text-sm">

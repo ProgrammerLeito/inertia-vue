@@ -90,6 +90,12 @@ watchEffect(() => {
     }
 });
 
+watchEffect(() => {
+    if (props.tbcategorias.length > 0 && selectedCategoria.value === '') {
+        selectedCategoria.value = props.tbcategorias[0].id;
+    }
+});
+
 </script>
  
 <template>
@@ -102,7 +108,7 @@ watchEffect(() => {
                 <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="p-6 bg-white border-gray-600 shadow-2xl rounded-lg dark:bg-gray-800">
                         <div class="flex flex-wrap gap-2 justify-between">
-                            <Link :href="route('tbproductos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                            <Link v-if="$page.props.user.permissions.includes('Registrar Catalago')" :href="route('tbproductos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                                 <i class="bi bi-clipboard-plus mx-1"></i>Registrar Producto
                             </Link>
                         </div>
@@ -112,7 +118,7 @@ watchEffect(() => {
                                     <div class="flex flex-col">
                                         <InputLabel class="block text-md font-medium text-gray-700">Categoría</InputLabel>
                                         <select v-model="selectedCategoria" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="" disabled selected >Seleccione una Categoría</option>
+                                            <option value="" disabled>Seleccione una Categoría</option>
                                             <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
                                         </select>
                                     </div>
@@ -153,7 +159,7 @@ watchEffect(() => {
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_Min</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio_Max</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Garantia</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2" v-if="$page.props.user.permissions.includes('Acciones Administrador')">Acciones</th>
+                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2" v-if="$page.props.user.permissions.includes('Acciones Catalago')">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -203,7 +209,7 @@ watchEffect(() => {
                                                     <i class="bi bi-trash3"></i>
                                                 </Button>
                                             </td> -->
-                                            <td class="p-3 text-center border-b" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
+                                            <td class="p-3 text-center border-b" v-if="$page.props.user.permissions.includes('Acciones Catalago')">
                                                 <Link :href="route('tbproductos.edit', { tbproducto: tbproducto.id })" class="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md mr-2">
                                                     <i class='bx bxs-edit text-base text-white'></i>
                                                 </Link>

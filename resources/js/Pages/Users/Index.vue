@@ -54,16 +54,16 @@ const deleteUser = (id, name) => {
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
-                        <Link :href="route('users.create')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <Link v-if="$page.props.user.permissions.includes('Acciones Usuarios')" :href="route('users.create')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Crear Usuarios
                         </Link>
-                        <Link :href="route('users.trashed')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <Link v-if="$page.props.user.permissions.includes('Acciones Usuarios')" :href="route('users.trashed')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Usuarios Eliminados
                         </Link>
-                        <Link :href="route('roles.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <Link  :href="route('roles.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Crear Roles
                         </Link>
-                        <Link :href="route('permisos.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <Link v-if="$page.props.user.permissions.includes('Acciones Usuarios')" :href="route('permisos.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             Crear Permisos
                         </Link>
                     </div>
@@ -78,7 +78,7 @@ const deleteUser = (id, name) => {
                                         <th scope="col" class="px-6 py-3 text-center">Sexo</th>
                                         <th scope="col" class="px-6 py-3 text-center">Celular</th>
                                         <th scope="col" class="px-6 py-3 text-center">Rol</th>
-                                        <th scope="col" class="text-center px-6 py-3">Acciones</th>
+                                        <th scope="col" class="text-center px-6 py-3" v-if="$page.props.user.permissions.includes('Acciones Usuarios')">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -98,13 +98,13 @@ const deleteUser = (id, name) => {
                                                 Sin rol
                                             </div>
                                         </td>
-                                        <td class="p-3 text-center whitespace-nowrap">
-                                            <Link class="py-2 px-4 text-green-500" :href="route('users.edit', { user: user.id })" >
-                                                <i class="bi bi-pencil-square"></i>
+                                        <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Usuarios')">
+                                            <Link :href="route('users.edit', { user: user.id })" class="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md mr-2">
+                                                <i class='bx bxs-edit text-base text-white'></i>
                                             </Link>
-                                            <ButtonDelete @click="$event => deleteUser(user.id,user.name)">
-                                                <i class="bi bi-trash3 text-red-500"></i>
-                                            </ButtonDelete>
+                                            <button @click="$event => deleteUser(user.id,user.name)" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                                <i class='bx bxs-trash text-base text-white'></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>

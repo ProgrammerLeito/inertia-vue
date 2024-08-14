@@ -156,10 +156,10 @@ const totalCount = props.productos.total;
                         <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('Crear Producto')">
                             <i class="bi bi-clipboard-plus mx-1"></i>Registrar Producto
                         </Link>
-                        <Link :href="route('salidas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <Link :href="route('salidas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('Listar Salidas')">
                             <i class="fa solid fa-list-ul mx-1"></i>Listar Salidas
                         </Link>
-                        <Link :href="route('entradas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                        <Link :href="route('entradas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('Listar Entradas')">
                             <i class="bi bi-list-check mx-1"></i>Listar Entradas
                         </Link>
                     </div>
