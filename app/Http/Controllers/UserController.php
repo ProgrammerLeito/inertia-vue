@@ -16,7 +16,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::with('roles')->orderBy('id', 'DESC')->paginate(15);
+        $users = User::with('roles')->orderBy('id', 'DESC')->paginate(100);
         $numeroUsersEliminados = User::onlyTrashed()->count();
 
         return Inertia::render('Users/Index', [

@@ -503,7 +503,7 @@ watch(tbproductosCombinados, (newProductos) => {
                                 <button class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" @click.prevent="toggleModal3">Agregar Producto</button>
                             </div>
                             <div class="py-5">
-                                <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2  max-h-80 overflow-y-auto">
+                                <div class="relative overflow-x-auto scroll-dataTableLEO shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2  max-h-80 overflow-y-auto">
                                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                                         <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                             <tr>
@@ -697,7 +697,7 @@ watch(tbproductosCombinados, (newProductos) => {
                     </div>
                 </div>
                 <div class="py-3 px-2">
-                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 max-h-80 overflow-y-auto">
+                    <div class="relative overflow-x-auto scroll-dataTableLEO shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 max-h-80 overflow-y-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-black dark:text-white">
                             <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                 <tr>

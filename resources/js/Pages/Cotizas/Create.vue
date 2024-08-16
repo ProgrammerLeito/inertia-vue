@@ -72,9 +72,9 @@ const form = useForm ({
     tenor_id:'',
     fecha:'',
     moneda:'',
-    validez_cot:'',
-    forma_pago:'',
-    dias_entrega:'',
+    validez_cot:'3 dias',
+    forma_pago:'Al contado',
+    dias_entrega:'Inmediata',
     tipoCambio:'',
     subtotal: 0,
     igv: 0,
@@ -271,14 +271,25 @@ watch(tbproductosAgregados, (newProductos) => {
         const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
         const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
         
-        
         let total = 0;
         const rows = document.querySelectorAll('tr'); // Selecciona todas las filas de la tabla
 
         rows.forEach(function(row) {
             const importeCell = row.querySelector('.inputImporte');
             const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
-            const cantidadCell = row.children[9]; // Asegúrate de que este índice es correcto
+            const cantidadCell = row.children[9];
+            const monedaPrimerProducto = monedaCell.textContent;
+            if (tbproductosAgregados.value.length == 1){
+                form.tipoCambio = "3.80";
+                if (monedaPrimerProducto == "$"){
+                    form.moneda = "dolares $"
+                }else{
+                    form.moneda = "soles s/"
+                }
+                form.moneda
+            }else{
+                console.log("aldskasdasd")
+            }
             let valorInput = 1;
             if (cantidadCell) {
                 // Intenta seleccionar el <input> dentro de esa celda
@@ -339,187 +350,127 @@ const openModal = (imageUrl) => {
     modalImageUrl.value = imageUrl;
     modalOpen.value = true;
 };
- 
+
 watch(() => form.moneda, (newValue) => {
-    if (newValue === 'dolares $') {
-        Swal.fire({
-            title: 'Tipo de Cambio',
-            input: 'number',
-            inputLabel: 'Ingresa el tipo de cambio del dólar',
-            showCancelButton: true,
-            confirmButtonText: 'Aceptar',
-            cancelButtonText: 'Cancelar',
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'Debes ingresar el tipo de cambio del dólar';
+    const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
+    const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
+    
+    let total = 0;
+    const rows = document.querySelectorAll('tr'); // Selecciona todas las filas de la tabla
+
+    rows.forEach(function(row) {
+        const importeCell = row.querySelector('.inputImporte');
+        const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
+        const cantidadCell = row.children[9]; // Asegúrate de que este índice es correcto
+        let valorInput = 1;
+        if (cantidadCell) {
+            // Intenta seleccionar el <input> dentro de esa celda
+            const input = cantidadCell.querySelector('input');
+
+            // Verifica si input no es null
+            if (input) {
+                // Obtén el valor del <input>
+                valorInput = input.value;
+                // console.log("Valor del input en la celda 10:", valorInput);
+            } else {
+                // console.log('No se encontró el <input> en la celda 10.');
+            }
+        } else {
+            // console.log('No se encontró la celda en la posición 10.');
+        }
+        if (importeCell && monedaCell) {
+            if(moneda == "Soles"){
+                const value = parseFloat(importeCell.textContent);
+                const moneda = monedaCell.textContent.trim();
+
+                if (!isNaN(value)) {
+                    if (moneda === "$") {
+                        total += (value * parseFloat(tipoCambio)) * valorInput;
+                    } else {
+                        total += value * valorInput;
+                    }
+                }
+            }else if(moneda == "Dólares"){
+                const value = parseFloat(importeCell.textContent);
+                const moneda = monedaCell.textContent.trim();
+
+                if (!isNaN(value)) {
+                    if (moneda === "s/") {
+                        total += (value / parseFloat(tipoCambio)) * valorInput;
+                    } else {
+                        total += value * valorInput;
+                    }
                 }
             }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const tipoCambio = result.value;
-                form.subtotal = parseFloat((form.subtotal / tipoCambio).toFixed(2));
-                form.igv = parseFloat((form.igv / tipoCambio).toFixed(2));
-                form.total = parseFloat((form.total / tipoCambio).toFixed(2));
-                form.tipoCambio = tipoCambio;
+        }
+    });
 
-                setTimeout(() => {
-                    const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
-                    const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
-                    
-                    
-                    let total = 0;
-                    const rows = document.querySelectorAll('tr'); // Selecciona todas las filas de la tabla
+    form.subtotal = parseFloat(total).toFixed(2);
+    form.total = parseFloat(total).toFixed(2);
 
-                    rows.forEach(function(row) {
-                        const importeCell = row.querySelector('.inputImporte');
-                        const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
-                        const cantidadCell = row.children[9]; // Asegúrate de que este índice es correcto
-                        let valorInput = 1;
-                        if (cantidadCell) {
-                            // Intenta seleccionar el <input> dentro de esa celda
-                            const input = cantidadCell.querySelector('input');
+    document.getElementById('subtotal').value = total.toFixed(2);
+    document.getElementById('total').value = total.toFixed(2);
+});
+ 
+watch(() => form.tipoCambio, (newValue) => {
+    const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
+    const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
+    
+    let total = 0;
+    const rows = document.querySelectorAll('tr'); // Selecciona todas las filas de la tabla
 
-                            // Verifica si input no es null
-                            if (input) {
-                                // Obtén el valor del <input>
-                                valorInput = input.value;
-                                // console.log("Valor del input en la celda 10:", valorInput);
-                            } else {
-                                // console.log('No se encontró el <input> en la celda 10.');
-                            }
-                        } else {
-                            // console.log('No se encontró la celda en la posición 10.');
-                        }
-                        if (importeCell && monedaCell) {
-                            if(moneda == "Soles"){
-                                const value = parseFloat(importeCell.textContent);
-                                const moneda = monedaCell.textContent.trim();
-                
-                                if (!isNaN(value)) {
-                                    if (moneda === "$") {
-                                        total += (value * parseFloat(tipoCambio)) * valorInput;
-                                    } else {
-                                        total += value * valorInput;
-                                    }
-                                }
-                            }else if(moneda == "Dólares"){
-                                const value = parseFloat(importeCell.textContent);
-                                const moneda = monedaCell.textContent.trim();
-                
-                                if (!isNaN(value)) {
-                                    if (moneda === "s/") {
-                                        total += (value / parseFloat(tipoCambio)) * valorInput;
-                                    } else {
-                                        total += value * valorInput;
-                                    }
-                                }
-                            }
-                        }
-                    });
+    rows.forEach(function(row) {
+        const importeCell = row.querySelector('.inputImporte');
+        const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
+        const cantidadCell = row.children[9]; // Asegúrate de que este índice es correcto
+        let valorInput = 1;
+        if (cantidadCell) {
+            // Intenta seleccionar el <input> dentro de esa celda
+            const input = cantidadCell.querySelector('input');
 
-                    form.subtotal = parseFloat(total).toFixed(2);
-                    form.total = parseFloat(total).toFixed(2);
-
-                    document.getElementById('subtotal').value = total.toFixed(2);
-                    document.getElementById('total').value = total.toFixed(2);
-                    
-                }, 50);
-
-                // console.log('Tipo de cambio ingresado:', tipoCambio);
+            // Verifica si input no es null
+            if (input) {
+                // Obtén el valor del <input>
+                valorInput = input.value;
+                // console.log("Valor del input en la celda 10:", valorInput);
             } else {
-                form.moneda = '';
+                // console.log('No se encontró el <input> en la celda 10.');
             }
-        });
-    } else if (newValue === 'soles s/') {
-        Swal.fire({
-            title: 'Tipo de Cambio',
-            input: 'number',
-            inputLabel: 'Ingresa el tipo de cambio de soles',
-            showCancelButton: true,
-            confirmButtonText: 'Aceptar',
-            cancelButtonText: 'Cancelar',
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'Debes ingresar el tipo de cambio del dólar';
+        } else {
+            // console.log('No se encontró la celda en la posición 10.');
+        }
+        if (importeCell && monedaCell) {
+            if(moneda == "Soles"){
+                const value = parseFloat(importeCell.textContent);
+                const moneda = monedaCell.textContent.trim();
+
+                if (!isNaN(value)) {
+                    if (moneda === "$") {
+                        total += (value * parseFloat(tipoCambio)) * valorInput;
+                    } else {
+                        total += value * valorInput;
+                    }
+                }
+            }else if(moneda == "Dólares"){
+                const value = parseFloat(importeCell.textContent);
+                const moneda = monedaCell.textContent.trim();
+
+                if (!isNaN(value)) {
+                    if (moneda === "s/") {
+                        total += (value / parseFloat(tipoCambio)) * valorInput;
+                    } else {
+                        total += value * valorInput;
+                    }
                 }
             }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const tipoCambio = result.value;
-                form.subtotal = parseFloat((form.subtotal * tipoCambio).toFixed(2));
-                form.igv = parseFloat((form.igv * tipoCambio).toFixed(2));
-                form.total = parseFloat((form.total * tipoCambio).toFixed(2));
-                form.tipoCambio = tipoCambio;
+        }
+    });
 
-                setTimeout(() => {
-                    const moneda = document.getElementById('moneda').options[document.getElementById("moneda").selectedIndex].text;
-                    const tipoCambio = document.getElementById('tipoCambio').value === null ? 1 : document.getElementById('tipoCambio').value;
-                    
-                    
-                    let total = 0;
-                    const rows = document.querySelectorAll('tr'); // Selecciona todas las filas de la tabla
+    form.subtotal = parseFloat(total).toFixed(2);
+    form.total = parseFloat(total).toFixed(2);
 
-                    rows.forEach(function(row) {
-                        const importeCell = row.querySelector('.inputImporte');
-                        const monedaCell = row.children[14]; // Supongo que la celda 15 es la columna 14 (index 0 basado)
-                        const cantidadCell = row.children[9]; // Asegúrate de que este índice es correcto
-                        let valorInput = 1;
-                        if (cantidadCell) {
-                            // Intenta seleccionar el <input> dentro de esa celda
-                            const input = cantidadCell.querySelector('input');
-
-                            // Verifica si input no es null
-                            if (input) {
-                                // Obtén el valor del <input>
-                                valorInput = input.value;
-                                // console.log("Valor del input en la celda 10:", valorInput);
-                            } else {
-                                // console.log('No se encontró el <input> en la celda 10.');
-                            }
-                        } else {
-                            // console.log('No se encontró la celda en la posición 10.');
-                        }
-                        if (importeCell && monedaCell) {
-                            if(moneda == "Soles"){
-                                const value = parseFloat(importeCell.textContent);
-                                const moneda = monedaCell.textContent.trim();
-                
-                                if (!isNaN(value)) {
-                                    if (moneda === "$") {
-                                        total += (value * parseFloat(tipoCambio)) * valorInput;
-                                    } else {
-                                        total += value * valorInput;
-                                    }
-                                }
-                            }else if(moneda == "Dólares"){
-                                const value = parseFloat(importeCell.textContent);
-                                const moneda = monedaCell.textContent.trim();
-                
-                                if (!isNaN(value)) {
-                                    if (moneda === "s/") {
-                                        total += (value / parseFloat(tipoCambio)) * valorInput;
-                                    } else {
-                                        total += value * valorInput;
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                    form.subtotal = parseFloat(total).toFixed(2);
-                    form.total = parseFloat(total).toFixed(2);
-
-                    document.getElementById('subtotal').value = total.toFixed(2);
-                    document.getElementById('total').value = total.toFixed(2);
-                    
-                }, 50);
-
-                // console.log('Tipo de cambio ingresado:', tipoCambio);
-            } else {
-                form.moneda = '';
-            }
-        });
-    }
+    document.getElementById('subtotal').value = total.toFixed(2);
+    document.getElementById('total').value = total.toFixed(2);
 });
  
 //modal para crear el tenor
@@ -636,51 +587,120 @@ const submitForm = async (event) => {
         event.preventDefault();
     }
 
+    $("#generate-quote-button").hide();
+    $("#loading-button").show();
     try {
         // Desplegar todos los acordeones
         const accordions = document.querySelectorAll('.accordions dt');
-        accordions.forEach(accordion => accordion.click());
-
-        // Esperar un breve momento para asegurarse de que los acordeones se desplieguen completamente
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Recolectar los datos de la tabla
-        const datosTabla = recolectarDatosTabla();
-
-        // Primera solicitud: Guardar la cotización
-        await form.post(route('cventas.store'));
-
-        // await Inertia.post(route('cventas.store'), datosTabla);
-
-        // Segunda solicitud: Validar ID con axios
-        const validationResponse = await axios.post('/validarIdCot');
-        const idCotizacion = validationResponse.data.id ?? 1; // Acceder al ID desde la respuesta
-        console.log('ID de la cotización:', idCotizacion);
-
-        // // Agregar el idCotizacion a cada producto
-        datosTabla.forEach(producto => {
-            producto.idCotizacion = idCotizacion;
+        accordions.forEach((accordion, index) => {
+            if (!accordion.classList.contains('active')) {
+                accordion.click();
+            }
         });
 
-        console.log('Datos que se enviarán:', datosTabla);
+        setTimeout(() => {
+            // Recolectar los datos de la tabla
+            const datosTabla = recolectarDatosTabla();
+            const nombreClienteError = form.cliente_id;
 
-        // Tercera solicitud: Guardar los productos de la cotización
-        const response = await axios.post(route('cventas.guardarProductosCotizacion'), {
-            productos: datosTabla
-        });
+            if (!nombreClienteError) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
 
-        console.log('Respuesta del servidor:', response);
+                Toast.fire({
+                    icon: 'error',
+                    text: 'Debe seleccionar un cliente.'
+                });
+                $("#generate-quote-button").show();
+                $("#loading-button").hide();
+            }
+            else if(datosTabla.length <= 0) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
 
-        // Mostrar mensaje de éxito
-        Swal.fire({
-            title: 'Cotización guardada',
-            text: 'La cotización y los productos se han guardado exitosamente.',
-            icon: 'success',
-            timer: 1500,
-            showConfirmButton: false
-        });
+                Toast.fire({
+                    icon: 'error',
+                    text: 'Debe seleccionar al menos un Producto.'
+                });
+                $("#generate-quote-button").show();
+                $("#loading-button").hide();
+            }else{
+                $.ajax({
+                    url: '/fn_guardarCotizacion',
+                    method: 'GET',
+                    data: {
+                        cliente_id: form.cliente_id,
+                        numeroDocumento: form.numeroDocumento,
+                        direccion: form.direccion,
+                        tenor_id: form.tenor_id,
+                        fecha: form.fecha,
+                        moneda: form.moneda,
+                        validez_cot: form.validez_cot,
+                        forma_pago: form.forma_pago,
+                        dias_entrega: form.dias_entrega,
+                        tipoCambio: form.tipoCambio,
+                        subtotal: form.subtotal,
+                        igv: form.igv,
+                        total: form.total,
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $.ajax({
+                                url: '/validarIdCot',
+                                method: 'GET',
+                                success: function(response) {
+                                    const idCotizacion = response.id;
+    
+                                    datosTabla.forEach(producto => {
+                                        producto.idCotizacion = idCotizacion;
+                                    });
+    
+                                    axios.post(route('cventas.guardarProductosCotizacion'), {
+                                        productos: datosTabla
+                                    });
+    
+                                    Swal.fire({
+                                        title: 'Cotización guardada',
+                                        text: 'La cotización y los productos se han guardado exitosamente.',
+                                        icon: 'success',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+    
+                                    Inertia.visit(route('cventas.index'));
+    
+                                },
+                                error: function(error) {
+                                    console.error("ERROR AL EXTRAER ULTIMO ID ",error);
+                                }
+                            });
+                        }
+                    },
+                    error: function(error) {
+                        console.error("ERROR AL REGISTRAR COTIZACION ",error);
+                    }
+                });
+            }
 
-
+        }, 500);
     } catch (error) {
         console.error('Error al enviar el formulario:', error);
 
@@ -695,7 +715,6 @@ const submitForm = async (event) => {
 
 const { props } = usePage();
 const user = props.auth.user;
-const roles = props.auth.user.roles[0]?.name;
 
 const obtenerNombreCompleto = (user) => {
     if (user) {
@@ -1063,7 +1082,7 @@ const previewPDF2 = () => {
 
         function fn_dibujarProductos(){
             doc.autoTable({
-                head: [['Modelo', 'Marca', 'Capacidades', 'Especificaciones', 'Cantidad', 'Precio Unitario', 'SubTotal', 'Imagen']],
+                head: [['Marca', 'Modelo', 'Capacidades', 'Especificaciones', 'Cantidad', 'Precio Unitario', 'SubTotal', 'Imagen']],
                 body: [
                     ...datosTabla.map(product => {
                         let especificacionesList = product.especificaciones
@@ -1072,8 +1091,8 @@ const previewPDF2 = () => {
                             .join('\n');
                         
                         return [
-                            product.modelo,
                             product.marca,
+                            product.modelo,
                             product.capacidades,
                             especificacionesList,
                             product.cantidad,
@@ -1415,9 +1434,6 @@ watchEffect(() => {
     }
 });
 
-var listarClientes = props.clientes;
-// console.log(listarClientes);
-
 </script>
  
 <template>
@@ -1477,7 +1493,7 @@ var listarClientes = props.clientes;
                                 <button class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" @click.prevent="toggleModal3">Agregar Producto</button>
                             </div>
                             <div class="sm:py-5 py-2">
-                                <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2  max-h-80 overflow-y-auto">
+                                <div class="relative overflow-x-auto scroll-dataTableLEO shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2  max-h-80 overflow-y-auto">
                                     <table class="w-full text-sm text-left rtl:text-right text-black dark:text-white">
                                         <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                             <tr>
@@ -1489,7 +1505,7 @@ var listarClientes = props.clientes;
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Capacidades</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">P. Proveedor</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Min.</th>
-                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Precio Max.</th>
+                                                <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 hidden">Precio Max.</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cantidad</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Importe</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 hidden">Garantia</th>
@@ -1540,7 +1556,7 @@ var listarClientes = props.clientes;
                                                 </td>
                                                 <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2) }}</td>
                                                 <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2) }} </td>
-                                                <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2) }} </td>
+                                                <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b hidden">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2) }} </td>
                                                 <td class="px-3 py-3 text-center border-r whitespace-nowrap border-b"><input class="text-center dark:bg-gray-800 bg-white text-black border-white dark:border-gray-800 dark:text-white w-16" type="number" v-model="tbproducto.cantidad"></td>
                                                 <td class="px-3 py-3 text-center border-r border-b inputImporte" contenteditable="true">{{ parseFloat(tbproducto.precio_min).toFixed(2) }}</td>
                                                 <td class="px-3 py-4 text-center border-r border-b capitalize hidden">
@@ -1594,10 +1610,9 @@ var listarClientes = props.clientes;
                                     <InputLabel for="validez_cot" class="block text-xs font-medium text-black dark:text-white">Validez de la Cotización</InputLabel>
                                     <select id="validez_cot" v-model="form.validez_cot" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="" disabled selected>Selecciona validez Cotización</option>
-                                        <option value="15 dias">3 dias</option>
-                                        <option value="30 dias">7 dias</option>
-                                        <option value="60 dias">15 dias</option>
+                                        <option value="3 dias" selected>3 dias</option>
+                                        <option value="7 dias">7 dias</option>
+                                        <option value="15 dias">15 dias</option>
                                         <option value="Sin Vigencia">Sin Vigencia</option>
                                     </select>
                                 </div>
@@ -1605,18 +1620,17 @@ var listarClientes = props.clientes;
                                     <InputLabel for="forma_pago" class="block text-xs font-medium text-black dark:text-white">Forma de pago</InputLabel>
                                     <select id="forma_pago" v-model="form.forma_pago"required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="" disabled selected>Selecciona una forma de pago</option>
+                                            <option value="Al contado" selected>Al contado</option>
                                         <option value="Credito 15 dias">Credito 15 dias</option>
                                         <option value="Credito 30 dias">Credito 30 dias</option>
                                         <option value="Credito 60 dias">Credito 60 dias</option>
-                                        <option value="Al contado">Al contado</option>
                                     </select>
                                 </div>
                                 <div>
                                     <InputLabel for="dias_entrega" class="block text-xs font-medium text-black dark:text-white">Días de entrega</InputLabel>
                                     <select id="dias_entrega" v-model="form.dias_entrega" required
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="" disabled selected>Selecciona días de entrega</option>
+                                        <option value="Inmediata" selected>Inmediata</option>
                                         <option v-for="dia in 31" :key="dia" :value="dia">{{ dia }} día{{ dia > 1 ? 's' : '' }}</option>
                                     </select>
                                 </div>
@@ -1632,7 +1646,7 @@ var listarClientes = props.clientes;
                                     </div>
                                     <div>
                                         <InputLabel class="text-xs" for="tipoCambio" :value="'tipo Cambio (' + (form.moneda === 'soles s/' ? 'S/' : '$') + '):'"></InputLabel>
-                                        <input id="tipoCambio" v-model="form.tipoCambio" type="number" class="w-28 font-semibold text-center border-gray-400 dark:border-white border-[1.5px] text-white bg-amber-400 uppercase rounded-r-md h-10" disabled/>
+                                        <input id="tipoCambio" v-model="form.tipoCambio" type="text" class="w-28 font-semibold text-center border-gray-400 dark:border-white border-[1.5px] text-white bg-amber-400 uppercase rounded-r-md h-10"/>
                                     </div>
                                 </div>
                             </div>
@@ -1660,10 +1674,25 @@ var listarClientes = props.clientes;
                                 <div class="flex flex-wrap gap-2 justify-end">
                                     <!-- <button class="inline-block bg-green-700 text-white font-bold py-2 px-4 rounded hover:bg-green-800 md:w-min whitespace-nowrap w-full text-center" @click.prevent="previewPDF">PREVISUALIZAR PDF</button> -->
                                     <button class="inline-block bg-green-700 text-white font-bold py-2 px-4 rounded hover:bg-green-800 md:w-min whitespace-nowrap w-full text-center" @click.prevent="previewPDF2">PREVISUALIZAR PDF</button>
-                                    <ButtonResponsive class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                                    <ButtonResponsive 
+                                        id="generate-quote-button" 
+                                        class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center"
+                                        @click="submitForm">
                                         Generar Cotizacion
                                     </ButtonResponsive>
-                                    <Link :href="route('cventas.index')" class="inline-block bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
+
+                                    <button 
+                                        id="loading-button" 
+                                        disabled 
+                                        type="button" 
+                                        class="text-white whitespace-nowrap md:w-min w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-5 py-2 justify-center text-center font-extrabold dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 hidden">
+                                        <svg aria-hidden="true" role="status" class="inline w-4 mt-[3px] h-4 me-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
+                                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/>
+                                        </svg>
+                                        Cargando...
+                                    </button>
+                                    <Link :href="route('cventas.index')" class="inline-block bg-red-600 text-white font-bold py-2.5 px-4 rounded hover:bg-red-700 md:w-min whitespace-nowrap w-full text-center">
                                         Cancelar
                                     </Link>
                                     <!--  -->
@@ -1740,7 +1769,7 @@ var listarClientes = props.clientes;
                     </div>
                 </div>
                 <div class="py-3 px-2">
-                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 max-h-80 overflow-y-auto">
+                    <div class="relative overflow-x-auto scroll-dataTableLEO shadow-md sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 max-h-80 overflow-y-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-black dark:text-white">
                             <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                 <tr>

@@ -94,10 +94,10 @@ const openCtgModal = async (cventa) => {
         input: 'select',
         inputOptions: {
             'Por Enviar': 'Por Enviar',
-            'Enviado': 'Enviado',
+            // 'Enviado': 'Enviado',
             'Aceptado': 'Aceptado',
             'Rechazado': 'Rechazado',
-            'Finalizado': 'Finalizado',
+            // 'Finalizado': 'Finalizado',
         },
         customClass: {
             title: 'text-2xl font-bold tracking-widest ',
@@ -167,22 +167,50 @@ const previousPage = () => {
     const prevPage = props.cventas.current_page - 1;
     formPage.get(route('cventas.index', { page: prevPage }));
 };
- 
+
 const nextPage = () => {
     const nextPage = props.cventas.current_page + 1;
     formPage.get(route('cventas.index', { page: nextPage }));
 };
- 
+
 const goToPage = (page) => {
     formPage.get(route('cventas.index', { page }));
 };
- 
+
 const total_pages = props.cventas.last_page;
 const current_page = props.cventas.current_page;
 const countPerPage = props.cventas.data.length;
 const totalCount = props.cventas.total;
 
+const displayedPages = () => {
+    if (total_pages <= 3) {
+        return Array.from({ length: total_pages }, (_, i) => i + 1);
+    } else if (current_page <= 2) {
+        return [1, 2, '...', total_pages];
+    } else if (current_page > total_pages - 3) {
+        return [1, '...', total_pages - 3, total_pages - 2, total_pages - 1, total_pages];
+    } else {
+        return [1, '...', current_page - 1, current_page, current_page + 1, total_pages];
+    }
+};
+
+
+let timerInterval;
+
 $(document).on('dblclick', ".previsualizarPfd", function(event) {
+    
+    Swal.fire({
+        title: '¡Atención!',
+        html: 'La cotización se esta generando, espere un momento.',
+        timer: 999999999, // Establece un valor grande para que parezca indefinido
+        timerProgressBar: true,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+        willClose: () => {
+            clearInterval(timerInterval);
+        }
+    })
     const $this = $(this);
     const cventaId = $this.data('id');
     const tbagregadoId = $this.data('id');
@@ -270,7 +298,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                 const [year, month, day] = fechaTexto.split('-');
                 // Crear un objeto Date con los componentes separados
                 const fecha = new Date(year, month - 1, day); // Restar 1 al mes porque los meses en Date comienzan desde 0
-                console.log("fecha", fecha);
+                // console.log("fecha", fecha);
 
                 const diaSemana = getNombreDia(fecha.getDay());
                 const dia = fecha.getDate().toString().padStart(2, '0');
@@ -524,7 +552,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                 doc.autoTable({
                     body: [
                         [
-                            { content: `Validez de la Cotización     : ${validez_cot}\n\nForma de Pago                    : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}\n\nAsistencia al correo de área de ventas industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}`, styles: { halign: 'left' , fontStyle: 'bold'} }
+                            { content: `Validez de la Cotización     : ${validez_cot}\n\nForma de Pago                    : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega} ${parseInt(dias_entrega) == 1 ? "dia" : dias_entrega == "Inmediata" ? "" : "dias"}\n\nAsistencia al correo de área de ventas industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}`, styles: { halign: 'left' , fontStyle: 'bold'} }
                         ],
                     ],
                     rowPageBreak: 'avoid',
@@ -569,7 +597,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
 
             function fn_dibujarProductos(){
                 doc.autoTable({
-                    head: [['Modelo', 'Marca', 'Capacidades', 'Especificaciones', 'Cantidad', 'Precio Unitario', 'SubTotal', 'Imagen']],
+                    head: [['Marca', 'Modelo', 'Capacidades', 'Especificaciones', 'Cantidad', 'Precio Unitario', 'SubTotal', 'Imagen']],
                     body: [
                         ...datosTabla.map(product => {
                             let especificacionesList = product.especificaciones
@@ -578,8 +606,8 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                 .join('\n');
                             
                             return [
-                                product.modelo,
                                 product.marca,
+                                product.modelo,
                                 product.capacidades,
                                 especificacionesList,
                                 product.cantidad,
@@ -817,22 +845,11 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
 
             // ========== Finaliza Construción de PDF ==========
 
-            Swal.fire({
-                title: "¿Desea previsualizar la cotización?",
-                text: "A continuación se mostrará una vista previa!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Si, Continuar",
-                cancelButtonText: "Cancelar",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const blob = doc.output('blob');
-                    const url = URL.createObjectURL(blob);
-                    window.open(url);
-                }
-            });
+            clearInterval(timerInterval);
+            Swal.close();
+            const blob = doc.output('blob');
+            const url = URL.createObjectURL(blob);
+            window.open(url);
         })
         .catch(error => {
             console.error('Error al consultar datos:', error);
@@ -876,7 +893,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                
                             </div>
                         </div>
-                        <div class="relative overflow-x-auto shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
+                        <div class="relative overflow-x-auto scroll-dataTableLEO shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
@@ -902,36 +919,35 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                         </td>
                                         <!-- <td class="px-6 py-4 text-center">{{ cventa.tenor ? cventa.tenor.name : 'Sin codigo' }}
                                         </td> -->
-                                        <td class="px-6 py-4 text-center">{{ cventa.fecha }}</td>
+                                        <td class="px-6 py-4 text-center whitespace-nowrap">{{ cventa.fecha }}</td>
                                         <!-- <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.subtotal }}</td> -->
-                                        <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ parseFloat(cventa.total * 1.18).toFixed(2) }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cventa.tecnico }}</td>
+                                        <td class="px-6 py-4 text-center whitespace-nowrap">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ parseFloat(cventa.total * 1.18).toFixed(2) }}</td>
+                                        <td class="px-6 py-4 text-center whitespace-nowrap">{{ cventa.tecnico }}</td>
                                         <td class="px-6 py-4 text-center text-white">
                                             <div :class="{
                                                 'bg-blue-600': cventa.estado === 'Por Enviar',
-                                                'bg-yellow-600': cventa.estado === 'Enviado',
+                                                // 'bg-yellow-600': cventa.estado === 'Enviado',
                                                 'bg-green-600': cventa.estado === 'Aceptado',
                                                 'bg-red-600': cventa.estado === 'Rechazado',
-                                                'bg-indigo-600': cventa.estado === 'Finalizado',
+                                                // 'bg-indigo-600': cventa.estado === 'Finalizado',
                                             }" class="inline-block px-2 py-1 rounded">
                                                 <b>{{ cventa.estado }}</b>
                                             </div>
                                         </td>
                                         <td class="py-4 text-center whitespace-nowrap">
-                                            <button @click="openCtgModal(cventa)"
+                                            <!-- <button @click="openCtgModal(cventa)"
                                                 class="text-center mx-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 dark:hover:bg-white dark:hover:text-blue-600 rounded-md"><i
-                                                    class="fas fa-star"></i></button>
-                                            <!-- <Link :href="route('cventas.edit', { cventa: cventa.id })"
-                                                class=" bg-green-500 p-1 dark:hover:bg-white py-1 px-2  dark:hover:text-green-500 rounded">
-                                            <i class="bi bi-pencil-square"></i>
-                                            </Link> -->
-                                            <Button v-if="$page.props.user.permissions.includes('Acciones Cotizacion')" @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id, cventa)"
-                                                class="ml-1 bg-red-600 dark:hover:bg-white dark:hover:text-red-600 py-1 px-2 font-extrabold dark:text-white rounded cursor-pointer text-white">
-                                                <i class="bi bi-trash3"></i>
-                                            </Button>
-                                            <button @click="openModal(cventa)"
-                                                class="text-center ml-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded-md"><i
-                                                    class="bi bi-eye"></i></button>
+                                                    class="fas fa-star"></i>
+                                            </button> -->
+                                            <button @click="openCtgModal(cventa)" class="inline-flex mx-1 items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md">
+                                                <i class='fas fa-star text-sm text-white'></i>
+                                            </button>
+                                            <button v-if="$page.props.user.permissions.includes('Acciones Cotizacion')" @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id, cventa)" class="inline-flex mx-1 items-center justify-center bg-red-600 hover:bg-red-700 px-[7px] py-[3px] rounded-md">
+                                                <i class='bi bi-trash3 text-sm text-white'></i>
+                                            </button>
+                                            <button @click="openModal(cventa)" class="inline-flex mx-1 items-center justify-center bg-blue-600 hover:bg-blue-700 px-[7px] py-[3px] rounded-md">
+                                                <i class='bi bi-eye text-sm text-white'></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -941,27 +957,26 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                             </div>
                         </div>
                         <div class="flex flex-wrap justify-between">
-                            <div class="mt-4 text-star">
+                            <!-- <div class="mt-4 text-star">
                                 <p class="text-gray-700 dark:text-white">Registros por página: {{ countPerPage }}
-                                    Total de
-                                    registros: {{
-                                        totalCount }}</p>
-                            </div>
-                            <div class="mt-4 text-end">
+                                    Total de registros: {{ totalCount }}</p>
+                            </div> -->
+                            <div class="flex mt-4 text-end justify-center md:justify-end w-full">
                                 <nav aria-label="Page navigation example mt-4">
                                     <ul class="inline-flex -space-x-px text-sm">
                                         <li>
                                             <button @click="previousPage" :disabled="!cventas.prev_page_url"
                                                 class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                                Previous
+                                                Prev
                                             </button>
                                         </li>
-                                        <li v-for="page in total_pages" :key="page">
-                                            <button @click="goToPage(page)"
+                                        <li v-for="page in displayedPages()" :key="page">
+                                            <button v-if="page !== '...'" @click="goToPage(page)"
                                                 :class="{ 'text-blue-600 border-blue-300 dark:text-gray-800 bg-blue-50 hover:bg-blue-100 hover:text-blue-700': page === current_page, 'text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': page !== current_page }"
                                                 class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                                 {{ page }}
                                             </button>
+                                            <span v-else class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">...</span>
                                         </li>
                                         <li>
                                             <button @click="nextPage" :disabled="!cventas.next_page_url"

@@ -69,9 +69,9 @@ watchEffect(() => {
         return (
             (tbproducto.modelo.toLowerCase().includes(searchLowerCase) ||
              tbproducto.precio_list.toLowerCase().includes(searchLowerCase) ||
+             tbproducto.tbmarca.nombre.toLowerCase().includes(searchLowerCase) ||
              tbproducto.codigo.toLowerCase().includes(searchLowerCase) ||
              tbproducto.precio_min.toLowerCase().includes(searchLowerCase) ||
-             tbproducto.precio_max.toLowerCase().includes(searchLowerCase) ||
              tbproducto.garantia.toLowerCase().includes(searchLowerCase) ||
              tbproducto.tbcategoria.nombre.toLowerCase().includes(searchLowerCase) ||
              tbproducto.tbsubcategoria.nombre.toLowerCase().includes(searchLowerCase)) &&
@@ -113,37 +113,45 @@ watchEffect(() => {
                             </Link>
                         </div>
                         <div>
-                            <div class="py-2 uppercase">
-                                <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-8 mb-3">
-                                    <div class="flex flex-col">
-                                        <InputLabel class="block text-md font-medium text-gray-700">Categoría</InputLabel>
-                                        <select v-model="selectedCategoria" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="" disabled>Seleccione una Categoría</option>
-                                            <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
-                                        </select>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <InputLabel class="block text-md font-medium text-gray-700">Subcategoría</InputLabel>
-                                        <select v-model="selectedSubcategoria" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="" disabled selected >Seleccione una Subcategoría</option>
-                                            <option v-for="tbsubcategoria in tbsubcategorias.filter(subcategoria => subcategoria.tbcategoria_id === selectedCategoria)" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
-                                        </select>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <InputLabel for="table-search" class="block text-md font-medium text-gray-700">Buscar</InputLabel>
-                                        <div class="relative mt-1">
-                                            <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                                                <svg class="w-4 h-4 text-gray-500 dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                                                </svg>
+                            <div class="py-2">
+                                <div class="flex lg:flex-row flex-col md:gap-4 gap-2.5 md:my-0 my-0 w-full py-1.5">
+                                    <div class="flex flex-col justify-end w-full">
+                                        <div class="flex flex-col md:flex-row md:items-center w-full md:h-9">
+                                            <div class="h-10 text-sm flex items-center justify-center text-center border border-gray-300 dark:border-gray-600 bg-gray-300 dark:bg-[#111B22] rounded-t-lg md:rounded-none md:rounded-l-lg">
+                                                <h4 class="font-medium text-gray-900 dark:text-gray-300 min-w-max px-2">Filtrar por Categoria: </h4>
                                             </div>
-                                            <input v-model="searchQuery" type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar el producto">
+                                            <select v-model="selectedCategoria" class="w-full h-10 outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 rounded-b-lg md:rounded-none md:rounded-r-lg">
+                                                <option value="" disabled>Seleccione una Categoría</option>
+                                                <option v-for="tbcategoria in tbcategorias" :key="tbcategoria.id" :value="tbcategoria.id">{{ tbcategoria.nombre }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col justify-end w-full">
+                                        <div class="flex flex-col md:flex-row md:items-center w-full md:h-9">
+                                            <div class="h-10 text-sm flex items-center justify-center text-center border border-gray-300 dark:border-gray-600 bg-gray-300 dark:bg-[#111B22] rounded-t-lg md:rounded-none md:rounded-l-lg">
+                                                <h4 class="font-medium text-gray-900 dark:text-gray-300 min-w-max px-2">Filtrar por Subcategoria: </h4>
+                                            </div>
+                                            <select v-model="selectedSubcategoria" class="w-full h-10 outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 rounded-b-lg md:rounded-none md:rounded-r-lg">
+                                                <option value="" disabled selected >Seleccione una Subcategoría</option>
+                                            <option v-for="tbsubcategoria in tbsubcategorias.filter(subcategoria => subcategoria.tbcategoria_id === selectedCategoria)" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col justify-end w-full">
+                                        <div class="flex w-full">
+                                            <span
+                                                class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                                <i class="fa-solid fa-cart-shopping text-md"></i>
+                                            </span>
+                                            <input v-model="searchQuery" type="text" id="table-search"
+                                                class="lg:max-w-xs w-full outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg focus:ring-primary-600 focus:border-primary-600 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                autocomplete="off"
+                                                placeholder="Buscar por Productos">
                                         </div>
                                     </div>
                                 </div>
                             </div>
- 
-                            <div class="relative overflow-x-auto shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
+                            <div class="relative overflow-x-auto scroll-dataTableLEO shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
                                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                                     <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                         <tr>

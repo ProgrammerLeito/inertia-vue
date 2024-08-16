@@ -109,7 +109,6 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('tenors', TenorController::class);
     Route::resource('/cventas', CventaController::class);
     Route::post('/guardarProductosCotizacion', [CventaController::class, 'guardarProductosCotizacion'])->name('cventas.guardarProductosCotizacion');
-    Route::post('/validarIdCot', [CventaController::class, 'validarIdCot']);
     Route::post('/consultarDatosCot', [CventaController::class, 'consultarDatosCot']);
     Route::post('/consultarDatosProductosCot', [CventaController::class, 'consultarDatosProductosCot']);
     Route::post('/cventas/cambiar_estado', [CventaController::class, 'cambiarEstado'])->name('cventas.cambiar_estado');
@@ -130,3 +129,6 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('roles', RoleController::class);
     Route::resource('permisos', PermisoController::class);
 });
+
+Route::get('/fn_guardarCotizacion', [CventaController::class, 'guardarCotizacion']);
+Route::get('/validarIdCot', [CventaController::class, 'validarIdCot']);

@@ -188,24 +188,6 @@ export default {
     }
 }
 
-.scroll-sidebar::-webkit-scrollbar{
-    width: 5px;
-}
-
-.scroll-sidebar::-webkit-scrollbar-track{
-    border: 7px solid #232943;
-    box-shadow: 0 0 5px 5px rgba(0, 0, 0, .5) inset;
-}
-
-.scroll-sidebar::-webkit-scrollbar-thumb{
-    border-radius: 3px;
-    background: linear-gradient(
-        10deg,
-        #7F7F7F,
-        #7F7F7F
-    );
-}
-
 </style>
 
 <style scoped>

@@ -20,7 +20,22 @@ class CventaController extends Controller
 {
     public function index()
     {
-        $cventas = Cventa::with('cliente', 'tenor')->orderBy('id', 'DESC')->paginate(10);
+        $user = auth()->user();
+
+        // Verifica si el usuario tiene los roles 'Area de TI' o 'Gerencia'
+        if ($user->roles->contains('name', 'Area de TI') || $user->roles->contains('name', 'Gerencia')) {
+            // Si el usuario tiene alguno de estos roles, muestra todas las cotizaciones
+            $cventas = Cventa::with('cliente', 'tenor')
+                ->orderBy('id', 'DESC')
+                ->paginate(30);
+        } else {
+            // De lo contrario, muestra solo las cotizaciones donde el técnico sea el usuario autenticado
+            $cventas = Cventa::with('cliente', 'tenor')
+                ->where('tecnico', $user->name)
+                ->orderBy('id', 'DESC')
+                ->paginate(30);
+        }
+
         return Inertia::render('Cotizas/Index', compact('cventas'));
     }
 
@@ -54,6 +69,43 @@ class CventaController extends Controller
         $validatedData['estado'] = 'Por Enviar';
         
         Cventa::create($validatedData);
+        return to_route('cventas.index');
+    }
+
+    public function guardarCotizacion(Request $request){
+        $cliente_id = $request->input('cliente_id');
+        $numeroDocumento = $request->input('numeroDocumento');
+        $direccion = $request->input('direccion');
+        $tenor_id = $request->input('tenor_id');
+        $fecha = $request->input('fecha');
+        $moneda = $request->input('moneda');
+        $validez_cot = $request->input('validez_cot');
+        $forma_pago = $request->input('forma_pago');
+        $dias_entrega = $request->input('dias_entrega');
+        $tipoCambio = $request->input('tipoCambio');
+        $subtotal = $request->input('subtotal');
+        $igv = $request->input('igv');
+        $total = $request->input('total');
+        $tecnico = Auth::user()->name;
+
+        $agregarCotizacion = new Cventa;
+        $agregarCotizacion->cliente_id = $cliente_id;
+        $agregarCotizacion->numeroDocumento = $numeroDocumento;
+        $agregarCotizacion->direccion = $direccion;
+        $agregarCotizacion->tenor_id = $tenor_id;
+        $agregarCotizacion->fecha = $fecha;
+        $agregarCotizacion->moneda = $moneda;
+        $agregarCotizacion->validez_cot = $validez_cot;
+        $agregarCotizacion->forma_pago = $forma_pago;
+        $agregarCotizacion->dias_entrega = $dias_entrega;
+        $agregarCotizacion->tipoCambio = $tipoCambio;
+        $agregarCotizacion->subtotal = $subtotal;
+        $agregarCotizacion->igv = $igv;
+        $agregarCotizacion->total = $total;
+        $agregarCotizacion->tecnico = $tecnico;
+        $agregarCotizacion->estado = 'Por Enviar';
+        $agregarCotizacion->save();
+
         return response()->json(['success' => true], 200);
     }
 
@@ -61,7 +113,7 @@ class CventaController extends Controller
     {
         $productos = DB::table('cventas')
                         ->select(DB::raw('MAX(id) as id'))
-                        ->first(); // Usa `first()` para obtener un único resultado en lugar de `get()`
+                        ->first();
 
         return response()->json($productos);
     }

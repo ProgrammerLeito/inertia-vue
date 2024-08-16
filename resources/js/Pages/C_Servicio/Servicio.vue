@@ -133,7 +133,7 @@ const totalCount = hservicios.total;
 
 
                     <div class="flex flex-col">
-                        <div class="relative overflow-x-auto shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2">
+                        <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 tracking-widest dark:text-white">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>

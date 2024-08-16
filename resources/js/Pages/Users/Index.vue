@@ -23,20 +23,38 @@ const formPage = useForm({});
 const onPageClick = (event)=>{
     formPage.get(route('users.index',{page:event}));
 }
+
 const deleteUser = (id, name) => {
     const alerta = Swal.mixin({
-        buttonsStyling:true
+        buttonsStyling: true
     });
     alerta.fire({
-        title: '¿Estás seguro de eliminar ' +name+ '?',
+        title: '¿Estás seguro de eliminar ' + name + '?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('users.destroy', id),{
-                onSuccess: () => {ok('usuario Eiminada')}
+            form.delete(route('users.destroy', id), {
+                onSuccess: () => {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "bottom-end",
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: 'Usuario eliminado',
+                        text: "El usuario ha sido eliminado correctamente"
+                    });
+                }
             });
         }
     })
@@ -68,7 +86,7 @@ const deleteUser = (id, name) => {
                         </Link>
                     </div>
                     <div class="mt-4">
-                        <div class="relative overflow-x-auto shadow-md md:rounded-lg rounded-xl shadow-gray-200 dark:shadow-gray-500">
+                        <div class="relative overflow-x-auto scroll-dataTableLEO shadow-md md:rounded-lg rounded-xl shadow-gray-200 dark:shadow-gray-500">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-white uppercase bg-green-600">
                                     <tr>
@@ -102,7 +120,7 @@ const deleteUser = (id, name) => {
                                             <Link :href="route('users.edit', { user: user.id })" class="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md mr-2">
                                                 <i class='bx bxs-edit text-base text-white'></i>
                                             </Link>
-                                            <button @click="$event => deleteUser(user.id,user.name)" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                            <button @click="$event => deleteUser(user.id, user.name)" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
                                                 <i class='bx bxs-trash text-base text-white'></i>
                                             </button>
                                         </td>

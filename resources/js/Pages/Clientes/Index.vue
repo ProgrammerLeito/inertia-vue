@@ -83,13 +83,13 @@ const deleteCliente = (id, razonSocial) => {
 
 watchEffect(() => {
     if (props.clientes.data) {
-        const jomar = searchQuery.value.toLowerCase().trim();
+        const leonardo = searchQuery.value.toLowerCase().trim();
 
         filteredClients.value = props.clientes.data.filter(cliente => {
-            const primero = cliente.id.toString().includes(jomar);
-            const segundo = cliente.ctg.toLowerCase().includes(jomar);
-            const tercero = cliente.razonSocial.toLowerCase().includes(jomar);
-            const cuarto = cliente.numeroDocumento.toLowerCase().includes(jomar);
+            const primero = cliente.id.toString().includes(leonardo);
+            const segundo = cliente.ctg.toLowerCase().includes(leonardo);
+            const tercero = cliente.razonSocial.toLowerCase().includes(leonardo);
+            const cuarto = cliente.numeroDocumento.toLowerCase().includes(leonardo);
 
             const searchMatch = primero || segundo || tercero || cuarto;
             const provinciaMatch = selectedProvincia.value === '' || cliente.tbprovincia_id === selectedProvincia.value;
@@ -278,56 +278,44 @@ const printPDF = async () => {
                     </div>
                     <div>
                         <div class="py-1">
-                            <div class="flex md:flex-row flex-col md:gap-8 gap-1 w-full md:p-2 p-0">
-                                <div class="flex flex-col w-full">
-                                    <InputLabel for="table-search"
-                                        class="block text-md font-medium text-gray-700 dark:text-white">Buscar
-                                    </InputLabel>
-                                    <div class="relative">
-                                        <div
-                                            class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-900 dark:text-black" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                                <path stroke="currentColor" stroke-linecap="round"
-                                                    stroke-linejoin="round" stroke-width="2"
-                                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                            </svg>
-                                        </div>
+                            <div class="flex lg:flex-row flex-col md:gap-4 gap-3 md:my-0 my-2 w-full py-1.5">
+                                <div class="flex flex-col justify-end w-full">
+                                    <div class="flex w-full">
+                                        <span
+                                            class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                            <i class='fa-solid fa-users text-md'></i>
+                                        </span>
                                         <input v-model="searchQuery" type="text" id="table-search"
-                                            class="block pt-2.5 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            placeholder="Buscar cliente">
+                                            class="w-full outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg focus:ring-primary-600 focus:border-primary-600 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            autocomplete="off"
+                                            placeholder="Ingrese Nombre de Cliente">
                                     </div>
                                 </div>
-                                <div class="flex flex-col w-full">
-                                    <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Ciudad
-                                    </InputLabel>
-                                    <select v-model="selectedProvincia"
-                                        class="block pt-2.5 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Buscar cliente">
-                                        <option value="" selected disabled>Seleccione por Ciudad</option>
-                                        <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id"
-                                            :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
-                                    </select>
-                                </div>
-                                <div class="flex flex-col w-full">
-                                    <InputLabel class="block text-md font-medium text-gray-700 dark:text-white">Asesor
-                                    </InputLabel>
-                                    <div class="relative">
-                                        <div
-                                            class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-800 dark:text-black" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                                <path stroke="currentColor" stroke-linecap="round"
-                                                    stroke-linejoin="round" stroke-width="2"
-                                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                            </svg>
+                                <div class="flex flex-col justify-end w-full">
+                                    <div class="flex flex-col md:flex-row md:items-center w-full md:h-9">
+                                        <div class="h-10 text-sm flex items-center justify-center text-center border border-gray-300 dark:border-gray-600 bg-gray-300 dark:bg-[#111B22] rounded-t-lg md:rounded-none md:rounded-l-lg">
+                                            <h4 class="font-medium text-gray-900 dark:text-gray-300 min-w-max px-2">Filtrar Ciudad: </h4>
                                         </div>
-                                        <input v-model="tecnicoQuery" type="text"
-                                            class="block pt-2.5 ps-10 text-sm tracking-widest text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            placeholder="Buscar por asesor">
+                                        <select v-model="selectedProvincia" class="w-full h-10 outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 rounded-b-lg md:rounded-none md:rounded-r-lg">
+                                            <option value="" selected disabled>Seleccione la Ciudad</option>
+                                            <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id"
+                                                :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="flex flex-col justify-end 2xl:mt-5 mt-1 w-full">
+                                <div class="flex flex-col justify-end w-full">
+                                    <div class="flex w-full">
+                                        <span
+                                            class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                            <i class='bx bxs-user-circle text-xl'></i>
+                                        </span>
+                                        <input v-model="tecnicoQuery"
+                                            class="w-full outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg focus:ring-primary-600 focus:border-primary-600 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            type="text" autocomplete="off"
+                                            placeholder="Ingrese Nombre de Asesor">
+                                    </div>
+                                </div>
+                                <div class="flex flex-col justify-end w-full">
                                     <button @click="printPDF"
                                         class="text-white bg-indigo-700 hover:bg-indigo-800 mt-0.5 py-2 px-4 rounded lg:w-min w-full whitespace-nowrap text-center">
                                         <i class="fas fa-print mx-2"></i> Imprimir
@@ -335,7 +323,7 @@ const printPDF = async () => {
                                 </div>
                             </div>
                         </div>
-                        <div class="relative overflow-x-auto shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
+                        <div class="relative scroll-dataTableLEO overflow-x-auto shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
@@ -370,10 +358,10 @@ const printPDF = async () => {
                                         </td>
                                         <td class="px-4 py-4 text-center">{{ (cliente.fechafactura ? cliente.fechafactura : 'Esperando fecha') + ' || ' + (cliente.codigofactura ? cliente.codigofactura : 'Esperando Codigo') }}</td>
                                         <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
-                                            <Link :href="route('clientes.edit', cliente.id)" class="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md mr-2">
+                                            <Link :href="route('clientes.edit', cliente.id)" class="transform hover:translate-y-[-2px] inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md mr-2">
                                                 <i class='bx bxs-edit text-base text-white'></i>
                                             </Link>
-                                            <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                            <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="transform hover:translate-y-[-2px] inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
                                                 <i class='bx bxs-trash text-base text-white'></i>
                                             </button>
                                         </td>
