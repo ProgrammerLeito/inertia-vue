@@ -325,8 +325,12 @@ const printPDF = async () => {
                         </div>
                         <div class="relative scroll-dataTableLEO overflow-x-auto shadow-md md:rounded-lg rounded-md shadow-gray-200 dark:shadow-gray-500">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
+                                <caption class="p-3.5 text-base font-semibold text-left rtl:text-right bg-gray-200 dark:bg-gray-700">
+                                    <p class="mx-2 items-start text-black dark:text-white">Para acceder a los contactos de un cliente, por favor haga doble clic sobre el nombre del cliente en la lista. Esto le permitirá visualizar los detalles de sus contactos.</p>
+                                </caption>
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 hidden">ID</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N°</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Ruc</th>
                                         <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">Razon social</th>
@@ -339,8 +343,9 @@ const printPDF = async () => {
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
-                                    <tr @dblclick="redirectToClient(cliente.id); guardarClienteId(cliente.id, cliente.razonSocial)" v-for="(cliente) in filteredClients" :key="cliente.id" class="bg-white border-b-2 dark:border-white border-gray-400 dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
-                                        <td class="px-6 py-4 text-center">{{ cliente.id }}</td>
+                                    <tr @dblclick="redirectToClient(cliente.id); guardarClienteId(cliente.id, cliente.razonSocial)" v-for="(cliente , i) in filteredClients" :key="cliente.id" class="bg-white border-b-2 dark:border-white border-gray-400 dark:hover:bg-gray-900 cursor-pointer hover:bg-gray-500 hover:text-white text-black dark:bg-gray-700 dark:text-white">
+                                        <td class="px-6 py-4 text-center hidden">{{ cliente.id }}</td>
+                                        <td class="px-6 py-4 text-center">{{ i + 1 }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.numeroDocumento }}</td>
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.direccion }}</td>

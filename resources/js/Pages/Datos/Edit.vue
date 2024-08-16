@@ -103,8 +103,8 @@ const submitForm = () => {
                                 <div>
                                     <InputLabel for="telefono" value="Telefono"
                                         class="block text-sm font-medium text-gray-700" />
-                                    <TextInput type="number" id="telefono" v-model="form.telefono" required
-                                        placeholder="Ingrese el precio"
+                                    <TextInput type="text" id="telefono" v-model="form.telefono" required
+                                        placeholder="Ingrese el numero"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="$page.props.errors.telefono" class="mt-2" />
                                 </div>
