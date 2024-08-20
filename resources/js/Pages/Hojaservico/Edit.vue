@@ -26,9 +26,31 @@ const { servicios, hservicio, hmarcas } = defineProps({
 
 const form = useForm(hservicio);
 
+const imagePreview1 = ref('');
+const imagePreview2 = ref('');
+const imagePreview3 = ref('');
+
 const onSelectFoto = (e, fieldName) => {
     const files = e.target.files;
     if (files.length) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            switch (fieldName) {
+                case 'foto':
+                    imagePreview1.value = e.target.result;
+                    break;
+                case 'foto2':
+                    imagePreview2.value = e.target.result;
+                    break;
+                case 'foto3':
+                    imagePreview3.value = e.target.result;
+                    break;
+                default:
+                    break;
+            }
+        };
+        reader.readAsDataURL(files[0]);
+
         switch (fieldName) {
             case 'foto':
                 form.foto = files[0];
@@ -133,7 +155,7 @@ watch(form.servicio_id, () => {
                                     </select>
                                 </div>
                                 <div class="flex items-center font-bold p-4 border py-2.5 border-green-600 rounded bg-green-600">
-                                    <div class="bg-yellow-400 text-base font-bold py-4 p-2 rounded text-white"> N° INFORME: {{ nInformeSeleccionado }} </div>
+                                    <div class="bg-yellow-500 text-base font-bold py-4 p-2 rounded text-white"> N° INFORME: {{ nInformeSeleccionado }} </div>
                                     <p class="py-4 text-base text-white font-bold mx-4">PARA : {{ razonSocialCliente }}</p>
                                 </div>
                             </div>
@@ -222,30 +244,70 @@ watch(form.servicio_id, () => {
                                     <InputError :message="form.errors.trabajos" class="mt-2"></InputError>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-6 md:grid-cols-2 lg:grid-cols-3 sm:gap-x-8 mb-3">
-                                <div>
-                                    <InputLabel for="foto" value="Foto"
-                                        class="block text-xs font-medium text-gray-700" />
-                                    <FileInput name="foto" @change="($event) => onSelectFoto($event, 'foto')" />
-                                    <InputError :message="$page.props.errors.foto" class="mt-2" />
-                                    <img class="h-36 w-auto mt-2 mx-auto rounded dark:text-white" :src="'/storage/' + hservicio.foto"
-                                        alt="Foto actual">
+                            <div class="flex flex-wrap gap-4 items-center justify-between">
+                                <!-- Foto 1 -->
+                                <div class="flex flex-col gap-4 items-center justify-center">
+                                    <div>
+                                        <InputLabel for="foto" value="Foto" class="block text-xs font-medium text-gray-700" />
+                                        <FileInput name="foto" @change="($event) => onSelectFoto($event, 'foto')" />
+                                        <InputError :message="$page.props.errors.foto" class="mt-2" />
+                                    </div>
+                                    <div class="flex items-center justify-center gap-4">
+                                        <div>
+                                            <img class="h-36 w-36 mt-2 rounded dark:text-white object-contain" :src="'/hservicio_img/' + hservicio.foto" alt="Foto actual">
+                                        </div>
+                                        <div v-if="imagePreview1">
+                                            <i class="fa-solid fa-right-left dark:text-white text-gray-900 text-4xl"></i>
+                                        </div>
+                                        <!-- Vista previa de la nueva Foto 1 -->
+                                        <div v-if="imagePreview1" class="text-center dark:text-white">
+                                            <img :src="imagePreview1" alt="Vista previa de la foto" class="h-32 w-38 object-contain rounded shadow">
+                                            <p class="text-sm dark:text-white text-gray-900 mt-2">Nueva Foto</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <InputLabel for="foto2" value="Foto 2"
-                                        class="block text-xs font-medium text-gray-700" />
-                                    <FileInput name="foto2" @change="($event) => onSelectFoto($event, 'foto2')" />
-                                    <InputError :message="$page.props.errors.foto2" class="mt-2" />
-                                    <img class="h-36 mt-2 w-auto mx-auto rounded dark:text-white" :src="'/storage/' + hservicio.foto2"
-                                        alt="Foto actual">
+                                <!-- Foto 2 -->
+                                <div class="flex flex-col gap-4 items-center justify-center">
+                                    <div>
+                                        <InputLabel for="foto2" value="Foto2" class="block text-xs font-medium text-gray-700" />
+                                        <FileInput name="foto2" @change="($event) => onSelectFoto($event, 'foto2')" />
+                                        <InputError :message="$page.props.errors.foto2" class="mt-2" />
+                                    </div>
+                                    <div class="flex items-center justify-center gap-4">
+                                        <div>
+                                            <img class="h-36 w-36 mt-2 rounded dark:text-white object-contain" :src="'/hservicio_img/' + hservicio.foto2" alt="Foto actual">
+                                        </div>
+                                        <div v-if="imagePreview2">
+                                            <i class="fa-solid fa-right-left dark:text-white text-gray-900 text-4xl"></i>
+                                        </div>
+                                        <!-- Vista previa de la nueva Foto 2 -->
+                                        <div v-if="imagePreview2" class="text-center dark:text-white">
+                                            <img :src="imagePreview2" alt="Vista previa de la foto2" class="h-32 w-38 object-contain rounded shadow">
+                                            <p class="text-sm dark:text-white text-gray-900 mt-2">Nueva Foto2</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <InputLabel for="foto3" value="Foto 3"
-                                        class="block text-xs font-medium text-gray-700" />
-                                    <FileInput name="foto3" @change="($event) => onSelectFoto($event, 'foto3')" />
-                                    <InputError :message="$page.props.errors.foto3" class="mt-2" />
-                                    <img class="h-36 w-auto mt-2 mx-auto rounded dark:text-white" :src="'/storage/' + hservicio.foto3"
-                                        alt="Foto actual">
+
+                                <!-- Foto 3 -->
+                                <div class="flex flex-col gap-4 items-center justify-center">
+                                    <div>
+                                        <InputLabel for="foto3" value="Foto3" class="block text-xs font-medium text-gray-700" />
+                                        <FileInput name="foto3" @change="($event) => onSelectFoto($event, 'foto3')" />
+                                        <InputError :message="$page.props.errors.foto3" class="mt-2" />
+                                    </div>
+                                    <div class="flex items-center justify-center gap-4">
+                                        <div>
+                                            <img class="h-36 w-36 mt-2 rounded dark:text-white object-contain" :src="'/hservicio_img/' + hservicio.foto3" alt="Foto actual">
+                                        </div>
+                                        <div v-if="imagePreview3">
+                                            <i class="fa-solid fa-right-left dark:text-white text-gray-900 text-4xl"></i>
+                                        </div>
+                                        <!-- Vista previa de la nueva Foto 3 -->
+                                        <div v-if="imagePreview3" class="text-center dark:text-white">
+                                            <img :src="imagePreview3" alt="Vista previa de la foto" class="h-32 w-38 object-contain rounded shadow">
+                                            <p class="text-sm dark:text-white text-gray-900 mt-2">Nueva Foto3</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="d-flex mt-4">

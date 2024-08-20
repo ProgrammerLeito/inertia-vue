@@ -111,14 +111,13 @@ const deleteServicio = (id, n_informe) => {
 }
 //cambio de estado
 const openCtgModal = async (servicio) => {
-    const jomar = `<i class="bi bi-check-circle-fill icon-large mx-2"></i>`;
-    const modalTitle = `Estado del cliente:<i class="bi bi-circle icon-large mx-2"></i> ${servicio.descripcion}`;
+    const modalTitle = `Asigna el Estado del cliente: ${servicio.cliente.razonSocial}`;
 
     const options = {
-        title: jomar + modalTitle,
+        title: modalTitle,
         input: 'select',
         inputOptions: {
-            'atendidos': 'atendidos',
+            'atendido': 'atendido',
             'no atendido': 'no atendido',
         },
         customClass: {
@@ -273,7 +272,7 @@ const totalCount = props.servicios.total;
                                                 <strong>{{ key }}</strong></td>
                                         </tr>
                                         <tr v-for="(servicio, i) in filteredServicio" :key="servicio.id" class="bg-white text-gray-900 border-b border-gray-400 dark:border-white font-bold dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 hover:text-white cursor-pointer">
-                                            <td class="px-6 py-4 text-center">
+                                            <td class="px-6 py-4 text-center capitalize text-white">
                                                 <div :class="{
                                                     'bg-red-600': servicio.estado === 'no atendido',
                                                     'bg-green-600': servicio.estado === 'atendido'

@@ -317,7 +317,9 @@ const previewPDF = () => {
     });
 
     // Vista previa del PDF en una nueva ventana
-    doc.output('dataurlnewwindow');
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    window.open(url);
 };
 
 </script>

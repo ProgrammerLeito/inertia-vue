@@ -205,7 +205,7 @@ const totalCount = hservicios.total;
                                     </tr>
                                 </thead>
                                 <tbody class="text-center text-xs">
-                                    <tr v-for="hservicio in filteredHservicios" :key="hservicio.id" class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                                    <tr v-for="hservicio in filteredHservicios" :key="hservicio.id" class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                         <!-- Mostrar los datos de cada hservicio -->
                                         <td class="px-6 py-4 text-center">{{ hservicio.hmarca ? hservicio.hmarca.nombre : 'Sin marca' }}</td>
                                         <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.modelo }}</td>

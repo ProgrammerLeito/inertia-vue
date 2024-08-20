@@ -44,20 +44,23 @@ class HservicioController extends Controller
         $validatedData['tecnico'] = $tecnico;
 
         if ($request->hasFile('foto')) {
-            $foto = $request->file('foto');
-            $routeName = $foto->store('requerimiento', ['disk' => 'public']);
+            $file = $request->file('foto');
+            $routeName = $file->store('', ['disk' => 'hservicio_img']);
             $validatedData['foto'] = $routeName;
         }
+
         if ($request->hasFile('foto2')) {
-            $foto2 = $request->file('foto2');
-            $routeName2 = $foto2->store('requerimiento', ['disk' => 'public']);
+            $file = $request->file('foto2');
+            $routeName2 = $file->store('', ['disk' => 'hservicio_img']);
             $validatedData['foto2'] = $routeName2;
         }
+
         if ($request->hasFile('foto3')) {
-            $foto3 = $request->file('foto3');
-            $routeName3 = $foto3->store('requerimiento', ['disk' => 'public']);
+            $file = $request->file('foto3');
+            $routeName3 = $file->store('', ['disk' => 'hservicio_img']);
             $validatedData['foto3'] = $routeName3;
         }
+
         $hservicio = Hservicio::create($validatedData);
         return redirect()->route('hservicios.index', ['servicio_id' => $hservicio->servicio_id]);
     }
@@ -79,30 +82,31 @@ class HservicioController extends Controller
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
-            $routeName = $file->store('requerimiento', ['disk' => 'public']);
+            $routeName = $file->store('', ['disk' => 'hservicio_img']);
             $validatedData['foto'] = $routeName;
-
+    
             if ($hservicio->foto) {
-                Storage::disk('public')->delete($hservicio->foto);
+                Storage::disk('hservicio_img')->delete($hservicio->foto);
             }
         }
 
         if ($request->hasFile('foto2')) {
-            $file2 = $request->file('foto2');
-            $routeName2 = $file2->store('requerimiento', ['disk' => 'public']);
-            $validatedData['foto2'] = $routeName2;
+            $file = $request->file('foto2');
+            $routeName = $file->store('', ['disk' => 'hservicio_img']);
+            $validatedData['foto2'] = $routeName;
+
             if ($hservicio->foto2) {
-                Storage::disk('public')->delete($hservicio->foto2);
+                Storage::disk('hservicio_img')->delete($hservicio->foto2);
             }
         }
 
         if ($request->hasFile('foto3')) {
-            $file3 = $request->file('foto3');
-            $routeName3 = $file3->store('requerimiento', ['disk' => 'public']);
-            $validatedData['foto3'] = $routeName3;
+            $file = $request->file('foto3');
+            $routeName = $file->store('', ['disk' => 'hservicio_img']);
+            $validatedData['foto3'] = $routeName;
 
             if ($hservicio->foto3) {
-                Storage::disk('public')->delete($hservicio->foto3);
+                Storage::disk('hservicio_img')->delete($hservicio->foto3);
             }
         }
 

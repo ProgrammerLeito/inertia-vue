@@ -4,9 +4,7 @@ import { Link } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import { ref, watchEffect } from 'vue';
-import { Inertia } from '@inertiajs/inertia';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
  
 const searchQuery = ref('');
 const filteredClients = ref([]);
@@ -262,9 +260,8 @@ const printPDF = async () => {
         <template #header>
             <div class="flex justify-between w-full pr sm:pr-14 ">
                 <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">
-                    Lista de Clientes</h1>
-                <!-- <h1 class="font-semibold md:ml-0 ml-20 text-base uppercase text-gray-800 leading-tight dark:text-white">
-                    Bienvenido(a):  {{ $page.props.auth.user.name }}</h1> -->
+                    Lista de Clientes
+                </h1>
             </div>
         </template>
 
@@ -370,17 +367,6 @@ const printPDF = async () => {
                                                 <i class='bx bxs-trash text-base text-white'></i>
                                             </button>
                                         </td>
-                                        <!-- <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Administrador')"> -->
-                                            <!-- <Link class="text-center text-white bg-green-500 hover:bg-green-600 py-1.5 px-2 rounded-md" :href="route('clientes.edit', cliente.id)">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </Link>
-                                            <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="text-center ml-1 text-white bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md">
-                                                <i class="bi bi-trash3"></i>
-                                            </button> -->
-                                            <!-- <button @click="openCtgModal(cliente)" class="text-center ml-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded-md">
-                                                <i class="fas fa-star"></i>
-                                            </button> -->
-                                        <!-- </td> -->
                                     </tr>
                                 </tbody>
                             </table>

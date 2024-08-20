@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CventaRequest;
 use App\Models\Cliente;
 use App\Models\Cventa;
 use App\Models\Tbcategoria;
@@ -10,7 +9,6 @@ use App\Models\Tbmarca;
 use App\Models\Tbproducto;
 use App\Models\Tbsubcategoria;
 use App\Models\TbproductosAgregados;
-use App\Models\Tenor;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -25,13 +23,14 @@ class CventaController extends Controller
         // Verifica si el usuario tiene los roles 'Area de TI' o 'Gerencia'
         if ($user->roles->contains('name', 'Area de TI') || $user->roles->contains('name', 'Gerencia')) {
             // Si el usuario tiene alguno de estos roles, muestra todas las cotizaciones
-            $cventas = Cventa::with('cliente', 'tenor')
+            $cventas = Cventa::with('cliente')
                 ->orderBy('id', 'DESC')
                 ->paginate(30);
         } else {
             // De lo contrario, muestra solo las cotizaciones donde el técnico sea el usuario autenticado
-            $cventas = Cventa::with('cliente', 'tenor')
-                ->where('tecnico', $user->name)
+            $nombreCompleto = $user->name . ' ' . $user->apellidopat . ' ' . $user->apellidomat;
+            $cventas = Cventa::with('cliente')
+                ->where('tecnico', $nombreCompleto)
                 ->orderBy('id', 'DESC')
                 ->paginate(30);
         }
@@ -52,24 +51,12 @@ class CventaController extends Controller
             $nCotizacion = '0000000001'; // Puedes asignar cualquier valor aquí
         }
 
-        $clientes = Cliente::all();
-        $tenors = Tenor::all();
+        $clientes = Cliente::select('id', 'razonSocial', 'direccion', 'numeroDocumento')->get();
         $tbproductos = Tbproducto::with('tbcategoria', 'tbsubcategoria', 'tbmarca')->get();
         $tbcategorias = Tbcategoria::with('tbsubcategorias')->get();
-        $tbsubcategorias = Tbsubcategoria::all();
-        $tbmarcas = Tbmarca::all();
-        return Inertia::render('Cotizas/Create', compact('clientes', 'tenors', 'tbproductos', 'tbcategorias', 'tbsubcategorias', 'tbmarcas', 'nCotizacion'));
-    }
-
-    public function store(CventaRequest $request)
-    {
-        $tecnico = Auth::user()->name;
-        $validatedData = $request->validated();
-        $validatedData['tecnico'] = $tecnico;
-        $validatedData['estado'] = 'Por Enviar';
-        
-        Cventa::create($validatedData);
-        return to_route('cventas.index');
+        $tbsubcategorias = Tbsubcategoria::select('id', 'tbcategoria_id', 'nombre')->get();
+        $tbmarcas = Tbmarca::select('id', 'nombre', 'tbsubcategoria_id')->get();
+        return Inertia::render('Cotizas/Create', compact('clientes', 'tbproductos', 'tbcategorias', 'tbsubcategorias', 'tbmarcas', 'nCotizacion'));
     }
 
     public function guardarCotizacion(Request $request){
@@ -86,7 +73,8 @@ class CventaController extends Controller
         $subtotal = $request->input('subtotal');
         $igv = $request->input('igv');
         $total = $request->input('total');
-        $tecnico = Auth::user()->name;
+        $usuarioAutenticado = Auth::user();
+        $tecnico = $usuarioAutenticado->name . ' ' . $usuarioAutenticado->apellidopat . ' ' . $usuarioAutenticado->apellidomat;
 
         $agregarCotizacion = new Cventa;
         $agregarCotizacion->cliente_id = $cliente_id;

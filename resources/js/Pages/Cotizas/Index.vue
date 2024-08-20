@@ -1,7 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
@@ -21,22 +21,28 @@ const props = defineProps({
 });
 
 const searchQuery = ref('');
+const selectedEstados = ref([]);
 
 // Computed property for filtered cventas
 const filteredCVentas = computed(() => {
-    if (!searchQuery.value) return props.cventas.data; // Access cventas via props
+    if (!searchQuery.value && selectedEstados.value.length === 0) return props.cventas.data;
 
     const query = searchQuery.value.toLowerCase().trim();
 
-    return props.cventas.data.filter(cventa => { // Access cventas data via props
+    return props.cventas.data.filter(cventa => {
         const nCotizacionMatch = cventa.n_cotizacion.toLowerCase().includes(query);
         const clienteMatch = cventa.cliente && cventa.cliente.razonSocial.toLowerCase().includes(query);
         const tecnicoMatch = cventa.tecnico.toLowerCase().includes(query);
-        const estadoMatch = cventa.estado.toLowerCase().includes(query);
+        const estadoMatch = selectedEstados.value.includes(cventa.estado); // Filtrar por estado
 
-        return nCotizacionMatch || clienteMatch || tecnicoMatch || estadoMatch;
+        return (nCotizacionMatch || clienteMatch || tecnicoMatch) && estadoMatch;
     });
 });
+
+// Observa cambios en los estados seleccionados (opcional)
+// watch(selectedEstados, (newValue) => {
+//     console.log('Estados seleccionados:', newValue);
+// });
 
 const form = useForm({
     id: ''
@@ -877,7 +883,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                         </Link>
                     </div>
                     <div>
-                        <div class="py-1">
+                        <div class="py-1 md:flex justify-between gap-4">
                             <div class="flex lg:flex-row flex-col md:gap-4 gap-3 md:my-0 my-2 w-full py-1.5">
                                 <div class="flex flex-col justify-end w-full">
                                     <div class="flex w-full">
@@ -890,6 +896,20 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                             autocomplete="off"
                                             placeholder="Buscar campos de la cotización">
                                     </div>
+                                </div>
+                            </div>
+                            <div class="md:flex-row flex py-1">
+                                <div class="flex items-center me-4">
+                                    <input v-model="selectedEstados" id="blue-checkbox" type="checkbox" value="Por Enviar" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="blue-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 whitespace-nowrap">Por enviar</label>
+                                </div>
+                                <div class="flex items-center me-4">
+                                    <input v-model="selectedEstados" id="green-checkbox" type="checkbox" value="Aceptado" class="w-4 h-4 text-green-500 bg-gray-100 border-gray-300 rounded focus:ring-green-600 dark:focus:ring-green-700 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="green-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 whitespace-nowrap">Aceptado</label>
+                                </div>
+                                <div class="flex items-center me-4">
+                                    <input v-model="selectedEstados" id="red-checkbox" type="checkbox" value="Rechazado" class="w-4 h-4 text-red-500 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="red-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 whitespace-nowrap">Rechazado</label>
                                 </div>
                             </div>
                         </div>
@@ -914,7 +934,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                         <td class="px-1 py-4 text-center hidden">{{ cventa.id }}</td>
                                         <td class="px-1 py-4 text-center">{{ cventa.n_cotizacion }}</td>
                                         <td class="px-1 py-4 text-center fa-fade font-semibold hidden">s|codigo</td>
-                                        <td class="px-1 py-4 text-center">
+                                        <td class="px-1 py-4 text-center whitespace-break-spaces">
                                             {{ cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente' }}
                                         </td>
                                         <!-- <td class="px-6 py-4 text-center">{{ cventa.tenor ? cventa.tenor.name : 'Sin codigo' }}
@@ -923,7 +943,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                         <!-- <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.subtotal }}</td> -->
                                         <td class="px-6 py-4 text-center whitespace-nowrap">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ parseFloat(cventa.total * 1.18).toFixed(2) }}</td>
                                         <td class="px-6 py-4 text-center whitespace-nowrap">{{ cventa.tecnico }}</td>
-                                        <td class="px-6 py-4 text-center text-white">
+                                        <td class="px-6 py-4 text-center text-white whitespace-nowrap">
                                             <div :class="{
                                                 'bg-blue-600': cventa.estado === 'Por Enviar',
                                                 // 'bg-yellow-600': cventa.estado === 'Enviado',

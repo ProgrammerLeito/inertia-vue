@@ -77,19 +77,19 @@ greeting.value = getGreeting();
         </template>
  
         <div id="fondoLogin" class="relative min-h-[calc(100vh-171px)] h-full flex flex-col justify-center items-center px-2 sm:pt-0 bg-[url('../../public/img/welcome_ini.jpg')] bg-no-repeat bg-cover bg-center">
-            <div class="bg-white rounded-lg shadow-black dark:shadow-white shadow-2xl z-50 h-auto md:h-[450px] px-2 w-auto md:w-[1000px]">
-                <div class="flex flex-col p-4 gap-2 md:gap-2 justify-center items-center font">
+            <div class="bg-white rounded-lg shadow-black dark:shadow-white shadow-2xl z-50 h-auto md:h-[450px] md:px-2 px-0 w-auto md:w-[1000px]">
+                <div class="flex flex-col p-4 gap-2 md:gap-2 justify-center items-center">
                     <video src="../../../public/img/balinsa.mp4" alt="Logooo" style="width: 700px; height: 300px; object-fit: contain;" autoplay muted loop></video>
                     <!-- <div class="font-bold text-md">
                         ¡{{ greeting }} {{$page.props.auth.user.name}}!
                     </div> -->
-                    <div class="md:text-5xl text-sm font-extrabold text-center" id="B_logo">
+                    <div class="md:text-5xl text-2xl font-extrabold text-center" id="B_logo">
                         INDUSTRIAS BALINSA - E.I.R.L.
                     </div>
                     <!-- <div class="md:text-xl text-md font-semibold text-center">
                         {{ motivationalQuote }}
                     </div> -->
-                    <div class="md:text-xl text-md font-semibold text-center">
+                    <div class="md:text-xl text-xl font-semibold text-center">
                         Piura - Trujillo - Chimbote
                     </div>
                 </div>

@@ -20,6 +20,14 @@ return [
             'throw' => false,
         ],
 
+        'hservicio_img' => [
+            'driver' => 'local',
+            'root' => public_path('hservicio_img'),
+            'url' => env('APP_URL').'/hservicio_img',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         'productos_img' => [
             'driver' => 'local',
             'root' => public_path('productos_img'),

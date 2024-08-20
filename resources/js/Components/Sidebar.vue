@@ -65,11 +65,10 @@ const logout = () => {
                     <!-- Scrool para sidebar -->
                     <div :class="{'scroll-sidebar h-[calc(100vh-415px)] overflow-x-auto': dataOpenSideBar, 'h-[calc(100vh-205px)] overflow-hidden': !dataOpenSideBar}">
                         <Link :href="route('clientes.index')" :active="route().current('clientes.*')" class="py-3 rounded-sm text-gray-400 px-2 flex space-x-2 p-2 cursor-pointer hover:text-white whitespace-pre-line"><span class='bi bi-people'><span v-show="dataOpenSideBar" class="ml-2">Listar Clientes</span></span></Link>
-                        <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
+                        <!-- <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-telephone'><span v-show="dataOpenSideBar" class="ml-2">Visitas y Llamadas</span></span></summary>
                             <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Control de llamadas Diarias</span> <img src="../../../public/img/excel.png" class="w-4"></Link>
-                            <!-- <Link :href="route('hojasservicios.index')" :active="route().current('hojasservicios.*')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Hoja De Servicio </span></Link> -->
-                        </details>
+                        </details> -->
                         <Link :href="route('tbproductos.index')" :active="route().current('tbproductos.*')" class="py-3 rounded-sm text-gray-400 px-2 flex space-x-2 p-2 cursor-pointer hover:text-white whitespace-pre-line"><span class=""><i class="fa-solid fa-cart-plus"></i><span v-show="dataOpenSideBar" class="ml-2">Catalago de Productos</span></span></Link>
                         <!-- <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-cart'><span v-show="dataOpenSideBar" class="ml-2">Productos</span></span></summary>
@@ -88,7 +87,7 @@ const logout = () => {
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-bar-chart-line'><span v-show="dataOpenSideBar" class="ml-2">Prestamos o Alquiler</span></span></summary>
-                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Equipos</span></Link>
+                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Listar Equipos</span> <img src="../../../public/img/excel.png" class="w-4"></Link>
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-patch-check'><span v-show="dataOpenSideBar" class="ml-2">Certificaciones</span></span></summary>

@@ -4,23 +4,14 @@ import { Link, useForm, usePage } from '@inertiajs/vue3'
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import ModalResponsive from '@/Components/ModalResponsive.vue';
 import Swal from 'sweetalert2';
-import { onMounted , watch , computed , ref , nextTick, watchEffect } from 'vue';
+import { onMounted , watch , computed , ref , watchEffect } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import axios from "axios";
 
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
-
-const nameInput2 = ref(null);
-const modal2 = ref(false);
-const title2 = ref('');
-const operation2 = ref(1);
-const id2 = ref('');
 
 const modal3 = ref(false);
 const tbproductosAgregados = ref([]);
@@ -59,10 +50,6 @@ const { clientes, tenors, tbproductos, tbsubcategorias, tbcategorias, tbmarcas, 
         required: true
     }
  
-});
- 
-const form2 = useForm({
-    name: '',
 });
 
 const form = useForm ({
@@ -472,47 +459,6 @@ watch(() => form.tipoCambio, (newValue) => {
     document.getElementById('subtotal').value = total.toFixed(2);
     document.getElementById('total').value = total.toFixed(2);
 });
- 
-//modal para crear el tenor
-const openModal2 = (op, name, tenor) => {
-    modal2.value = true;
-    nextTick(() => nameInput2.value.focus());
-    operation2.value = op;
-    id2.value = tenor;
-    if (op === 1) {
-        title2.value = 'Registrar Descripcion';
-    } else {
-        title2.value = 'Actualizar Descripcion';
-        form2.name = name;
-    }
-};
- 
-const closeModal2 = () => {
-    modal2.value = false;
-    form2.reset();
-};
- 
-const save2 = () => {
-    if (operation2.value === 1) {
-        form2.post(route('tenors.store'), {
-            onSuccess: () => { ok2('registrado con exito'); }
-        });
-    } else {
-        form2.put(route('tenors.update', id2.value), {
-            onSuccess: () => { ok2('actualizado con exito'); }
-        });
-    }
-};
-const ok2 = (msj) => {
-    form2.reset();
-    closeModal2();
-    Swal.fire({
-        title: msj,
-        icon: 'success',
-        timer: 1000,
-        showConfirmButton: false
-    });
-};
  
 onMounted(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -1708,28 +1654,6 @@ watchEffect(() => {
                 </div>
             </div>
         </div>
-        <ModalResponsive :show="modal2" @close="closeModal2">
-            <div class="p-4 uppercase">
-                <h2 class="text-lg font-medium text-gray-900 dark:text-white text-center uppercase mb-4">{{ title2 }}</h2>
-                <div class="p-1">
-                    <div class="w-full">
-                        <InputLabel for="name" value="Nombre:" class="mb-2"></InputLabel>
-                        <TextInput id="name" ref="nameInput2" v-model="form2.name" type="text" class="w-full"
-                                placeholder="Nombre"></TextInput>
-                        <InputError :message="form2.errors.name" class="mt-2"></InputError>
-                    </div>
-                </div>
-                <div class="p-1 flex justify-center">
-                    <PrimaryButton :disabled="form2.processing" @click="save2">
-                        <i class="fa-solid fa-save mx-1"></i>{{ operation2 == 1 ? 'Registrar' : 'Actualizar' }}
-                    </PrimaryButton>
-                    <DangerButton class="ml-3" :disabled="form2.processing"
-                            @click="closeModal2">
-                            Cancelar
-                    </DangerButton>
-                </div>
-            </div>
-        </ModalResponsive>
  
         <div v-if="modal3" class="fixed inset-0 overflow-y-auto z-1 pt-[110px] overflow-hidden bg-gray-200/40 flex justify-center items-center md:px-0 px-2" style="backdrop-filter: blur(2px);" @click.self="toggleModal3">
             <div class=" min-w-[calc(100vw-60px)] md:ml-[50px] md:px-6 max-h-[90%]">
