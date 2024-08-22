@@ -36,6 +36,14 @@ return [
             'throw' => false,
         ],
 
+        'productos_inventario' => [
+            'driver' => 'local',
+            'root' => public_path('productos_inventario'),
+            'url' => env('APP_URL').'/productos_inventario',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

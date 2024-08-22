@@ -40,7 +40,7 @@ class ProductoController extends Controller
                             DB::raw('(SELECT COALESCE(SUM(unidad_devolucion), 0) FROM salidas WHERE salidas.producto_id = productos.id) as total_devolucion'),
                             DB::raw('(SELECT COALESCE((SELECT cantidad FROM entradas WHERE entradas.producto_id = productos.id ORDER BY id DESC LIMIT 1), 0)) as ultima_cantidad_entrada')
                         )
-                        ->where('categories.id', '=', $categoryId)->orderBy('id', 'DESC')
+                        ->where('categories.id', '=', $categoryId)->orderBy('productos.id', 'DESC')
                         ->paginate(1000);
 
         $productos->appends(['category_id' => $categoryId]);
@@ -61,14 +61,15 @@ class ProductoController extends Controller
     public function store(ProductoRequest $request)
     {
         $producto = Producto::create($request->validated());
+
         if ($request->hasFile('imagen_producto')) {
             $file = $request->file('imagen_producto');
-            $fileName = uniqid('productos') . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('img/productos'), $fileName);
-            $producto->imagen_producto = $fileName;
+            $filePath = $file->store('', ['disk' => 'productos_inventario']);
+            $producto->imagen_producto = $filePath;
             $producto->save();
         }
 
+        // Redirige a la vista de productos con el ID de la categoría del producto
         return redirect()->route('productos.index', ['category_id' => $producto->category_id]);
     }
 
@@ -88,8 +89,14 @@ class ProductoController extends Controller
     public function destroy($id)
     {
         $producto = Producto::find($id);
-        unlink(public_path('img/productos/'.$producto->imagen_producto));
-        $producto->delete();
+
+        if ($producto) {
+            $imagePath = public_path('productos_inventario/' . $producto->imagen_producto);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+            $producto->delete();
+        }
         return redirect()->back();
     }
 }

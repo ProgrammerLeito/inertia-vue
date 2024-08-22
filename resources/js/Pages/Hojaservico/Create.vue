@@ -11,6 +11,8 @@ import FileInput from '@/Components/FileInput.vue';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const nameInput2 = ref(null);
 const modal2 = ref(false);
@@ -87,6 +89,8 @@ const form = useForm(initialvalues);
 const imagePreview1 = ref('');
 const imagePreview2 = ref('');
 const imagePreview3 = ref('');
+const imagePreviews = ref(['', '', '']); // Arreglo para guardar las vistas previas de las imágenes
+
 const onSelectFoto = (e, fieldName) => {
     const files = e.target.files;
     if (files.length) {
@@ -96,12 +100,15 @@ const onSelectFoto = (e, fieldName) => {
             switch (fieldName) {
                 case 'foto':
                     imagePreview1.value = e.target.result;
+                    imagePreviews.value[0] = e.target.result; // Guarda en el arreglo de imágenes
                     break;
                 case 'foto2':
                     imagePreview2.value = e.target.result;
+                    imagePreviews.value[1] = e.target.result; // Guarda en el arreglo de imágenes
                     break;
                 case 'foto3':
                     imagePreview3.value = e.target.result;
+                    imagePreviews.value[2] = e.target.result; // Guarda en el arreglo de imágenes
                     break;
                 default:
                     break;
@@ -110,21 +117,9 @@ const onSelectFoto = (e, fieldName) => {
         reader.readAsDataURL(files[0]);
 
         // También puedes guardar el archivo en el formulario si es necesario
-        switch (fieldName) {
-            case 'foto':
-                form.foto = files[0];
-                break;
-            case 'foto2':
-                form.foto2 = files[0];
-                break;
-            case 'foto3':
-                form.foto3 = files[0];
-                break;
-            default:
-                break;
-        }
+        form[fieldName] = files[0];
     }
-}
+};
 
 const submitForm = () => {
     form.post(route('hservicios.store'), {
@@ -203,6 +198,559 @@ watch(form.servicio_id, () => {
     form.n_informe = nInformeSeleccionado.value;
     form.razonSocial = razonSocialCliente.value;
 });
+
+const { props } = usePage();
+const user = props.auth.user;
+
+const obtenerNombreCompleto = (user) => {
+    if (user) {
+        return `${user.name} ${user.apellidopat} ${user.apellidomat}`;
+    }
+    return '';
+};
+
+const nombreCompleto = obtenerNombreCompleto(user);
+
+const previewPDF2 = () => {
+
+    const fechaEncabezadoCotizacion = new Date();
+    const añoCotizacion = fechaEncabezadoCotizacion.getFullYear();
+    const numeroCotizacion = form.n_informe
+    const numeroCotizacionFormateado = numeroCotizacion.toString().padStart(8, '0');
+    const marca = document.getElementById('hmarca_id').options[document.getElementById("hmarca_id").selectedIndex].text;
+    const serie = document.getElementById("serie").value;
+    const modelo = document.getElementById("modelo").value;
+    const div = document.getElementById("div").value;
+    const capacidad = document.getElementById("capacidad").value;
+    const plataforma = document.getElementById("plataforma").value;
+    const requiere = document.getElementById('requiere').options[document.getElementById("requiere").selectedIndex].text;
+    
+    const diagnostico = document.getElementById("diagnostico").value;
+    const trabajos = document.getElementById("trabajos").value;
+
+    const razonSocial = document.getElementById("razonSocial").value;
+
+    // Función para obtener el nombre del día de la semana en español
+    function getNombreDia(dia) {
+        const dias = [
+            'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
+        ];
+        return dias[dia];
+    }
+
+    // Función para obtener el nombre del mes en español
+    function getNombreMes(mes) {
+        const meses = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        return meses[mes];
+    }
+
+    // Función para formatear la fecha en el formato deseado
+    function obtenerFechaFormateada() {
+        const fecha = new Date();
+
+        const diaSemana = getNombreDia(fecha.getDay());
+        const dia = fecha.getDate().toString().padStart(2, '0');
+        const mes = getNombreMes(fecha.getMonth());
+        const año = fecha.getFullYear();
+
+        return `${diaSemana} ${dia} de ${mes} del ${año}`;
+    }
+
+    const fechaFormateada = obtenerFechaFormateada();
+
+    // ========== Inicia Función Dibujar Encabezado ==========
+
+    function fn_dibujarEncabezado(texto){
+        const anchoTexto = doc.getTextWidth(texto);
+        const eje_x_left = anchoPagina - anchoTexto - margenDerecho;
+        doc.text(eje_x_left, eje_y, texto);
+    }
+
+    // ========== Termina Función Dibujar Encabezado ==========
+
+    // ========== Inicia Función Dibujar Datos Generales ==========
+
+    function fn_dibujarDatosGenerales(inicioTabla){
+        doc.autoTable({
+            body: [
+                [
+                    'DATOS GENERALES'
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0],
+                textColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: inicioTabla,
+            columnStyles: {
+                0: {
+                    cellWidth: 190,
+                    fontStyle: 'bold'
+                }
+            },
+        });
+
+        doc.autoTable({
+            body: [
+                [
+                    'Técnico Responsable',
+                    nombreCompleto,
+                    'Fecha de Registro',
+                    fechaFormateada
+
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY,
+            columnStyles: {
+                0: {
+                    cellWidth: 40,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                },
+                1: {
+                    cellWidth: 55
+                },
+                2: {
+                    cellWidth: 30,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                }
+            },
+        });
+
+        doc.autoTable({
+            body: [
+                [
+                    'Cliente',
+                    razonSocial
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: { top: 30 , left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY,
+            columnStyles: {
+                0: {
+                    cellWidth: 40,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                }
+            },
+        });
+    }
+
+    // ========== Termina Función Dibujar Datos Generales ==========
+
+    // ========== Inicia Función Dibujar Datos del Equipo ==========
+
+    function fn_dibujarDatosdelEquipo(){
+        doc.autoTable({
+            body: [
+                [
+                    'DATOS DEL EQUIPO'
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0],
+                textColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY + 6,
+            columnStyles: {
+                0: {
+                    cellWidth: 190,
+                    fontStyle: 'bold'
+                }
+            },
+        });
+
+        doc.autoTable({
+            body: [
+                [
+                    'MARCA',
+                    marca,
+                    'MODELO',
+                    modelo
+
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY,
+            columnStyles: {
+                0: {
+                    cellWidth: 40,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                },
+                1: {
+                    cellWidth: 55
+                },
+                2: {
+                    cellWidth: 30,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                }
+            },
+        });
+
+        doc.autoTable({
+            body: [
+                [
+                    'SERIE',
+                    serie,
+                    'DIVISION',
+                    div
+
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY,
+            columnStyles: {
+                0: {
+                    cellWidth: 40,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                },
+                1: {
+                    cellWidth: 55
+                },
+                2: {
+                    cellWidth: 30,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                }
+            },
+        });
+
+        doc.autoTable({
+            body: [
+                [
+                    'CAPACIDAD',
+                    capacidad,
+                    'PLATAFORMA',
+                    plataforma
+
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY,
+            columnStyles: {
+                0: {
+                    cellWidth: 40,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                },
+                1: {
+                    cellWidth: 55
+                },
+                2: {
+                    cellWidth: 30,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                }
+            },
+        });
+
+        doc.autoTable({
+            body: [
+                [
+                    'REQUIERE',
+                    requiere
+
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY,
+            columnStyles: {
+                0: {
+                    cellWidth: 40,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                },
+                1: {
+                    cellWidth: 150
+                }
+            },
+        });
+    }
+
+    // ========== Termina Función Dibujar Datos del Equipo ==========
+
+    // ========== Inicia Función Dibujar Cuentas ==========
+
+    function fn_dibujarDiagnosticoTecnico(){
+        doc.autoTable({
+            body: [
+                [
+                    { content: 'DIAGNOSTICO DEL TECNICO :', styles: { halign: 'left' , fontStyle: 'bold', textColor: [0, 0, 0]} }
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY + 5,
+            columnStyles: {
+                0: {
+                    cellWidth: 190,
+                    fontStyle: 'bold'
+                }
+            },
+        });
+
+        const lineYPosition = doc.lastAutoTable.finalY;
+
+        doc.autoTable({
+            body: [
+                [
+                    { content: diagnostico, styles: { halign: 'left' , fontStyle: 'bold' } }
+                ],
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY
+        });
+
+        doc.setDrawColor(255, 255, 255);
+        doc.setLineWidth(1);
+        doc.line(10.1, lineYPosition, doc.internal.pageSize.width - 10.1, lineYPosition);
+    }
+
+    // ========== Termina Función Dibujar Cuentas ==========
+
+    // ========== Inicia Función Dibujar Trabajos ==========
+
+    function fn_dibujarTrabajos(){
+        doc.autoTable({
+            body: [
+                [
+                    { content: 'TRABAJOS A REALIZAR :', styles: { halign: 'left' , fontStyle: 'bold', textColor: [0, 0, 0]} }
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY + 5,
+            columnStyles: {
+                0: {
+                    cellWidth: 190,
+                    fontStyle: 'bold'
+                }
+            },
+        });
+
+        const lineYPosition2 = doc.lastAutoTable.finalY;
+
+        doc.autoTable({
+            body: [
+                [
+                    { content: trabajos, styles: { halign: 'left' , fontStyle: 'bold' } }
+                ],
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY
+        });
+
+        doc.setDrawColor(255, 255, 255);
+        doc.setLineWidth(1);
+        doc.line(10.1, lineYPosition2, doc.internal.pageSize.width - 10.1, lineYPosition2);
+    }
+
+    // ========== Termina Función Dibujar Trabajos ==========
+
+    // ========== Inicia Función Dibujar Fotos ==========
+
+    function fn_dibujarFotos() {
+        const columnWidth = 63.3; // Ancho de cada columna para FOTO 2 y FOTO 3
+        const rowHeight = 40; // Altura de cada fila (ajustar si es necesario)
+        const startY = doc.lastAutoTable.finalY + 5;
+        const totalWidth = columnWidth * 3; // Ancho total del encabezado (ajustado a 3 columnas)
+
+        // Crear tabla de encabezado para las fotos
+        doc.autoTable({
+            head: [['FOTO 1', 'FOTO 2', 'FOTO 3']],
+            startY: startY,
+            theme: 'grid',
+            styles: {
+                fontSize: 8,
+                cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0],
+                halign: 'center'
+            },
+            columnStyles: {
+                0: { cellWidth: columnWidth }, // Ancho de la primera columna para FOTO 1
+                1: { cellWidth: columnWidth }, // Ancho de la segunda columna para FOTO 2
+                2: { cellWidth: columnWidth }  // Ancho de la tercera columna para FOTO 3
+            },
+            tableWidth: totalWidth, // Ancho total de la tabla
+            margin: { left: 10 } // Ajusta el margen izquierdo para centrar la tabla
+        });
+
+        // Posicionar las imágenes en las tres columnas
+        imagePreviews.value.forEach((imgData, index) => {
+            if (imgData) {
+                const column = index % 3; // Determina la columna (0, 1 o 2)
+                const row = Math.floor(index / 3); // Determina la fila (0, 1, 2, etc.)
+
+                // Calcula la posición X e Y para la imagen
+                const posX = 10 + (column * columnWidth); // Ajusta el espacio entre columnas si es necesario
+                const posY = startY + (row * rowHeight) + 10; // Ajusta el offset vertical según sea necesario
+
+                // Añade la imagen al PDF con tamaño específico
+                doc.addImage(imgData, 'PNG', posX, posY, columnWidth, rowHeight); // Ajusta el tamaño según sea necesario
+            }
+        });
+    }
+
+
+    // ========== Termina Función Dibujar Fotos ==========
+
+    // ========== Inicia Construción de PDF ==========
+
+    const doc = new jsPDF();
+    // const doc = new jsPDF('landscape'); // Horizontal
+
+    let eje_y = 10;
+    let eje_x = 10;
+    let margenDerecho = 10;
+    let anchoPagina = doc.internal.pageSize.width;
+
+    doc.setTextColor(0,0,0);
+    doc.setFontSize(9);
+    doc.setFont('Helvetica', 'normal');
+
+    const backgroundImg = '/img/logo_ini.png';
+    doc.addImage(backgroundImg, 'JPEG', eje_x, eje_y, 80, 25);
+    
+    eje_y += 5;
+
+    fn_dibujarEncabezado("Av. Separadora Mz A LT 8 Sector 28 de Julio");
+    eje_y += 5;
+    fn_dibujarEncabezado("Telf: 955571986 - 924808237 - 934094721");
+    eje_y += 5;
+    fn_dibujarEncabezado("Correo: industriasbalinsa@gmail.com");
+    eje_y += 5;
+    fn_dibujarEncabezado("www.balinsa.com");
+    eje_y += 5;
+    fn_dibujarEncabezado("RUC: 20608165585");
+
+    eje_y += 10;
+
+    doc.setFontSize(12);
+    doc.setFont('Helvetica', 'bold');
+    fn_dibujarEncabezado(`REPORTE DE MANTENIMIENTO : N° ${añoCotizacion} - ${numeroCotizacionFormateado}`);
+    // doc.text(eje_x, eje_y, fechaFormateada);
+
+    const inicioTabla = 50;
+
+    fn_dibujarDatosGenerales(inicioTabla);
+
+    doc.setFontSize(8);
+    doc.setFont('Helvetica', 'bold');
+    fn_dibujarDatosdelEquipo();
+
+    doc.setFont('Helvetica', 'normal');
+    fn_dibujarDiagnosticoTecnico();
+
+    doc.setFont('Helvetica', 'normal');
+    fn_dibujarTrabajos();
+
+    fn_dibujarFotos();
+
+    // ========== Finaliza Construción de PDF ==========
+
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    window.open(url);
+}
 
 </script>
 <template>
@@ -292,13 +840,13 @@ watch(form.servicio_id, () => {
                                 </div>
                                 <div>
                                     <InputLabel for="plataforma" value="plataforma" />
-                                    <TextInput v-model="form.plataforma" type="text" id="capacidad"
+                                    <TextInput v-model="form.plataforma" type="text" id="plataforma"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="form.errors.plataforma" class="mt-2"></InputError>
                                 </div>
                                 <div>
                                     <InputLabel for="requiere" value="requiere" />
-                                    <select id="moneda" v-model="form.requiere" required
+                                    <select id="requiere" v-model="form.requiere" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Selecciona una opcion</option>
                                         <option value="REQUIERE MANTENIMIENTO">REQUIERE MANTENIMIENTO</option>
@@ -345,7 +893,7 @@ watch(form.servicio_id, () => {
                                         <div class="mt-2 flex items-center justify-center w-full"
                                             v-if="form.foto !== ''">
                                             <img :src="imagePreview1" alt="Vista previa de la foto"
-                                                class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                                class="p-2 block w-36 h-36 object-contain items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
                                         </div>
                                     </div>
                                 </div>
@@ -358,7 +906,7 @@ watch(form.servicio_id, () => {
                                         <div class="mt-2 flex items-center justify-center w-full"
                                             v-if="form.foto2 !== ''">
                                             <img :src="imagePreview2" alt="Vista previa de la foto 2"
-                                                class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                                class="p-2 block w-36 h-36 items-center object-contain text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
                                         </div>
                                     </div>
                                 </div>
@@ -371,13 +919,14 @@ watch(form.servicio_id, () => {
                                         <div class="mt-2 flex items-center justify-center w-full"
                                             v-if="form.foto3 !== ''">
                                             <img :src="imagePreview3" alt="Vista previa de la foto 3"
-                                                class="p-2 block w-36 h-36 items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                                class="p-2 block w-36 h-36 items-center object-contain text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
+                                    <button class="inline-block bg-green-700 text-white font-bold py-2 px-4 rounded hover:bg-green-800 md:w-min whitespace-nowrap w-full text-center" @click.prevent="previewPDF2">PREVISUALIZAR PDF</button>
                                     <ButtonResponsive
                                         class="inline-block uppercase bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 md:w-min whitespace-nowrap w-full text-center">
                                         Guadar Hoja de Servicio

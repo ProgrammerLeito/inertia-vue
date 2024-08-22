@@ -182,6 +182,7 @@ const totalCount = props.productos.total;
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 hidden">ID</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Codigo</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Foto</th>
                                         <th scope="col" class="px-6 py-3 text-left dark:border-white border-b-2">Producto</th>
@@ -199,10 +200,11 @@ const totalCount = props.productos.total;
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="bg-white text-black dark:bg-gray-700 dark:text-white border-b dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer" @dblclick="redirectToSalidas(producto.producto_id); guardarProductoId(producto.producto_id)" v-for="producto in filteredProductos">
-                                        <td class="px-6 py-4 text-center">{{ producto.producto_id }}</td>
+                                    <tr class="bg-white text-black dark:bg-gray-700 dark:text-white border-b dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer" @dblclick="redirectToSalidas(producto.producto_id); guardarProductoId(producto.producto_id)" v-for="(producto, i) in filteredProductos">
+                                        <td class="px-6 py-4 text-center hidden">{{ producto.producto_id }}</td>
+                                        <td class="px-6 py-4 text-center">{{ i + 1 }}</td>
                                         <td class="px-0 py-0 font-semibold text-center">
-                                            <img @click="openModal('/img/productos/' + producto.imagen_producto)" :src="'/img/productos/' + producto.imagen_producto" alt="Foto del Producto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
+                                            <img @click="openModal('/productos_inventario/' + producto.imagen_producto)" :src="'/productos_inventario/' + producto.imagen_producto" alt="Foto del Producto" style="width: 70px; height: 70px; cursor: pointer; object-fit: cover;" class="rounded-md py-1 mx-auto">
                                         </td>
                                         <td class="px-6 py-4 font-semibold text-left">{{ producto.insumo }}</td>
                                         <td class="px-6 py-4 text-center">{{ producto.comprador }}</td>

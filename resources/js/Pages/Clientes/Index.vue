@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import { ref, watchEffect } from 'vue';
 import jsPDF from 'jspdf';
+import 'jspdf-autotable';
  
 const searchQuery = ref('');
 const filteredClients = ref([]);
@@ -114,7 +115,7 @@ const openCtgModal = async (cliente) => {
             input: 'text-base tracking-widest ',
             confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
         },
-        inputPlaceholder: 'Selecciona una opción 🔽',
+        inputPlaceholder: 'Selecciona una opción ⏬',
         showCancelButton: true,
         confirmButtonText: 'Asignar',
         showLoaderOnConfirm: true,

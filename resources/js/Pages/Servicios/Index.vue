@@ -316,25 +316,25 @@ const totalCount = props.servicios.total;
                             </table>
                         </div>
                         <div class="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 sm:gap-x-8 mb-3">
-                            <div class="flex max-w-sm p-2 text-xs font-bold bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center justify-center">
+                            <div class="flex w-auto md:max-w-sm p-2 text-xs font-bold bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center md:justify-center justify-start whitespace-break-spaces">
                                 <span class="bg-blue-600 text-white me-2 px-2.5 py-0.5 rounded">Visitado</span>
                                 <p class="text-gray-700 ml-2 dark:text-gray-100">
                                     Equipo o instrumento ya verificado por servicio tecnico
                                 </p>
                             </div>
-                            <div class="flex max-w-sm p-2 text-xs font-bold bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center ">
+                            <div class="flex w-auto md:max-w-sm p-2 text-xs font-bold bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center md:justify-center justify-start whitespace-break-spaces">
                                 <span class="bg-green-600 text-white me-2 px-2.5 py-0.5 rounded">Cotizado</span>
                                 <p class="text-gray-700 ml-2 dark:text-gray-100">
                                     A la espera de una confirmacion positiva
                                 </p>
                             </div>
-                            <div class="flex max-w-sm p-2 bg-white border text-xs font-bold border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center justify-center">
+                            <div class="flex w-auto md:max-w-sm p-2 bg-white border text-xs font-bold border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center md:justify-center justify-start whitespace-break-spaces">
                                 <span class="bg-yellow-600 text-white me-2 px-2.5 py-0.5 rounded">Pendiente</span>
                                 <p class="text-gray-700 ml-2 dark:text-gray-100">
                                     Equipo o instrumento aun no revisado por servicio tecnico
                                 </p>
                             </div>
-                            <div class="flex max-w-sm p-2 bg-white border text-xs font-bold border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center">
+                            <div class="flex w-auto md:max-w-sm p-2 bg-white border text-xs font-bold border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 items-center md:justify-center justify-start whitespace-break-spaces">
                                 <span class="bg-red-600 text-white me-2 px-2.5 py-0.5 rounded">Finalizado</span>
                                 <p class="text-gray-700 ml-2 dark:text-gray-100">
                                     Concluida y aceptada por el cliente

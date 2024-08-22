@@ -33,7 +33,7 @@ const filteredCVentas = computed(() => {
         const nCotizacionMatch = cventa.n_cotizacion.toLowerCase().includes(query);
         const clienteMatch = cventa.cliente && cventa.cliente.razonSocial.toLowerCase().includes(query);
         const tecnicoMatch = cventa.tecnico.toLowerCase().includes(query);
-        const estadoMatch = selectedEstados.value.includes(cventa.estado); // Filtrar por estado
+        const estadoMatch = selectedEstados.value.length === 0 || selectedEstados.value.includes(cventa.estado);
 
         return (nCotizacionMatch || clienteMatch || tecnicoMatch) && estadoMatch;
     });
