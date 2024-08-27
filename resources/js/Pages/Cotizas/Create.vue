@@ -664,7 +664,7 @@ const user = props.auth.user;
 
 const obtenerNombreCompleto = (user) => {
     if (user) {
-        return `${user.name} ${user.apellidopat} ${user.apellidomat}`;
+        return `${user.name} ${user.apellidopat} ${user.apellidomat}`.toUpperCase();
     }
     return '';
 };

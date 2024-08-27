@@ -22,19 +22,13 @@ class hojaservicioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'n_informe' => '',
-            'servicio_a_realizar' => '',
             'razon_social' => '',
-            'direccion' => '',
+            'cantidad' => '',
+            'descripcion' => '',
+            'fecha' => '',
+            'lugar' => '',
             'contacto' => '',
-            'area_de_contacto' => '',
-            'telefono_de_contacto' => '',
-            'asesor_encargado' => '',
-            'tecnico_encargado' => '',
-            'hora_del_servicio' => 'nullable|date_format:H:i',
-            'cantidad_de_instrumentos' => '',
-            'datos_del_instrumento' => '',
-            'trabajos_a_realizar' => '',
+            'usuario' => '',
         ];
     }
 }

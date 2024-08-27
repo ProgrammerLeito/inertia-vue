@@ -102,7 +102,7 @@ const deleteUser = (id, name) => {
                                 <tbody>
                                     <tr class="bg-white text-black dark:bg-gray-700 dark:text-white" v-for="(user, i) in users.data" :key="user.id">
                                         <td class="px-6 py-4 font-semibold text-center">{{ i + 1 }}</td>
-                                        <td class="px-6 py-4 font-semibold text-left whitespace-nowrap">{{ user.name }}</td>
+                                        <td class="px-6 py-4 font-semibold text-left whitespace-nowrap uppercase">{{ user.name }}</td>
                                         <td class="px-6 py-4 font-semibold text-center whitespace-nowrap">{{ user.email }}</td>
                                         <td class="px-6 py-4 font-semibold text-center whitespace-nowrap">{{ user.sexo }}</td>
                                         <td class="px-6 py-4 font-semibold text-center whitespace-nowrap">{{ user.celular }}</td>

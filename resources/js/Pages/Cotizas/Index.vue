@@ -203,7 +203,51 @@ const displayedPages = () => {
 
 let timerInterval;
 
+$(document).on('click', ".descargarPDF", function(event) {
+    const $this = $(this);
+    const trElement = $this.closest('tr');
+    const cventaId = trElement.data('id');
+    const tbagregadoId = trElement.data('id');
+
+    // Depuración
+    // console.log('cventaId:', cventaId);
+    // console.log('tbagregadoId:', tbagregadoId);
+
+    // Verificar si la solicitud ya ha sido realizada
+    if ($this.data('clicked')) {
+        return; // Salir de la función si la solicitud ya se ha realizado
+    }
+
+    // Marcar el elemento como clickeado
+    $this.data('clicked', true);
+
+    let variablebandera = true;
+
+    fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera, $this);
+});
+
 $(document).on('dblclick', ".previsualizarPfd", function(event) {
+    const $this = $(this);
+    const cventaId = $this.data('id');
+    const tbagregadoId = $this.data('id');
+
+    // Verificar si la solicitud ya ha sido realizada
+    if ($this.data('clicked')) {
+        // console.log('La solicitud ya ha sido realizada para este elemento.');
+        return; // Salir de la función si la solicitud ya se ha realizado
+    }
+
+    // Marcar el elemento como clickeado
+    $this.data('clicked', true);
+
+    let variablebandera = false;
+
+    fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera, $this);
+});
+
+function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera, elemento) {
+
+    const $this = elemento
     
     Swal.fire({
         title: '¡Atención!',
@@ -217,18 +261,6 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
             clearInterval(timerInterval);
         }
     })
-    const $this = $(this);
-    const cventaId = $this.data('id');
-    const tbagregadoId = $this.data('id');
-
-    // Verificar si la solicitud ya ha sido realizada
-    if ($this.data('clicked')) {
-        // console.log('La solicitud ya ha sido realizada para este elemento.');
-        return; // Salir de la función si la solicitud ya se ha realizado
-    }
-
-    // Marcar el elemento como clickeado
-    $this.data('clicked', true);
 
     // Crear promesas para las consultas
     const consultaDatosCot = axios.post('/consultarDatosCot', { id: cventaId }, {
@@ -257,7 +289,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
             const ruc = arregloCotizacion.numeroDocumento;
             const direccion = arregloCotizacion.direccion;
             const numeroCotizacion = arregloCotizacion.n_cotizacion;
-            const nombreCompleto = arregloCotizacion.tecnico;
+            const nombreCompleto = arregloCotizacion.tecnico.toUpperCase();
             const valorTipoCambio = arregloCotizacion.tipoCambio;
             const forma_pago = arregloCotizacion.forma_pago;
             const validez_cot = arregloCotizacion.validez_cot;
@@ -853,9 +885,22 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
 
             clearInterval(timerInterval);
             Swal.close();
-            const blob = doc.output('blob');
-            const url = URL.createObjectURL(blob);
-            window.open(url);
+            function padNumber(number, length) {
+                return String(number).padStart(length, '0');
+            }
+
+            const nombreArchivo = `${razonSocial}_${padNumber(cventaId, 9)}.pdf`;
+            doc.setProperties({
+                title: nombreArchivo
+            });
+
+            if (!variablebandera){
+                const blobUrl = doc.output('bloburl');
+                window.open(blobUrl);
+            }else{
+                doc.save(nombreArchivo);
+            }
+
         })
         .catch(error => {
             console.error('Error al consultar datos:', error);
@@ -864,7 +909,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
             // Restablecer el estado después de un breve periodo de tiempo
             setTimeout(() => $this.data('clicked', false), 1000); // Ajusta el tiempo según sea necesario
         });
-});
+};
 
 </script>
  
@@ -900,16 +945,16 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                             </div>
                             <div class="md:flex-row flex py-1">
                                 <div class="flex items-center me-4">
-                                    <input v-model="selectedEstados" id="blue-checkbox" type="checkbox" value="Por Enviar" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="blue-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 whitespace-nowrap">Por enviar</label>
+                                    <input v-model="selectedEstados" id="blue-checkbox" type="checkbox" value="Por Enviar" class="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="blue-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Por enviar</label>
                                 </div>
                                 <div class="flex items-center me-4">
-                                    <input v-model="selectedEstados" id="green-checkbox" type="checkbox" value="Aceptado" class="w-4 h-4 text-green-500 bg-gray-100 border-gray-300 rounded focus:ring-green-600 dark:focus:ring-green-700 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="green-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 whitespace-nowrap">Aceptado</label>
+                                    <input v-model="selectedEstados" id="green-checkbox" type="checkbox" value="Aceptado" class="w-4 h-4 cursor-pointer text-green-500 bg-gray-100 border-gray-300 rounded focus:ring-green-600 dark:focus:ring-green-700 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="green-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Aceptado</label>
                                 </div>
                                 <div class="flex items-center me-4">
-                                    <input v-model="selectedEstados" id="red-checkbox" type="checkbox" value="Rechazado" class="w-4 h-4 text-red-500 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="red-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 whitespace-nowrap">Rechazado</label>
+                                    <input v-model="selectedEstados" id="red-checkbox" type="checkbox" value="Rechazado" class="w-4 h-4 cursor-pointer text-red-500 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="red-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Rechazado</label>
                                 </div>
                             </div>
                         </div>
@@ -942,7 +987,7 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                         <td class="px-6 py-4 text-center whitespace-nowrap">{{ cventa.fecha }}</td>
                                         <!-- <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.subtotal }}</td> -->
                                         <td class="px-6 py-4 text-center whitespace-nowrap">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ parseFloat(cventa.total * 1.18).toFixed(2) }}</td>
-                                        <td class="px-6 py-4 text-center whitespace-nowrap">{{ cventa.tecnico }}</td>
+                                        <td class="px-6 py-4 text-center whitespace-nowrap uppercase">{{ cventa.tecnico }}</td>
                                         <td class="px-6 py-4 text-center text-white whitespace-nowrap">
                                             <div :class="{
                                                 'bg-blue-600': cventa.estado === 'Por Enviar',
@@ -955,10 +1000,9 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
                                             </div>
                                         </td>
                                         <td class="py-4 text-center whitespace-nowrap">
-                                            <!-- <button @click="openCtgModal(cventa)"
-                                                class="text-center mx-1 text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 dark:hover:bg-white dark:hover:text-blue-600 rounded-md"><i
-                                                    class="fas fa-star"></i>
-                                            </button> -->
+                                            <button class="descargarPDF inline-flex mx-1 items-center justify-center bg-green-600 hover:bg-green-700 px-1.5 py-0.5 rounded-md">
+                                                <i class="fa-solid fa-download text-sm hover-beat-fade text-white"></i>
+                                            </button>
                                             <button @click="openCtgModal(cventa)" class="inline-flex mx-1 items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md">
                                                 <i class='fas fa-star text-sm text-white'></i>
                                             </button>
@@ -1014,3 +1058,9 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
         </div>
     </AppLayout>
 </template>
+
+<style>
+.hover-beat-fade:hover {
+    animation: fa-beat 1s infinite;
+}
+</style>
