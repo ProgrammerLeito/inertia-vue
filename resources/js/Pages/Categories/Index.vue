@@ -258,8 +258,8 @@ const totalCount = props.categories.total;
                 </div>
                 <div class="p-3 ">
                     <InputLabel for="descripcion" value="DESCRIPCION:" class="mb-2"></InputLabel>
-                    <TextInput id="descripcion" ref="nameInput" v-model="form.descripcion" type="text" class="w-full"
-                        placeholder="Descipcion de la categoria"></TextInput>
+                    <textarea id="descripcion" ref="nameInput" v-model="form.descripcion" type="text" class="w-full"
+                        placeholder="Descipcion de la categoria"></textarea>
                     <InputError :message="form.errors.descripcion" class="mt-2"></InputError>
                 </div>
                 <div class="p-3 flex justify-center">

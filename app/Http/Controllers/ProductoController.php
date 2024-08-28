@@ -8,6 +8,7 @@ use Inertia\Response;
 use App\Models\Category;
 use App\Http\Requests\ProductoRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductoController extends Controller
 {
@@ -81,9 +82,26 @@ class ProductoController extends Controller
 
     public function update(Request $request, Producto $producto)
     {
-        $producto->update($request->all());
+        $data = $request->except('imagen_producto');
+        
+        if ($request->hasFile('imagen_producto')) {
+            // Eliminar la imagen anterior si existe
+            if ($producto->imagen_producto) {
+                Storage::disk('productos_inventario')->delete($producto->imagen_producto);
+            }
 
-        return redirect()->route('productos.index', ['category_id' => $request->category_id]);
+            // Obtener la nueva imagen
+            $file = $request->file('imagen_producto');
+            // Almacenar la nueva imagen y obtener la ruta
+            $filePath = $file->store('', ['disk' => 'productos_inventario']);
+            // Agregar la nueva ruta de imagen a los datos
+            $data['imagen_producto'] = $filePath;
+        }
+
+        // Actualizar el producto con los nuevos datos
+        $producto->update($data);
+
+        return redirect()->route('productos.index', ['category_id' => $producto->category_id]);
     }
 
     public function destroy($id)

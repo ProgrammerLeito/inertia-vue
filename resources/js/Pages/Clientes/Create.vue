@@ -185,36 +185,36 @@ const ok4 = (msj) => {
                                          class="mt-2 w-full"/>
                                         <button @click="consultarReniec" type="button" class="bg-blue-600 w-12 h-[42px] rounded-r-lg hover:bg-blue-700"><i class='bx bx-search-alt text-white font-medium text-xl'></i></button>
                                     </div>
-                                    <InputError :message="errors.numeroDocumento" />
+                                    <InputError :message="$page.props.errors.numeroDocumento" />
                                 </div>    
                                 <div>
                                     <InputLabel value="razon Social" />
-                                    <TextInput v-model="form.razonSocial" type="text" placeholder="" class="mt-2 w-full"/>
+                                    <TextInput v-model="form.razonSocial" required type="text" placeholder="" class="mt-2 w-full"/>
                                 </div>
                                 <div>
                                     <InputLabel value="Estado"/>
-                                    <TextInput v-model="form.estado" type="text" class="mt-2 w-full"/>
+                                    <TextInput v-model="form.estado" required type="text" class="mt-2 w-full"/>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel value="Distrito" />
-                                    <TextInput v-model="form.distrito" type="text" class="mt-2 w-full"/>
+                                    <TextInput v-model="form.distrito" required type="text" class="mt-2 w-full"/>
                                 </div>
                                 <div>
                                     <InputLabel value="Provincia" />
-                                    <TextInput v-model="form.provincia" type="text"  class="mt-2 w-full" />
+                                    <TextInput v-model="form.provincia" required type="text"  class="mt-2 w-full" />
                                 </div>
                                 <div>
                                     <InputLabel value="Departamento" />
-                                    <TextInput v-model="form.departamento" type="text" class="mt-2 w-full"/>
+                                    <TextInput v-model="form.departamento" required type="text" class="mt-2 w-full"/>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div class="flex flex-col items-start">
                                     <InputLabel for="prov_clientes" value="Ciudad" class="ml-1"/>
                                     <div class="flex w-full mt-1">
-                                        <select v-model="form.tbprovincia_id" name="tbprovincia_id" id="tbprovincia_id"
+                                        <select v-model="form.tbprovincia_id" required name="tbprovincia_id" id="tbprovincia_id"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm text-base sm:text-base border-gray-300 rounded-l-lg h-[41.6px]">
                                             <option value="" disabled=""  selected="selected">Selecciona una Ciudad</option>
                                             <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id" :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
@@ -231,12 +231,12 @@ const ok4 = (msj) => {
                                 </div>
                                 <div>
                                     <InputLabel for="cli_direccion2" value="direccion anexa 1"/>
-                                    <TextInput v-model="form.cli_direccion2" type="text" id="cli_direccion2" placeholder="Ingrese Direccion Anexa 1" class="mt-2 w-full"/>
+                                    <TextInput v-model="form.cli_direccion2" type="text" id="cli_direccion2" required placeholder="Ingrese Direccion Anexa 1" class="mt-2 w-full"/>
                                 </div>
                             </div>
                             <div>
                                 <InputLabel for="cli_observacion" value="Observaciones"/>
-                                    <textarea id="cli_observacion" v-model="form.cli_observacion" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las observaciones..."></textarea>
+                                    <textarea id="cli_observacion" v-model="form.cli_observacion" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Escriba las observaciones..."></textarea>
                                 <InputError :message="$page.props.errors.cli_observacion" class=""/>
                             </div>
                             <div class="d-flex mt-4">

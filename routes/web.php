@@ -51,6 +51,7 @@ Route::middleware(['auth:web'])->group(function () {
     // Inventario de productos
     Route::resource('/categories', CategoryController::class);
     Route::resource('/productos', ProductoController::class);
+    route::post('/producto/{producto}', [ProductoController::class, 'update'])->name('producto.update');
     Route::resource('/salidas', SalidasController::class);
     Route::resource('/entradas', EntradaController::class);
     Route::post('/comprobarSalida', [SalidasController::class , 'comprobarSalida']);
@@ -90,7 +91,7 @@ Route::middleware(['auth:web'])->group(function () {
     //Consulta para consumir la api de sunat para el modulo de clientes
     Route::get('/consultar-reniec', function (Request $request) {
         $numeroDocumento = $request->query('numero');
-        $token = 'apis-token-7907.K0qLm91OLHYP07iBLCqF4INtKqqtu0H6';
+        $token = 'apis-token-10192.lgbp44SaTMi8tlleXcrrFYn79hAwerEU';
    
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token

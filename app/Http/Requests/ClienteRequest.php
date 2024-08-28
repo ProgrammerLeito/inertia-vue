@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ClienteRequest extends FormRequest
 {
@@ -22,7 +23,7 @@ class ClienteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'numeroDocumento' => 'required|string',
+            'numeroDocumento' => ['required', 'string', 'max:250', Rule::unique(table: 'clientes', column: 'numeroDocumento')->ignore(id: request('clientes'), idColumn: 'id')],
             'razonSocial' => 'required|string',
             'direccion' => 'required|string',
             'distrito' => 'required|string',
@@ -36,6 +37,14 @@ class ClienteRequest extends FormRequest
             'cli_direccion2' => 'required',
             'cli_observacion' => 'required|string',
             'tbprovincia_id' => 'required',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'numeroDocumento.unique' => 'El número de documento ya ha sido registrado.',
+            // Otros mensajes de error personalizados...
         ];
     }
 }

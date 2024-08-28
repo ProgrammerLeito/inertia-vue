@@ -348,7 +348,7 @@ const printPDF = async () => {
                                         <td class="px-6 py-4 text-left font-semibold">{{ cliente.razonSocial }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.direccion }}</td>
                                         <td class="px-6 py-4 text-center">{{ cliente.tbprovincia ? cliente.tbprovincia.prov_nombre : 'Sin ciudad' }}</td>
-                                        <td class="px-6 py-4 text-center">{{ cliente.asesor }}</td>
+                                        <td class="px-6 py-4 text-center uppercase">{{ cliente.asesor }}</td>
                                         <td class="py-4 px-2 text-center" @contextmenu.prevent="openCtgModal(cliente)">
                                             <div :class="{
                                                 'bg-blue-600 text-white': cliente.ctg === 'Vip',

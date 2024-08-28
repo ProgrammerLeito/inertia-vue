@@ -32,7 +32,7 @@ class ClienteController extends Controller
     {
         $asesor = Auth::user()->name;
 
-        $token = 'apis-token-7907.K0qLm91OLHYP07iBLCqF4INtKqqtu0H6'; // Reemplaza con tu token
+        $token = 'apis-token-10192.lgbp44SaTMi8tlleXcrrFYn79hAwerEU'; // Reemplaza con tu token
         $ruc = $request->input('numeroDocumento');
 
         // Iniciar llamada a API con cURL

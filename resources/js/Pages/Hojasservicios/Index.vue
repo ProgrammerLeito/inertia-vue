@@ -204,29 +204,6 @@ const deleteHojaServicio = (id, razon_social) => {
                                 <InputError :message="form.errors.cantidad" class="mt-2"></InputError>
                             </div>
                             <div>
-                                <InputLabel for="descripcion" value="descripcion"
-                                    class="block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.descripcion" type="text" id="descripcion" required
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                <InputError :message="form.errors.descripcion" class="mt-2"></InputError>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:gap-y-6 gap-y-3 md:grid-cols-3 sm:gap-x-8 mb-3">
-                            <div>
-                                <InputLabel for="fecha" value="fecha"
-                                    class="block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.fecha" type="date" id="fecha" required
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                <InputError :message="form.errors.fecha" class="mt-2"></InputError>
-                            </div>
-                            <div>
-                                <InputLabel for="lugar" value="lugar"
-                                    class="block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.lugar" type="text" id="lugar" required
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                <InputError :message="form.errors.lugar" class="mt-2"></InputError>
-                            </div>
-                            <div>
                                 <InputLabel for="contacto" value="contacto"
                                     class="block text-md font-medium text-gray-700 " />
                                 <TextInput v-model="form.contacto" type="text" id="contacto" required
@@ -234,9 +211,32 @@ const deleteHojaServicio = (id, razon_social) => {
                                 <InputError :message="form.errors.contacto" class="mt-2"></InputError>
                             </div>
                         </div>
-                        <div class="d-flex mt-4">
-                            <div class="flex flex-wrap gap-2 justify-end">
-                                <ButtonResponsive v-if="!isEditing" @dblclick="editHojaServicio(hojaservicio)" class="uppercase text-xs">Generar Hoja de Especificaciones</ButtonResponsive>
+                        <div class="grid grid-cols-1 md:gap-y-6 gap-y-3 md:grid-cols-3 md:gap-x-8 gap-x-0 mb-3">
+                            <div>
+                                <InputLabel for="fecha" value="fecha"
+                                    class="block text-md font-medium text-gray-700 " />
+                                <TextInput v-model="form.fecha" type="date" id="fecha" required
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                <InputError :message="form.errors.fecha" class="mt-2"></InputError>
+                            </div>
+                            <div class="col-span-2">
+                                <InputLabel for="lugar" value="lugar"
+                                    class="block text-md font-medium text-gray-700 " />
+                                <TextInput v-model="form.lugar" type="text" id="lugar" required
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                <InputError :message="form.errors.lugar" class="mt-2"></InputError>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:gap-y-6 gap-y-3 md:grid-cols-3 mb-3">
+                            <div class="col-span-2">
+                                <InputLabel for="descripcion" value="descripcion"
+                                    class="block text-md font-medium text-gray-700 " />
+                                <textarea v-model="form.descripcion" type="text" id="descripcion" required
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                <InputError :message="form.errors.descripcion" class="mt-2"></InputError>
+                            </div>
+                            <div class="flex flex-wrap gap-2 justify-end items-end">
+                                <ButtonResponsive v-if="!isEditing" @dblclick="editHojaServicio(hojaservicio)" class="uppercase text-xs">Generar Hoja de Servicio</ButtonResponsive>
                                 <ButtonResponsive v-if="isEditing" @click="updateHojaServicio()" class="uppercase text-xs">Actualizar Hoja de Servicio</ButtonResponsive>
                             </div>
                         </div>
@@ -244,14 +244,6 @@ const deleteHojaServicio = (id, razon_social) => {
                     <div class="tracking-widest font-extrabold text-center uppercase">
                         <h1 class="md:text-lg mb-3 text-md dark:text-white underline decoration-wavy">Historial de Hojas de Servicio </h1>
                     </div>
-                    <!-- <div class="flex justify-between text-center">
-                        <h1 class="md:text-lg mb-3 font-extrabold text-md dark:text-white">Historial de Hojas de Servicio </h1>
-                        <div class="flex flex-wrap justify-end items-center">
-                            <label class="text-base text-gray-900 dark:text-gray-50">Filtrar por :</label>
-                            <input type="date" v-model="fechaSeleccionada" @change="filtrarPorFecha"
-                                class="outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 px-2.5 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="fechaHoyHoja">
-                        </div>
-                    </div> -->
                     <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                             <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
@@ -281,10 +273,9 @@ const deleteHojaServicio = (id, razon_social) => {
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.lugar }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.contacto }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.usuario }}</td>
-                                    <td class="px-6 py-3 justify-center dark:border-white flex">
-                                        <button @click="$event => deleteHojaServicio(hojaservicio.id, hojaservicio.razon_social)"
-                                            class="text-center ml-1 text-white shadow-lg shadow-gray-500 dark:shadow-red-600 dark:hover:bg-white dark:hover:text-red-600 bg-red-500 hover:bg-red-600 py-1 px-2 rounded-md"
-                                            title="Eliminar Cliente"><i class="bi bi-trash3"></i>
+                                    <td class="px-6 py-3 dark:border-white relative">
+                                        <button @click="$event => deleteHojaServicio(hojaservicio.id, hojaservicio.razon_social)" class="bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md" title="Eliminar Cliente">
+                                            <i class='bx bxs-trash text-base text-white'></i>
                                         </button>
                                     </td>
                                 </tr>
