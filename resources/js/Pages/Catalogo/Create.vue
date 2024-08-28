@@ -459,9 +459,11 @@ const ok4 = (msj) => {
                                         class="block text-xs font-medium text-gray-700" />
                                     <FileInput name="foto" @change="(e) => onSelectFoto(e, 'foto')" />
                                     <InputError :message="$page.props.errors.foto" class="mt-2" />
-                                    <div class="mt-2 " v-if="form.foto !== ''">
-                                        <img :src="imagePreview1" alt="Vista previa de la foto"
-                                            class="h-32 dark:text-white text-black mx-auto rounded">
+                                    <div class="flex flex-wrap justify-center items-center px-4 py-2" v-if="imagePreview1">
+                                        <div class="mt-2">
+                                            <img :src="imagePreview1" alt="Vista previa de la foto"
+                                            class="p-2 w-40 h-40 object-contain text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-200 dark:bg-gray-600 dark:border-gray-500">
+                                        </div>
                                     </div>
                                 </div>
                             </div>

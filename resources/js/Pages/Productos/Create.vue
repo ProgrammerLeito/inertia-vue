@@ -124,13 +124,13 @@ const submitForm = () => {
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                             <div class="p-6 bg-white border-gray-200 dark:bg-gray-800">
-                                <div class="flex flex-col md:flex-row justify-center items-start gap-x-10 gap-y-4">
+                                <div class="flex flex-col md:flex-row justify-center items-start md:gap-40 gap-0 gap-y-5">
                                     <div>
                                         <p class="text-gray-900 dark:text-white font-extrabold">Ingresar Nuevo Producto a Almacen</p>
                                         <p class="text-gray-900 dark:text-white font-normal">Crear un nuevo producto</p>
                                     </div>
                                     <div class="md:flex-1 w-full">
-                                        <div class="class dark:bg-gray-700 bg-gray-200 rounded-t-lg p-5">
+                                        <div class="class dark:bg-gray-700 bg-gray-100 rounded-t-lg p-5">
                                             <InputLabel for="category_id" value="Categorias" class="ml-1"/>
                                             <select v-model="form.category_id" name="category_id" id="category_id" class="bg-white border mt-1 border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                                 <option value="" disabled="" selected="selected">Selecciona una Categoria</option>
@@ -207,13 +207,15 @@ const submitForm = () => {
                                                     class="block text-md font-medium text-gray-700" />
                                                 <FileInput name="foto" @change="(e) => onSelectFoto(e, 'foto')" class="text-sm" />
                                                 <InputError :message="$page.props.errors.imagen_producto" class="mt-2" />
-                                                <div class="mt-2 " v-if="form.imagen_producto !== ''">
-                                                    <img :src="imagePreview1" alt="Vista previa de la foto"
-                                                        class="h-32 dark:text-white text-black mx-auto rounded">
+                                                <div class="flex flex-wrap gap-10 justify-center items-center mb-4 mt-4">
+                                                    <div class="mt-2 " v-if="form.imagen_producto !== ''">
+                                                        <img :src="imagePreview1" alt="Vista previa de la foto"
+                                                        class="p-2 w-36 h-36 object-contain text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-200 dark:bg-gray-600 dark:border-gray-500">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="flex justify-end dark:bg-gray-600 bg-gray-300 py-3 pr-4 rounded-b-lg">
+                                        <div class="flex justify-end dark:bg-gray-600 bg-gray-200 py-3 pr-4 rounded-b-lg">
                                             <button class="px-4 py-2 text-white font-medium tracking-wider text-xs uppercase rounded-lg bg-blue-700 hover:bg-blue-800 focus:outline-none focus:shadow-outline">
                                                 Registrar Producto
                                             </button>

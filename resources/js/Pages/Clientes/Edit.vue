@@ -24,14 +24,6 @@ const { cliente, tbprovincias } = defineProps({
 // Lógica del componente
 const form = useForm(cliente);
 
-const setCurrentDate = () => {
-    const today = new Date().toISOString().split('T')[0];
-    form.fechafactura = today;
-}
-onMounted(() => {
-    setCurrentDate();
-});
-
 // Función para enviar el formulario
 const submitForm = () => {
     form.put(route('clientes.update', { cliente: cliente.id }), {
@@ -146,6 +138,11 @@ const submitForm = () => {
                                     <InputLabel value="N° Factura" />
                                     <TextInput v-model="form.codigofactura" type="text" placeholder="Ingrese el codigo de factura" class="mt-2 w-full"/>
                                 </div>
+                                <div v-if="$page.props.user.permissions.includes('Acciones Administrador')">
+                                    <InputLabel for="asesor" value="Asesor"/>
+                                        <TextInput id="asesor" v-model="form.asesor" rows="4" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Escriba las observaciones..."></TextInput>
+                                    <InputError :message="$page.props.errors.asesor" class=""/>
+                                </div>                                
                             </div>
                                 <InputLabel for="cli_observacion" value="Observaciones"/>
                                     <textarea id="cli_observacion" v-model="form.cli_observacion" rows="2" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las observaciones..."></textarea>

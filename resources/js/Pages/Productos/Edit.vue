@@ -101,13 +101,13 @@ const onSelectFoto2 = (e, fieldName) => {
                 <form @submit.prevent="submitForm">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6 bg-white border-gray-200 dark:bg-gray-800">
-                            <div class="flex flex-col md:flex-row justify-center items-start gap-x-10 gap-y-4">
+                            <div class="flex flex-col md:flex-row justify-center items-start md:gap-40 gap-0 gap-y-5">
                                 <div>
                                     <p class="text-gray-900 dark:text-white font-extrabold">Actualizar Producto</p>
                                     <p class="text-gray-900 dark:text-white font-normal">Actualizar el producto seleccionado</p>
                                 </div>
                                 <div class="md:flex-1 w-full">
-                                    <div class="class dark:bg-gray-700 bg-gray-200 rounded-t-lg p-5">
+                                    <div class="class dark:bg-gray-700 bg-gray-100 rounded-t-lg p-5">
                                         <InputLabel for="category_id" value="Categorias" class="ml-1"/>
                                         <select v-model="form.category_id" name="category_id" id="category_id" class="bg-white border mt-1 border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                             <option value="" disabled="" selected="selected">Selecciona una Categoria</option>
@@ -184,25 +184,25 @@ const onSelectFoto2 = (e, fieldName) => {
                                             <FileInput name="foto" @change="(e) => onSelectFoto2(e, 'foto')" class="text-sm" />
                                             <InputError :message="$page.props.errors.imagen_producto" class="mt-2" />
 
-                                            <div class="mt-4 flex space-x-4 justify-between items-center">
+                                            <div class="flex flex-wrap gap-10 justify-center items-center mb-4 mt-4">
                                                 <!-- Foto Actual -->
                                                 <div class="text-center dark:text-white">
-                                                    <img class="h-32 rounded shadow" :src="'/productos_inventario/' + productos.imagen_producto" alt="Foto actual">
+                                                    <img :src="'/productos_inventario/' + productos.imagen_producto" alt="Foto actual" class="p-2 block w-36 h-36 items-center object-contain text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-200 dark:bg-gray-600 focus:outline-none dark:border-gray-500">
                                                     <p class="text-sm dark:text-white text-gray-900 mt-1">Foto actual</p>
                                                 </div>
-                                                <div>
+                                                <div v-if="imagePreview2">
                                                     <i class="fa-solid fa-right-left dark:text-white text-gray-900 text-4xl"></i>
                                                 </div>
                                                 
                                                 <!-- Vista Previa de la Nueva Foto -->
                                                 <div v-if="imagePreview2" class="text-center dark:text-white">
-                                                    <img :src="imagePreview2" alt="Vista previa de la foto" class="h-32 rounded shadow">
+                                                    <img :src="imagePreview2" alt="Vista previa de la foto" class="p-2 block w-36 h-36 items-center object-contain text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-200 dark:bg-gray-600 focus:outline-none dark:border-gray-500">
                                                     <p class="text-sm dark:text-white text-gray-900 mt-1">Nueva Foto</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="flex justify-end dark:bg-gray-600 bg-gray-300 py-3 pr-4 rounded-b-lg">
+                                    <div class="flex justify-end dark:bg-gray-600 bg-gray-200 py-3 pr-4 rounded-b-lg">
                                         <button class="px-4 py-2 text-white font-medium tracking-wider text-xs uppercase rounded-lg bg-blue-700 hover:bg-blue-800 focus:outline-none focus:shadow-outline">
                                             Actualizar Producto
                                         </button>

@@ -30,7 +30,7 @@ class ClienteController extends Controller
 
     public function store(ClienteRequest $request)
     {
-        $asesor = Auth::user()->name;
+        $asesor = "s/n";
 
         $token = 'apis-token-10192.lgbp44SaTMi8tlleXcrrFYn79hAwerEU'; // Reemplaza con tu token
         $ruc = $request->input('numeroDocumento');

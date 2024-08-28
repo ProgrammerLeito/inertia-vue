@@ -278,19 +278,19 @@ const submitForm = () => {
                                     <FileInput name="foto" @change="(e) => onSelectFoto2(e, 'foto')"  />
                                     <InputError :message="$page.props.errors.foto" class="mt-2" />
 
-                                    <div class="mt-4 flex space-x-4 justify-between items-center">
+                                    <div class="mt-4 flex space-x-4 justify-center items-center">
                                         <!-- Foto Actual -->
                                         <div class="text-center dark:text-white">
-                                            <img class="h-32 rounded shadow" :src="'/productos_img/' + tbproducto.foto" alt="Foto actual">
+                                            <img :src="'/productos_img/' + tbproducto.foto" alt="Foto actual" class="p-2 w-40 h-40 object-contain text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-200 dark:bg-gray-600 dark:border-gray-500">
                                             <p class="text-sm dark:text-white text-gray-900 mt-1">Foto actual</p>
                                         </div>
-                                        <div>
+                                        <div v-if="imagePreview2">
                                             <i class="fa-solid fa-right-left dark:text-white text-gray-900 text-4xl"></i>
                                         </div>
                                         
                                         <!-- Vista Previa de la Nueva Foto -->
                                         <div v-if="imagePreview2" class="text-center dark:text-white">
-                                            <img :src="imagePreview2" alt="Vista previa de la foto" class="h-32 rounded shadow">
+                                            <img :src="imagePreview2" alt="Vista previa de la foto" class="p-2 w-40 h-40 object-contain text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-200 dark:bg-gray-600 dark:border-gray-500">
                                             <p class="text-sm dark:text-white text-gray-900 mt-1">Nueva Foto</p>
                                         </div>
                                     </div>
