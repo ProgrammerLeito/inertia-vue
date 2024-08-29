@@ -53,6 +53,9 @@ import { Link } from '@inertiajs/vue3';
 import ButtonDelete from '@/Components/ButtonDelete.vue';
 import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
+import axios from "axios";
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 const props = defineProps({
     productos: {
@@ -141,6 +144,73 @@ const current_page = props.productos.current_page;
 const countPerPage = props.productos.data.length;
 const totalCount = props.productos.total;
 
+const obtenerDatosSalidas = async () => {
+    try {
+        const response = await axios.get('/fn_ObtenerDatosSalidas');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener las salidas:', error);
+        return [];
+    }
+};
+
+const printPDF = async () => {
+    const data = await obtenerDatosSalidas();
+
+    const doc = new jsPDF('landscape');
+
+    const headerText = 'LISTA DE SALIDAS';
+    const tableHeaders = ['N°', 'EMPRESA', 'PRODUCTO', 'TÉCNICO', 'UNIDAD SALIDA', 'UNIDAD DEVOLUCIÓN', 'FECHA', 'HORA SALIDA'];
+
+    // Mapear los datos para la tabla
+    const tableData = data.map((item, i) => [
+        i + 1,
+        item.empresa || '',
+        item.producto_nombre || '',
+        item.tecnico || '',
+        item.unidad_salida || '',
+        item.unidad_devolucion || '',
+        item.fecha || '',
+        item.hora_salida || '',
+    ]);
+
+    let eje_y = 10;
+
+    // Añadir el contenido al PDF
+    doc.setFontSize(14);
+    doc.setFont('courier', 'bold');
+    doc.text(headerText, 15, eje_y += 7);
+
+    doc.autoTable({
+        head: [tableHeaders],
+        body: tableData,
+        startY: eje_y += 10,
+        theme: 'grid',
+        styles: {
+            fontSize: 8,
+            cellPadding: 2,
+            valign: 'middle',
+            halign: 'center',
+            textColor: '#000000',
+        },
+        headStyles: {
+            fillColor: '#40c63a',
+            textColor: '#ffffff',
+        },
+        bodyStyles: {
+            fillColor: '#eeefef',
+            textColor: '#000000',
+        },
+        columnStyles: {
+            0: { fontStyle: 'bold' },
+        },
+    });
+
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    window.open(url);
+};
+
 </script>
 
 <template>
@@ -153,15 +223,19 @@ const totalCount = props.productos.total;
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
-                        <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('Crear Producto')">
+                        <Link :href="route('productos.create')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap items-center flex justify-center gap-2 w-full text-center" v-if="$page.props.user.permissions.includes('Crear Producto')">
                             <i class="bi bi-clipboard-plus mx-1"></i>Registrar Producto
                         </Link>
-                        <Link :href="route('salidas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('Listar Salidas')">
+                        <Link :href="route('salidas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full items-center flex justify-center gap-2 text-center" v-if="$page.props.user.permissions.includes('Listar Salidas')">
                             <i class="fa solid fa-list-ul mx-1"></i>Listar Salidas
                         </Link>
-                        <Link :href="route('entradas.index')" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('Listar Entradas')">
+                        <Link :href="route('entradas.index')" class="text-white bg-indigo-700 items-center flex justify-center gap-2 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('Listar Entradas')">
                             <i class="bi bi-list-check mx-1"></i>Listar Entradas
                         </Link>
+                        <button @click="printPDF" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center items-center flex justify-center gap-2">
+                            <i class="bx bx-printer text-xl"></i>
+                            Imprimir Salidas
+                        </button>
                     </div>
                     <div class="md:mt-2 mt-4">
                         <div class="font-semibold text-center dark:text-white">Categoria || {{ nombreCategoria }}</div>

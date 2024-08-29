@@ -133,3 +133,4 @@ Route::middleware(['auth:web'])->group(function () {
 
 Route::get('/fn_guardarCotizacion', [CventaController::class, 'guardarCotizacion']);
 Route::get('/validarIdCot', [CventaController::class, 'validarIdCot']);
+route::get('/fn_ObtenerDatosSalidas', [ProductoController::class, 'fn_ObtenerDatosSalidas'])->name('fn_ObtenerDatosSalidas');

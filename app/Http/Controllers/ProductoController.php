@@ -52,6 +52,32 @@ class ProductoController extends Controller
         ]);
     }
 
+    public function fn_ObtenerDatosSalidas(){
+        try {
+            $salidas = DB::table('salidas')
+                        ->join('productos', 'salidas.producto_id', '=', 'productos.id')
+                        ->join('users', 'users.id', '=', 'salidas.tecnico')
+                        ->select(
+                            'salidas.empresa',
+                            'salidas.unidad_salida',
+                            'salidas.comentario_salida',
+                            'users.name as tecnico', // Nombre del técnico
+                            'salidas.fecha',
+                            'salidas.hora_salida',
+                            'salidas.unidad_devolucion',
+                            'productos.insumo as producto_nombre' // Nombre del producto
+                        )
+                        ->orderBy('salidas.id', 'DESC')
+                        ->get();
+    
+            return response()->json($salidas);
+        } catch (\Exception $e) {
+            // Log the error and return a 500 response
+            \log("")::error('Error al obtener las salidas: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al obtener las salidas'], 500);
+        }
+    }
+    
     public function create()
     {
         $categories = Category::all();
