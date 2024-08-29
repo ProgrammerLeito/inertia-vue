@@ -15,6 +15,7 @@ class Hojaservicio extends Model
         'fecha',
         'lugar',
         'contacto',
+        'nro_contacto',
         'usuario'
     ];
 

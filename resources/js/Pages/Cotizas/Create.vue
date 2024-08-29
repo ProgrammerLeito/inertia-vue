@@ -1227,8 +1227,12 @@ const previewPDF2 = () => {
 
         // ========== Inicia Construción de PDF ==========
 
-        const doc = new jsPDF();
-        // const doc = new jsPDF('landscape'); // Horizontal
+        let doc = NaN
+        if($("#paginaHorizontal").prop("checked")){
+            doc = new jsPDF('landscape'); // Horizontal
+        }else{
+            doc = new jsPDF('portrait'); // Vertical
+        };
 
         let eje_y = 10;
         let eje_x = 10;
@@ -1395,7 +1399,7 @@ watchEffect(() => {
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                
                         <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-4 sm:gap-x-8 mb-3 sm:py-0 py-2">
+                            <div class="grid grid-cols-1 gap-y-0 sm:grid-cols-4 sm:gap-x-8 mb-3 sm:py-0 py-2">
                                 <!-- cliente -->
                                 <div class="w-full">
                                     <InputLabel for="cliente_id" class="text-xs">Cliente</InputLabel>
@@ -1435,7 +1439,11 @@ watchEffect(() => {
                                     <InputError :message="$page.props.errors.fecha" class="mt-2"/>
                                 </div>
                             </div>
-                            <div class="text-end">
+                            <div class="flex flex-col md:flex-row justify-end items-center gap-y-4 gap-x-10">
+                                <div class="flex items-center">
+                                    <input id="paginaHorizontal" type="checkbox" value="Rechazado" class="w-4 h-4 cursor-pointer text-orange-500 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="paginaHorizontal" class="ms-2 text-sm font-extrabold text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Generar PDF Horizontal</label>
+                                </div>
                                 <!-- Botón para abrir el tercer modal -->
                                 <button class="text-white uppercase text-xs bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" @click.prevent="toggleModal3">Agregar Producto</button>
                             </div>

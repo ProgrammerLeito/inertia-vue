@@ -1,7 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
@@ -200,7 +200,6 @@ const displayedPages = () => {
     }
 };
 
-
 let timerInterval;
 
 $(document).on('click', ".descargarPDF", function(event) {
@@ -213,17 +212,9 @@ $(document).on('click', ".descargarPDF", function(event) {
     // console.log('cventaId:', cventaId);
     // console.log('tbagregadoId:', tbagregadoId);
 
-    // Verificar si la solicitud ya ha sido realizada
-    if ($this.data('clicked')) {
-        return; // Salir de la función si la solicitud ya se ha realizado
-    }
-
-    // Marcar el elemento como clickeado
-    $this.data('clicked', true);
-
     let variablebandera = true;
 
-    fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera, $this);
+    fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera);
 });
 
 $(document).on('dblclick', ".previsualizarPfd", function(event) {
@@ -231,23 +222,12 @@ $(document).on('dblclick', ".previsualizarPfd", function(event) {
     const cventaId = $this.data('id');
     const tbagregadoId = $this.data('id');
 
-    // Verificar si la solicitud ya ha sido realizada
-    if ($this.data('clicked')) {
-        // console.log('La solicitud ya ha sido realizada para este elemento.');
-        return; // Salir de la función si la solicitud ya se ha realizado
-    }
-
-    // Marcar el elemento como clickeado
-    $this.data('clicked', true);
-
     let variablebandera = false;
 
-    fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera, $this);
+    fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera);
 });
 
-function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera, elemento) {
-
-    const $this = elemento
+function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
     
     Swal.fire({
         title: '¡Atención!',
@@ -834,8 +814,12 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera, elemento) 
 
             // ========== Inicia Construción de PDF ==========
 
-            const doc = new jsPDF();
-            // const doc = new jsPDF('landscape'); // Horizontal
+            let doc = NaN
+            if($("#paginaHorizontal").prop("checked")){
+                doc = new jsPDF('landscape'); // Horizontal
+            }else{
+                doc = new jsPDF('portrait'); // Vertical
+            };
 
             let eje_y = 10;
             let eje_x = 10;
@@ -905,10 +889,6 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera, elemento) 
         .catch(error => {
             console.error('Error al consultar datos:', error);
         })
-        .finally(() => {
-            // Restablecer el estado después de un breve periodo de tiempo
-            setTimeout(() => $this.data('clicked', false), 1000); // Ajusta el tiempo según sea necesario
-        });
 };
 
 </script>
@@ -943,18 +923,24 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera, elemento) 
                                     </div>
                                 </div>
                             </div>
-                            <div class="md:flex-row flex py-1">
-                                <div class="flex items-center me-4">
-                                    <input v-model="selectedEstados" id="blue-checkbox" type="checkbox" value="Por Enviar" class="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="blue-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Por enviar</label>
-                                </div>
-                                <div class="flex items-center me-4">
-                                    <input v-model="selectedEstados" id="green-checkbox" type="checkbox" value="Aceptado" class="w-4 h-4 cursor-pointer text-green-500 bg-gray-100 border-gray-300 rounded focus:ring-green-600 dark:focus:ring-green-700 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="green-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Aceptado</label>
-                                </div>
-                                <div class="flex items-center me-4">
-                                    <input v-model="selectedEstados" id="red-checkbox" type="checkbox" value="Rechazado" class="w-4 h-4 cursor-pointer text-red-500 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="red-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Rechazado</label>
+                            <div class="md:flex-row flex py-1 justify-between">
+                                <div class="flex lg:flex-nowrap flex-wrap md:gap-y-0 md:gap-x-0 gap-y-3 gap-x-2">
+                                    <div class="flex items-center md:me-10 me-4">
+                                        <input id="paginaHorizontal" type="checkbox" value="Rechazado" class="w-4 h-4 cursor-pointer text-orange-500 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="paginaHorizontal" class="ms-2 text-sm font-extrabold text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Generar PDF Horizontal</label>
+                                    </div>
+                                    <div class="flex items-center me-4">
+                                        <input v-model="selectedEstados" id="blue-checkbox" type="checkbox" value="Por Enviar" class="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="blue-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Por enviar</label>
+                                    </div>
+                                    <div class="flex items-center me-4">
+                                        <input v-model="selectedEstados" id="green-checkbox" type="checkbox" value="Aceptado" class="w-4 h-4 cursor-pointer text-green-500 bg-gray-100 border-gray-300 rounded focus:ring-green-600 dark:focus:ring-green-700 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="green-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Aceptado</label>
+                                    </div>
+                                    <div class="flex items-center me-4">
+                                        <input v-model="selectedEstados" id="red-checkbox" type="checkbox" value="Rechazado" class="w-4 h-4 cursor-pointer text-red-500 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="red-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Rechazado</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

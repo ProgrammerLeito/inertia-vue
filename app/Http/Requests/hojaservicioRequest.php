@@ -28,6 +28,7 @@ class hojaservicioRequest extends FormRequest
             'fecha' => '',
             'lugar' => '',
             'contacto' => '',
+            'nro_contacto' => '',
             'usuario' => '',
         ];
     }

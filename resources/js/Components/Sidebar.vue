@@ -74,11 +74,12 @@ const logout = () => {
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-cart'><span v-show="dataOpenSideBar" class="ml-2">Productos</span></span></summary>
                             <Link :href="route('tbproductos.index')" :active="route().current('tbproductos.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Catalago de Productos</span></Link>
                         </details> -->
+                        <Link :href="route('hojasservicios.index')" :active="route().current('hojasservicios.*')" class="py-3 rounded-sm text-gray-400 px-2 flex space-x-2 p-2 cursor-pointer hover:text-white whitespace-pre-line"><span class=""><i class="fa-solid fa-file-powerpoint ml-1"></i><span v-show="dataOpenSideBar" class="ml-2.5">Cuadro de Pendientes</span></span></Link>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-gear-wide-connected'><span v-show="dataOpenSideBar" class="ml-2">Servicio Tecnico</span></span></summary>
                             <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Manuales y Calibracion</span> <img src="../../../public/img/one_drive.png" class="w-4"></Link>
                             <Link :href="route('servicios.index')" :active="route().current('servicios.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Hojas de Salida</span></Link>
-                            <Link :href="route('hojasservicios.index')" :active="route().current('hojasservicios.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Realizar Hoja de servicio</span></Link>
+                            <!-- <Link :href="route('hojasservicios.index')" :active="route().current('hojasservicios.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Realizar Hoja de servicio</span></Link> -->
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-graph-up-arrow'><span v-show="dataOpenSideBar" class="ml-2">Cotizaciones</span></span></summary>
