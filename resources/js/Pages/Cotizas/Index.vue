@@ -234,6 +234,8 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
         html: 'La cotización se esta generando, espere un momento.',
         timer: 999999999, // Establece un valor grande para que parezca indefinido
         timerProgressBar: true,
+        allowOutsideClick: false,   // Desactiva el clic fuera de la alerta
+        allowEscapeKey: false,
         didOpen: () => {
             Swal.showLoading();
         },

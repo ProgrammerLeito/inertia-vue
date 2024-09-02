@@ -52,31 +52,34 @@ class ProductoController extends Controller
         ]);
     }
 
-    public function fn_ObtenerDatosSalidas(){
+    public function fn_ObtenerDatosSalidas(Request $request){
         try {
-            $salidas = DB::table('salidas')
+            $query = DB::table('salidas')
                         ->join('productos', 'salidas.producto_id', '=', 'productos.id')
                         ->join('users', 'users.id', '=', 'salidas.tecnico')
                         ->select(
                             'salidas.empresa',
                             'salidas.unidad_salida',
                             'salidas.comentario_salida',
-                            'users.name as tecnico', // Nombre del técnico
+                            'users.name as tecnico',
                             'salidas.fecha',
                             'salidas.hora_salida',
                             'salidas.unidad_devolucion',
-                            'productos.insumo as producto_nombre' // Nombre del producto
-                        )
-                        ->orderBy('salidas.id', 'DESC')
-                        ->get();
+                            'productos.insumo as producto_nombre'
+                        );
     
+            if ($request->has('fechaHoy') && $request->has('fechaHasta')) {
+                $query->whereBetween('salidas.fecha', [$request->fechaHoy, $request->fechaHasta]);
+            }
+    
+            $salidas = $query->orderBy('salidas.id', 'DESC')->get();
+        
             return response()->json($salidas);
         } catch (\Exception $e) {
-            // Log the error and return a 500 response
             \log("")::error('Error al obtener las salidas: ' . $e->getMessage());
             return response()->json(['error' => 'Error al obtener las salidas'], 500);
         }
-    }
+    }    
     
     public function create()
     {

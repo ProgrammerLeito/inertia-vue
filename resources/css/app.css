@@ -59,3 +59,13 @@
         #7F7F7F
     );
 }
+
+#nombre_Logo {
+    font-family: "AlphaMaleModern";
+    letter-spacing: 3px;
+}
+
+#B_logo {
+    font-family: "AlphaMaleModern";
+    transform: translateX(2px) translateY(1px);
+}

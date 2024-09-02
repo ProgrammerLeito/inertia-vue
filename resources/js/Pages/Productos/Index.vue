@@ -50,9 +50,15 @@ export default {
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
-import ButtonDelete from '@/Components/ButtonDelete.vue';
+import ModalCategoria from '@/Components/ModalCategoria.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import InputError from '@/Components/InputError.vue';
+import TextInput from '@/Components/TextInput.vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Swal from 'sweetalert2';
 import {useForm} from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
 import axios from "axios";
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -146,7 +152,12 @@ const totalCount = props.productos.total;
 
 const obtenerDatosSalidas = async () => {
     try {
-        const response = await axios.get('/fn_ObtenerDatosSalidas');
+        const response = await axios.get('/fn_ObtenerDatosSalidas', {
+            params: {
+                fechaHoy: form.fechaHoy,
+                fechaHasta: form.fechaHasta
+            }
+        });
         return response.data;
     } catch (error) {
         console.error('Error al obtener las salidas:', error);
@@ -154,7 +165,38 @@ const obtenerDatosSalidas = async () => {
     }
 };
 
+const save = async () => {
+    const salidas = await obtenerDatosSalidas();
+    
+    if (salidas.length > 0) {
+        await printPDF(salidas);
+        ok('PDF generado correctamente');
+    } else {
+        Swal.fire({
+            title: 'No hay datos para las fechas seleccionadas',
+            icon: 'warning',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    }
+};
+
+let timerInterval;
+
 const printPDF = async () => {
+    Swal.fire({
+        title: '¡Atención!',
+        html: 'El historial de salidas se esta generando, espere un momento.',
+        timer: 999999999, // Establece un valor grande para que parezca indefinido
+        timerProgressBar: true,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+        willClose: () => {
+            clearInterval(timerInterval);
+        }
+    })
+    // Asegúrate de que obtenerDatosSalidas esté definida antes de llamarla aquí
     const data = await obtenerDatosSalidas();
 
     const doc = new jsPDF('landscape');
@@ -206,10 +248,39 @@ const printPDF = async () => {
         },
     });
 
+    Swal.close();
+
     const blob = doc.output('blob');
     const url = URL.createObjectURL(blob);
     window.open(url);
 };
+
+const openModalSalidas = () => {
+    modal.value = true;
+};
+ 
+const closeModal = () =>{
+    modal.value = false;
+    form.reset();
+}
+ 
+const ok = () =>{
+    form.reset();
+    closeModal();
+}
+
+const setCurrentDate = () => {
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }).split('/').reverse().join('-');
+    form.fechaHoy = today; // Asigna la fecha actual al campo de registro
+    form.fechaHasta = today; // Asigna la fecha actual al campo de registro
+};
+
+onMounted(() => {
+    setCurrentDate();
+});
+
+const nameInput = ref(null);
+const modal = ref(false);
 
 </script>
 
@@ -232,9 +303,8 @@ const printPDF = async () => {
                         <Link :href="route('entradas.index')" class="text-white bg-indigo-700 items-center flex justify-center gap-2 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center" v-if="$page.props.user.permissions.includes('Listar Entradas')">
                             <i class="bi bi-list-check mx-1"></i>Listar Entradas
                         </Link>
-                        <button @click="printPDF" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center items-center flex justify-center gap-2">
-                            <i class="bx bx-printer text-xl"></i>
-                            Imprimir Salidas
+                        <button @click.prevent="openModalSalidas" class="text-white bg-indigo-700 hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center items-center flex justify-center gap-2" v-if="$page.props.user.permissions.includes('Imprimir Salidas')">
+                            <i class="bx bx-printer text-xl"></i>Imprimir Salidas
                         </button>
                     </div>
                     <div class="md:mt-2 mt-4">
@@ -356,7 +426,6 @@ const printPDF = async () => {
                 <div class="w-full max-w-sm max-h-[90%] h-full bg-gray-50 rounded-t-lg">
                     <img :src="modalImageUrl" alt="Imagen ampliada" class="max-w-sm w-full h-full object-contain">
                 </div>
-                <!-- Botón de cierre del modal -->
                 <div class="bg-gray-50 p-2 w-full max-w-sm flex justify-end rounded-b-lg">
                     <button @click="modalOpen = false" type="button" class="w-full justify-center rounded-md border border-transparent shadow-sm px-14 py-0 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:text-sm">
                         Cerrar
@@ -364,5 +433,32 @@ const printPDF = async () => {
                 </div>
             </div>
         </div>
+        <ModalCategoria :show="modal" @close="closeModal">
+            <div class="p-4">
+                <h2 class="text-base font-bold text-gray-900 dark:text-white text-center uppercase mb-4">Imprimir Salidas</h2>
+                <div class="grid grid-cols-2 gap-x-8">
+                    <div>
+                        <InputLabel for="fechaHoy" value="Fecha Hoy:" class="mb-2 text-base font-bold"></InputLabel>
+                        <TextInput id="fechaHoy" ref="fechaHoy" v-model="form.fechaHoy" type="date" class="w-full"
+                            placeholder="Nombre de la categoria"></TextInput>
+                        <InputError :message="form.errors.fechaHoy" class="mt-2"></InputError>
+                    </div>
+                    <div>
+                        <InputLabel for="fechaHasta" value="Fecha Hasta:" class="mb-2 text-base font-bold"></InputLabel>
+                        <TextInput id="fechaHasta" ref="nameInput" v-model="form.fechaHasta" type="date" class="w-full"
+                            placeholder="Nombre de la categoria"></TextInput>
+                        <InputError :message="form.errors.fechaHasta" class="mt-2"></InputError>
+                    </div>
+                </div>
+                <div class="p-3 flex justify-center">
+                    <PrimaryButton :disabled="form.processing" @click="save" class="flex justify-center gap-2">
+                        <i class="bx bx-printer text-xl"></i>Imprimir
+                    </PrimaryButton>
+                    <DangerButton class="ml-3" :disabled="form.processing" @click="closeModal">
+                        Cancelar
+                    </DangerButton>
+                </div>
+            </div>
+        </ModalCategoria>
     </AppLayout>
 </template>

@@ -19,6 +19,7 @@ const form = useForm({
     cantidad: '',
     descripcion: '',
     fecha: '',
+    hora: '',
     lugar: '',
     contacto: '',
     nro_contacto: ''
@@ -35,8 +36,20 @@ const filtrarPorFecha = () => {
 };
 
 const setCurrentDate = () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }).split('/').reverse().join('-');
     form.fecha = today; // Asigna la fecha actual al campo de registro
+};
+
+const setCurrentTime = () => {
+    const now = new Date();
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    form.hora = `${hour}:${minute}`;
+}
+
+const formatTime = (timeString) => {
+    const time = new Date("2000-01-01T" + timeString);
+    return time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
 };
 
 // Función para establecer la fecha seleccionada en el filtro de fechas
@@ -47,14 +60,15 @@ const setFechaSeleccionada = () => {
     if (fechaEnUrl) {
         fechaSeleccionada.value = fechaEnUrl; // Si hay una fecha en la URL, úsala
     } else {
-        const today = new Date().toISOString().split('T')[0];
-        fechaSeleccionada.value = today; // De lo contrario, usa la fecha actual
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }).split('/').reverse().join('-'); // Usa la fecha actual en la zona horaria de Lima
+        fechaSeleccionada.value = today;
     }
 };
 
 onMounted(() => {
     setCurrentDate();         // Establece la fecha de registro
     setFechaSeleccionada();   // Establece la fecha para el filtrado
+    setCurrentTime();         // Establece la hora
 });
 
 const editHojaServicio = (hojaservicio) => {
@@ -63,6 +77,7 @@ const editHojaServicio = (hojaservicio) => {
     form.cantidad = hojaservicio.cantidad;
     form.descripcion = hojaservicio.descripcion;
     form.fecha = hojaservicio.fecha;
+    form.hora = hojaservicio.hora;
     form.lugar = hojaservicio.lugar;
     form.contacto = hojaservicio.contacto;
     form.nro_contacto = hojaservicio.nro_contacto;
@@ -75,7 +90,7 @@ const submitForm = () => {
             onSuccess: () => {
                 form.reset();
                 setCurrentDate();
-                setCurrentTime();
+                setCurrentTime(); 
                 showSuccessMessage('Hoja de servicio creada exitosamente.');
                 form.id = null;
             },
@@ -85,7 +100,7 @@ const submitForm = () => {
             onSuccess: () => {
                 form.reset();
                 setCurrentDate();
-                setCurrentTime();
+                setCurrentTime(); 
                 showSuccessMessage('Hoja de servicio actualizada exitosamente.');
                 form.id = null;
                 isEditing.value = false;
@@ -220,12 +235,20 @@ const deleteHojaServicio = (id, razon_social) => {
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 <InputError :message="form.errors.lugar" class="mt-2"></InputError>
                             </div>
-                            <div>
-                                <InputLabel for="fecha" value="fecha"
-                                    class="block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.fecha" type="date" id="fecha" required
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                <InputError :message="form.errors.fecha" class="mt-2"></InputError>
+                            <div class="grid md:grid-cols-2 grid-cols-1 gap-x-4 gap-y-4">
+                                <div>
+                                    <InputLabel for="fecha" value="fecha"
+                                        class="block text-md font-medium text-gray-700 " />
+                                        <TextInput v-model="form.fecha" type="date" id="fecha" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="form.errors.fecha" class="mt-2"></InputError>
+                                </div>
+                                <div>
+                                    <InputLabel for="hora" value="hora"
+                                        class="block text-md font-medium text-gray-700 " />
+                                    <TextInput v-model="form.hora" type="time" id="hora" required :disabled="!$page.props.user.permissions.includes('Acciones Administrador')"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="form.errors.hora" class="mt-2"></InputError>
+                                </div>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:gap-y-6 gap-y-3 md:grid-cols-3 mb-3">
@@ -238,7 +261,7 @@ const deleteHojaServicio = (id, razon_social) => {
                             </div>
                             <div class="flex flex-wrap gap-2 justify-end items-end">
                                 <ButtonResponsive v-if="!isEditing" @dblclick="editHojaServicio(hojaservicio)" class="uppercase text-xs">Generar Hoja de Servicio</ButtonResponsive>
-                                <ButtonResponsive v-if="isEditing" @click="updateHojaServicio()" class="uppercase text-xs">Actualizar Hoja de Servicio</ButtonResponsive>
+                                <ButtonResponsive v-if="isEditing" class="uppercase text-xs">Actualizar Hoja de Servicio</ButtonResponsive>
                             </div>
                         </div>
                     </form>
@@ -267,17 +290,17 @@ const deleteHojaServicio = (id, razon_social) => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="text-center text-xs tracking-widest">
+                            <tbody>
                                 <tr @dblclick="editHojaServicio(hojaservicio)" v-for="hojaservicio in hojaservicios"
                                     :key="hojaservicio.id"
-                                    class="bg-white text-black  hover:text-white border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                                    class="bg-white text-black text-xs hover:text-white border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                     <!-- Mostrar los datos de cada hservicio -->
                                     <td class="px-6 py-4 text-center">{{ hojaservicio.id }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.usuario }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b whitespace-break-spaces">{{hojaservicio.razon_social }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.cantidad }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b whitespace-break-spaces">{{hojaservicio.descripcion }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b whitespace-nowrap">{{hojaservicio.fecha }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b whitespace-break-spaces">{{hojaservicio.fecha }} a las {{ formatTime(hojaservicio.hora) }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.lugar }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.contacto }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.nro_contacto }}</td>

@@ -119,15 +119,3 @@ html.dark #fondoLogin::after {
     z-index: 1;
 }
 </style>
-
-<style scoped>
-#nombre_Logo {
-    font-family: "AlphaMaleModern";
-    letter-spacing: 3px;
-}
-
-#B_logo {
-    font-family: "AlphaMaleModern";
-    transform: translateX(2px) translateY(1px);
-}
-</style>

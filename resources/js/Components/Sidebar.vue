@@ -78,7 +78,7 @@ const logout = () => {
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-gear-wide-connected'><span v-show="dataOpenSideBar" class="ml-2">Servicio Tecnico</span></span></summary>
                             <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Manuales y Calibracion</span> <img src="../../../public/img/one_drive.png" class="w-4"></Link>
-                            <Link :href="route('servicios.index')" :active="route().current('servicios.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Hojas de Salida</span></Link>
+                            <Link :href="route('servicios.index')" :active="route().current('servicios.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Listar Hojas de Servicio</span></Link>
                             <!-- <Link :href="route('hojasservicios.index')" :active="route().current('hojasservicios.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Realizar Hoja de servicio</span></Link> -->
                         </details>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
