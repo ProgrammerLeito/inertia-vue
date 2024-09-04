@@ -57,22 +57,6 @@ onMounted(() => {
     setCurrentTime();
 });
 //filtros de acuerdo al cliente seleccionado
-const filteredDatos = ref([]);
-const updateFilteredDatos = () => {
-
-    if (form.cliente_id) {
-        filteredDatos.value = datos.filter(dato => dato.cliente_id == form.cliente_id);
-        const clienteSeleccionado = clientes.find(cliente => cliente.id == form.cliente_id);
-        if (clienteSeleccionado) {
-            form.direccion = clienteSeleccionado.direccion;
-        } else {
-            form.direccion = '';
-        }
-    } else {
-        filteredDatos.value = datos;
-        form.direccion = '';
-    }
-};
 watch(form.cliente_id, () => {
     updateFilteredDatos();
 });
@@ -156,6 +140,76 @@ const obtenerNombreCompleto = (user) => {
 };
 const nombreCompleto = obtenerNombreCompleto(user);
 
+const onKeydown = (event) => {
+    if (filteredClientes.value.length > 0) {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            selectedIndex.value = (selectedIndex.value + 1) % filteredClientes.value.length;
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            selectedIndex.value = (selectedIndex.value - 1 + filteredClientes.value.length) % filteredClientes.value.length;
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            if (selectedIndex.value >= 0) {
+                selectCliente(filteredClientes.value[selectedIndex.value]);
+            }
+        }
+    }
+};
+
+const searchTerm = ref('');
+const searchTermCodigoCli = ref('');
+const filteredClientes = ref([]);
+const selectedIndex = ref(-1);
+const direcciones = ref([]);
+
+const filteredDatos = ref([]);
+
+const updateFilteredDatos = () => {
+    if (form.cliente_id) {
+        filteredDatos.value = datos.filter(dato => dato.cliente_id == form.cliente_id);
+        const clienteSeleccionado = clientes.find(cliente => cliente.id == form.cliente_id);
+        if (clienteSeleccionado) {
+            direcciones.value = [clienteSeleccionado.direccion, clienteSeleccionado.cli_direccion2];
+            form.direccion = '';  // No seleccionar una dirección automáticamente
+        } else {
+            direcciones.value = [];
+            form.direccion = '';
+        }
+    } else {
+        filteredDatos.value = datos;
+        direcciones.value = [];
+        form.direccion = '';
+    }
+};
+
+const updateSelection = (index) => {
+    selectedIndex.value = index;
+};
+
+const selectCliente = (cliente) => {
+    searchTerm.value = cliente.razonSocial;
+    searchTermCodigoCli.value = cliente.id;
+    form.cliente_id = searchTermCodigoCli.value;
+    form.direccion = '';
+    form.numeroDocumento = cliente.numeroDocumento;
+    updateFilteredDatos(); // Actualizar los datos relacionados con el cliente seleccionado
+    filteredClientes.value = [];
+};
+
+const onInput = () => {
+    selectedIndex.value = -1;
+    if (searchTerm.value.length > 0) {
+        filteredClientes.value = props.clientes.filter(cliente =>
+            cliente.razonSocial.toLowerCase().includes(searchTerm.value.toLowerCase())
+        );
+    } else {
+        filteredClientes.value = [];
+    }
+    // Actualizar los datos filtrados cada vez que se ingresa algo
+    updateFilteredDatos();
+};
+
 </script>
 
 <template>
@@ -168,30 +222,39 @@ const nombreCompleto = obtenerNombreCompleto(user);
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div
                     class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
-                    <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="h-full mx-auto px-4 md:py-0 py-2 sm:px-6 lg:px-8">
                         <form @submit.prevent="submitForm">
                             <div class="hidden">
                                 <InputLabel>N° informe</InputLabel>
                                 <TextInput v-model="form.n_informe" type="text"
                                     class="input mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                             </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
+                            <div class="grid grid-cols-1 gap-y-3 md:grid-cols-3 sm:gap-x-6 md:mb-0 mb-2">
+                                <div class="w-full md:-mb-0 -mb-5">
+                                    <InputLabel for="cliente_id" class="text-md">Cliente</InputLabel>
+                                    <div class="relative">
+                                        <TextInput v-model="searchTerm" autocomplete="off" type="text" id="cliente_id" @input="onInput" placeholder="Ingresa razon social"
+                                            @keydown="onKeydown" required
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                        <div id="contenedorDeClientes"
+                                            class="w-full z-50 max-h-60 border border-gray-300 rounded-lg absolute overflow-auto text-sm divide-y divide-gray-200 bg-white dark:bg-gray-800"
+                                            v-show="filteredClientes.length > 0">
+                                            <div v-for="(cliente, index) in filteredClientes" :key="cliente.id"
+                                                :class="['text-gray-800 text-sm dark:text-white font-medium cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis dark:hover:bg-gray-700 hover:bg-gray-200 option p-2', { 'bg-gray-200 dark:bg-gray-700': index === selectedIndex }]"
+                                                @click="selectCliente(cliente)" @mouseover="updateSelection(index)">
+                                                {{ cliente.razonSocial }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div>
-                                    <InputLabel for="cliente_id" value="Cliente"
-                                        class="block text-md font-medium text-gray-700" />
-                                    <select id="cliente_id" v-model="form.cliente_id" required
-                                        @change="updateFilteredDatos"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="">Seleccione un cliente</option>
-                                        <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{
-                                            cliente.razonSocial }}</option>
+                                    <InputLabel for="direccion" value="Seleccionar Dirección" class="block text-md font-medium text-gray-700" />
+                                    <select v-model="form.direccion" id="direccion" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="" selected disabled>Selecciona una dirección</option>
+                                        <option v-for="(direccion, index) in direcciones" :key="index" :value="direccion">
+                                            {{ direccion }}
+                                        </option>
                                     </select>
-                                </div>
-                                <div>
-                                    <InputLabel for="direccion" value="Direccion/Ruta"
-                                        class="block text-md font-medium text-gray-700 " />
-                                    <TextInput v-model="form.direccion" type="text" id="direccion"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="form.errors.direccion" class="mt-2"></InputError>
                                 </div>
                                 <div>
@@ -206,7 +269,7 @@ const nombreCompleto = obtenerNombreCompleto(user);
                                     </select>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
+                            <div class="grid grid-cols-1 gap-y-3 md:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel for="fecha" value="Fecha de atencion al cliente"
                                         class="block text-md font-medium text-gray-700 " />
@@ -229,7 +292,7 @@ const nombreCompleto = obtenerNombreCompleto(user);
                                     <InputError :message="form.errors.n_guia" class="mt-2"></InputError>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
+                            <div class="grid grid-cols-1 gap-y-3 md:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel for="descripcion" value="descripcion" />
                                     <select id="moneda" v-model="form.descripcion" required

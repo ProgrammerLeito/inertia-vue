@@ -10,9 +10,9 @@ import { onMounted, ref, watch, watchEffect } from 'vue';
 import Swal from 'sweetalert2';
 import { defineProps } from 'vue';
 
-const { datos, clientes, users ,servicio } = defineProps({
+const props = defineProps({
     clientes: {
-        type: Object,
+        type: Array,
         required: true
     },
     datos: {
@@ -23,12 +23,24 @@ const { datos, clientes, users ,servicio } = defineProps({
         type: Object,
         required: true
     },
-    servicio:{
-        type:Object
+    servicio: {
+        type: Object,
+        required: true
     }
 });
 
-const form = useForm(servicio);
+const form = useForm({
+    cliente_id: props.servicio.cliente_id,
+    direccion: props.servicio.direccion,
+    dato_id: props.servicio.dato_id,
+    fecha: props.servicio.fecha,
+    hora: props.servicio.hora,
+    n_guia: props.servicio.n_guia,
+    descripcion: props.servicio.descripcion,
+    user_id: props.servicio.user_id,
+    e_servicio: props.servicio.e_servicio,
+});
+
 //fec ha y hora actual
 const setCurrentDate = () => {
     const today = new Date().toISOString().split('T')[0];
@@ -46,24 +58,52 @@ onMounted(() => {
 });
 //filtro por cliente y datos
 const filteredDatos = ref([]);
+const direcciones = ref([]);
+
 const updateFilteredDatos = () => {
     if (form.cliente_id) {
-        filteredDatos.value = datos.filter(dato => dato.cliente_id == form.cliente_id);
-       const clienteSeleccionado = clientes.find(cliente => cliente.id == form.cliente_id);
+        const clienteSeleccionado = props.clientes.find(cliente => cliente.id == form.cliente_id);
         if (clienteSeleccionado) {
-            form.direccion = clienteSeleccionado.direccion;
+            // Actualiza las direcciones basadas en el cliente seleccionado
+            direcciones.value = [clienteSeleccionado.direccion, clienteSeleccionado.cli_direccion2];
+            
+            // Actualiza los contactos basados en el cliente seleccionado
+            filteredDatos.value = props.datos.filter(dato => dato.cliente_id == form.cliente_id);
+            
+            // Selecciona automáticamente la dirección si coincide con alguna de las disponibles
+            if (direcciones.value.includes(form.direccion)) {
+                form.direccion = form.direccion;
+            } else {
+                form.direccion = direcciones.value.length > 0 ? direcciones.value[0] : '';
+            }
+            
+            // Selecciona automáticamente el primer contacto si es el actual
+            if (filteredDatos.value.length > 0 && !filteredDatos.value.some(dato => dato.id == form.dato_id)) {
+                form.dato_id = filteredDatos.value[0].id;
+            }
         } else {
+            direcciones.value = [];
+            filteredDatos.value = [];
             form.direccion = '';
+            form.dato_id = '';
         }
     } else {
-        filteredDatos.value = datos;
+        direcciones.value = [];
+        filteredDatos.value = [];
         form.direccion = '';
+        form.dato_id = '';
     }
 };
-watch(form.cliente_id, () => {
+
+onMounted(() => {
+    setCurrentTime();
     updateFilteredDatos();
 });
-updateFilteredDatos();
+
+watch(() => form.cliente_id, () => {
+    updateFilteredDatos();
+});
+
 //metodo para actualizar
 const submitForm = () => {
     form.put(route('servicios.update',{ servicio: servicio.id }), {
@@ -123,38 +163,39 @@ const submitForm = () => {
                     class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                         <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
+                            <div class="grid grid-cols-1 gap-y-3 md:grid-cols-3 sm:gap-x-6 md:mb-3 mb-2">
                                 <div>
-                                    <InputLabel for="cliente_id" value="Cliente"
-                                        class="block text-md font-medium text-gray-700" />
-                                    <select id="cliente_id" v-model="form.cliente_id" required
-                                        @change="updateFilteredDatos"
+                                    <InputLabel for="cliente_id" value="Cliente" class="block text-md font-medium text-gray-700" />
+                                    <select id="cliente_id" v-model="form.cliente_id" required @change="updateFilteredDatos"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="">Seleccione un cliente</option>
-                                        <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{
-                                            cliente.razonSocial }}</option>
+                                        <option value="" selected disabled>Seleccione un cliente</option>
+                                        <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">
+                                            {{ cliente.razonSocial }}
+                                        </option>
                                     </select>
                                 </div>
                                 <div>
-                                    <InputLabel for="direccion" value="Direccion/Ruta"
-                                        class="block text-md font-medium text-gray-700 " />
-                                    <TextInput v-model="form.direccion" type="text" id="direccion"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputLabel for="direccion" value="Seleccionar Dirección" class="block text-md font-medium text-gray-700" />
+                                    <select v-model="form.direccion" id="direccion" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="" selected disabled>Selecciona una dirección</option>
+                                        <option v-for="(direccion, index) in direcciones" :key="index" :value="direccion">
+                                            {{ direccion }}
+                                        </option>
+                                    </select>
                                     <InputError :message="form.errors.direccion" class="mt-2"></InputError>
                                 </div>
                                 <div>
-                                    <InputLabel for="dato_id" value="Contacto + N° Telefono"
-                                        class="block text-md font-medium text-gray-700" />
+                                    <InputLabel for="dato_id" value="Contacto + N° Telefono" class="block text-md font-medium text-gray-700" />
                                     <select id="dato_id" v-model="form.dato_id" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="">Seleccione un contacto</option>
-                                        <option v-for="dato in filteredDatos" :key="dato.id" :value="dato.id">{{
-                                            `${dato.nombre}
-                                            - ${dato.cargo} - ${dato.telefono}` }}</option>
+                                        <option value="" selected disabled>Seleccione un contacto</option>
+                                        <option v-for="dato in filteredDatos" :key="dato.id" :value="dato.id">
+                                            {{ `${dato.nombre} - ${dato.cargo} - ${dato.telefono}` }}
+                                        </option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
+                            <div class="grid grid-cols-1 gap-y-3 md:grid-cols-3 sm:gap-x-6 md:mb-3 mb-2">
                                 <div>
                                     <InputLabel for="fecha" value="Fecha de atencion al cliente"
                                         class="block text-md font-medium text-gray-700 " />
@@ -177,7 +218,7 @@ const submitForm = () => {
                                     <InputError :message="form.errors.n_guia" class="mt-2"></InputError>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
+                            <div class="grid grid-cols-1 gap-y-3 md:grid-cols-3 sm:gap-x-6 md:mb-0 mb-2">
                                 <div>
                                     <InputLabel for="descripcion" value="descripcion" />
                                     <select id="moneda" v-model="form.descripcion" required

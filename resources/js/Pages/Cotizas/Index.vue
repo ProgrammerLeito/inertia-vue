@@ -99,7 +99,7 @@ const openCtgModal = async (cventa) => {
         title: modalTitle,
         input: 'select',
         inputOptions: {
-            'Por Enviar': 'Por Enviar',
+            'Enviado': 'Enviado',
             // 'Enviado': 'Enviado',
             'Aceptado': 'Aceptado',
             'Rechazado': 'Rechazado',
@@ -932,8 +932,8 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
                                         <label for="paginaHorizontal" class="ms-2 text-sm font-extrabold text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Generar PDF Horizontal</label>
                                     </div>
                                     <div class="flex items-center me-4">
-                                        <input v-model="selectedEstados" id="blue-checkbox" type="checkbox" value="Por Enviar" class="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label for="blue-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Por enviar</label>
+                                        <input v-model="selectedEstados" id="blue-checkbox" type="checkbox" value="Enviado" class="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="blue-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Enviado</label>
                                     </div>
                                     <div class="flex items-center me-4">
                                         <input v-model="selectedEstados" id="green-checkbox" type="checkbox" value="Aceptado" class="w-4 h-4 cursor-pointer text-green-500 bg-gray-100 border-gray-300 rounded focus:ring-green-600 dark:focus:ring-green-700 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
@@ -978,7 +978,7 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
                                         <td class="px-6 py-4 text-center whitespace-nowrap uppercase">{{ cventa.tecnico }}</td>
                                         <td class="px-6 py-4 text-center text-white whitespace-nowrap">
                                             <div :class="{
-                                                'bg-blue-600': cventa.estado === 'Por Enviar',
+                                                'bg-blue-600': cventa.estado === 'Enviado',
                                                 // 'bg-yellow-600': cventa.estado === 'Enviado',
                                                 'bg-green-600': cventa.estado === 'Aceptado',
                                                 'bg-red-600': cventa.estado === 'Rechazado',

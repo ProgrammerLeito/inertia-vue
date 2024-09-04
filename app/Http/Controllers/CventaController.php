@@ -91,7 +91,7 @@ class CventaController extends Controller
         $agregarCotizacion->igv = $igv;
         $agregarCotizacion->total = $total;
         $agregarCotizacion->tecnico = $tecnico;
-        $agregarCotizacion->estado = 'Por Enviar';
+        $agregarCotizacion->estado = 'Enviado';
         $agregarCotizacion->save();
 
         return response()->json(['success' => true], 200);

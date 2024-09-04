@@ -649,44 +649,70 @@ const previewPDF2 = () => {
 
     function fn_dibujarFotos() {
         const columnWidth = 63.3; // Ancho de cada columna para FOTO 2 y FOTO 3
-        const rowHeight = 40; // Altura de cada fila (ajustar si es necesario)
         const startY = doc.lastAutoTable.finalY + 5;
         const totalWidth = columnWidth * 3; // Ancho total del encabezado (ajustado a 3 columnas)
 
+        const imagen1 = imagePreview1.value;
+        const imagen2 = imagePreview2.value;
+        const imagen3 = imagePreview3.value;
+        
         // Crear tabla de encabezado para las fotos
         doc.autoTable({
             head: [['FOTO 1', 'FOTO 2', 'FOTO 3']],
+            body: [
+                [
+                    { content: '', styles: { cellWidth: columnWidth, minCellHeight: columnWidth } },
+                    { content: '', styles: { cellWidth: columnWidth, minCellHeight: columnWidth } },
+                    { content: '', styles: { cellWidth: columnWidth, minCellHeight: columnWidth } }
+                ]
+            ],
             startY: startY,
             theme: 'grid',
             styles: {
+                rowPageBreak: 'avoid',
                 fontSize: 8,
-                cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
                 lineWidth: 0.30,
                 lineColor: [0, 0, 0],
                 halign: 'center'
             },
-            columnStyles: {
-                0: { cellWidth: columnWidth }, // Ancho de la primera columna para FOTO 1
-                1: { cellWidth: columnWidth }, // Ancho de la segunda columna para FOTO 2
-                2: { cellWidth: columnWidth }  // Ancho de la tercera columna para FOTO 3
-            },
             tableWidth: totalWidth, // Ancho total de la tabla
-            margin: { left: 10 } // Ajusta el margen izquierdo para centrar la tabla
-        });
+            margin: { left: 10 }, // Ajusta el margen izquierdo para centrar la tabla
+            didDrawCell: function (data) {
+                // Determinar qué imagen insertar en la celda correspondiente
+                let image;
+                if (data.column.index === 0 && data.cell.section === 'body') {
+                    image = imagen1;
+                } else if (data.column.index === 1 && data.cell.section === 'body') {
+                    image = imagen2;
+                } else if (data.column.index === 2 && data.cell.section === 'body') {
+                    image = imagen3;
+                }
 
-        // Posicionar las imágenes en las tres columnas
-        imagePreviews.value.forEach((imgData, index) => {
-            if (imgData) {
-                const column = index % 3; // Determina la columna (0, 1 o 2)
-                const row = Math.floor(index / 3); // Determina la fila (0, 1, 2, etc.)
+                // Agregar la imagen a la celda si está disponible
+                if (image) {
+                    const imageProps = doc.getImageProperties(image);
+                    const cellWidth = data.cell.width;
+                    const cellHeight = data.cell.height;
+                    const imageWidth = imageProps.width;
+                    const imageHeight = imageProps.height;
+                    const aspectRatio = imageWidth / imageHeight;
 
-                // Calcula la posición X e Y para la imagen
-                const posX = 10 + (column * columnWidth); // Ajusta el espacio entre columnas si es necesario
-                const posY = startY + (row * rowHeight) + 10; // Ajusta el offset vertical según sea necesario
+                    let drawWidth, drawHeight;
 
-                // Añade la imagen al PDF con tamaño específico
-                doc.addImage(imgData, 'PNG', posX, posY, columnWidth, rowHeight); // Ajusta el tamaño según sea necesario
-            }
+                    if (cellWidth / cellHeight > aspectRatio) {
+                        drawHeight = cellHeight;
+                        drawWidth = drawHeight * aspectRatio;
+                    } else {
+                        drawWidth = cellWidth;
+                        drawHeight = drawWidth / aspectRatio;
+                    }
+
+                    const x = data.cell.x + (cellWidth - drawWidth) / 2;
+                    const y = data.cell.y + (cellHeight - drawHeight) / 2;
+
+                    doc.addImage(image, 'JPEG', x + 1, y + 1, drawWidth - 2, drawHeight - 2); // Ajusta el formato según sea necesario
+                }
+            },
         });
     }
 
