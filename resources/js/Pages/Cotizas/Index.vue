@@ -8,6 +8,30 @@ import { Inertia } from '@inertiajs/inertia';
 import axios from "axios";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+// Funcion para recortar cero
+function trimLeadingZeros(value) {
+    if (!value) return '';
+    return value.replace(/^0+/, '');
+}
+
+// Funcion para dia/mes/año
+function formatDate(dateString) {
+    const [day, month, year] = dateString.split('/');
+    const date = new Date(`${year}-${month}-${day}`);
+    const options = { 
+        weekday: 'long', 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
+    };
+    return date.toLocaleDateString('es-ES', options);
+}
+
+// Funcion para recortar a la primera letra del asesor que ha registrado
+function getFirstLetter(value) {
+    if (!value) return '';
+    return value.charAt(0).toUpperCase();
+}
  
 const props = defineProps({
     cventas: {
@@ -25,7 +49,17 @@ const selectedEstados = ref([]);
 
 // Computed property for filtered cventas
 const filteredCVentas = computed(() => {
-    if (!searchQuery.value && selectedEstados.value.length === 0) return props.cventas.data;
+    // Filtrar por estado "Enviado" por defecto si no hay filtros aplicados
+    const estadosPorDefecto = selectedEstados.value.length === 0
+        ? ['Enviado']  // Mostrar solo los "Enviado" si no hay estados seleccionados
+        : selectedEstados.value;
+
+    if (!searchQuery.value && selectedEstados.value.length === 0) {
+        // Excluir los estados "Aceptado" y "Rechazado" por defecto
+        return props.cventas.data.filter(cventa =>
+            cventa.estado === 'Enviado'
+        );
+    }
 
     const query = searchQuery.value.toLowerCase().trim();
 
@@ -33,7 +67,7 @@ const filteredCVentas = computed(() => {
         const nCotizacionMatch = cventa.n_cotizacion.toLowerCase().includes(query);
         const clienteMatch = cventa.cliente && cventa.cliente.razonSocial.toLowerCase().includes(query);
         const tecnicoMatch = cventa.tecnico.toLowerCase().includes(query);
-        const estadoMatch = selectedEstados.value.length === 0 || selectedEstados.value.includes(cventa.estado);
+        const estadoMatch = estadosPorDefecto.includes(cventa.estado);
 
         return (nCotizacionMatch || clienteMatch || tecnicoMatch) && estadoMatch;
     });
@@ -99,7 +133,7 @@ const openCtgModal = async (cventa) => {
         title: modalTitle,
         input: 'select',
         inputOptions: {
-            'Enviado': 'Enviado',
+            // 'Enviado': 'Enviado',
             // 'Enviado': 'Enviado',
             'Aceptado': 'Aceptado',
             'Rechazado': 'Rechazado',
@@ -898,7 +932,7 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
 <template>
     <AppLayout title="Cotizaciones por Venta">
         <template #header>
-            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Lista de Cotizaciones</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Lista de Cotizaciones Por Venta</h1>
         </template>
  
         <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
@@ -932,10 +966,6 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
                                         <label for="paginaHorizontal" class="ms-2 text-sm font-extrabold text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Generar PDF Horizontal</label>
                                     </div>
                                     <div class="flex items-center me-4">
-                                        <input v-model="selectedEstados" id="blue-checkbox" type="checkbox" value="Enviado" class="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label for="blue-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Enviado</label>
-                                    </div>
-                                    <div class="flex items-center me-4">
                                         <input v-model="selectedEstados" id="green-checkbox" type="checkbox" value="Aceptado" class="w-4 h-4 cursor-pointer text-green-500 bg-gray-100 border-gray-300 rounded focus:ring-green-600 dark:focus:ring-green-700 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label for="green-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer whitespace-nowrap">Aceptado</label>
                                     </div>
@@ -952,7 +982,7 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N°</th>
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2 hidden">C | Factura</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Cliente</th>
+                                        <th scope="col" class="px-0 py-3 text-left dark:border-white border-b-2">Cliente</th>
                                         <!-- <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Referencia</th> -->
                                         <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Emision</th>
                                         <!-- <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Neto</th> -->
@@ -965,17 +995,22 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
                                 <tbody class="text-center text-xs">
                                     <tr v-for="(cventa, index) in filteredCVentas" :key="cventa.id" :data-id="cventa.id" class="bg-white previsualizarPfd text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer">
                                         <td class="px-1 py-4 text-center hidden">{{ cventa.id }}</td>
-                                        <td class="px-1 py-4 text-center">{{ cventa.n_cotizacion }}</td>
+                                        <td class="px-1 py-4 text-center">{{ trimLeadingZeros(cventa.n_cotizacion) }}</td>
                                         <td class="px-1 py-4 text-center fa-fade font-semibold hidden">s|codigo</td>
-                                        <td class="px-1 py-4 text-center whitespace-break-spaces">
+                                        <td class="px-1 py-4 text-left whitespace-break-spaces">
                                             {{ cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente' }}
                                         </td>
                                         <!-- <td class="px-6 py-4 text-center">{{ cventa.tenor ? cventa.tenor.name : 'Sin codigo' }}
                                         </td> -->
-                                        <td class="px-6 py-4 text-center whitespace-nowrap">{{ cventa.fecha }}</td>
+                                        <td class="px-6 py-4 text-center whitespace-nowrap capitalize">{{ formatDate(cventa.fecha) }}</td>
                                         <!-- <td class="px-6 py-4 text-center">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ cventa.subtotal }}</td> -->
                                         <td class="px-6 py-4 text-center whitespace-nowrap">{{ cventa.moneda == "dolares $" ? "$" : "S/" }} {{ parseFloat(cventa.total * 1.18).toFixed(2) }}</td>
-                                        <td class="px-6 py-4 text-center whitespace-nowrap uppercase">{{ cventa.tecnico }}</td>
+                                        <td class="px-6 py-4 text-center whitespace-nowrap uppercase sm:hidden">
+                                            {{ getFirstLetter(cventa.tecnico) }}
+                                        </td>
+                                        <td class="px-6 py-4 text-center whitespace-nowrap uppercase hidden sm:table-cell">
+                                            {{ cventa.tecnico }}
+                                        </td>
                                         <td class="px-6 py-4 text-center text-white whitespace-nowrap">
                                             <div :class="{
                                                 'bg-blue-600': cventa.estado === 'Enviado',

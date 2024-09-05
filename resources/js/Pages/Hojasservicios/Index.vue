@@ -30,6 +30,13 @@ const hojaservicio = ref(null);
 
 // Definir la variable para la fecha seleccionada
 const fechaSeleccionada = ref('');
+const diaSemana = ref('');
+
+const obtenerNombreDiaSemana = (fecha) => {
+    const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const fechaObj = new Date(fecha + 'T00:00:00-05:00'); // Ajusta la zona horaria si es necesario
+    return dias[fechaObj.getDay()];
+};
 
 const filtrarPorFecha = () => {
     router.get(route('hojasservicios.index'), { fecha: fechaSeleccionada.value });
@@ -58,17 +65,23 @@ const setFechaSeleccionada = () => {
     const fechaEnUrl = queryParams.get('fecha');
     
     if (fechaEnUrl) {
-        fechaSeleccionada.value = fechaEnUrl; // Si hay una fecha en la URL, úsala
+        fechaSeleccionada.value = fechaEnUrl;
     } else {
-        const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }).split('/').reverse().join('-'); // Usa la fecha actual en la zona horaria de Lima
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }).split('/').reverse().join('-');
         fechaSeleccionada.value = today;
     }
+    actualizarDiaSemana(); // Actualiza el nombre del día cuando se establece la fecha
+};
+
+const actualizarDiaSemana = () => {
+    diaSemana.value = obtenerNombreDiaSemana(fechaSeleccionada.value);
 };
 
 onMounted(() => {
     setCurrentDate();         // Establece la fecha de registro
     setFechaSeleccionada();   // Establece la fecha para el filtrado
     setCurrentTime();         // Establece la hora
+    actualizarDiaSemana();    // Establece dia de la semana como texto
 });
 
 const editHojaServicio = (hojaservicio) => {
@@ -90,7 +103,8 @@ const submitForm = () => {
             onSuccess: () => {
                 form.reset();
                 setCurrentDate();
-                setCurrentTime(); 
+                setCurrentTime();
+                actualizarDiaSemana(); 
                 showSuccessMessage('Hoja de servicio creada exitosamente.');
                 form.id = null;
             },
@@ -100,7 +114,8 @@ const submitForm = () => {
             onSuccess: () => {
                 form.reset();
                 setCurrentDate();
-                setCurrentTime(); 
+                setCurrentTime();
+                actualizarDiaSemana(); 
                 showSuccessMessage('Hoja de servicio actualizada exitosamente.');
                 form.id = null;
                 isEditing.value = false;
@@ -186,6 +201,19 @@ const deleteHojaServicio = (id, razon_social) => {
     });
 }
 
+// Funcion para dia/mes/año
+function formatDate(dateString) {
+    const [day, month, year] = dateString.split('/');
+    const date = new Date(`${year}-${month}-${day}`);
+    const options = { 
+        weekday: 'long', 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
+    };
+    return date.toLocaleDateString('es-ES', options);
+}
+
 </script>
 <template>
     <AppLayout title="Hoja de Servicio">
@@ -268,7 +296,7 @@ const deleteHojaServicio = (id, razon_social) => {
                     <div class="flex sm:flex-row flex-col justify-between items-center md:py-4 gap-y-2 py-2">
                         <h1 class="md:text-lg font-extrabold text-md dark:text-white">Historial de Cuadro de Pendientes </h1>
                         <div class="flex flex-wrap justify-end items-center gap-x-4">
-                            <label class="text-base text-gray-900 dark:text-gray-50 font-extrabold">Filtrar por :</label>
+                            <label class="text-base text-gray-900 dark:text-gray-50 font-extrabold">Filtrar por : {{ diaSemana }}</label>
                             <input type="date" v-model="fechaSeleccionada" @change="filtrarPorFecha"
                                 class="outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 px-2.5 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="fechaHoyHoja">
                         </div>
@@ -282,12 +310,11 @@ const deleteHojaServicio = (id, razon_social) => {
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Razon Social</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">cantidad</th>
                                     <th scope="col" class="px-20 py-3 text-center dark:border-white border-b-2">descripcion</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">fecha</th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">hora</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">lugar</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">contacto</th>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N° Contacto</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones
-                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -300,7 +327,7 @@ const deleteHojaServicio = (id, razon_social) => {
                                     <td class="px-6 py-3 text-center dark:border-white border-b whitespace-break-spaces">{{hojaservicio.razon_social }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.cantidad }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b whitespace-break-spaces">{{hojaservicio.descripcion }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b whitespace-break-spaces">{{hojaservicio.fecha }} a las {{ formatTime(hojaservicio.hora) }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b whitespace-nowrap">{{ formatTime(hojaservicio.hora) }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.lugar }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.contacto }}</td>
                                     <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.nro_contacto }}</td>

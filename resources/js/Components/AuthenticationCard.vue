@@ -45,24 +45,24 @@ onMounted(() => {
             <form @submit.prevent="submit" class="z-10">
                 <div class="w-full flex flex-col max-w-[400px]">
                     <div class="w-full flex flex-col mb-2 items-center">
-                        <h3 class="text-2xl font-extrabold mb-2 uppercase md:text-black dark:text-white" id="textoIniciarSesion">Iniciar Sesion</h3>
+                        <h3 class="text-2xl font-extrabold mb-2 uppercase md:text-black text-white dark:text-white" id="textoIniciarSesion">Iniciar Sesion</h3>
                         <img src="img/logo_ini.png" alt="Logo" class="w-full p-4 h-full object-cover dark:hidden">
                         <img src="img/logo_ini_dark.png" alt="Logo Dark" class="w-full p-4 h-full object-cover hidden dark:block">
                     </div>
 
                     <div class="w-full flex flex-col">
-                        <p class="dark:text-white font-extrabold text-base">Email :</p>
-                        <input v-model="form.email" required class="w-full text-black text-base dark:text-white py-4 my-2 bg-transparent border-b rounded-md border-gray-200 md:border-black dark:border-gray-300 outline-none placeholder:text-white md:placeholder:text-gray-400 dark:md:placeholder:text-gray-400 focus:outline-none" type="email" placeholder="example@balinsa.net"/>
+                        <p class="dark:text-white font-extrabold text-base text-white md:text-black">Email :</p>
+                        <input v-model="form.email" required class="w-full md:text-black text-white text-base md:dark:text-white py-4 my-2 bg-transparent border-b rounded-md border-gray-200 md:border-black dark:border-gray-300 outline-none placeholder:text-white md:placeholder:text-gray-400 dark:md:placeholder:text-gray-400 focus:outline-none" type="email" placeholder="example@balinsa.net"/>
                         <InputError class="mt-2" :message="form.errors.email" />
-                        <p class="dark:text-white font-extrabold text-base">Contraseña :</p>
-                        <input v-model="form.password" required class="w-full text-black text-base dark:text-white py-4 my-2 bg-transparent border-b rounded-md border-gray-200 md:border-black dark:border-gray-300 outline-none placeholder:text-white md:placeholder:text-gray-400 dark:md:placeholder:text-gray-400 focus:outline-none" type="password" placeholder="**************">
+                        <p class="dark:text-white font-extrabold text-base text-white md:text-black">Contraseña :</p>
+                        <input v-model="form.password" required class="w-full md:text-black text-white text-base dark:text-white py-4 my-2 bg-transparent border-b rounded-md border-gray-200 md:border-black dark:border-gray-300 outline-none placeholder:text-white md:placeholder:text-gray-400 dark:md:placeholder:text-gray-400 focus:outline-none" type="password" placeholder="**************">
                         <InputError class="mt-2" :message="form.errors.password" />
-                        <div class="flex justify-between items-center my-2">
+                        <div class="flex justify-between whitespace-break-spaces items-center my-2">
                             <div>
                                 <Checkbox v-model:checked="form.remember" name="remember" />
-                                <span class="ms-2 text-sm text-gray-900 dark:text-white">Recordarme</span>
+                                <span class="ms-2 text-sm text-white md:text-black dark:text-white">Recordarme</span>
                             </div>
-                            <Link :href="route('password.request')" class="text-blue-900 dark:text-white font-extrabold text-sm flex justify-end">Olvidaste tu contraseña ?</Link>
+                            <Link :href="route('password.request')" class="text-white md:text-blue-700 dark:text-white font-extrabold text-sm flex justify-end">Olvidaste tu contraseña ?</Link>
                         </div>
                     </div>
                     <div class="w-full flex flex-col my-1 items-center">
