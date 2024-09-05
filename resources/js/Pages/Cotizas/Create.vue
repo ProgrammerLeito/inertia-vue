@@ -485,11 +485,24 @@ const recolectarDatosTabla = () => {
 
         const marca = row.querySelector('td:nth-child(5)')?.innerText.trim() || '';
         
-        row.querySelectorAll('td:nth-child(6) input[type="checkbox"]').forEach(checkbox => {
-            if (checkbox.checked) {
-                capacidadesSeleccionadas.push(checkbox.value);
+        const td = row.querySelector('td:nth-child(6)');
+
+        // Verificar si existen inputs en la columna
+        const checkboxes = td.querySelectorAll('input[type="checkbox"]');
+        if (checkboxes.length > 0) {
+            // Si hay checkboxes, recorrerlos y verificar cuáles están seleccionados
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    capacidadesSeleccionadas.push(checkbox.value);
+                }
+            });
+        } else {
+            // Si no hay inputs, tomar el texto de la columna
+            const texto = td.textContent.trim();
+            if (texto) {
+                capacidadesSeleccionadas.push(texto);
             }
-        });
+        }
 
         const precioList = parseFloat(row.querySelector('td:nth-child(7)')?.innerText.trim().replace(/[^0-9.,]/g, '') || 0);
         const precioMin = parseFloat(row.querySelector('td:nth-child(8)')?.innerText.trim().replace(/[^0-9.,]/g, '') || 0);
@@ -912,95 +925,141 @@ const previewPDF2 = () => {
         // ========== Inicia Función Dibujar Condiciones ==========
 
         function fn_dibujarCondiciones(){
-            doc.autoTable({
-                body: [
-                    [
-                        { content: 'CONDICIONES :', styles: { halign: 'left' , fontStyle: 'bold'} }
-                    ]
-                ],
-                rowPageBreak: 'avoid',
-                theme: 'grid',
-                styles: { 
-                    fontSize: 8, 
-                    cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
-                    lineWidth: 0.30,
-                    lineColor: [0, 0, 0]
-                },
-                margin: {left: 10 , right: 10},
-                startY: doc.lastAutoTable.finalY + 5
-            });
-    
-            const lineYPosition = doc.lastAutoTable.finalY;
-    
-            doc.autoTable({
-                body: [
-                    [
-                        { content: `Emitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585\n\nNo se realizan cambios ni devoluciones\n\nOrden de compra irrevocable`, styles: { halign: 'left' , fontStyle: 'bold' } }
+            // console.log("fn_dibujarCondiciones",datosTabla[0]["subcategoria_id"])
+            const verificarCategoria = datosTabla[0]["subcategoria_id"];
+            if( verificarCategoria == "Servicio de calibracion"){
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: 'CONDICIONES :', styles: { halign: 'left' , fontStyle: 'bold'} }
+                        ]
                     ],
-                ],
-                rowPageBreak: 'avoid',
-                theme: 'grid',
-                styles: { 
-                    fontSize: 8, 
-                    cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
-                    lineWidth: 0.30,
-                    lineColor: [0, 0, 0]
-                },
-                margin: {left: 10 , right: 10},
-                startY: doc.lastAutoTable.finalY
-            });
-    
-            doc.setDrawColor(255, 255, 255);
-            doc.setLineWidth(1);
-            doc.line(10.1, lineYPosition, doc.internal.pageSize.width - 10.1, lineYPosition); 
-    
-            const lineYPosition2 = doc.lastAutoTable.finalY;
-    
-            doc.autoTable({
-                body: [
-                    [
-                        { content: `Los precios unitarios NO incluyen IGV`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [255, 0, 0] } }
-                    ],
-                ],
-                rowPageBreak: 'avoid',
-                theme: 'grid',
-                styles: { 
-                    fontSize: 8, 
-                    cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
-                    lineWidth: 0.30,
-                    lineColor: [0, 0, 0]
-                },
-                margin: {left: 10 , right: 10},
-                startY: doc.lastAutoTable.finalY
-            });
-    
-            doc.setDrawColor(255, 255, 255);
-            doc.setLineWidth(1);
-            doc.line(10.1, lineYPosition2, doc.internal.pageSize.width - 10.1, lineYPosition2); 
-    
-            const lineYPosition3 = doc.lastAutoTable.finalY;
-    
-            doc.autoTable({
-                body: [
-                    [
-                        { content: `Validez de la Cotización     : ${validez_cot}\n\nForma de Pago                    : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}\n\nAsistencia al correo de área de ventas industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}`, styles: { halign: 'left' , fontStyle: 'bold'} }
-                    ],
-                ],
-                rowPageBreak: 'avoid',
-                theme: 'grid',
-                styles: { 
-                    fontSize: 8, 
-                    cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
-                    lineWidth: 0.30,
-                    lineColor: [0, 0, 0]
-                },
-                margin: {left: 10 , right: 10},
-                startY: doc.lastAutoTable.finalY
-            });
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY + 5
+                });
+        
+                const lineYPosition4 = doc.lastAutoTable.finalY;
 
-            doc.setDrawColor(255, 255, 255);
-            doc.setLineWidth(1);
-            doc.line(10.1, lineYPosition3, doc.internal.pageSize.width - 10.1, lineYPosition3); 
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: `La balanza debe estar operativa y en perfecto estado\n\nSi la balanza se encuentra inoperativa o presenta alguna falla al momento de certificar se procederá al cobro total del 190% del servicio por gastos de logistica y adicionales\n\nTiempo de tolerancia de espera para realizar el servicio como máximo 2 horas\n\nToda reprogramación tiene un costo adicional`, styles: { halign: 'left' , fontStyle: 'bold' } }
+                        ],
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY
+                });
+
+                doc.setDrawColor(255, 255, 255);
+                doc.setLineWidth(1);
+                doc.line(10.1, lineYPosition4, doc.internal.pageSize.width - 10.1, lineYPosition4); 
+            } else {
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: 'CONDICIONES :', styles: { halign: 'left' , fontStyle: 'bold'} }
+                        ]
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY + 5
+                });
+        
+                const lineYPosition = doc.lastAutoTable.finalY;
+        
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: `Emitir una orden de compra a nombre de INDUSTRIAS BALINSA E.I.R.L con ruc: 20608165585\n\nNo se realizan cambios ni devoluciones\n\nOrden de compra irrevocable`, styles: { halign: 'left' , fontStyle: 'bold' } }
+                        ],
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY
+                });
+        
+                doc.setDrawColor(255, 255, 255);
+                doc.setLineWidth(1);
+                doc.line(10.1, lineYPosition, doc.internal.pageSize.width - 10.1, lineYPosition); 
+        
+                const lineYPosition2 = doc.lastAutoTable.finalY;
+        
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: `Los precios unitarios NO incluyen IGV`, styles: { halign: 'left' , fontStyle: 'bold', textColor: [255, 0, 0] } }
+                        ],
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY
+                });
+        
+                doc.setDrawColor(255, 255, 255);
+                doc.setLineWidth(1);
+                doc.line(10.1, lineYPosition2, doc.internal.pageSize.width - 10.1, lineYPosition2); 
+        
+                const lineYPosition3 = doc.lastAutoTable.finalY;
+        
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: `Validez de la Cotización     : ${validez_cot}\n\nForma de Pago                    : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}\n\nAsistencia al correo de área de ventas industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}`, styles: { halign: 'left' , fontStyle: 'bold'} }
+                        ],
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY
+                });
+
+                doc.setDrawColor(255, 255, 255);
+                doc.setLineWidth(1);
+                doc.line(10.1, lineYPosition3, doc.internal.pageSize.width - 10.1, lineYPosition3); 
+            }
 
             doc.autoTable({
                 body: [
@@ -1474,7 +1533,7 @@ watchEffect(() => {
                                         </thead>
                                         <tbody>
                                             <tr v-for="(tbproducto, i) in tbproductosAgregados" :key="i">
-                                                <td class="px-6 py-3 text-center border-r border-b hidden">{{ tbproducto.tbsubcategoria.nombre }}</td>
+                                                <td class="px-6 py-3 text-center border-r border-b hidden">{{ tbproducto.tbcategoria.nombre }}</td>
                                                 <td class="px-3 py-4 text-center border-r border-b">{{ tbproducto.modelo }}</td>
                                                 <td class="px-4 py-3 text-center border-r border-b">
                                                     <img @click="openModal('/productos_img/' + tbproducto.foto)" :src="'/productos_img/' + tbproducto.foto" alt="Foto" class="w-10 h-10 cursor-pointer object-cover rounded-md">
@@ -1495,20 +1554,25 @@ watchEffect(() => {
                                                     </div>
                                                 </td>
                                                 <td class="px-3 py-3 text-center border-r border-b">{{ tbproducto.tbmarca ? tbproducto.tbmarca.nombre : 'Sin marca' }}</td>
-                                                <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap" contenteditable="true">
-                                                    <div class="flex flex-col">
-                                                        <label v-for="(capacidad, i) in tbproducto.capacidades.split('\n')" :key="i" class="flex items-center">
-                                                            <input 
-                                                                type="checkbox" 
-                                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
-                                                                :value="capacidad" 
-                                                                :name="`capacidad-${tbproducto.modelo}-${i}`"
-                                                                :checked="tbproducto.capacidades.split('\n').length === 1"
-                                                            >
-                                                            <span class="ml-2">{{ capacidad }}</span>
-                                                        </label>
-                                                    </div>
-                                                </td>
+                                                <template v-if="tbproducto.tbcategoria.nombre === 'Servicio de calibracion'">
+                                                    <td class="px-6 py-3 text-center border-r border-b whitespace-nowrap" contenteditable="true"></td>
+                                                </template>
+                                                <template v-else>
+                                                    <td class="px-6 py-3 text-left border-r border-b whitespace-nowrap">
+                                                        <div class="flex flex-col">
+                                                            <label v-for="(capacidad, i) in tbproducto.capacidades.split('\n')" :key="i" class="flex items-center">
+                                                                <input 
+                                                                    type="checkbox" 
+                                                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
+                                                                    :value="capacidad" 
+                                                                    :name="`capacidad-${tbproducto.modelo}-${i}`"
+                                                                    :checked="tbproducto.capacidades.split('\n').length === 1"
+                                                                >
+                                                                <span class="ml-2">{{ capacidad }}</span>
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </template>
                                                 <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_list ? tbproducto.precio_list : '0').toFixed(2) }}</td>
                                                 <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_min ? tbproducto.precio_min : '0').toFixed(2) }} </td>
                                                 <td class="px-6 py-4 text-center border-r whitespace-nowrap border-b hidden">{{ tbproducto.moneda }} {{ parseFloat(tbproducto.precio_max ? tbproducto.precio_max : '0').toFixed(2) }} </td>

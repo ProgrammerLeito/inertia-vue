@@ -540,6 +540,51 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
             // ========== Inicia Función Dibujar Condiciones ==========
 
             function fn_dibujarCondiciones(){
+            // console.log("fn_dibujarCondiciones",datosTabla[0]["subcategoria_id"])
+            const verificarCategoria = datosTabla[0]["subcategoria_id"];
+            if( verificarCategoria == "Servicio de calibracion"){
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: 'CONDICIONES :', styles: { halign: 'left' , fontStyle: 'bold'} }
+                        ]
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY + 5
+                });
+        
+                const lineYPosition4 = doc.lastAutoTable.finalY;
+
+                doc.autoTable({
+                    body: [
+                        [
+                            { content: `La balanza debe estar operativa y en perfecto estado\n\nSi la balanza se encuentra inoperativa o presenta alguna falla al momento de certificar se procederá al cobro total del 190% del servicio por gastos de logistica y adicionales\n\nTiempo de tolerancia de espera para realizar el servicio como máximo 2 horas\n\nToda reprogramación tiene un costo adicional`, styles: { halign: 'left' , fontStyle: 'bold' } }
+                        ],
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: 8, 
+                        cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: {left: 10 , right: 10},
+                    startY: doc.lastAutoTable.finalY
+                });
+
+                doc.setDrawColor(255, 255, 255);
+                doc.setLineWidth(1);
+                doc.line(10.1, lineYPosition4, doc.internal.pageSize.width - 10.1, lineYPosition4); 
+            } else {
                 doc.autoTable({
                     body: [
                         [
@@ -611,7 +656,7 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
                 doc.autoTable({
                     body: [
                         [
-                            { content: `Validez de la Cotización     : ${validez_cot}\n\nForma de Pago                    : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega} ${parseInt(dias_entrega) == 1 ? "dia" : dias_entrega == "Inmediata" ? "" : "dias"}\n\nAsistencia al correo de área de ventas industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}`, styles: { halign: 'left' , fontStyle: 'bold'} }
+                            { content: `Validez de la Cotización     : ${validez_cot}\n\nForma de Pago                    : ${forma_pago}\n\nPlazo de Entrega                 : ${dias_entrega}\n\nAsistencia al correo de área de ventas industriasbalinsa@gmail.com\n\nTipo de Cambio                   : ${valorTipoCambio}`, styles: { halign: 'left' , fontStyle: 'bold'} }
                         ],
                     ],
                     rowPageBreak: 'avoid',
@@ -629,26 +674,27 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
                 doc.setDrawColor(255, 255, 255);
                 doc.setLineWidth(1);
                 doc.line(10.1, lineYPosition3, doc.internal.pageSize.width - 10.1, lineYPosition3); 
-
-                doc.autoTable({
-                    body: [
-                        [
-                            { content: 'Hacer deposito bancario a nombre de INDUSTRIAS BALINSA EIRL segun:', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
-                        ]
-                    ],
-                    rowPageBreak: 'avoid',
-                    theme: 'grid',
-                    styles: { 
-                        fontSize: 9.5, 
-                        cellPadding: 1,
-                        lineWidth: 0.30,
-                        lineColor: [255, 255, 255]
-                    },
-                    headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
-                    margin: {left: 10 , right: 10},
-                    startY: doc.lastAutoTable.finalY + 5,
-                });
             }
+
+            doc.autoTable({
+                body: [
+                    [
+                        { content: 'Hacer deposito bancario a nombre de INDUSTRIAS BALINSA EIRL segun:', styles: { halign: 'left' , textColor: [ 0, 0, 0 ]} },
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: { 
+                    fontSize: 9.5, 
+                    cellPadding: 1,
+                    lineWidth: 0.30,
+                    lineColor: [255, 255, 255]
+                },
+                headStyles: { fillColor: [253, 202, 36], textColor: [0, 0, 0] },
+                margin: {left: 10 , right: 10},
+                startY: doc.lastAutoTable.finalY + 5,
+            });
+        }
 
             // ========== Termina Función Dibujar Condiciones ==========
 
