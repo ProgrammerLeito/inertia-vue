@@ -8,23 +8,28 @@ import { Inertia } from '@inertiajs/inertia';
 import axios from "axios";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+
+import { format, parse } from 'date-fns';
+import { es } from 'date-fns/locale';  // para la localización en español
+
 // Funcion para recortar cero
 function trimLeadingZeros(value) {
     if (!value) return '';
     return value.replace(/^0+/, '');
 }
 
-// Funcion para dia/mes/año
+//Funcion para dia/mes/año
 function formatDate(dateString) {
-    const [day, month, year] = dateString.split('/');
-    const date = new Date(`${year}-${month}-${day}`);
-    const options = { 
-        weekday: 'long', 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric' 
-    };
-    return date.toLocaleDateString('es-ES', options);
+    if (!dateString) return 'Fecha inválida';
+
+    // Parseamos la fecha en formato año-mes-día (YYYY-MM-DD)
+    const parsedDate = parse(dateString, 'yyyy-MM-dd', new Date());
+
+    // Verificamos si la fecha es válida
+    if (isNaN(parsedDate)) return 'Fecha inválida';
+
+    // Formateamos la fecha en el formato día/mes/año con día de la semana
+    return format(parsedDate, 'EEEE dd/MM/yyyy', { locale: es });
 }
 
 // Funcion para recortar a la primera letra del asesor que ha registrado

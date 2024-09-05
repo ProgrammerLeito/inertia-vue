@@ -201,19 +201,6 @@ const deleteHojaServicio = (id, razon_social) => {
     });
 }
 
-// Funcion para dia/mes/año
-function formatDate(dateString) {
-    const [day, month, year] = dateString.split('/');
-    const date = new Date(`${year}-${month}-${day}`);
-    const options = { 
-        weekday: 'long', 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric' 
-    };
-    return date.toLocaleDateString('es-ES', options);
-}
-
 </script>
 <template>
     <AppLayout title="Hoja de Servicio">
