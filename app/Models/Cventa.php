@@ -46,9 +46,4 @@ class Cventa extends Model
         return $this->belongsTo(Cliente::class);
     }
 
-    public function tenor()
-    {
-        return $this->belongsTo(Tenor::class);
-    }
-
 }

@@ -141,8 +141,8 @@ class CventaController extends Controller
             return response()->json(['error' => 'ID is required'], 400);
         }
 
-        $cventas = DB::select(
-            'SELECT 
+        $cventas = DB::select('
+            SELECT 
                 cventas.id,
                 cventas.n_cotizacion,
                 cventas.codesunat,

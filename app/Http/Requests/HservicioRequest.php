@@ -22,26 +22,26 @@ class HservicioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'hmarca_id' => 'required',
-            'modelo' => 'required|string',
-            'serie' => 'required|string',
-            'tecnico' => '',
-            'div' => 'required|string',
-            'capacidad' => 'required|string',
-            'plataforma' => 'required|string',
-            'fecha' => 'required|date',
-            'requiere' => 'required|string',
-            'diagnostico' => 'required|string',
-            'trabajos' => 'required|string',
-            'n_informe' => 'nullable',
-            'razonSocial' => 'nullable',
+            'hmarca_id' => 'nullable',
+            'instrumento' => 'nullable',
+            'rango' => 'nullable',
+            'medida_bastago' => 'nullable',
+            'codigo' => 'nullable',
+            'material' => 'nullable',
+            'modelo' => 'nullable',
+            'serie' => 'nullable',
+            'div' => 'nullable',
+            'capacidad' => 'nullable',
+            'cliente_id' => 'nullable',
+            'plataforma' => 'nullable',
+            'fecha' => 'nullable|date',
+            'requiere' => 'nullable',
+            'diagnostico' => 'nullable',
+            'trabajos' => 'nullable',
+            'tecnico' => 'nullable',
             'foto' => 'nullable',
             'foto2' => 'nullable',
             'foto3' => 'nullable',
-            'servicio_id' => [
-                'required',
-                Rule::exists('servicios', 'id'),
-            ],
         ];
     }
 }

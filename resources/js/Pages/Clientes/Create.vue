@@ -11,6 +11,7 @@ import {Link , useForm} from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 import Swal from 'sweetalert2';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
+import { show_alerta } from '@/utils/alertasSwal';
 
 const nameInput4 = ref(null);
 const modal4 = ref(false);
@@ -71,37 +72,14 @@ const consultarReniec = async () => {
 const submitForm = () => {
     form.post(route('clientes.store'), {
         onSuccess: () => {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "bottom-end",
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
-            Toast.fire({
-                icon: "success",
-                title: 'Éxito',
-                text: "El cliente se ha registrado correctamente"
-            });
+            show_alerta('El cliente se ha registrado correctamente', 'success')
         },
         onError: (errors) => {
             if(errors.response && errors.response.status) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error al registrar el producto. Por favor, inténtalo de nuevo.'
-                });
+                show_alerta('Ha ocurrido un error al registrar el producto. Por favor, inténtalo de nuevo.', 'error');
                 console.error('Error HTTP:', errors.response.status);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.'
-                });
+                show_alerta('Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'error');
                 console.error('Error desconocido:', errors);
             }
         }
@@ -131,37 +109,15 @@ const closeModal4 = () =>{
 const save4 = () => {
     if (operation4.value == 1) {
         form4.post(route('tbprovincias.store'), {
-            onSuccess: () => { ok4('ciudad registrada') }
-        });
-    } else {
-        form4.put(route('tbprovincias.update', id4.value), {
-            onSuccess: () => { ok4('ciudad actualizado') }
+            onSuccess: () => { ok4('La ciudad ha sido registrada correctamente', 'success') }
         });
     }
 }
 
-const ok4 = (msj) => {
+const ok4 = (msj, icono) => {
     form4.reset();
     closeModal4();
-    const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-    });
-    Toast.fire({
-        icon: "success",
-        title: msj,
-        customClass: {
-                title: 'text-2xl font-bold tracking-widest ',
-                icon: 'text-base font-bold tracking-widest ',
-            },
-    });
+    show_alerta(msj, icono)
 };
 
 </script>

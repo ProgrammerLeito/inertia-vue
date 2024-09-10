@@ -62,6 +62,7 @@ import { ref, onMounted } from 'vue';
 import axios from "axios";
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import { show_alerta, show_confirmacion } from '@/utils/alertasSwal';
 
 const props = defineProps({
     productos: {
@@ -86,25 +87,12 @@ const form = useForm ({
 });
 
 const deleteProducto = (id, insumo) => {
-    const alerta = Swal.mixin({
-        buttonsStyling:true
-    });
-
-    alerta.fire({
-        title: '¿Estás seguro de eliminar ' +insumo+ '?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
-    }).then((result) => {
+    show_confirmacion('¿Estas seguro?', `Estas seguro de eliminar definitivamente el producto ${insumo} de la base de datos`)
+    .then((result) => {
         if (result.isConfirmed) {
             form.delete(route('productos.destroy', id), {
                 onSuccess: () => {
-                    alerta.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Producto eliminado exitosamente'
-                    });
+                    show_alerta('El producto se ha eliminado definitivamente', 'success')
                 }
             });
         }

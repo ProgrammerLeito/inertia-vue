@@ -7,6 +7,7 @@ import InputError from '@/Components/InputError.vue';
 import { Link, useForm, router } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import { ref, onMounted } from 'vue';
+import { show_alerta} from '@/utils/alertasSwal';
 
 const props = defineProps({
     hojaservicios: {
@@ -105,7 +106,7 @@ const submitForm = () => {
                 setCurrentDate();
                 setCurrentTime();
                 actualizarDiaSemana(); 
-                showSuccessMessage('Hoja de servicio creada exitosamente.');
+                show_alerta('Hoja de servicio creada exitosamente.', 'success');
                 form.id = null;
             },
         });
@@ -116,36 +117,12 @@ const submitForm = () => {
                 setCurrentDate();
                 setCurrentTime();
                 actualizarDiaSemana(); 
-                showSuccessMessage('Hoja de servicio actualizada exitosamente.');
+                show_alerta('Hoja de servicio actualizada exitosamente.', 'success');
                 form.id = null;
                 isEditing.value = false;
             },
         });
     }
-};
-
-const showSuccessMessage = (message) => {
-    const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-    });
-    Toast.fire({
-        icon: "success",
-        title: 'Éxito',
-        text: message,
-        customClass: {
-            title: 'text-2xl font-bold tracking-widest ',
-            text: 'text-2xl font-bold tracking-widest ',
-            icon: 'text-base font-bold tracking-widest ',
-        },
-    });
 };
 
 const form2 = useForm({

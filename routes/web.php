@@ -29,7 +29,6 @@ use App\Http\Controllers\TbsubcategoriaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SidebarController;
 use App\Http\Controllers\TbprovinciaController;
-use App\Http\Controllers\TenorController;
 use App\Http\Controllers\TrealizadoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -107,7 +106,6 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('/tbprovincias', TbprovinciaController::class);
     
     // Cotizaciones por venta
-    Route::resource('tenors', TenorController::class);
     Route::resource('/cventas', CventaController::class);
     Route::post('/guardarProductosCotizacion', [CventaController::class, 'guardarProductosCotizacion'])->name('cventas.guardarProductosCotizacion');
     Route::post('/consultarDatosCot', [CventaController::class, 'consultarDatosCot']);
@@ -132,5 +130,7 @@ Route::middleware(['auth:web'])->group(function () {
 });
 
 Route::get('/fn_guardarCotizacion', [CventaController::class, 'guardarCotizacion']);
+Route::get('/fn_ObtenerHojasServicio', [HservicioController::class, 'obtenerHojasServicio']);
+Route::get('/fn_ObtenerHojasServicioDiarias', [HservicioController::class, 'obtenerHojasServicioDiarias']);
 Route::get('/validarIdCot', [CventaController::class, 'validarIdCot']);
 route::get('/fn_ObtenerDatosSalidas', [ProductoController::class, 'fn_ObtenerDatosSalidas'])->name('fn_ObtenerDatosSalidas');

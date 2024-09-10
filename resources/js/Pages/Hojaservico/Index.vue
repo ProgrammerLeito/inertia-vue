@@ -1,28 +1,51 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link, usePage, useForm } from '@inertiajs/vue3';
+import { Link, usePage, useForm } from '@inertiajs/vue3';
 import InputLabel from '@/Components/InputLabel.vue';
 import Swal from 'sweetalert2';
 import vueTailwindPaginationUmd from '@ocrv/vue-tailwind-pagination';
 import {computed, nextTick, ref, watchEffect, onMounted } from 'vue';
-import ButtonDelete from '@/Components/ButtonDelete.vue';
 
 const searchQuery = ref('');
 const filteredHservicios = ref([]);
 
-const{hservicios,servicios,hmarcas}=defineProps({
+const{hservicios,hmarcas}=defineProps({
     hservicios:{
         type : Array,
         required:true
-    },
-    servicios:{
-        type:Object
     },
     hmarcas:{
         type:Object
     },
     countByRequiere:{type: Object},
 });
+
+//para cargar antes del DOM
+// document.addEventListener('DOMContentLoaded', function() {
+// });
+
+function construirDatosdeServicios() {
+    $.ajax({
+        url: '/fn_ObtenerHojasServicioDiarias',
+        method: 'GET',
+        success: function(response) {
+            let bodyDiarios = $('#tbodyHojasServicioDiarias');
+            bodyDiarios.empty();
+
+            response.forEach(function(item) {
+                let nuevaFila = `
+                <tr class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                    <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ item.id }</td>
+                    <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-left">${ item.razonSocial }</td>
+                    <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ item.fecha }</td>
+                </tr>`;
+                bodyDiarios.append(nuevaFila);
+            });
+        }
+    });
+}
+construirDatosdeServicios();
+
 const form = useForm({
     id:''
 })
@@ -37,70 +60,12 @@ watchEffect(() => {
     });
 });
 
-//no se que hace
-const selectedServicio = computed(() => {
-    return servicios.find(servicio => servicio.id === form.servicio_id);
-});
-
-
-//eliminar
-const deleteHservicio= (id, modelo) => {
-    const alerta = Swal.mixin({
-        buttonsStyling:true
-    });
-
-    alerta.fire({
-        title: '¿Estás seguro de eliminar ' +modelo+ '?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.delete(route('hservicios.destroy', id), {
-                onSuccess: () => {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "bottom-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
-                    });
-                    Toast.fire({
-                        icon: "success",
-                        title: 'Éxito',
-                        text: "Requerimientos de servicio  eliminado exitosamente"
-                    });
-                }
-            });
-        }
-    });
-}
-
-//formateo de fecha y hora
-const formatDate = (dateString) => {
-    const options = { month: 'short', day: '2-digit', year: 'numeric' };
-    const offset = new Date().getTimezoneOffset();
-    const offsetMilliseconds = offset * 60 * 1000;
-    const date = new Date(new Date(dateString).getTime() + offsetMilliseconds);
-    return date.toLocaleDateString('es-ES', options);
-};
-
 //llamando cliente_id razonSocial local datos
 const idHojasServicio = ref('');
 const razonSocial = ref('');
-const nInforme = ref('');
 
 onMounted(() => {
-    idHojasServicio.value = localStorage.getItem('servicio_id');
     razonSocial.value = localStorage.getItem('razonSocial');
-    nInforme.value = localStorage.getItem('n_informe');
 });
 
 //estilos
@@ -156,16 +121,8 @@ const totalCount = hservicios.total;
                         <Link @click="guardarRequerimientoId(idHojasServicio)" :href="route('hservicios.create')" class="text-white bg-indigo-700 font-bold hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
                             <i class="fa fa-plus-circle mx-2"></i>Requerimientos Servicio
                         </Link>
-                        <Link :href="route('servicios.index')" class="text-white bg-indigo-700 font-bold hover:bg-indigo-800 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                        <i class="fas fa-arrow-left mx-2"></i>Servicios
-                    </Link>
                     </div>
-                    <div class="md:mt-0 mt-4">
-                        <div class="w-full my-2 text-center font-bold flex justify-center text-black dark:border-gray-700">
-                           <p class="py-2 text-black dark:text-white rounded ml-1">N° Informe | {{ nInforme }}</p> <p class="text-center mx-2 ml-1 py-2 dark:text-white"> - {{ razonSocial }}</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-col">
+                    <div class="flex flex-col py-2">
                         <InputLabel for="table-search" class="block text-md font-medium text-gray-700">Buscar</InputLabel>
                         <div class="relative mt-1">
                             <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -177,7 +134,7 @@ const totalCount = hservicios.total;
                             </div>
                         </div>
                     <div>
-                        <div class="flex flex-wrap gap-4 my-6">
+                        <div class="flex flex-wrap gap-4 my-2">
                             <div class="dark:text-white uppercase text-xs font-bold">
                                 <span class="bg-indigo-800 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-800 dark:text-white">{{ $page.props.totalHservicio }}</span>
                                 Equipos en total
@@ -191,41 +148,13 @@ const totalCount = hservicios.total;
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
                                 <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                     <tr>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">marca</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">modelo</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">capacidad</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">serie</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">div</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">plataforma</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">diagnostico</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">requiere</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">registro</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">fecha</th>
-                                    <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">acciones</th>
+                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N°</th>
+                                        <th scope="col" class="px-5 py-3 text-start dark:border-white border-b-2">Cliente</th>
+                                        <th scope="col" class="px-5 py-3 text-start dark:border-white border-b-2">fecha</th>
                                     </tr>
                                 </thead>
-                                <tbody class="text-center text-xs">
-                                    <tr v-for="hservicio in filteredHservicios" :key="hservicio.id" class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
-                                        <!-- Mostrar los datos de cada hservicio -->
-                                        <td class="px-6 py-4 text-center">{{ hservicio.hmarca ? hservicio.hmarca.nombre : 'Sin marca' }}</td>
-                                        <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.modelo }}</td>
-                                        <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.capacidad }}</td>
-                                        <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.serie }}</td>
-                                        <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.div }}</td>
-                                        <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.plataforma }}</td>
-                                        <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.diagnostico }}</td>
-                                        <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.requiere }}</td>
-                                        <td class="px-6 py-3 text-center dark:border-white border-b">{{ hservicio.tecnico }}</td>
-                                        <td class="px-6 py-3 text-center dark:border-white border-b">{{ formatDate(hservicio.fecha) }}</td>
-                                        <td class="px-6 py-3 text-center dark:border-white border-b">
-                                            <Link :href="route('hservicios.edit',  hservicio.id)" class="mx-2 px-1 py-1 bg-green-700 text-white rounded hover:bg-green-500">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </Link>
-                                            <Button @click="$event => deleteHservicio(hservicio.id,hservicio.modelo)" class=" ml-1 px-1 py-1 bg-red-600 text-white rounded hover:bg-red-700">
-                                                <i class="bi bi-trash3"></i>
-                                            </Button>
-                                        </td>
-                                    </tr>
+                                <tbody id="tbodyHojasServicioDiarias" class="text-center text-xs">
+
                                 </tbody>
                             </table>
                         </div>
@@ -271,15 +200,3 @@ const totalCount = hservicios.total;
         </div>
     </AppLayout>
 </template>
-
-<script>
-export default {
-    name: 'CategoriesIndex',
-    methods: {
-        guardarRequerimientoId(idHojasServicio) {
-            // Guardar el producto_id en localStorage
-            localStorage.setItem('idrequerimiento', idHojasServicio);
-        },
-    }
-};
-</script>

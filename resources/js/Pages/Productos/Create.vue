@@ -8,6 +8,7 @@ import TextInput from '@/Components/TextInput.vue'
 import FileInput from '@/Components/FileInput.vue';
 import { onMounted, watch, ref } from 'vue';
 import Swal from 'sweetalert2';
+import { show_alerta } from '@/utils/alertasSwal';
 
 defineProps({
     categories: {
@@ -82,28 +83,14 @@ const onSelectFoto = (e, fieldName) => {
 const submitForm = () => {
     form.post(route('productos.store'), {
         onSuccess: () => {
-            Swal.fire({
-                title: '¡Producto guardado!',
-                text: 'El producto se ha guardado exitosamente.',
-                icon: 'success',
-                timer: 3000, 
-                showConfirmButton: false
-            });
+            show_alerta('El producto se ha registrado correctamente', 'success');
         },
         onError: (errors) => {
             if (errors.response && errors.response.status) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error al registrar el producto. Por favor, inténtalo de nuevo.'
-                });
+                show_alerta('Ha ocurrido un error al registrar el producto. Por favor, inténtalo de nuevo.', 'error');
                 console.error('Error HTTP:', errors.response.status);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.'
-                });
+                show_alerta('Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'error');
                 console.error('Error desconocido:', errors);
             }
         }
