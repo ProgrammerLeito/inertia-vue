@@ -22,6 +22,7 @@ class HservicioRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'n_servicio' => 'nullable',
             'hmarca_id' => 'nullable',
             'instrumento' => 'nullable',
             'rango' => 'nullable',

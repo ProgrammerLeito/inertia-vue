@@ -6,6 +6,7 @@ use App\Http\Requests\HservicioRequest;
 use App\Http\Requests\UpdateHservicioRequest;
 use App\Models\Cliente;
 use App\Models\Hservicio;
+use App\Models\Servicio;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -21,23 +22,48 @@ class HservicioController extends Controller
                             'clientes.razonSocial as razonSocial',
                             'hservicios.id',
                             'hservicios.fecha',
-                        )
-                        ->paginate(5000);
+                        );
         return Inertia::render('Hojaservico/Index',compact('hservicios'));
     }
 
     public function obtenerHojasServicioDiarias(Request $request)
     {
-        $hservicios = DB::table('hservicios')
-            ->join('clientes', 'hservicios.cliente_id', '=', 'clientes.id')
+        $servicios = DB::table('servicios')
+            ->join('clientes', 'servicios.cliente_id', '=', 'clientes.id')
             ->select(
                 'clientes.razonSocial as razonSocial',
-                'hservicios.id',
-                'hservicios.fecha'
+                'servicios.id',
+                'servicios.fecha'
             )
+            ->orderBy("servicios.fecha","DESC")
             ->get();
 
-        return response()->json($hservicios);
+        return response()->json($servicios);
+    }
+
+    public function obtenerFechaHojaServicio(Request $request)
+    {
+        $tbIdClientaso = $request->input('cliente_id');
+        $tbHojaServicioId = $request->input('fecha');
+        
+        // Busca el registro por fecha
+        $servicio = DB::table('servicios')
+            ->where('fecha', '=', $tbHojaServicioId)
+            ->where('cliente_id', '=', $tbIdClientaso)
+            ->first();
+
+        // Si no existe, crearlo
+        if (!$servicio) {
+            $id = DB::table('servicios')->insertGetId([
+                'fecha' => $tbHojaServicioId,
+                'cliente_id' => $tbIdClientaso,
+            ]);
+
+            // Retornar el nuevo registro creado
+            $servicio = DB::table('servicios')->where('id', $id)->first();
+        }
+
+        return response()->json($servicio);
     }
 
     public function create(){
@@ -51,9 +77,9 @@ class HservicioController extends Controller
         $tecnico = Auth::user()->name;
 
         $validatedData = $request->except(['foto', 'foto2', 'foto3']);
+
         $validatedData['tecnico'] = $tecnico;
-        
-        // Manejo de las fotos
+
         foreach (['foto', 'foto2', 'foto3'] as $foto) {
             if ($request->hasFile($foto)) {
                 $file = $request->file($foto);
@@ -64,6 +90,46 @@ class HservicioController extends Controller
 
         Hservicio::create($validatedData);
         return redirect()->back();
+    }
+
+    public function obtenerHojasServicioAnteriores(Request $request){
+        $servicio = $request->input('servicio');
+        $fecha = $request->input('fecha');
+
+        $obtenerdatos = DB::select('
+            SELECT 
+                hservicios.id,
+                hservicios.hmarca_id,
+                hservicios.instrumento,
+                hservicios.rango,
+                hservicios.medida_bastago,
+                hservicios.codigo,
+                hservicios.material,
+                hservicios.modelo,
+                hservicios.serie,
+                hservicios.div,
+                hservicios.capacidad,
+                hservicios.cliente_id,
+                hservicios.n_servicio,
+                hservicios.plataforma,
+                hservicios.fecha,
+                hservicios.requiere,
+                hservicios.diagnostico,
+                hservicios.trabajos,
+                hservicios.tecnico,
+                hservicios.foto,
+                hservicios.foto2,
+                hservicios.foto3,
+                clientes.razonSocial AS cliente_razonSocial
+            FROM hservicios
+            INNER JOIN clientes ON hservicios.cliente_id = clientes.id
+            INNER JOIN servicios ON hservicios.n_servicio = servicios.id
+            WHERE hservicios.n_servicio = ?
+            AND hservicios.fecha = ?',
+            [$servicio ,$fecha]
+        );
+
+        return response()->json($obtenerdatos);
     }
 
     public function obtenerHojasServicio(Request $request){
@@ -89,6 +155,7 @@ class HservicioController extends Controller
                 hservicios.diagnostico,
                 hservicios.trabajos,
                 hservicios.tecnico,
+                hservicios.n_servicio,
                 hservicios.foto,
                 hservicios.foto2,
                 hservicios.foto3,

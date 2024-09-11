@@ -106,7 +106,7 @@ const submitForm = () => {
                 setCurrentDate();
                 setCurrentTime();
                 actualizarDiaSemana(); 
-                show_alerta('Hoja de servicio creada exitosamente.', 'success');
+                show_alerta('Pendiente creado exitosamente.', 'success');
                 form.id = null;
             },
         });
@@ -117,7 +117,7 @@ const submitForm = () => {
                 setCurrentDate();
                 setCurrentTime();
                 actualizarDiaSemana(); 
-                show_alerta('Hoja de servicio actualizada exitosamente.', 'success');
+                show_alerta('Pendiente actualizado exitosamente.', 'success');
                 form.id = null;
                 isEditing.value = false;
             },
@@ -135,7 +135,7 @@ const deleteHojaServicio = (id, razon_social) => {
     });
 
     alerta.fire({
-        title: '¿Estás seguro de eliminar ala hoja de servicio definitivamente : ' + razon_social + '?',
+        title: '¿Estás seguro de eliminar el pendiente definitivamente : ' + razon_social + '?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -165,7 +165,7 @@ const deleteHojaServicio = (id, razon_social) => {
                     Toast.fire({
                         icon: "success",
                         title: 'Éxito',
-                        text: "Hoja de servicio eliminado exitosamente.",
+                        text: "Pendiente eliminado exitosamente.",
                         customClass: {
                             title: 'text-2xl font-bold tracking-widest ',
                             icon: 'text-base font-bold tracking-widest ',
@@ -180,7 +180,7 @@ const deleteHojaServicio = (id, razon_social) => {
 
 </script>
 <template>
-    <AppLayout title="Hoja de Servicio">
+    <AppLayout title="Registrar Pendientes">
         <template #header>
             <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Cuadro de Pendientes</h1>
         </template>
@@ -252,8 +252,8 @@ const deleteHojaServicio = (id, razon_social) => {
                                 <InputError :message="form.errors.descripcion" class="mt-2"></InputError>
                             </div>
                             <div class="flex flex-wrap gap-2 justify-end items-end">
-                                <ButtonResponsive v-if="!isEditing" @dblclick="editHojaServicio(hojaservicio)" class="uppercase text-xs">Generar Hoja de Servicio</ButtonResponsive>
-                                <ButtonResponsive v-if="isEditing" class="uppercase text-xs">Actualizar Hoja de Servicio</ButtonResponsive>
+                                <ButtonResponsive v-if="!isEditing" @dblclick="editHojaServicio(hojaservicio)" class="uppercase text-xs">Generar Pendiente</ButtonResponsive>
+                                <ButtonResponsive v-if="isEditing" class="uppercase text-xs">Actualizar Pendiente</ButtonResponsive>
                             </div>
                         </div>
                     </form>

@@ -10,6 +10,7 @@ class Hservicio extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'n_servicio',
         'hmarca_id',
         'instrumento',
         'rango',
@@ -44,8 +45,5 @@ class Hservicio extends Model
         static::updating(function ($hservicio) {
             $hservicio->updated_at = Carbon::now()->setTimezone('America/Lima')->toDateTimeString();
         });
-    }
-    public function hmarca(){
-        return $this->belongsTo(Hmarca::class);
     }
 }

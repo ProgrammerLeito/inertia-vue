@@ -10,44 +10,7 @@ class Servicio extends Model
     use HasFactory;
     protected $fillable = [
         'cliente_id',
-        'direccion',
-        'dato_id',
-        'user_id',
-        'n_guia',
-        'fecha',
-        'hora',
-        'tecnico',
-        'estado',
-        'descripcion',
-        'pdf',
-        'e_servicio',
+        'fecha'
     ];
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($servicio) {
-            $lastService = self::orderBy('id', 'desc')->first();
-            $nextNumber = $lastService ? str_pad((int) $lastService->n_informe + 1, 9, '0', STR_PAD_LEFT) : '000000001';
-            $servicio->n_informe = $nextNumber;
-        });
-    }
-
-    public function cliente(){
-        return $this->belongsTo(Cliente::class);
-    }
-
-    public function dato(){
-        return $this->belongsTo(Dato::class);
-    }
-
-    public function user(){
-        return $this->belongsTo(User::class);
-    }
-
-    public function hservicios()
-    {
-        return $this->hasMany(Hservicio::class);
-    }
-
+    
 }
