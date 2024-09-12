@@ -1,6 +1,10 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Link } from '@inertiajs/vue3';
+import FileInput from '@/Components/FileInput.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import { Link, useForm } from '@inertiajs/vue3';
+import { onMounted, ref } from 'vue';
 import Swal from 'sweetalert2';
 import { format, parse } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -10,6 +14,102 @@ const{hservicios}=defineProps({
         type : Array,
         required:true
     }
+});
+
+const isEditing = ref(false);
+
+const editHojaServicio = (hservicio) => {
+    form.n_servicio = hservicio.n_servicio
+    form.id = hservicio.id;
+    form.hmarca_id = hservicio.hmarca_id;
+    form.instrumento = hservicio.instrumento;
+    form.rango = hservicio.rango;
+    form.medida_bastago = hservicio.medida_bastago;
+    form.codigo = hservicio.codigo;
+    form.material = hservicio.material;
+    form.modelo = hservicio.modelo;
+    form.serie = hservicio.serie;
+    form.div = hservicio.div;
+    form.capacidad = hservicio.capacidad;
+    form.cliente_razonSocial = hservicio.cliente_razonSocial;
+    form.plataforma = hservicio.plataforma;
+    form.fecha = hservicio.fecha;
+    form.requiere = hservicio.requiere;
+    form.diagnostico = hservicio.diagnostico;
+    form.trabajos = hservicio.trabajos;
+    form.foto = hservicio.foto;
+    form.foto2 = hservicio.foto2;
+    form.foto3 = hservicio.foto3;
+
+    imagePreview1.value = '/hservicio_img/' + hservicio.foto;
+    imagePreview2.value = '/hservicio_img/' + hservicio.foto2;
+    imagePreview3.value = '/hservicio_img/' + hservicio.foto3;
+
+    images.value = [
+        imagePreview1.value, // imagen 1
+        imagePreview2.value, // imagen 2
+        imagePreview3.value  // imagen 3
+    ];
+
+    isEditing.value = true;
+};
+
+const imagePreview1 = ref('');
+const imagePreview2 = ref('');
+const imagePreview3 = ref('');
+const imagePreviews = ref(['', '', '']);
+
+const onSelectFoto = (e, fieldName) => {
+    const files = e.target.files;
+    if (files.length) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            // Actualiza la vista previa de la imagen correspondiente
+            switch (fieldName) {
+                case 'foto':
+                    imagePreview1.value = e.target.result;
+                    imagePreviews.value[0] = e.target.result; // Guarda en el arreglo de imágenes
+                    break;
+                case 'foto2':
+                    imagePreview2.value = e.target.result;
+                    imagePreviews.value[1] = e.target.result; // Guarda en el arreglo de imágenes
+                    break;
+                case 'foto3':
+                    imagePreview3.value = e.target.result;
+                    imagePreviews.value[2] = e.target.result; // Guarda en el arreglo de imágenes
+                    break;
+                default:
+                    break;
+            }
+        };
+        reader.readAsDataURL(files[0]);
+
+        // También puedes guardar el archivo en el formulario si es necesario
+        form[fieldName] = files[0];
+    }
+};
+
+const form = useForm({
+    n_servicio: '',
+    hmarca_id: '',
+    instrumento: '1',
+    rango: '',
+    medida_bastago: '',
+    codigo: '',
+    material: '',
+    modelo: '',
+    serie: '',
+    div: '',
+    capacidad: '',
+    cliente_id: '',
+    plataforma: '',
+    fecha: '',
+    requiere: '',
+    diagnostico: '',
+    trabajos: '',
+    foto: '',
+    foto2: '',
+    foto3: '',
 });
 
 //Funcion para dia/mes/año
@@ -72,9 +172,9 @@ function construirDatosdeServicios() {
                     agrupadosPorFecha[fecha].forEach(function(item) {
                         let nuevaFila = $(`
                         <tr class="bg-white font-extrabold text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-800 hover:bg-gray-400 cursor-pointer">
-                            <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${item.id}</td>
-                            <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-left">${item.razonSocial}</td>
-                            <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${item.fecha}</td>
+                            <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${item.id}</td>
+                            <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-left">${item.razonSocial}</td>
+                            <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center whitespace-nowrap">${item.fecha}</td>
                         </tr>`);
                         bodyDiarios.append(nuevaFila);
                     });
@@ -149,8 +249,8 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                     // Para Balanzas
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.id }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.id }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.hmarca_id }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
@@ -167,8 +267,8 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                     // Para Termómetros
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.id }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.id }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.hmarca_id }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.rango }</td>
@@ -185,8 +285,8 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                     // Para Pesas
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.id }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.modelo }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.id }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.codigo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.material }</td>
@@ -202,13 +302,13 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
             $('#divTablitaHojasdeServicio').show();
             $('#divListarHojasdeServicio').hide();
 
-            // Añadir el manejador de eventos de doble clic
-            // $('#tbodyContenedorHojasServiciosBalanzas, #tbodyContenedorHojasServiciosTermometros, #tbodyContenedorHojasServiciosPesas').on('dblclick', 'tr', function() {
-            //     let hservicio = JSON.parse($(this).attr('data-hservicio'));
-            //     editHojaServicio(hservicio);
-            //     let instrumento = hservicio.instrumento;
-            //     actualizarVisibilidadIns(instrumento);
-            // });
+            $('#tbodyContenedorHojasServiciosBalanzas, #tbodyContenedorHojasServiciosTermometros, #tbodyContenedorHojasServiciosPesas').on('dblclick', 'tr', function() {
+                let hservicio = JSON.parse($(this).attr('data-hservicio'));
+                editHojaServicio(hservicio);
+                let instrumento = hservicio.instrumento;
+                actualizarVisibilidadIns(instrumento);
+            });
+
             // Filtrar filas por cliente
             function filtrarPorCliente() {
                 let nombreFiltrar = $('#filtrarRequerimientosHojas').val().toUpperCase();
@@ -279,7 +379,92 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
 $(document).on("click", "#retornarbody", function() {
     $('#divTablitaHojasdeServicio').hide();
     $('#divListarHojasdeServicio').show();
+    form.reset();
+
+    // Para cambiar el valor de una ref, necesitas usar .value
+    imagePreview1.value = "";
+    imagePreview2.value = "";
+    imagePreview3.value = "";
+
+    // Si estás usando el array de previews
+    imagePreviews.value = ['', '', ''];
 });
+
+function actualizarVisibilidadIns(instrumento) {
+    if (instrumento == "1") {
+        $('#divMarca').show();
+        $('#divModelo').show();
+        $('#divSerie').show();
+        $('#divDivision').show();
+        $('#divCapacidad').show();
+        $('#divPlataforma').show();
+        $('#divRango').hide();
+        $('#divMedidaBastago').hide();
+        $('#divCodigo').hide();
+        $('#divMaterial').hide();
+    } else if (instrumento == "2") {
+        $('#divMarca').show();
+        $('#divModelo').show();
+        $('#divSerie').show();
+        $('#divDivision').show();
+        $('#divCapacidad').hide();
+        $('#divPlataforma').hide();
+        $('#divRango').show();
+        $('#divMedidaBastago').show();
+        $('#divCodigo').hide();
+        $('#divMaterial').hide();
+    } else if (instrumento == "3") {
+        $('#divMarca').hide();
+        $('#divModelo').show();
+        $('#divSerie').hide();
+        $('#divDivision').hide();
+        $('#divCapacidad').show();
+        $('#divPlataforma').hide();
+        $('#divRango').hide();
+        $('#divMedidaBastago').hide();
+        $('#divCodigo').show();
+        $('#divMaterial').show();
+    }
+}
+
+$(document).on('change', '#instrumento', function () {
+    let instrumento = $('#instrumento').val();
+    actualizarVisibilidadIns(instrumento);
+});
+
+// Variables reactivas
+const showModal = ref(false);
+const currentIndex = ref(0);
+const images = ref([]);
+
+// Función para abrir el modal con el índice de la imagen
+const openModal = (index) => {
+  currentIndex.value = index;
+  showModal.value = true;
+};
+
+// Función para cerrar el modal
+const closeModal = () => {
+  showModal.value = false;
+};
+
+// Función para pasar a la imagen anterior
+const prevImage = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--;
+  } else {
+    currentIndex.value = images.value.length - 1; // Si estamos en la primera, va a la última
+  }
+};
+
+// Función para pasar a la imagen siguiente
+const nextImage = () => {
+  if (currentIndex.value < images.value.length - 1) {
+    currentIndex.value++;
+  } else {
+    currentIndex.value = 0; // Si estamos en la última, vuelve a la primera
+  }
+};
 </script>
 
 <template>
@@ -300,7 +485,7 @@ $(document).on("click", "#retornarbody", function() {
                         <div class="flex md:w-96 w-full">
                             <span
                                 class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                <i class='bx bxs-user-circle text-xl'></i>
+                                <i class="fa-solid fa-folder-open text-md"></i>
                             </span>
                             <input id="filtrarClienteHoja"
                                 class="w-full outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg focus:ring-primary-600 focus:border-primary-600 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -310,50 +495,17 @@ $(document).on("click", "#retornarbody", function() {
                     </div>
                     <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-500 mt-2">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white" id="tbHojaServicioBuscar">
-                            <thead class="text-xs text-white uppercase bg-blue-600">
+                            <thead class="text-xs text-white uppercase bg-green-600">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">N°</th>
                                     <th scope="col" class="px-5 py-3 text-start dark:border-white border-b-2">Cliente</th>
-                                    <th scope="col" class="px-5 py-3 text-start dark:border-white border-b-2">fecha</th>
+                                    <th scope="col" class="px-5 py-3 text-center dark:border-white border-b-2">fecha</th>
                                 </tr>
                             </thead>
                             <tbody id="tbodyHojasServicioDiarias" class="text-center text-xs">
                             </tbody>
                         </table>
                     </div>
-                    <!-- <div class="flex flex-wrap md:justify-between sm:justify-between justify-center">
-                        <div class="hidden sm:block">
-                            <div class="flex flex-wrap mt-4 md:justify-between sm:justify-between justify-center gap-4 text-star">
-                                <p class="text-gray-700 dark:text-white font-semibold">Registros por página: {{ countPerPage }}</p>
-                                <p class="text-gray-700 dark:text-white font-semibold">Total de Hojas de Servicios: {{ totalCount }}</p>
-                            </div>
-                        </div>
-                        <div class="mt-4 sm:text-end text-center">
-                            <nav aria-label="Page navigation example mt-4">
-                                <ul class="inline-flex -space-x-px text-sm">
-                                    <li>
-                                        <button @click="previousPage" :disabled="!hservicios.prev_page_url"
-                                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-700 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                            Prev
-                                        </button>
-                                    </li>
-                                    <li v-for="page in total_pages" :key="page">
-                                        <button @click="goToPage(page)"
-                                            :class="{ 'text-blue-600 border-blue-300 dark:text-gray-900 bg-blue-50 hover:bg-blue-100 hover:text-blue-700': page === current_page, 'text-gray-900 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': page !== current_page }"
-                                            class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                            {{ page }}
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button @click="nextPage" :disabled="!hservicios.next_page_url"
-                                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-700 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                            Next
-                                        </button>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div> -->
                 </div>
             </div>
         </div>
@@ -362,8 +514,162 @@ $(document).on("click", "#retornarbody", function() {
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="w-full">
                         <button class="text-white bg-blue-600 flex justify-center items-center text-center md:gap-2 gap-4 font-bold hover:bg-blue-700 uppercase text-sm py-2 px-6 rounded md:w-min whitespace-nowrap w-full" id="retornarbody">
-                            <i class="fa-solid fa-arrow-left"></i>retornar
+                            <i class="fa-solid fa-arrow-left"></i>Regresar
                         </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 md:mt-2.5 gap-y-4 mt-2 mb-1">
+                        <div class="w-full -mb-2">
+                            <InputLabel for="cliente_id" value="Cliente" />
+                            <TextInput v-model="form.cliente_razonSocial" type="text" id="cliente_id"
+                                disabled class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div class="col-span-1 col-start-0 col-end-0 sm:col-start-3 sm:col-end-4 mb-2">
+                            <InputLabel for="instrumento" class="block text-xs uppercase font-medium text-black dark:text-white">Instrumento</InputLabel>
+                            <select v-model="form.instrumento" disabled id="instrumento" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <option value="1" selected>Balanzas</option>
+                                    <option value="2">Termometros</option>
+                                    <option value="3">Pesas</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 mb-2">
+                        <div id="divMarca">
+                            <InputLabel for="hmarca_id" value="Marca" />
+                            <TextInput v-model="form.hmarca_id" type="text" id="hmarca_id" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div id="divModelo">
+                            <InputLabel for="modelo" value="Modelo" />
+                            <TextInput v-model="form.modelo" type="text" id="modelo" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div id="divCodigo" class="hidden">
+                            <InputLabel for="codigo" value="Codigo"
+                                class="block text-md font-medium text-gray-700 " />
+                            <TextInput v-model="form.codigo" type="text" id="codigo" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div id="divSerie">
+                            <InputLabel for="serie" value="Serie"
+                                class="block text-md font-medium text-gray-700 " />
+                            <TextInput v-model="form.serie" type="text" id="serie" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div id="divRango" class="hidden">
+                            <InputLabel for="rango" value="rango"
+                                class="block text-md font-medium text-gray-700 " />
+                            <TextInput v-model="form.rango" type="text" id="rango" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div id="divMedidaBastago" class="hidden">
+                            <InputLabel for="medida_bastago" value="Medida de Bastago"
+                                class="block text-md font-medium text-gray-700 " />
+                            <TextInput v-model="form.medida_bastago" type="text" id="medida_bastago" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div id="divDivision">
+                            <InputLabel for="div" value="Div" />
+                            <TextInput v-model="form.div" type="text" id="div" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div id="divCapacidad">
+                            <InputLabel for="capacidad" value="Capacidad" />
+                            <TextInput v-model="form.capacidad" type="text" id="capacidad" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div id="divMaterial" class="hidden">
+                            <InputLabel for="material" value="Material" />
+                            <TextInput v-model="form.material" type="text" id="material" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div id="divPlataforma">
+                            <InputLabel for="plataforma" value="Plataforma" />
+                            <TextInput v-model="form.plataforma" type="text" id="plataforma" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                        <div>
+                            <InputLabel for="requiere" value="Requiere" />
+                            <select id="requiere" v-model="form.requiere" required disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <option value="">Selecciona una opcion</option>
+                                <option value="REQUIERE MANTENIMIENTO">MANTENIMIENTO</option>
+                                <option value="REQUIERE REPARACION">REPARACION</option>
+                                <option value="POR REVISAR">POR REVISAR</option>
+                                <option value="CERTIFICACION">CERTIFICACION</option>
+                                <option value="GARANTIA">GARANTIA</option>
+                                <option value="IMPLEMENTACION">IMPLEMENTACION</option>
+                                <option value="CALIBRACION">CALIBRACION</option>
+                            </select>
+                        </div>
+                        <div>
+                            <InputLabel for="fecha" value="Fecha"
+                                class="block text-md font-medium text-gray-700 " />
+                            <TextInput v-model="form.fecha" type="date" id="fecha" disabled
+                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3">
+                        <div>
+                            <InputLabel for="diagnostico" value="Diagnostico" />
+                            <textarea id="diagnostico" rows="4" required v-model="form.diagnostico" disabled
+                                class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Escriba las diagnostico..."></textarea>
+                        </div>
+                        <div>
+                            <InputLabel for="trabajos" value="Trabajos" />
+                            <textarea id="trabajos" rows="4" required v-model="form.trabajos" disabled
+                                class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Escriba las trabajos..."></textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mt-0 flex justify-center items-center flex-wrap gap-y-0 sm:gap-x-2 gap-4">
+                            <div v-if="imagePreview1" class="sm:col-span-1 flex-1 whitespace-nowrap">
+                                <div class="flex flex-wrap gap-4 items-center justify-center mb-4 mt-1.5">
+                                    <div class="dark:text-white font-extrabold">Foto 1</div>
+                                    <div class="mt-2 flex items-center justify-center w-full">
+                                        <img @click="openModal(0)" :src="imagePreview1" alt="Vista previa de la foto"
+                                        class="p-2 block w-36 h-36 object-contain items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="imagePreview2" class="sm:col-span-1 flex-1 whitespace-nowrap">
+                                <div class="flex flex-wrap gap-4 items-center justify-center mb-4 mt-1.5">
+                                    <div class="dark:text-white font-extrabold">Foto 2</div>
+                                    <div class="mt-2 flex items-center justify-center w-full">
+                                        <img @click="openModal(1)" :src="imagePreview2" alt="Vista previa de la foto"
+                                        class="p-2 block w-36 h-36 object-contain items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="imagePreview3" class="sm:col-span-1 flex-1 whitespace-nowrap">
+                                <div class="flex flex-wrap gap-4 items-center justify-center mb-4 mt-1.5">
+                                    <div class="dark:text-white font-extrabold">Foto 3</div>
+                                    <div class="mt-2 flex items-center justify-center w-full">
+                                        <img @click="openModal(2)" :src="imagePreview3" alt="Vista previa de la foto"
+                                        class="p-2 block w-36 h-36 object-contain items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="showModal" class="fixed right-0 top-[110px] bottom-[-60px] md:left-[50px] left-[-2px] overflow-y-auto z-[10000] bg-gray-200/40">
+                            <div class="flex justify-center items-center flex-col h-full max-h-[90%] py-10 m-auto rounded-lg" style="backdrop-filter: blur(5px);">
+                                <div class="w-full max-w-sm max-h-[90%] h-full bg-gray-50 dark:bg-gray-500 rounded-t-lg relative">
+                                    <button @click="prevImage" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-600 text-white px-2 py-1 rounded-l text-xl hover:bg-gray-700">
+                                        &lt;
+                                    </button>
+                                    <img :src="images[currentIndex]" alt="Imagen ampliada" class="max-w-sm w-full h-full object-contain">
+                                    <button @click="nextImage" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-600 text-white px-2 py-1 rounded-r text-xl hover:bg-gray-700">
+                                        &gt;
+                                    </button>
+                                    </div>
+                                    <div class="bg-gray-50 dark:bg-gray-400 p-2 w-full max-w-sm flex justify-end rounded-b-lg">
+                                    <button @click="closeModal" type="button" class="w-full justify-center rounded-md border border-transparent shadow-sm px-14 py-0 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:text-sm">
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="py-4 flex flex-col gap-4">
                         <div class="flex flex-col py-1">
@@ -390,7 +696,7 @@ $(document).on("click", "#retornarbody", function() {
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Serie</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Div</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Plataforma</th>
-                                            <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Requiere</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                         </tr>
@@ -412,7 +718,7 @@ $(document).on("click", "#retornarbody", function() {
                                         <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Rango</th>
                                         <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Medida Bastago</th>
                                         <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Div</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Requiere</th>
+                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                         <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
                                         <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                     </tr>
@@ -432,7 +738,7 @@ $(document).on("click", "#retornarbody", function() {
                                         <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Codigo</th>
                                         <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Capacidad</th>
                                         <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Material</th>
-                                        <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Requiere</th>
+                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                         <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
                                         <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                     </tr>

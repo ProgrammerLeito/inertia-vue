@@ -1095,8 +1095,8 @@ $(document).on('change', '#instrumento', function () {
                                     <select id="requiere" v-model="form.requiere" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Selecciona una opcion</option>
-                                        <option value="REQUIERE MANTENIMIENTO">MANTENIMIENTO</option>
-                                        <option value="REQUIERE REPARACION">REPARACION</option>
+                                        <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+                                        <option value="REPARACION">REPARACION</option>
                                         <option value="POR REVISAR">POR REVISAR</option>
                                         <option value="CERTIFICACION">CERTIFICACION</option>
                                         <option value="GARANTIA">GARANTIA</option>
