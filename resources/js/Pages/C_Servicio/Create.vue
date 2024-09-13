@@ -120,7 +120,7 @@ onMounted(() => {
 
 //hora y fecha actual
 const setCurrentDate = () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }).split('/').reverse().join('-');
     form.fecha = today;
 }
 const setCurrentTime = () => {

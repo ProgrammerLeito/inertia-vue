@@ -461,7 +461,7 @@ watch(() => form.tipoCambio, (newValue) => {
 });
  
 onMounted(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }).split('/').reverse().join('-');
     form.fecha = today;
 });
  

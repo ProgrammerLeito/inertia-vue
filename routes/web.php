@@ -136,3 +136,5 @@ Route::get('/fn_ObtenerHojasServicio', [HservicioController::class, 'obtenerHoja
 Route::get('/fn_ObtenerHojasServicioDiarias', [HservicioController::class, 'obtenerHojasServicioDiarias']);
 Route::get('/validarIdCot', [CventaController::class, 'validarIdCot']);
 route::get('/fn_ObtenerDatosSalidas', [ProductoController::class, 'fn_ObtenerDatosSalidas'])->name('fn_ObtenerDatosSalidas');
+Route::get('/fn_obtenerSubcategoriasRegistradas', [TbsubcategoriaController::class, 'obtenerSubcategoriasRegistradas']);
+Route::get('/fn_obtenerMarcasRegistradas', [TbmarcaController::class, 'obtenerMarcasRegistradas']);

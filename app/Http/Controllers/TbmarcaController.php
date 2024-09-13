@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tbmarca;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TbmarcaController extends Controller
 {
@@ -20,4 +21,15 @@ class TbmarcaController extends Controller
         return redirect()->back()->with('success', 'Marca creada correctamente.', $tbmarcas);
     }
 
+    public function obtenerMarcasRegistradas (){
+        $subcategorias = DB::table('tbmarcas')
+            ->select(
+                'id',
+                'nombre'
+            )
+            ->orderBy("tbmarcas.id","ASC")
+            ->get();
+
+        return response()->json($subcategorias);
+    }
 }

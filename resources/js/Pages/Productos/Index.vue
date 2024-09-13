@@ -200,7 +200,7 @@ const printPDF = async () => {
         item.tecnico || '',
         item.unidad_salida || '',
         item.unidad_devolucion || '',
-        item.fecha || '',
+        formatDate(item.fecha) || '', // Asegúrate de que formatDate esté definida y sea la función correcta
         item.hora_salida || '',
     ]);
 

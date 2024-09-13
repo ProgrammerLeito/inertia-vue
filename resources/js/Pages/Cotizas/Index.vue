@@ -8,35 +8,7 @@ import { Inertia } from '@inertiajs/inertia';
 import axios from "axios";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-
-import { format, parse } from 'date-fns';
-import { es } from 'date-fns/locale';  // para la localización en español
-
-// Funcion para recortar cero
-function trimLeadingZeros(value) {
-    if (!value) return '';
-    return value.replace(/^0+/, '');
-}
-
-//Funcion para dia/mes/año
-function formatDate(dateString) {
-    if (!dateString) return 'Fecha inválida';
-
-    // Parseamos la fecha en formato año-mes-día (YYYY-MM-DD)
-    const parsedDate = parse(dateString, 'yyyy-MM-dd', new Date());
-
-    // Verificamos si la fecha es válida
-    if (isNaN(parsedDate)) return 'Fecha inválida';
-
-    // Formateamos la fecha en el formato día/mes/año con día de la semana
-    return format(parsedDate, 'EEEE dd/MM/yyyy', { locale: es });
-}
-
-// Funcion para recortar a la primera letra del asesor que ha registrado
-function getFirstLetter(value) {
-    if (!value) return '';
-    return value.charAt(0).toUpperCase();
-}
+import { formatDate, trimLeadingZeros, getFirstLetter } from '@/utils/funcionesglobales';
  
 const props = defineProps({
     cventas: {
@@ -77,11 +49,6 @@ const filteredCVentas = computed(() => {
         return (nCotizacionMatch || clienteMatch || tecnicoMatch) && estadoMatch;
     });
 });
-
-// Observa cambios en los estados seleccionados (opcional)
-// watch(selectedEstados, (newValue) => {
-//     console.log('Estados seleccionados:', newValue);
-// });
 
 const form = useForm({
     id: ''

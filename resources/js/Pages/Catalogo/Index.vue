@@ -1,10 +1,9 @@
 <script setup>
 import { ref, watchEffect, computed } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import ButtonDelete from '@/Components/ButtonDelete.vue';
 import Swal from 'sweetalert2';
 import { Link, useForm } from '@inertiajs/vue3'
-import InputLabel from '@/Components/InputLabel.vue';
+import { show_alerta, show_confirmacion } from '@/utils/alertasSwal';
 
 const filteredTbproductos = ref([]);
 const searchQuery = ref('');
@@ -38,25 +37,12 @@ const deleteTbproducto = (id, modelo) => {
     const alerta = Swal.mixin({
         buttonsStyling:true
     });
- 
-    alerta.fire({
-        title: '¿Estás seguro de eliminar ' +modelo+ '?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
-    }).then((result) => {
+    show_confirmacion('¿Estas seguro?', `Estas seguro de eliminar definitivamente el producto de modelo ${modelo} de la base de datos`)
+    .then((result) => {
         if (result.isConfirmed) {
             form.delete(route('tbproductos.destroy', id), {
                 onSuccess: () => {
-                    alerta.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Producto eliminado exitosamente',
-                        timer: 1000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
-                    });
+                    show_alerta('El producto se ha eliminado definitivamente', 'success')
                 }
             });
         }

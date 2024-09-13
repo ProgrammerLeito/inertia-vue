@@ -1,13 +1,11 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import FileInput from '@/Components/FileInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm } from '@inertiajs/vue3';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import Swal from 'sweetalert2';
-import { format, parse } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatDate } from '@/utils/funcionesglobales';
 
 const{hservicios}=defineProps({
     hservicios:{
@@ -111,14 +109,6 @@ const form = useForm({
     foto2: '',
     foto3: '',
 });
-
-//Funcion para dia/mes/año
-function formatDate(dateString) {
-    if (!dateString) return 'Fecha inválida';
-    const parsedDate = parse(dateString, 'yyyy-MM-dd', new Date());
-    if (isNaN(parsedDate)) return 'Fecha inválida';
-    return format(parsedDate, 'EEEE dd/MM/yyyy', { locale: es });
-}
 
 let timerInterval;
 function construirDatosdeServicios() {
@@ -503,6 +493,7 @@ const nextImage = () => {
                                 </tr>
                             </thead>
                             <tbody id="tbodyHojasServicioDiarias" class="text-center text-xs">
+                                <tr class="rounded-lg border-2 dark:border-gray-700 dark:text-gray-200 text-base"><td colspan="4" class="text-center">No hay datos</td></tr>
                             </tbody>
                         </table>
                     </div>

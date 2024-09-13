@@ -4,15 +4,13 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { onMounted, ref, defineProps, watchEffect } from 'vue';
+import { onMounted, ref, defineProps } from 'vue';
 import FileInput from '@/Components/FileInput.vue';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { show_alerta } from '@/utils/alertasSwal';
-
-import { format, parse } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatDate } from '@/utils/funcionesglobales';
 
 const { hservicios } = defineProps({
     hservicios:{
@@ -901,14 +899,6 @@ const selectCliente = (cliente) => {
     filteredClientes.value = [];
     obtenerDatosTiempoReal();
 };
-
-//Funcion para dia/mes/año
-function formatDate(dateString) {
-    if (!dateString) return 'Fecha inválida';
-    const parsedDate = parse(dateString, 'yyyy-MM-dd', new Date());
-    if (isNaN(parsedDate)) return 'Fecha inválida';
-    return format(parsedDate, 'EEEE dd/MM/yyyy', { locale: es });
-}
 
 function resetarDatosFrm(){
     form.id = null;

@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { ref,onMounted,computed,watch } from 'vue';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import * as XLSX from 'xlsx';
+import { show_alerta, show_confirmacion } from '@/utils/alertasSwal';
 
 const props=defineProps({
     carritos:{
@@ -36,39 +37,14 @@ watch(precio_t, (newVal) => {
 const submitForm = () => {
     form.post(route('carritos.store'), {
         onSuccess: () => {
-            form.cantidad = '';
-            form.precio_t = '0.00';
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "bottom-end",
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
-            Toast.fire({
-                icon: "success",
-                title: 'Éxito',
-                text: "El producto se ha registrado en el carrito correctamente"
-            });
+            show_alerta('El producto se ha registrado en el carrito correctamente.', 'success')
         },
         onError: (errors) => {
             if (errors.response && errors.response.status) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error al registrar el producto. Por favor, inténtalo de nuevo.'
-                });
+                show_alerta('Ha ocurrido un error al registrar el producto. Por favor, inténtalo de nuevo.', 'error')
                 console.error('Error HTTP:', errors.response.status);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.'
-                });
+                show_alerta('Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'error')
                 console.error('Error desconocido:', errors);
             }
         }
@@ -83,45 +59,12 @@ const deleteCarrito = (id, materiales) => {
     const alerta = Swal.mixin({
         buttonsStyling: true
     });
-
-    alerta.fire({
-        title: '¿Estás seguro de eliminar el producto del carrito definitivamente : ' + materiales + '?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
-        customClass: {
-            title: 'text-xl font-bold tracking-widest ',
-            cancelButton: 'text-base tracking-widest ',
-            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
-        },
-    }).then((result) => {
+    show_confirmacion(`¿Estás seguro de eliminar el producto del carrito definitivamente: ${materiales}. Esta acción no se puede deshacer!`)
+    .then((result) => {
         if (result.isConfirmed) {
             form2.delete(route('carritos.destroy', id), {
                 onSuccess: () => {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "bottom-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
-                    });
-                    Toast.fire({
-                        icon: "success",
-                        title: 'Éxito',
-                        text: "El producto del carrito se a eliminado exitosamente.",
-                        customClass: {
-                            title: 'text-2xl font-bold tracking-widest ',
-                            icon: 'text-base font-bold tracking-widest ',
-                            text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
-                        },
-                    });
+                    show_alerta('El producto del carrito se a eliminado exitosamente.', 'success')
                 }
             });
         }

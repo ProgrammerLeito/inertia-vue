@@ -49,7 +49,7 @@ onMounted(() => {
 });
 
 onMounted(() => {
-    const today = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual y la formatea como yyyy-mm-dd
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }).split('/').reverse().join('-');
     form.fecha = today; // Asigna la fecha actual al modelo de datos del formulario
 });
 

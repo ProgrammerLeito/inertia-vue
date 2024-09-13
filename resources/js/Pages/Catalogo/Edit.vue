@@ -5,9 +5,9 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
-import Swal from 'sweetalert2';
 import { ref, watch } from 'vue';
 import FileInput from '@/Components/FileInput.vue';
+import { show_alerta } from '@/utils/alertasSwal';
 
 const { tbproducto, tbmarcas, tbcategorias, tbsubcategorias } = defineProps({
     tbproducto: {
@@ -89,27 +89,7 @@ updateFilteredSubcategoriasYMarcas();
 const submitForm = () => {
     form.post(route('tbproductos.update', { tbproducto: tbproducto.id }), {
         onSuccess: () => {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "bottom-end",
-                showConfirmButton: false,
-                timer: 1000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
-            Toast.fire({
-                icon: "success",
-                title: 'Éxito',
-                text: 'El producto se ha actualizado correctamente.',
-                customClass: {
-                    title: 'text-2xl font-bold tracking-widest ',
-                    text: 'text-2xl font-bold tracking-widest ',
-                    icon: 'text-base font-bold tracking-widest ',
-                },
-            });
+            show_alerta('El producto se ha actualizado correctamente.', 'success')
         },
     });
 };

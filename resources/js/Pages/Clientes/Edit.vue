@@ -8,6 +8,7 @@ import TextInput from '@/Components/TextInput.vue';
 import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import Swal from 'sweetalert2';
 import { defineProps } from 'vue';
+import { show_alerta } from '@/utils/alertasSwal';
 
 // Define los props esperados
 const { cliente, tbprovincias } = defineProps({
@@ -28,42 +29,14 @@ const form = useForm(cliente);
 const submitForm = () => {
     form.put(route('clientes.update', { cliente: cliente.id }), {
         onSuccess: () => {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "bottom-end",
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
-            Toast.fire({
-                icon: "success",
-                title: 'Éxito',
-                text: "El cliente se ha actualizado correctamente"
-            });
+            show_alerta('El cliente se ha actualizado correctamente.', 'success')
         },
         onError: (errors) => {
             if (errors.response && errors.response.status) {
-                // Si hay un error de respuesta HTTP, manejarlo aquí
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error al actualzar el cliente. Por favor, inténtalo de nuevo.',
-                    timer: 1000,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                });
+                show_alerta('Ha ocurrido un error al actualzar el cliente. Por favor, inténtalo de nuevo.', 'error')
                 console.error('Error HTTP:', errors.response.status);
             } else {
-                // Si el error no tiene una propiedad de respuesta o de estado, manejarlo aquí
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.'
-                });
+                show_alerta('Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'error')
                 console.error('Error desconocido:', errors);
             }
         }

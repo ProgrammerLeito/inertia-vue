@@ -6,6 +6,7 @@ import { useForm } from '@inertiajs/vue3';
 import { ref, watchEffect } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { show_alerta, show_confirmacion } from '@/utils/alertasSwal';
  
 const searchQuery = ref('');
 const filteredClients = ref([]);
@@ -32,48 +33,12 @@ const form = useForm({
 })
 
 const deleteCliente = (id, razonSocial) => {
-    const alerta = Swal.mixin({
-        buttonsStyling: true
-    });
-
-    alerta.fire({
-        title: '¿Estás seguro de eliminar al cliente: ' + razonSocial + '?\n¡Este cliente se eliminará definitivamente de la base de datos. Esta acción no se puede deshacer!',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
-        customClass: {
-            title: 'text-xl font-bold tracking-wide ',
-            cancelButton: 'text-base tracking-wide ',
-            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-wide ',
-        },
-    }).then((result) => {
+    show_confirmacion(`¿Estás seguro de eliminar al cliente: ${razonSocial}, ¡Este cliente se eliminará definitivamente de la base de datos. Esta acción no se puede deshacer!`)
+    .then((result) => {
         if (result.isConfirmed) {
                     form.delete(route('clientes.destroy', id), {
                         onSuccess: () => {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: "bottom-end",
-                                showConfirmButton: false,
-                                timer: 1000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.onmouseenter = Swal.stopTimer;
-                                    toast.onmouseleave = Swal.resumeTimer;
-                                }
-                            });
-                            Toast.fire({
-                                icon: "success",
-                                title: "Exito",
-                                text: "Cliente Eliminado Exitosamente",
-                                customClass: {
-                                    title: 'text-2xl font-bold tracking-widest ',
-                                    icon: 'text-base font-bold tracking-widest ',
-                                    text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
-                                    },
-                            });
+                            show_alerta('Cliente eliminado exitosamente de la base de datos.', 'success')
                         }
                     });
                 }
@@ -134,37 +99,13 @@ const openCtgModal = async (cliente) => {
                 ctg: ctg
             });
             if (response && response.status === 200) {
-                const Toast = Swal.mixin({
-                        toast: true,
-                        position: "bottom-end",
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
-                    });
-                    Toast.fire({
-                        icon: "success",
-                        title: 'Éxito',
-                        text: "Calificación asignada exitosamente.",
-                        customClass: {
-                            title: 'text-2xl font-bold tracking-widest ',
-                            icon: 'text-base font-bold tracking-widest ',
-                            text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
-                        },
-                    });
+                show_alerta('Calificación asignada exitosamente.', 'success')
             } else {
                 throw new Error(response ? response.data.message : 'Error desconocido');
             }
         } catch (error) {
             console.error('Error al actualizar la calificación:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Hubo un problema al actualizar la calificación del cliente',
-            });
+            show_alerta('Hubo un problema al actualizar la calificación del cliente.', 'error')
         }
     }
 };
@@ -199,12 +140,6 @@ const printPDF = async () => {
         format: 'a4',
         compress: true,
     });
-
-    // const backgroundImage = '/storage/profile-photos/plantillaclientes.png';
-
-    // Agregar la imagen de fondo (simulado, jsPDF no admite imágenes de fondo directamente)
-    // doc.addImage(backgroundImage, 'PNG', 0, 0, 210, 297);
-    // A4: 210 x 297 mm
 
     // Definir el contenido del PDF
     const headerText = 'LISTA DE CLIENTES:';

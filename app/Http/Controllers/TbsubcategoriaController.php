@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tbsubcategoria;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TbsubcategoriaController extends Controller
 {
@@ -23,4 +24,16 @@ class TbsubcategoriaController extends Controller
         return redirect()->back();
     }
 
+    public function obtenerSubcategoriasRegistradas (){
+        $subcategorias = DB::table('tbsubcategorias')
+            ->select(
+                'id',
+                'tbcategoria_id',
+                'nombre'
+            )
+            ->orderBy("tbsubcategorias.id","ASC")
+            ->get();
+
+        return response()->json($subcategorias);
+    }
 }
