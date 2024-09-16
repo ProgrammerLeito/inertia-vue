@@ -806,12 +806,13 @@ const updateSelection = (index) => {
 
 const informeNumero = ref('');
 
-function obtenerDatosTiempoReal(){
+function obtenerDatosTiempoReal(fecha){
     $.ajax({
         url: '/fn_ObtenerHojasServicio',
         method: 'GET',
         data: {
             cliente_id: form.cliente_id,
+            fecha: form.fecha,
         },
         success: function(response) {
             $('#tbodyContenedorHojasServiciosBalanzas').empty();
@@ -973,6 +974,108 @@ function actualizarVisibilidadIns(instrumento) {
 $(document).on('change', '#instrumento', function () {
     let instrumento = $('#instrumento').val();
     actualizarVisibilidadIns(instrumento);
+});
+
+$(document).on('change', '#fecha', function () {
+    let fecha = $('#fecha').val();
+    let cliente_id = form.cliente_id;
+
+    if (fecha) {
+        $.ajax({
+            url: '/fn_verificarFechayDatos',
+            method: 'GET',
+            data: {
+                cliente_id: cliente_id, 
+                fecha: fecha, 
+            },
+            success: function(response) {
+                $('#tbodyContenedorHojasServiciosBalanzas').empty();
+                $('#tbodyContenedorHojasServiciosTermometros').empty();
+                $('#tbodyContenedorHojasServiciosPesas').empty();
+
+                let contadorbal = 1;
+                let contadorter = 1;
+                let contadorpes = 1;
+                informeNumero.value = 'S/N'; 
+
+                if (response.length > 0) {
+                    response.forEach(function(hservicio) {
+                        informeNumero.value = hservicio.n_servicio || '';
+                        let hservicioJson = JSON.stringify(hservicio);
+                        let nuevaFila;
+
+                        if (hservicio.instrumento == "1") {
+                            // Para Balanzas
+                            nuevaFila = `
+                            <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorbal++ }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.div }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) }</td>
+                            </tr>
+                            `;
+                            $('#tbodyContenedorHojasServiciosBalanzas').append(nuevaFila);
+
+                        } else if (hservicio.instrumento == "2") {
+                            // Para Termómetros
+                            nuevaFila = `
+                            <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorter++ }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.rango }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.medida_bastago }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.div }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) }</td>
+                            </tr>
+                            `;
+                            $('#tbodyContenedorHojasServiciosTermometros').append(nuevaFila);
+
+                        } else if (hservicio.instrumento == "3") {
+                            // Para Pesas
+                            nuevaFila = `
+                            <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorpes++ }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.modelo }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.codigo }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.material }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) }</td>
+                            </tr>
+                            `;
+                            $('#tbodyContenedorHojasServiciosPesas').append(nuevaFila);
+                        }
+                    });
+                } else {
+                    show_alerta('No se encontraron registros en esta fecha.', 'error');
+                }
+
+                checkTableVisibility();
+                // Añadir el manejador de eventos de doble clic
+                $('#tbodyContenedorHojasServiciosBalanzas, #tbodyContenedorHojasServiciosTermometros, #tbodyContenedorHojasServiciosPesas').on('dblclick', 'tr', function() {
+                    let hservicio = JSON.parse($(this).attr('data-hservicio'));
+                    editHojaServicio(hservicio);
+                    let instrumento = hservicio.instrumento;
+                    actualizarVisibilidadIns(instrumento);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error en la solicitud AJAX:', status, error);
+                show_alerta('Error en la solicitud. Inténtalo de nuevo más tarde.', 'error');
+            }
+        });
+    }
 });
 
 </script>

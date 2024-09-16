@@ -297,7 +297,6 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                 actualizarVisibilidadIns(instrumento);
                 $('#divMostrarInstrumento').show();
                 $('#divMostrarDatosInforme').show();
-                $('#divMostrarFrmCrearNuevoInformeTecnico').hide();
                 $('#divMostrarImagenesInforme').show();
             });
 
@@ -372,7 +371,6 @@ $(document).on("click", "#retornarbody", function() {
     $('#divMostrarDatosInforme').hide();
     $('#divMostrarInstrumento').hide();
     $('#divMostrarImagenesInforme').hide();
-    $('#divMostrarFrmCrearNuevoInformeTecnico').hide();
     $('#divTablitaHojasdeServicio').hide();
     $('#divListarHojasdeServicio').show();
     form.reset();
@@ -468,17 +466,6 @@ $(document).on('change', '#instrumento2', function () {
     actualizarVisibilidadIns2(instrumento);
 });
 
-$(document).on('click', '#crearNuevaHojaServicio', function (){
-    form.reset();
-});
-
-$(document).on('click', '#crearNuevaHojaServicio', function () {
-    $('#divMostrarDatosInforme').hide();
-    $('#divMostrarInstrumento').hide();
-    $('#divMostrarFrmCrearNuevoInformeTecnico').show();
-    $('#divMostrarImagenesInforme').hide();
-});
-
 // Variables reactivas
 const showModal = ref(false);
 const currentIndex = ref(0);
@@ -513,49 +500,6 @@ const nextImage = () => {
   }
 };
 
-const submitForm = () => {
-    // $("#btnguardarHojaServicio").hide();
-    // $("#loading-button").show();
-    // $.ajax({
-    //     url: '/fn_obtenerFechaHojaServicio',
-    //     method: 'GET',
-    //     data: {
-    //         cliente_id: form.cliente_id,
-    //         fecha: form.fecha
-    //     },
-    //     success: function(response) {
-    //         if (response) {
-    //             let idServicio = response["id"]
-    //             form.n_servicio = idServicio;
-    //             form.post(route('hservicios.store'), {
-    //                 onSuccess: () => {
-    //                     show_alerta('La hoja de servicio se ha registrado correctamente.', 'success');
-    //                     obtenerDatosTiempoReal();
-    //                     resetarDatosFrm();
-    //                     $("#btnguardarHojaServicio").show();
-    //                     $("#loading-button").hide();
-    //                 },
-    //                 onError: (errors) => {
-    //                     if (errors.response && errors.response.status) {
-    //                         show_alerta('Ha ocurrido un error al registrar el producto. Por favor, inténtalo de nuevo.', 'error');
-    //                         console.error('Error HTTP:', errors.response.status);
-    //                     } else {
-    //                         show_alerta('Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'error');
-    //                         console.error('Error desconocido:', errors);
-    //                     }
-    //                 }
-    //             });
-    //         }
-    //     },
-    //     error: function(error) {
-    //         console.error("ERROR AL REGISTRAR COTIZACION ",error);
-    //     }
-    // });
-    $("#btnguardarHojaServicio").hide();
-    $("#loading-button").show();
-    console.log(form);
-    $("#btnguardarHojaServicio").show();
-}
 </script>
 
 <template>
@@ -603,7 +547,6 @@ const submitForm = () => {
                         <button class="text-white bg-blue-600 flex justify-center items-center text-center md:gap-2 gap-4 font-bold hover:bg-blue-700 uppercase text-sm py-2 px-6 rounded md:w-min whitespace-nowrap w-full" id="retornarbody">
                             <i class="fa-solid fa-arrow-left"></i>Regresar
                         </button>
-                        <ButtonResponsive id="crearNuevaHojaServicio" class="uppercase text-xs bg-red-600 hover:bg-red-700">Nuevo Informe Tecnico</ButtonResponsive>
                     </div>
                     <div class="py-2">
                         <div class="flex items-center font-bold p-4 border py-1 border-green-600 rounded bg-green-600">
@@ -768,177 +711,6 @@ const submitForm = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div id="divMostrarFrmCrearNuevoInformeTecnico" class="hidden">
-                        <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 sm:grid-cols-3 md:py-0 py-2">
-                                <div class="w-full -mb-2">
-                                    <InputLabel for="cliente_id" value="Cliente" />
-                                    <TextInput v-model="form.cliente_razonSocial" type="text" id="cliente_id"
-                                        disabled class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                </div>
-                                <div class="col-span-1 col-start-0 col-end-0 sm:col-start-3 sm:col-end-4 mb-2">
-                                    <InputLabel for="instrumento" class="block text-xs font-medium text-black dark:text-white">Instrumento</InputLabel>
-                                    <select id="instrumento2" v-model="form.instrumento" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            <option value="1" selected>Balanzas</option>
-                                            <option value="2">Termometros</option>
-                                            <option value="3">Pesas</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 mb-3">
-                                <div id="divMarca2">
-                                    <InputLabel for="hmarca_id" value="marca" />
-                                    <TextInput v-model="form.hmarca_id" type="text" id="hmarca_id"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.hmarca_id" class="mt-2"></InputError>
-                                </div>
-                                <div id="divModelo2">
-                                    <InputLabel for="modelo" value="modelo" />
-                                    <TextInput v-model="form.modelo" type="text" id="modelo"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.modelo" class="mt-2"></InputError>
-                                </div>
-                                <div id="divCodigo2" class="hidden">
-                                    <InputLabel for="codigo" value="codigo"
-                                        class="block text-md font-medium text-gray-700 " />
-                                    <TextInput v-model="form.codigo" type="text" id="codigo"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.codigo" class="mt-2"></InputError>
-                                </div>
-                                <div id="divSerie2">
-                                    <InputLabel for="serie" value="serie"
-                                        class="block text-md font-medium text-gray-700 " />
-                                    <TextInput v-model="form.serie" type="text" id="serie"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.serie" class="mt-2"></InputError>
-                                </div>
-                                <div id="divRango2" class="hidden">
-                                    <InputLabel for="rango" value="rango"
-                                        class="block text-md font-medium text-gray-700 " />
-                                    <TextInput v-model="form.rango" type="text" id="rango"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.rango" class="mt-2"></InputError>
-                                </div>
-                                <div id="divMedidaBastago2" class="hidden">
-                                    <InputLabel for="medida_bastago" value="medida de bastago"
-                                        class="block text-md font-medium text-gray-700 " />
-                                    <TextInput v-model="form.medida_bastago" type="text" id="medida_bastago"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.medida_bastago" class="mt-2"></InputError>
-                                </div>
-                                <div id="divDivision2">
-                                    <InputLabel for="div" value="div" />
-                                    <TextInput v-model="form.div" type="text" id="div"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.div" class="mt-2"></InputError>
-                                </div>
-                                <div id="divCapacidad2">
-                                    <InputLabel for="capacidad" value="capacidad" />
-                                    <TextInput v-model="form.capacidad" type="text" id="capacidad"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.capacidad" class="mt-2"></InputError>
-                                </div>
-                                <div id="divMaterial2" class="hidden">
-                                    <InputLabel for="material" value="material" />
-                                    <TextInput v-model="form.material" type="text" id="material"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.material" class="mt-2"></InputError>
-                                </div>
-                                <div id="divPlataforma2">
-                                    <InputLabel for="plataforma" value="plataforma" />
-                                    <TextInput v-model="form.plataforma" type="text" id="plataforma"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.plataforma" class="mt-2"></InputError>
-                                </div>
-                                <div>
-                                    <InputLabel for="requiere" value="requiere" />
-                                    <select id="requiere" v-model="form.requiere" required
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="">Selecciona una opcion</option>
-                                        <option value="MANTENIMIENTO">MANTENIMIENTO</option>
-                                        <option value="REPARACION">REPARACION</option>
-                                        <option value="POR REVISAR">POR REVISAR</option>
-                                        <option value="CERTIFICACION">CERTIFICACION</option>
-                                        <option value="GARANTIA">GARANTIA</option>
-                                        <option value="IMPLEMENTACION">IMPLEMENTACION</option>
-                                        <option value="CALIBRACION">CALIBRACION</option>
-                                    </select>
-                                    <InputError :message="$page.props.errors.descripcion" class="" />
-                                </div>
-                                <div>
-                                    <InputLabel for="fecha" value="Fecha"
-                                        class="block text-md font-medium text-gray-700 " />
-                                    <TextInput v-model="form.fecha" type="date" id="fecha" :disabled="!$page.props.user.permissions.includes('Acciones Administrador')"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.fecha" class="mt-2"></InputError>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3">
-                                <div>
-                                    <InputLabel for="diagnostico" value="diagnostico" />
-                                    <textarea id="diagnostico" v-model="form.diagnostico" rows="4" required
-                                        class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Escriba las diagnostico..."></textarea>
-                                    <InputError :message="form.errors.diagnostico" class="mt-2"></InputError>
-                                </div>
-                                <div>
-                                    <InputLabel for="trabajos" value="trabajos" />
-                                    <textarea id="trabajos" v-model="form.trabajos" rows="4" required
-                                        class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Escriba las trabajos..."></textarea>
-                                    <InputError :message="form.errors.trabajos" class="mt-2"></InputError>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="mt-0 flex justify-center items-center flex-wrap gap-y-0 sm:gap-x-2">
-                                    <div class="sm:col-span-1 flex-1 whitespace-nowrap">
-                                        <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
-                                            <InputLabel for="foto" value="Foto"
-                                                class="block text-sm font-medium text-gray-700" />
-                                            <FileInput class="text-sm" name="foto" @change="($event) => onSelectFoto($event, 'foto')" />
-                                            <InputError :message="$page.props.errors.foto" class="mt-2" />
-                                            <div class="mt-2 flex items-center justify-center w-full"
-                                                v-if="form.foto !== ''">
-                                                <img :src="imagePreview1" alt="Vista previa de la foto"
-                                                    class="p-2 block w-36 h-36 object-contain items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="sm:col-span-1 flex-1 whitespace-nowrap">
-                                        <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
-                                            <InputLabel for="foto2" value="Foto 2"
-                                                class="block text-sm font-medium text-gray-700" />
-                                            <FileInput class="text-sm"name="foto2" @change="($event) => onSelectFoto($event, 'foto2')" />
-                                            <InputError :message="$page.props.errors.foto2" class="mt-2" />
-                                            <div class="mt-2 flex items-center justify-center w-full"
-                                                v-if="form.foto2 !== ''">
-                                                <img :src="imagePreview2" alt="Vista previa de la foto 2"
-                                                    class="p-2 block w-36 h-36 items-center object-contain text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="sm:col-span-1 flex-1 whitespace-nowrap">
-                                        <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
-                                            <InputLabel for="foto3" value="Foto 3"
-                                                class="block text-sm font-medium text-gray-700" />
-                                            <FileInput class="text-sm" name="foto3" @change="($event) => onSelectFoto($event, 'foto3')" />
-                                            <InputError :message="$page.props.errors.foto3" class="mt-2" />
-                                            <div class="mt-2 flex items-center justify-center w-full"
-                                                v-if="form.foto3 !== ''">
-                                                <img :src="imagePreview3" alt="Vista previa de la foto 3"
-                                                    class="p-2 block w-36 h-36 items-center object-contain text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex mt-4">
-                                <div class="flex flex-wrap gap-x-4 gap-y-4 justify-end">
-                                    <ButtonResponsive id="btnguardarHojaServicio" class="uppercase text-xs">Guadar Informe Tecnico</ButtonResponsive>
-                                </div>
-                            </div>
-                        </form>
                     </div>
                     <div class="py-4 flex flex-col gap-4">
                         <div class="flex flex-col py-1">

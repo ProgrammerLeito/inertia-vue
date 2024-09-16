@@ -134,6 +134,7 @@ class HservicioController extends Controller
 
     public function obtenerHojasServicio(Request $request){
         $cliente_id = $request->input('cliente_id');
+        $fecha = $request->input('fecha');
 
         $obtenerdatos = DB::select('
             SELECT 
@@ -163,8 +164,48 @@ class HservicioController extends Controller
             FROM hservicios
             INNER JOIN clientes ON hservicios.cliente_id = clientes.id
             WHERE hservicios.cliente_id = ?
-            AND hservicios.fecha = CURDATE()',
-            [$cliente_id]
+            AND hservicios.fecha = ?',
+            [$cliente_id,$fecha]
+        );
+
+        return response()->json($obtenerdatos);
+    }
+
+    public function verificarFechayDatos(Request $request)
+    {
+        $cliente_id = $request->input('cliente_id');
+        $fecha = $request->input('fecha');
+
+        $obtenerdatos = DB::select('
+            SELECT 
+                hservicios.id,
+                hservicios.hmarca_id,
+                hservicios.instrumento,
+                hservicios.rango,
+                hservicios.medida_bastago,
+                hservicios.codigo,
+                hservicios.material,
+                hservicios.modelo,
+                hservicios.serie,
+                hservicios.div,
+                hservicios.capacidad,
+                hservicios.cliente_id,
+                hservicios.plataforma,
+                hservicios.fecha,
+                hservicios.requiere,
+                hservicios.diagnostico,
+                hservicios.trabajos,
+                hservicios.tecnico,
+                hservicios.n_servicio,
+                hservicios.foto,
+                hservicios.foto2,
+                hservicios.foto3,
+                clientes.razonSocial AS cliente_razonSocial
+            FROM hservicios
+            INNER JOIN clientes ON hservicios.cliente_id = clientes.id
+            WHERE hservicios.cliente_id = ?
+            AND hservicios.fecha = ?',
+            [$cliente_id, $fecha]
         );
 
         return response()->json($obtenerdatos);
