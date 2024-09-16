@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { show_alerta } from '@/utils/alertasSwal';
 import { formatDate } from '@/utils/funcionesglobales';
+import { checkTableVisibility } from '@/utils/hFuncionesServicios';
 
 const { hservicios } = defineProps({
     hservicios:{
@@ -817,6 +818,9 @@ function obtenerDatosTiempoReal(){
             $('#tbodyContenedorHojasServiciosTermometros').empty();
             $('#tbodyContenedorHojasServiciosPesas').empty();
 
+            let contadorbal = 1;
+            let contadorter = 1;
+            let contadorpes = 1;
             informeNumero.value = 'S/N'; 
             response.forEach(function(hservicio) {
                 informeNumero.value = hservicio.n_servicio || '';
@@ -827,7 +831,7 @@ function obtenerDatosTiempoReal(){
                     // Para Balanzas
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.id }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorbal++ }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad }</td>
@@ -845,7 +849,7 @@ function obtenerDatosTiempoReal(){
                     // Para Termómetros
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.id }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorter++ }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
@@ -863,7 +867,7 @@ function obtenerDatosTiempoReal(){
                     // Para Pesas
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.id }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorpes++ }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.modelo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.codigo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad }</td>
@@ -877,6 +881,7 @@ function obtenerDatosTiempoReal(){
                 }
             });
 
+            checkTableVisibility();
             // Añadir el manejador de eventos de doble clic
             $('#tbodyContenedorHojasServiciosBalanzas, #tbodyContenedorHojasServiciosTermometros, #tbodyContenedorHojasServiciosPesas').on('dblclick', 'tr', function() {
                 let hservicio = JSON.parse($(this).attr('data-hservicio'));
@@ -973,10 +978,10 @@ $(document).on('change', '#instrumento', function () {
 </script>
 
 <template>
-    <AppLayout title="Registrar Hoja de Servicio">
+    <AppLayout title="Registrar Informe Tecnico">
         <template #header>
             <div class="flex flex-wrap">
-                <div class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Registrar hoja de servicio</div>
+                <div class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Registrar Informe Tecnico</div>
             </div>
         </template>
 
@@ -1164,8 +1169,8 @@ $(document).on('change', '#instrumento', function () {
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-x-4 gap-y-4 justify-end">
-                                    <ButtonResponsive v-if="isEditing" id="crearNuevaHojaServicio" class="uppercase text-xs bg-red-600 hover:bg-red-700">Nueva Hoja de Servicio</ButtonResponsive>
-                                    <ButtonResponsive id="btnguardarHojaServicio" v-if="!isEditing" class="uppercase text-xs">Guadar Hoja de Servicio</ButtonResponsive>
+                                    <ButtonResponsive v-if="isEditing" id="crearNuevaHojaServicio" class="uppercase text-xs bg-red-600 hover:bg-red-700">Nuevo Informe Tecnico</ButtonResponsive>
+                                    <ButtonResponsive id="btnguardarHojaServicio" v-if="!isEditing" class="uppercase text-xs">Guadar Informe Tecnico</ButtonResponsive>
                                     <button 
                                         id="loading-button" 
                                         disabled 
@@ -1177,13 +1182,13 @@ $(document).on('change', '#instrumento', function () {
                                         </svg>
                                         Cargando...
                                     </button>
-                                    <ButtonResponsive id="btnactualizarHojaServicio" v-if="isEditing" class="uppercase text-xs">Actualizar Hoja de Servicio</ButtonResponsive>
+                                    <ButtonResponsive id="btnactualizarHojaServicio" v-if="isEditing" class="uppercase text-xs">Actualizar Informe Tecnico</ButtonResponsive>
                                 </div>
                             </div>
                         </form>
                         <div class="py-4 flex flex-col gap-4">
                             <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
-                                <table id="construirTablaBalanzas" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
+                                <table id="construirTablaBalanzas" class="w-full hidden text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                                         <caption class="bg-gray-500 dark:bg-gray-700 p-2 w-full rounded-lt-lg border-b-2 text-sm font-bold text-gray-100">Balanzas</caption>
                                         <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                             <tr>
@@ -1205,7 +1210,7 @@ $(document).on('change', '#instrumento', function () {
                                 </table>
                             </div>
                             <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
-                                <table id="construirTablaTermometros" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
+                                <table id="construirTablaTermometros" class="w-full hidden text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                                     <caption class="bg-gray-500 dark:bg-gray-700 p-2 w-full rounded-lt-lg border-b-2 text-sm font-bold text-gray-100">Termometros</caption>
                                     <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                         <tr>
@@ -1227,7 +1232,7 @@ $(document).on('change', '#instrumento', function () {
                                 </table>
                             </div>
                             <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
-                                <table id="construirTablaPesas" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
+                                <table id="construirTablaPesas" class="w-full hidden text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
                                     <caption class="bg-gray-500 dark:bg-gray-700 p-2 w-full rounded-lt-lg border-b-2 text-sm font-bold text-gray-100">Pesas</caption>
                                     <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                         <tr>

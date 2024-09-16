@@ -134,7 +134,7 @@ const submitForm = () => {
                                 </div>
  
                             </div>
-                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 sm:gap-x-8">
+                            <div class="grid lg:grid-cols-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-3 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel for="codigo" class="block text-xs font-medium text-gray-700">Código
                                     </InputLabel>
@@ -184,8 +184,6 @@ const submitForm = () => {
                                     </select>
                                     <InputError :message="$page.props.errors.moneda" class="mt-2" />
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 sm:gap-x-8 mt-3">
                                 <div>
                                     <InputLabel for="precio_min" class="block text-xs font-medium text-gray-700">
                                         Precio_min

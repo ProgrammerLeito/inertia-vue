@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tbprovincias;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TbprovinciaController extends Controller
 {
@@ -15,5 +16,17 @@ class TbprovinciaController extends Controller
         Tbprovincias::create($validatedData);
 
         return redirect()->back()->with('success', 'Marca creada correctamente.');
+    }
+
+    public function obtenerProvinciasRegistradas (){
+        $provincias = DB::table('tbprovincias')
+            ->select(
+                'id',
+                'prov_nombre'
+            )
+            ->orderBy("tbprovincias.id","ASC")
+            ->get();
+
+        return response()->json($provincias);
     }
 }

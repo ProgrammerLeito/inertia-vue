@@ -138,3 +138,4 @@ Route::get('/validarIdCot', [CventaController::class, 'validarIdCot']);
 route::get('/fn_ObtenerDatosSalidas', [ProductoController::class, 'fn_ObtenerDatosSalidas'])->name('fn_ObtenerDatosSalidas');
 Route::get('/fn_obtenerSubcategoriasRegistradas', [TbsubcategoriaController::class, 'obtenerSubcategoriasRegistradas']);
 Route::get('/fn_obtenerMarcasRegistradas', [TbmarcaController::class, 'obtenerMarcasRegistradas']);
+Route::get('/fn_obtenerProvinciasRegistradas', [TbprovinciaController::class, 'obtenerProvinciasRegistradas']);

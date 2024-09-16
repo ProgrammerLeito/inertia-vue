@@ -2,6 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+import TextInputCliente from '@/Components/TextInputCliente.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import TextRuc from '@/Components/TextRuc.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -9,7 +10,6 @@ import ButtonResponsive from '@/Components/ButtonResponsive.vue';
 import InputError from '@/Components/InputError.vue';
 import {Link , useForm} from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
-import Swal from 'sweetalert2';
 import ModalResponsive from '@/Components/ModalResponsive.vue';
 import { show_alerta } from '@/utils/alertasSwal';
 
@@ -19,12 +19,13 @@ const title4 = ref('');
 const operation4 = ref(1);
 const id4 = ref('');
 
-defineProps({
+const { tbprovincias } = defineProps({
     tbprovincias: {
-        type : Object,
+        type: Object,
         required: true
     }
 });
+
 const form4 = useForm ({
     prov_nombre: '',
 
@@ -106,18 +107,73 @@ const closeModal4 = () =>{
     form4.reset();
 }
 
+const provincias = ref([]);
+
 const save4 = () => {
     if (operation4.value == 1) {
         form4.post(route('tbprovincias.store'), {
             onSuccess: () => { ok4('La ciudad ha sido registrada correctamente', 'success') }
         });
     }
+    $.ajax({
+        url: '/fn_obtenerProvinciasRegistradas',
+        method: 'GET',
+        success: function(response) {
+            provincias.value = response;
+        }
+    });
 }
 
 const ok4 = (msj, icono) => {
     form4.reset();
     closeModal4();
     show_alerta(msj, icono)
+};
+
+const searchTerm = ref('');
+const searchTermCodigoCli = ref('');
+const filteredClientes = ref([]);
+const selectedIndex = ref(-1);
+
+const onInput = () => {
+    selectedIndex.value = -1;
+    if (searchTerm.value.length > 0) {
+        const provinciasAUtilizar = provincias.value.length > 0 ? provincias.value : tbprovincias;
+        filteredClientes.value = provinciasAUtilizar.filter(tbprovincia =>
+            tbprovincia.prov_nombre.toLowerCase().includes(searchTerm.value.toLowerCase())
+        );
+    } else {
+        filteredClientes.value = [];
+    }
+};
+
+const onKeydown = (event) => {
+    if (filteredClientes.value.length > 0) {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            selectedIndex.value = (selectedIndex.value + 1) % filteredClientes.value.length;
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            selectedIndex.value = (selectedIndex.value - 1 + filteredClientes.value.length) % filteredClientes.value.length;
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            if (selectedIndex.value >= 0) {
+                selectCliente(filteredClientes.value[selectedIndex.value]);
+            }
+        }
+    }
+};
+
+const updateSelection = (index) => {
+    selectedIndex.value = index;
+};
+
+
+const selectCliente = (tbprovincia) => {
+    searchTerm.value = tbprovincia.prov_nombre;
+    searchTermCodigoCli.value = tbprovincia.id;
+    form.tbprovincia_id = searchTermCodigoCli.value;
+    filteredClientes.value = [];
 };
 
 </script>
@@ -133,7 +189,7 @@ const ok4 = (msj, icono) => {
                 <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                         <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
+                            <div class="grid lg:grid-cols-3 grid-cols-1 sm:grid-cols-2 gap-y-3 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel for="numeroDocumento" value="Número de RUC" />
                                     <div class="w-full flex justify-end items-end">
@@ -151,8 +207,6 @@ const ok4 = (msj, icono) => {
                                     <InputLabel value="Estado"/>
                                     <TextInput v-model="form.estado" required type="text" class="mt-2 w-full"/>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel value="Distrito" />
                                     <TextInput v-model="form.distrito" required type="text" class="mt-2 w-full"/>
@@ -165,22 +219,28 @@ const ok4 = (msj, icono) => {
                                     <InputLabel value="Departamento" />
                                     <TextInput v-model="form.departamento" required type="text" class="mt-2 w-full"/>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
-                                <div class="flex flex-col items-start">
-                                    <InputLabel for="prov_clientes" value="Ciudad" class="ml-1"/>
-                                    <div class="flex w-full mt-1">
-                                        <select v-model="form.tbprovincia_id" required name="tbprovincia_id" id="tbprovincia_id"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm text-base sm:text-base border-gray-300 rounded-l-lg h-[41.6px]">
-                                            <option value="" disabled=""  selected="selected">Selecciona una Ciudad</option>
-                                            <option v-for="tbprovincia in tbprovincias" :key="tbprovincia.id" :value="tbprovincia.id">{{ tbprovincia.prov_nombre }}</option>
-                                        </select>
-                                        <Button @click.prevent="() => openModal4(1)" class="bg-green-600 text-white mt-1 py-1 w-10 h-[42px] sm:h-[42px] rounded-r-lg">
-                                            <i class="fas fa-plus mx-2"></i>
-                                        </Button>
+                                <div class="w-full flex items-end justify-center">
+                                    <div class="w-full">
+                                        <InputLabel for="cliente_id">Cliente</InputLabel>
+                                        <div class="relative">
+                                            <TextInputCliente v-model="searchTerm" autocomplete="off" type="text" id="cliente_id" @input="onInput" placeholder="Ingresa nombre de ciudad"
+                                                @keydown="onKeydown" required
+                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg h-[41.6px]" />
+                                            <div id="contenedorDeClientes"
+                                                class="w-full z-50 max-h-60 border border-gray-300 rounded-lg absolute overflow-auto text-sm divide-y divide-gray-200 bg-white dark:bg-gray-800"
+                                                v-show="filteredClientes.length > 0">
+                                                <div v-for="(tbprovincia, index) in filteredClientes" :key="tbprovincia.id"
+                                                    :class="['text-gray-800 text-sm dark:text-white font-medium cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis dark:hover:bg-gray-700 hover:bg-gray-200 option p-2', { 'bg-gray-200 dark:bg-gray-700': index === selectedIndex }]"
+                                                    @click="selectCliente(tbprovincia)" @mouseover="updateSelection(index)">
+                                                    {{ tbprovincia.prov_nombre }}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <Button @click.prevent="() => openModal4(1)" class="bg-green-600 text-white mt-1 py-1 w-10 h-[41.5px] sm:h-[41.6px] rounded-r-lg">
+                                        <i class="fas fa-plus mx-2"></i>
+                                    </Button>
                                 </div>
-                         
                                 <div>
                                     <InputLabel value="direccion fiscal" />
                                     <TextInput v-model="form.direccion" type="text" required placeholder="" class="mt-2 w-full"/>

@@ -11,12 +11,7 @@ import { show_alerta, show_confirmacion } from '@/utils/alertasSwal';
 const searchQuery = ref('');
 const filteredClients = ref([]);
 const selectedProvincia = ref('');
-const isDropdownOpen = ref(false);
 const tecnicoQuery = ref('');
-
-const toggleDropdown = () => {
-    isDropdownOpen.value = !isDropdownOpen.value;
-};
 
 const props = defineProps({
     clientes: {

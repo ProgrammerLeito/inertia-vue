@@ -55,7 +55,7 @@ const submitForm = () => {
                 <div class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto uppercase text-sm  shadow-lg bg-white dark:bg-gray-800 rounded-lg">
                     <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                         <form @submit.prevent="submitForm">
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
+                            <div class="grid lg:grid-cols-3 grid-cols-1 sm:grid-cols-2 gap-y-3 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel value="Numero de Ruc" />
                                     <TextInput v-model="form.numeroDocumento" type="text" placeholder="Ingrese Razon Social" class="mt-2 w-full"/>
@@ -68,8 +68,6 @@ const submitForm = () => {
                                     <InputLabel value="Estado" />
                                     <TextInput v-model="form.estado" type="text" class="mt-2 w-full"/>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel value="distrito" />
                                     <TextInput v-model="form.distrito" type="text" class="mt-2 w-full"/>
@@ -82,8 +80,6 @@ const submitForm = () => {
                                     <InputLabel value="departamento" />
                                     <TextInput v-model="form.departamento" type="text" class="mt-2 w-full"/>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel for="tbprovincia_id" value="Ciudad" class="ml-1"/>
                                     <select v-model="form.tbprovincia_id" name="tbprovincia_id" id="tbprovincia_id" class="bg-white border mt-1 border-gray-300 text-gray-900 mb-2 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -100,8 +96,6 @@ const submitForm = () => {
                                     <InputLabel for="cli_direccion2" value="direccion anexa 1"/>
                                     <TextInput v-model="form.cli_direccion2" type="text" id="cli_direccion2" placeholder="Ingrese Direccion Anexa 1" class="mt-2 w-full uppercase"/>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-3 sm:gap-x-6 mb-3">
                                 <div>
                                     <InputLabel for="fecha" value="Fecha Factura Emitida" />
                                     <TextInput v-model="form.fechafactura" type="date" id="fecha" class="mt-2 w-full" />
@@ -117,10 +111,9 @@ const submitForm = () => {
                                     <InputError :message="$page.props.errors.asesor" class=""/>
                                 </div>                                
                             </div>
-                                <InputLabel for="cli_observacion" value="Observaciones"/>
-                                    <textarea id="cli_observacion" v-model="form.cli_observacion" rows="2" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las observaciones..."></textarea>
-                                <InputError :message="$page.props.errors.cli_observacion" class=""/>
-
+                            <InputLabel for="cli_observacion" value="Observaciones"/>
+                                <textarea id="cli_observacion" v-model="form.cli_observacion" rows="2" class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Escriba las observaciones..."></textarea>
+                            <InputError :message="$page.props.errors.cli_observacion" class=""/>
                             <!-- Botones de acción -->
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-2 justify-end">
