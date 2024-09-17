@@ -290,13 +290,15 @@ const printPDF = async () => {
                                             </div>
                                         </td>
                                         <td class="px-4 py-4 text-center">{{ (cliente.fechafactura ? cliente.fechafactura : 'Esperando fecha') + ' || ' + (cliente.codigofactura ? cliente.codigofactura : 'Esperando Codigo') }}</td>
-                                        <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
-                                            <Link :href="route('clientes.edit', cliente.id)" class="transform hover:translate-y-[-2px] inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md mr-2">
-                                                <i class='bx bxs-edit text-base text-white'></i>
-                                            </Link>
-                                            <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="transform hover:translate-y-[-2px] inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
-                                                <i class='bx bxs-trash text-base text-white'></i>
-                                            </button>
+                                        <td class="relative text-center" v-if="$page.props.user.permissions.includes('Acciones Administrador')">
+                                            <div class="flex gap-2 justify-center items-center">
+                                                <Link :href="route('clientes.edit', cliente.id)" class="transform hover:translate-y-[-2px] inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md  ">
+                                                    <i class='bx bxs-edit text-base text-white'></i>
+                                                </Link>
+                                                <button @click="$event => deleteCliente(cliente.id, cliente.razonSocial)" class="transform hover:translate-y-[-2px] inline-flex items-center justify-center bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md">
+                                                    <i class='bx bxs-trash text-base text-white'></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>

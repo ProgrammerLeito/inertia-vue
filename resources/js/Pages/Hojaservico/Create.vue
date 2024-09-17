@@ -140,7 +140,7 @@ const submitForm = () => {
                     form.post(route('hservicios.store'), {
                         onSuccess: () => {
                             show_alerta('La hoja de servicio se ha registrado correctamente.', 'success');
-                            obtenerDatosTiempoReal();
+                            obtenerDatosTiempoReal(form.fecha);
                             resetarDatosFrm();
                             $("#btnguardarHojaServicio").show();
                             $("#loading-button").hide();
@@ -166,11 +166,10 @@ const submitForm = () => {
         $("#loading-button").show();
         form.put(route('hservicios.update', form.id), {
             onSuccess: () => {
-                setCurrentDate();
                 show_alerta('La hoja de servicio se ha actualizado correctamente.', 'success');
                 form.id = null;
                 isEditing.value = false;
-                obtenerDatosTiempoReal();
+                obtenerDatosTiempoReal(form.fecha);
                 resetarDatosFrm();
                 $("#btnactualizarHojaServicio").show();
                 $("#loading-button").hide();
@@ -812,7 +811,7 @@ function obtenerDatosTiempoReal(fecha){
         method: 'GET',
         data: {
             cliente_id: form.cliente_id,
-            fecha: form.fecha,
+            fecha: fecha,
         },
         success: function(response) {
             $('#tbodyContenedorHojasServiciosBalanzas').empty();
@@ -903,7 +902,7 @@ const selectCliente = (cliente) => {
     searchTermCodigoCli.value = cliente.id;
     form.cliente_id = searchTermCodigoCli.value;
     filteredClientes.value = [];
-    obtenerDatosTiempoReal();
+    obtenerDatosTiempoReal(form.fecha);
 };
 
 function resetarDatosFrm(){
@@ -1062,7 +1061,6 @@ $(document).on('change', '#fecha', function () {
                 }
 
                 checkTableVisibility();
-                // Añadir el manejador de eventos de doble clic
                 $('#tbodyContenedorHojasServiciosBalanzas, #tbodyContenedorHojasServiciosTermometros, #tbodyContenedorHojasServiciosPesas').on('dblclick', 'tr', function() {
                     let hservicio = JSON.parse($(this).attr('data-hservicio'));
                     editHojaServicio(hservicio);
