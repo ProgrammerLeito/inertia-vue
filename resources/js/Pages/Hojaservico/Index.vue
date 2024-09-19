@@ -148,9 +148,12 @@ function construirDatosdeServicios() {
                 datos.forEach(function(item) {
                     let nuevaFila = $(`
                     <tr class="bg-white font-extrabold text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-800 hover:bg-gray-400 cursor-pointer">
+                        <td class="px-4 w-32 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${item.id}</td>
                         <td class="px-4 w-40 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${formatDate(item.fecha)}</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-left">${item.razonSocial}</td>
-                        <td class="px-4 w-32 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${item.id}</td>
+                        <td class="px-4 w-24 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${item.balanzas}</td>
+                        <td class="px-4 w-24 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${item.termometros}</td>
+                        <td class="px-4 w-24 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${item.pesas}</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center whitespace-nowrap hidden">${item.fecha}</td>
                     </tr>`);
                     bodyDiarios.append(nuevaFila);
@@ -202,9 +205,9 @@ construirDatosdeServicios();
 
 $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
     let fila = $(this).closest('tr');
-    let razonSocial = fila.find('td:eq(1)').text();
-    let servicio = fila.find('td:eq(2)').text();
-    let fecha = fila.find('td:eq(3)').text();
+    let razonSocial = fila.find('td:eq(2)').text();
+    let servicio = fila.find('td:eq(0)').text();
+    let fecha = fila.find('td:eq(6)').text();
     
     localStorage.setItem('razonSocial', razonSocial);
     localStorage.setItem('servicio', servicio);
@@ -285,7 +288,10 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                 }
             });
 
+            $('#h1InformesTecnicos').hide();
+            $('#h1DiagnosticodeInforme').show();
             $('#divTablitaHojasdeServicio').show();
+            $('#retornarbody').hide();
             $('#divListarHojasdeServicio').hide();
 
             checkTableVisibility();
@@ -296,8 +302,9 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                 let instrumento = hservicio.instrumento;
                 actualizarVisibilidadIns(instrumento);
                 $('#divMostrarInstrumento').show();
-                $('#divMostrarDatosInforme').show();
-                $('#divMostrarImagenesInforme').show();
+                $('#btnListarHojasdeServicio').hide();
+                $('#retornarbody').show();
+                $('#divTablasdeTodoslosDatosdeInstrumentos').hide();
             });
 
             // Filtrar filas por cliente
@@ -368,11 +375,10 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
 });
 
 $(document).on("click", "#retornarbody", function() {
-    $('#divMostrarDatosInforme').hide();
+    $('#btnListarHojasdeServicio').show();
+    $('#retornarbody').hide();
     $('#divMostrarInstrumento').hide();
-    $('#divMostrarImagenesInforme').hide();
-    $('#divTablitaHojasdeServicio').hide();
-    $('#divListarHojasdeServicio').show();
+    $('#divTablasdeTodoslosDatosdeInstrumentos').show();
     form.reset();
 
     imagePreview1.value = "";
@@ -380,6 +386,14 @@ $(document).on("click", "#retornarbody", function() {
     imagePreview3.value = "";
 
     imagePreviews.value = ['', '', ''];
+});
+
+$(document).on("click", "#btnListarHojasdeServicio", function() {
+    $('#h1DiagnosticodeInforme').hide();
+    $('#h1InformesTecnicos').show();
+    $('#divMostrarImagenesInforme').hide();
+    $('#divTablitaHojasdeServicio').hide();
+    $('#divListarHojasdeServicio').show();
 });
 
 function actualizarVisibilidadIns(instrumento) {
@@ -505,7 +519,8 @@ const nextImage = () => {
 <template>
     <AppLayout title="Informes Tecnicos">
         <template #header>
-            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white">Informes Tecnicos</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white" id="h1InformesTecnicos">Informes Tecnicos</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white hidden" id="h1DiagnosticodeInforme">Diagnosticos de Informes Tecnicos</h1>
         </template>
 
         <div id="divListarHojasdeServicio" class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
@@ -527,9 +542,12 @@ const nextImage = () => {
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white" id="tbHojaServicioBuscar">
                             <thead class="text-xs text-white uppercase bg-green-600">
                                 <tr>
+                                    <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">N° de Informe</th>
                                     <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                     <th scope="col" class="px-5 py-3 text-start dark:border-white border-b-2">Cliente</th>
-                                    <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">N° de Informe</th>
+                                    <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Balanzas</th>
+                                    <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Termometros</th>
+                                    <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Pesas</th>
                                 </tr>
                             </thead>
                             <tbody id="tbodyHojasServicioDiarias" class="text-center text-xs">
@@ -547,6 +565,9 @@ const nextImage = () => {
                         <button class="text-white bg-blue-600 flex justify-center items-center text-center md:gap-2 gap-4 font-bold hover:bg-blue-700 uppercase text-sm py-2 px-6 rounded md:w-min whitespace-nowrap w-full" id="retornarbody">
                             <i class="fa-solid fa-arrow-left"></i>Regresar
                         </button>
+                        <button class="text-white bg-blue-600 flex justify-center items-center text-center md:gap-2 gap-4 font-bold hover:bg-blue-700 uppercase text-sm py-2 px-6 rounded md:w-min whitespace-nowrap w-full" id="btnListarHojasdeServicio">
+                            <i class="fa-solid fa-arrow-left"></i>Listar Informes Tecnicos
+                        </button>
                     </div>
                     <div class="py-2">
                         <div class="flex items-center font-bold p-4 border py-1 border-green-600 rounded bg-green-600">
@@ -555,115 +576,117 @@ const nextImage = () => {
                         </div>
                     </div>
                     <div id="divMostrarInstrumento" class="hidden">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 md:mt-2 gap-y-4 mt-2 mb-1">
-                            <div class="w-full -mb-2 hidden">
-                                <InputLabel for="cliente_id" value="Cliente" />
-                                <TextInput v-model="form.cliente_razonSocial" type="text" id="cliente_id"
-                                    disabled class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div class="col-span-1 col-start-0 col-end-0 sm:col-start-3 sm:col-end-4 mb-2">
-                                <InputLabel for="instrumento" class="block text-xs uppercase font-medium text-black dark:text-white">Instrumento</InputLabel>
-                                <select v-model="form.instrumento" disabled id="instrumento" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        <option value="1" selected>Balanzas</option>
-                                        <option value="2">Termometros</option>
-                                        <option value="3">Pesas</option>
-                                </select>
+                        <div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 md:mt-2 gap-y-4 mt-2 mb-1">
+                                <div class="w-full -mb-2 hidden">
+                                    <InputLabel for="cliente_id" value="Cliente" />
+                                    <TextInput v-model="form.cliente_razonSocial" type="text" id="cliente_id"
+                                        disabled class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div class="col-span-1 col-start-0 col-end-0 sm:col-start-3 sm:col-end-4 mb-2">
+                                    <InputLabel for="instrumento" class="block text-xs uppercase font-medium text-black dark:text-white">Instrumento</InputLabel>
+                                    <select v-model="form.instrumento" disabled id="instrumento" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            <option value="1" selected>Balanzas</option>
+                                            <option value="2">Termometros</option>
+                                            <option value="3">Pesas</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
+                        <div>
+                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 mb-2">
+                                <div id="divMarca">
+                                    <InputLabel for="hmarca_id" value="Marca" />
+                                    <TextInput v-model="form.hmarca_id" type="text" id="hmarca_id" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div id="divModelo">
+                                    <InputLabel for="modelo" value="Modelo" />
+                                    <TextInput v-model="form.modelo" type="text" id="modelo" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div id="divCodigo" class="hidden">
+                                    <InputLabel for="codigo" value="Codigo"
+                                        class="block text-md font-medium text-gray-700 " />
+                                    <TextInput v-model="form.codigo" type="text" id="codigo" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div id="divSerie">
+                                    <InputLabel for="serie" value="Serie"
+                                        class="block text-md font-medium text-gray-700 " />
+                                    <TextInput v-model="form.serie" type="text" id="serie" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div id="divRango" class="hidden">
+                                    <InputLabel for="rango" value="rango"
+                                        class="block text-md font-medium text-gray-700 " />
+                                    <TextInput v-model="form.rango" type="text" id="rango" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div id="divMedidaBastago" class="hidden">
+                                    <InputLabel for="medida_bastago" value="Medida de Bastago"
+                                        class="block text-md font-medium text-gray-700 " />
+                                    <TextInput v-model="form.medida_bastago" type="text" id="medida_bastago" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div id="divDivision">
+                                    <InputLabel for="div" value="Div" />
+                                    <TextInput v-model="form.div" type="text" id="div" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div id="divCapacidad">
+                                    <InputLabel for="capacidad" value="Capacidad" />
+                                    <TextInput v-model="form.capacidad" type="text" id="capacidad" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div id="divMaterial" class="hidden">
+                                    <InputLabel for="material" value="Material" />
+                                    <TextInput v-model="form.material" type="text" id="material" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div id="divPlataforma">
+                                    <InputLabel for="plataforma" value="Plataforma" />
+                                    <TextInput v-model="form.plataforma" type="text" id="plataforma" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                                <div>
+                                    <InputLabel for="requiere" value="Requiere" />
+                                    <select id="requiere" v-model="form.requiere" required disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        <option value="">Selecciona una opcion</option>
+                                        <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+                                        <option value="REPARACION">REPARACION</option>
+                                        <option value="POR REVISAR">POR REVISAR</option>
+                                        <option value="CERTIFICACION">CERTIFICACION</option>
+                                        <option value="GARANTIA">GARANTIA</option>
+                                        <option value="IMPLEMENTACION">IMPLEMENTACION</option>
+                                        <option value="CALIBRACION">CALIBRACION</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <InputLabel for="fecha" value="Fecha"
+                                        class="block text-md font-medium text-gray-700 " />
+                                    <TextInput v-model="form.fecha" type="date" id="fecha" disabled
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3">
+                                <div>
+                                    <InputLabel for="diagnostico" value="Diagnostico" />
+                                    <textarea id="diagnostico" rows="4" required v-model="form.diagnostico" disabled
+                                        class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Escriba las diagnostico..."></textarea>
+                                </div>
+                                <div>
+                                    <InputLabel for="trabajos" value="Trabajos" />
+                                    <textarea id="trabajos" rows="4" required v-model="form.trabajos" disabled
+                                        class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Escriba las trabajos..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
                     </div>
-                    <div id="divMostrarDatosInforme" class="hidden">
-                        <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 mb-2">
-                            <div id="divMarca">
-                                <InputLabel for="hmarca_id" value="Marca" />
-                                <TextInput v-model="form.hmarca_id" type="text" id="hmarca_id" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div id="divModelo">
-                                <InputLabel for="modelo" value="Modelo" />
-                                <TextInput v-model="form.modelo" type="text" id="modelo" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div id="divCodigo" class="hidden">
-                                <InputLabel for="codigo" value="Codigo"
-                                    class="block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.codigo" type="text" id="codigo" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div id="divSerie">
-                                <InputLabel for="serie" value="Serie"
-                                    class="block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.serie" type="text" id="serie" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div id="divRango" class="hidden">
-                                <InputLabel for="rango" value="rango"
-                                    class="block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.rango" type="text" id="rango" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div id="divMedidaBastago" class="hidden">
-                                <InputLabel for="medida_bastago" value="Medida de Bastago"
-                                    class="block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.medida_bastago" type="text" id="medida_bastago" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div id="divDivision">
-                                <InputLabel for="div" value="Div" />
-                                <TextInput v-model="form.div" type="text" id="div" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div id="divCapacidad">
-                                <InputLabel for="capacidad" value="Capacidad" />
-                                <TextInput v-model="form.capacidad" type="text" id="capacidad" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div id="divMaterial" class="hidden">
-                                <InputLabel for="material" value="Material" />
-                                <TextInput v-model="form.material" type="text" id="material" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div id="divPlataforma">
-                                <InputLabel for="plataforma" value="Plataforma" />
-                                <TextInput v-model="form.plataforma" type="text" id="plataforma" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                            <div>
-                                <InputLabel for="requiere" value="Requiere" />
-                                <select id="requiere" v-model="form.requiere" required disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                    <option value="">Selecciona una opcion</option>
-                                    <option value="MANTENIMIENTO">MANTENIMIENTO</option>
-                                    <option value="REPARACION">REPARACION</option>
-                                    <option value="POR REVISAR">POR REVISAR</option>
-                                    <option value="CERTIFICACION">CERTIFICACION</option>
-                                    <option value="GARANTIA">GARANTIA</option>
-                                    <option value="IMPLEMENTACION">IMPLEMENTACION</option>
-                                    <option value="CALIBRACION">CALIBRACION</option>
-                                </select>
-                            </div>
-                            <div>
-                                <InputLabel for="fecha" value="Fecha"
-                                    class="block text-md font-medium text-gray-700 " />
-                                <TextInput v-model="form.fecha" type="date" id="fecha" disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3">
-                            <div>
-                                <InputLabel for="diagnostico" value="Diagnostico" />
-                                <textarea id="diagnostico" rows="4" required v-model="form.diagnostico" disabled
-                                    class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Escriba las diagnostico..."></textarea>
-                            </div>
-                            <div>
-                                <InputLabel for="trabajos" value="Trabajos" />
-                                <textarea id="trabajos" rows="4" required v-model="form.trabajos" disabled
-                                    class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Escriba las trabajos..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="divMostrarImagenesInforme" class="hidden">
                         <div class="mt-0 flex justify-center items-center flex-wrap gap-y-0 sm:gap-x-2 gap-4">
                             <div v-if="imagePreview1" class="sm:col-span-1 flex-1 whitespace-nowrap">
                                 <div class="flex flex-wrap gap-4 items-center justify-center mb-4 mt-1.5">
@@ -712,82 +735,84 @@ const nextImage = () => {
                             </div>
                         </div>
                     </div>
-                    <div class="py-4 flex flex-col gap-4">
-                        <div class="flex flex-col py-1">
-                            <div class="flex md:w-96 w-full">
-                                <span
-                                    class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                    <i class='bx bxs-user-circle text-xl'></i>
-                                </span>
-                                <input id="filtrarRequerimientosHojas"
-                                    class="w-full outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg focus:ring-primary-600 focus:border-primary-600 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    type="text" autocomplete="off"
-                                    placeholder="Buscar datos de todas las hojas">
+                    <div id="divTablasdeTodoslosDatosdeInstrumentos">
+                        <div class="py-4 flex flex-col gap-4">
+                            <div class="flex flex-col py-1">
+                                <div class="flex md:w-96 w-full">
+                                    <span
+                                        class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                        <i class='bx bxs-user-circle text-xl'></i>
+                                    </span>
+                                    <input id="filtrarRequerimientosHojas"
+                                        class="w-full outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg focus:ring-primary-600 focus:border-primary-600 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        type="text" autocomplete="off"
+                                        placeholder="Buscar datos de todas las hojas">
+                                </div>
                             </div>
-                        </div>
-                        <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
-                            <table id="construirTablaBalanzas" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
-                                    <caption class="bg-gray-500 dark:bg-gray-700 p-2 w-full rounded-lt-lg border-b-2 text-sm font-bold text-gray-100">Balanzas</caption>
+                            <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
+                                <table id="construirTablaBalanzas" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
+                                        <caption class="bg-gray-500 dark:bg-gray-700 p-2 w-full rounded-lt-lg border-b-2 text-sm font-bold text-gray-100">Balanzas</caption>
+                                        <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
+                                            <tr>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">N°</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Marca</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Modelo</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Capacidad</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Serie</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Div</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Plataforma</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyContenedorHojasServiciosBalanzas">
+                                            <tr class="rounded-lg border-2 dark:border-gray-700 dark:text-gray-200"><td colspan="10" class="text-center">No hay datos</td></tr>
+                                        </tbody>
+                                </table>
+                            </div>
+                            <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
+                                <table id="construirTablaTermometros" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
+                                    <caption class="bg-gray-500 dark:bg-gray-700 p-2 w-full rounded-lt-lg border-b-2 text-sm font-bold text-gray-100">Termometros</caption>
                                     <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
                                         <tr>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">N°</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Marca</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Modelo</th>
-                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Capacidad</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Serie</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Rango</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Medida Bastago</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Div</th>
-                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Plataforma</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tbodyContenedorHojasServiciosBalanzas">
+                                    <tbody id="tbodyContenedorHojasServiciosTermometros">
                                         <tr class="rounded-lg border-2 dark:border-gray-700 dark:text-gray-200"><td colspan="10" class="text-center">No hay datos</td></tr>
                                     </tbody>
-                            </table>
-                        </div>
-                        <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
-                            <table id="construirTablaTermometros" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
-                                <caption class="bg-gray-500 dark:bg-gray-700 p-2 w-full rounded-lt-lg border-b-2 text-sm font-bold text-gray-100">Termometros</caption>
-                                <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
-                                    <tr>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">N°</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Marca</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Modelo</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Serie</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Rango</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Medida Bastago</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Div</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tbodyContenedorHojasServiciosTermometros">
-                                    <tr class="rounded-lg border-2 dark:border-gray-700 dark:text-gray-200"><td colspan="10" class="text-center">No hay datos</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
-                            <table id="construirTablaPesas" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
-                                <caption class="bg-gray-500 dark:bg-gray-700 p-2 w-full rounded-lt-lg border-b-2 text-sm font-bold text-gray-100">Pesas</caption>
-                                <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
-                                    <tr>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">N°</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Modelo</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Codigo</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Capacidad</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Material</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
-                                        <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tbodyContenedorHojasServiciosPesas">
-                                    <tr class="rounded-lg border-2 dark:border-gray-700 dark:text-gray-200"><td colspan="8" class="text-center">No hay datos</td></tr>
-                                </tbody>
-                            </table>
+                                </table>
+                            </div>
+                            <div class="relative overflow-x-auto scroll-dataTableLEO shadow-lg sm:rounded-lg shadow-gray-400 dark:shadow-gray-800">
+                                <table id="construirTablaPesas" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-900">
+                                    <caption class="bg-gray-500 dark:bg-gray-700 p-2 w-full rounded-lt-lg border-b-2 text-sm font-bold text-gray-100">Pesas</caption>
+                                    <thead class="text-xs text-white uppercase bg-green-600 dark:bg-green-600">
+                                        <tr>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">N°</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Modelo</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Codigo</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Capacidad</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Material</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyContenedorHojasServiciosPesas">
+                                        <tr class="rounded-lg border-2 dark:border-gray-700 dark:text-gray-200"><td colspan="8" class="text-center">No hay datos</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

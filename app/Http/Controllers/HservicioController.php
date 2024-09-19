@@ -30,12 +30,18 @@ class HservicioController extends Controller
     {
         $servicios = DB::table('servicios')
             ->join('clientes', 'servicios.cliente_id', '=', 'clientes.id')
+            ->join('hservicios', 'servicios.id', '=', 'hservicios.n_servicio')
             ->select(
                 'clientes.razonSocial as razonSocial',
                 'servicios.id',
-                'servicios.fecha'
+                'servicios.fecha',
+                DB::raw('SUM(CASE WHEN hservicios.instrumento = "1" THEN 1 ELSE 0 END) as balanzas'),
+                DB::raw('SUM(CASE WHEN hservicios.instrumento = "2" THEN 1 ELSE 0 END) as termometros'),
+                DB::raw('SUM(CASE WHEN hservicios.instrumento = "3" THEN 1 ELSE 0 END) as pesas'),
+                'hservicios.n_servicio as n_informe'
             )
-            ->orderBy("servicios.fecha","DESC")
+            ->groupBy('servicios.id', 'clientes.razonSocial', 'servicios.fecha', 'hservicios.n_servicio')
+            ->orderBy("servicios.fecha", "DESC")
             ->get();
 
         return response()->json($servicios);
