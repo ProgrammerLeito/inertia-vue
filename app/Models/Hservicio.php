@@ -19,7 +19,7 @@ class Hservicio extends Model
         'material',
         'modelo',
         'serie',
-        'div',
+        'division',
         'capacidad',
         'cliente_id',
         'plataforma',

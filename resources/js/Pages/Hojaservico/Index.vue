@@ -7,9 +7,10 @@ import { ref } from 'vue';
 import Swal from 'sweetalert2';
 import { formatDate } from '@/utils/funcionesglobales';
 import { checkTableVisibility } from '@/utils/hFuncionesServicios';
-import ButtonResponsive from '@/Components/ButtonResponsive.vue';
-import FileInput from '@/Components/FileInput.vue';
-import InputError from '@/Components/InputError.vue';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import axios from "axios";
+import { Inertia } from '@inertiajs/inertia';
 
 const{hservicios}=defineProps({
     hservicios:{
@@ -31,7 +32,7 @@ const editHojaServicio = (hservicio) => {
     form.material = hservicio.material;
     form.modelo = hservicio.modelo;
     form.serie = hservicio.serie;
-    form.div = hservicio.div;
+    form.division = hservicio.division;
     form.capacidad = hservicio.capacidad;
     form.cliente_razonSocial = hservicio.cliente_razonSocial;
     form.plataforma = hservicio.plataforma;
@@ -61,36 +62,6 @@ const imagePreview2 = ref('');
 const imagePreview3 = ref('');
 const imagePreviews = ref(['', '', '']);
 
-const onSelectFoto = (e, fieldName) => {
-    const files = e.target.files;
-    if (files.length) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            // Actualiza la vista previa de la imagen correspondiente
-            switch (fieldName) {
-                case 'foto':
-                    imagePreview1.value = e.target.result;
-                    imagePreviews.value[0] = e.target.result; // Guarda en el arreglo de imágenes
-                    break;
-                case 'foto2':
-                    imagePreview2.value = e.target.result;
-                    imagePreviews.value[1] = e.target.result; // Guarda en el arreglo de imágenes
-                    break;
-                case 'foto3':
-                    imagePreview3.value = e.target.result;
-                    imagePreviews.value[2] = e.target.result; // Guarda en el arreglo de imágenes
-                    break;
-                default:
-                    break;
-            }
-        };
-        reader.readAsDataURL(files[0]);
-
-        // También puedes guardar el archivo en el formulario si es necesario
-        form[fieldName] = files[0];
-    }
-};
-
 const form = useForm({
     n_servicio: '',
     hmarca_id: '',
@@ -101,7 +72,7 @@ const form = useForm({
     material: '',
     modelo: '',
     serie: '',
-    div: '',
+    division: '',
     capacidad: '',
     cliente_id: '',
     plataforma: '',
@@ -238,16 +209,21 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                     // Para Balanzas
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center hidden">${ hservicio.id }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ contadorbal++ }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.hmarca_id }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.div }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ hservicio.fecha }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">
+                            <button class="bg-blue-600 px-1 rounded rounded-md py-0.5 btn-generate-pdf"><i class='bx bx-printer text-lg text-white'></i></button>
+                            <button class="bg-yellow-600 px-1.5 rounded rounded-md py-1"><i class='bx bxs-edit text-base text-white'></i></button>
+                        </td>
                     </tr>
                     `;
                     $('#tbodyContenedorHojasServiciosBalanzas').append(nuevaFila);
@@ -256,16 +232,21 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                     // Para Termómetros
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center hidden">${ hservicio.id }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ contadorter++ }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.hmarca_id }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.rango }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.medida_bastago }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.div }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ hservicio.fecha }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">
+                            <button class="bg-blue-600 px-1 rounded rounded-md py-0.5 btn-generate-pdf"><i class='bx bx-printer text-lg text-white'></i></button>
+                            <button class="bg-yellow-600 px-1.5 rounded rounded-md py-1"><i class='bx bxs-edit text-base text-white'></i></button>
+                        </td>
                     </tr>
                     `;
                     $('#tbodyContenedorHojasServiciosTermometros').append(nuevaFila);
@@ -274,6 +255,7 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                     // Para Pesas
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center hidden">${ hservicio.id }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ contadorpes++ }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.codigo }</td>
@@ -282,6 +264,10 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ hservicio.fecha }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">
+                            <button class="bg-blue-600 px-1 rounded rounded-md py-0.5 btn-generate-pdf"><i class='bx bx-printer text-lg text-white'></i></button>
+                            <button class="bg-yellow-600 px-1.5 rounded rounded-md py-1"><i class='bx bxs-edit text-base text-white'></i></button>
+                        </td>
                     </tr>
                     `;
                     $('#tbodyContenedorHojasServiciosPesas').append(nuevaFila);
@@ -373,6 +359,871 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
         },
     });
 });
+
+$(document).on('click', '.btn-generate-pdf', function (event) {
+    event.preventDefault();
+    
+    let fila = $(this).closest('tr');
+    let servicioId = fila.find('td:eq(0)').text();
+    console.log(servicioId);
+
+    // Realizar la solicitud Ajax para obtener los diagnósticos
+    $.ajax({
+        url: '/fn_consultarDatosDiagnosticosServ',
+        method: 'GET',
+        data: { id: servicioId }
+    })
+    .then(function (diagnosticoServicioResponse) {
+        let hservicio = diagnosticoServicioResponse.hservicios[0]; // Tomamos el primer elemento del array hservicios
+        console.log('Datos PE:', hservicio);
+
+        // Llamar a la función de previsualización pasando el objeto hservicio
+        previsualizarpdf(hservicio);
+    })
+    .catch(function (error) {
+        console.error('Error en la solicitud Ajax:', error);
+        Swal.fire('Error', 'No se pudieron cargar los datos.', 'error');
+    });
+});
+
+function previsualizarpdf(hservicio) {
+    // Función para obtener el nombre del día de la semana en español
+    function getNombreDia(dia) {
+        const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        return dias[dia];
+    }
+
+    // Función para obtener el nombre del mes en español
+    function getNombreMes(mes) {
+        const meses = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        return meses[mes];
+    }
+
+    // Función para formatear la fecha en el formato deseado
+    function obtenerFechaFormateada(fechaTexto) {
+        const [year, month, day] = fechaTexto.split('-');
+        const fecha = new Date(year, month - 1, day);
+
+        const diaSemana = getNombreDia(fecha.getDay());
+        const dia = fecha.getDate().toString().padStart(2, '0');
+        const mes = getNombreMes(fecha.getMonth());
+        const año = fecha.getFullYear();
+
+        return `${diaSemana} ${dia} de ${mes} del ${año}`;
+    }
+
+    // Utilizamos la fecha del hservicio para formatearla
+    const fechaFormateada = obtenerFechaFormateada(hservicio.hservicio_fecha);
+
+    // Construcción del PDF
+    const doc = new jsPDF();
+
+    let eje_y = 10;
+    let eje_x = 10;
+    let margenDerecho = 10;
+    let anchoPagina = doc.internal.pageSize.width;
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(9);
+    doc.setFont('Helvetica', 'normal');
+
+    // Agregar imagen de fondo
+    const backgroundImg = '/img/logo_ini.png';
+    doc.addImage(backgroundImg, 'JPEG', eje_x, eje_y, 60, 20);
+
+    eje_y += 5;
+
+    // Dibujar encabezado
+    function fn_dibujarEncabezado(texto) {
+        const anchoTexto = doc.getTextWidth(texto);
+        const eje_x_left = anchoPagina - anchoTexto - margenDerecho;
+        doc.text(eje_x_left, eje_y, texto);
+    }
+
+    fn_dibujarEncabezado("Av. Separadora Mz A LT 8 Sector 28 de Julio");
+    eje_y += 5;
+    fn_dibujarEncabezado("Telf: 955571986 - 924808237 - 934094721");
+    eje_y += 5;
+    fn_dibujarEncabezado("Correo: industriasbalinsa@gmail.com");
+    eje_y += 5;
+    fn_dibujarEncabezado("RUC: 20608165585");
+
+    eje_y += 8;
+
+    doc.setFontSize(12);
+    doc.setFont('Helvetica', 'bold');
+    fn_dibujarEncabezado(`REPORTE DE INFORME TECNICO : N° ${hservicio.servicio_id}`);
+    // doc.text(eje_x, eje_y, "asgjd");
+
+    // ========== Inicia Función Dibujar Datos Generales==========
+
+    function fn_dibujarDatosGenerales(inicioTabla) {
+        doc.autoTable({
+            body: [
+                ['DATOS GENERALES']
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: {
+                fontSize: 8,
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0],
+                textColor: [0, 0, 0]
+            },
+            margin: { left: 10, right: 10 },
+            startY: inicioTabla,
+            columnStyles: {
+                0: {
+                    cellWidth: 190,
+                    fontStyle: 'bold'
+                }
+            },
+        });
+
+        doc.autoTable({
+            body: [
+                [
+                    'Técnico Responsable',
+                    hservicio.tecnico,
+                    'Fecha de Registro',
+                    fechaFormateada
+
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY,
+            columnStyles: {
+                0: {
+                    cellWidth: 40,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                },
+                1: {
+                    cellWidth: 55
+                },
+                2: {
+                    cellWidth: 30,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                }
+            },
+        });
+        doc.autoTable({
+            body: [
+                [
+                    'Cliente',
+                    hservicio.razonSocial
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: 2,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: { top: 30 , left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY,
+            columnStyles: {
+                0: {
+                    cellWidth: 40,
+                    fontStyle: 'bold',
+                    textColor: [0, 0, 0]
+                }
+            },
+        });
+    }
+
+    // ========== Termina Función Dibujar Datos Generales==========
+
+    // ========== Inicia Función Dibujar Datos del Equipo ==========
+
+    function fn_dibujarDatosdelEquipo() {
+        console.log(hservicio.instrumento)
+        if (hservicio.instrumento == "1"){
+            doc.autoTable({
+                body: [
+                    [
+                        'DATOS DEL EQUIPO : BALANZA'
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0],
+                    textColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY + 6,
+                columnStyles: {
+                    0: {
+                        cellWidth: 190,
+                        fontStyle: 'bold'
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'MARCA',
+                        hservicio.hmarca_id,
+                        'MODELO',
+                        hservicio.modelo
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 55
+                    },
+                    2: {
+                        cellWidth: 30,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'SERIE',
+                        hservicio.serie,
+                        'DIVISION',
+                        hservicio.division
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 55
+                    },
+                    2: {
+                        cellWidth: 30,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'CAPACIDAD',
+                        hservicio.capacidad,
+                        'PLATAFORMA',
+                        hservicio.plataforma
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 55
+                    },
+                    2: {
+                        cellWidth: 30,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'REQUIERE',
+                        hservicio.requiere
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 150
+                    }
+                },
+            });
+        } else if (hservicio.instrumento == "2"){
+            doc.autoTable({
+                body: [
+                    [
+                        'DATOS DEL EQUIPO : TERMOMETRO'
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0],
+                    textColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY + 6,
+                columnStyles: {
+                    0: {
+                        cellWidth: 190,
+                        fontStyle: 'bold'
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'MARCA',
+                        hservicio.hmarca_id,
+                        'MODELO',
+                        hservicio.modelo
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 55
+                    },
+                    2: {
+                        cellWidth: 30,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'SERIE',
+                        hservicio.serie,
+                        'DIVISION',
+                        hservicio.division
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 55
+                    },
+                    2: {
+                        cellWidth: 30,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'RANGO',
+                        hservicio.rango,
+                        'MEDIDA DE BASTAGO',
+                        hservicio.medida_bastago
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 55
+                    },
+                    2: {
+                        cellWidth: 30,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'REQUIERE',
+                        hservicio.requiere
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 150
+                    }
+                },
+            });
+        } else if (hservicio.instrumento == "3"){
+            doc.autoTable({
+                body: [
+                    [
+                        'DATOS DEL EQUIPO : PESA'
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0],
+                    textColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY + 6,
+                columnStyles: {
+                    0: {
+                        cellWidth: 190,
+                        fontStyle: 'bold'
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'MODELO',
+                        hservicio.modelo,
+                        'CAPACIDAD',
+                        hservicio.capacidad
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 55
+                    },
+                    2: {
+                        cellWidth: 30,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'CODIGO',
+                        hservicio.codigo,
+                        'MATERIAL',
+                        hservicio.material,
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 55
+                    },
+                    2: {
+                        cellWidth: 30,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    }
+                },
+            });
+
+            doc.autoTable({
+                body: [
+                    [
+                        'REQUIERE',
+                        hservicio.requiere
+
+                    ]
+                ],
+                rowPageBreak: 'avoid',
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.30,
+                    lineColor: [0, 0, 0]
+                },
+                margin: { left: 10, right: 10 },
+                startY: doc.lastAutoTable.finalY,
+                columnStyles: {
+                    0: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
+                    },
+                    1: {
+                        cellWidth: 150
+                    }
+                },
+            });
+        }
+    }
+
+    // ========== Termina Función Dibujar Datos del Equipo ==========
+
+    // ========== Inicia Función Dibujar Cuentas ==========
+
+    function fn_dibujarDiagnosticoTecnico(){
+        doc.autoTable({
+            body: [
+                [
+                    { content: 'DIAGNOSTICO DEL TECNICO :', styles: { halign: 'left' , fontStyle: 'bold', textColor: [0, 0, 0]} }
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY + 5,
+            columnStyles: {
+                0: {
+                    cellWidth: 190,
+                    fontStyle: 'bold'
+                }
+            },
+        });
+
+        const lineYPosition = doc.lastAutoTable.finalY;
+
+        doc.autoTable({
+            body: [
+                [
+                    { content: hservicio.diagnostico, styles: { halign: 'left' , fontStyle: 'bold' } }
+                ],
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY
+        });
+
+        doc.setDrawColor(255, 255, 255);
+        doc.setLineWidth(1);
+        doc.line(10.1, lineYPosition, doc.internal.pageSize.width - 10.1, lineYPosition);
+    }
+
+    // ========== Termina Función Dibujar Cuentas ==========
+
+    // ========== Inicia Función Dibujar Trabajos ==========
+
+    function fn_dibujarTrabajos(){
+        doc.autoTable({
+            body: [
+                [
+                    { content: 'TRABAJOS A REALIZAR :', styles: { halign: 'left' , fontStyle: 'bold', textColor: [0, 0, 0]} }
+                ]
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 2, bottom: 1, left: 2, right: 2 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY + 5,
+            columnStyles: {
+                0: {
+                    cellWidth: 190,
+                    fontStyle: 'bold'
+                }
+            },
+        });
+
+        const lineYPosition2 = doc.lastAutoTable.finalY;
+
+        doc.autoTable({
+            body: [
+                [
+                    { content: hservicio.trabajos, styles: { halign: 'left' , fontStyle: 'bold' } }
+                ],
+            ],
+            rowPageBreak: 'avoid',
+            theme: 'grid',
+            styles: { 
+                fontSize: 8, 
+                cellPadding: { top: 1, bottom: 2, left: 8, right: 8 },
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0]
+            },
+            margin: {left: 10 , right: 10},
+            startY: doc.lastAutoTable.finalY
+        });
+
+        doc.setDrawColor(255, 255, 255);
+        doc.setLineWidth(1);
+        doc.line(10.1, lineYPosition2, doc.internal.pageSize.width - 10.1, lineYPosition2);
+    }
+
+    // ========== Termina Función Dibujar Trabajos ==========
+    
+    // ========== Inicia Función Dibujar Fotos ==========
+
+    function fn_dibujarFotos() {
+        const columnWidth = 63.3;
+        const startY = doc.lastAutoTable.finalY + 5;
+        const totalWidth = columnWidth * 3;
+        const imagenes = [
+            hservicio.foto ? "/hservicio_img/" + hservicio.foto : null,
+            hservicio.foto2 ? "/hservicio_img/" + hservicio.foto2 : null,
+            hservicio.foto3 ? "/hservicio_img/" + hservicio.foto3 : null
+        ];
+
+        const containerWidth = 20;
+        const containerHeight = 20;
+        const reductionFactor = 0.8;
+
+        const imgWidth = containerWidth * reductionFactor;
+        const imgHeight = containerHeight * reductionFactor;
+
+        doc.autoTable({
+            head: [['FOTO 1', 'FOTO 2', 'FOTO 3']],
+            body: [
+                [
+                    { content: '', styles: { cellWidth: columnWidth, minCellHeight: columnWidth } },
+                    { content: '', styles: { cellWidth: columnWidth, minCellHeight: columnWidth } },
+                    { content: '', styles: { cellWidth: columnWidth, minCellHeight: columnWidth } }
+                ]
+            ],
+            startY: startY,
+            theme: 'grid',
+            styles: {
+                rowPageBreak: 'avoid',
+                fontSize: 8,
+                lineWidth: 0.30,
+                lineColor: [0, 0, 0],
+                halign: 'center'
+            },
+            tableWidth: totalWidth,
+            margin: { left: 10 },
+            didDrawCell: function (data) {
+                // Verificar si la celda pertenece al cuerpo (body) de la tabla
+                if (data.cell.section === 'body') {
+                    const image = imagenes[data.column.index];
+
+                    if (!image) {
+                        doc.text("Sin Imagen", data.cell.x + (data.cell.width / 2), data.cell.y + (data.cell.height / 2), { align: 'center' });
+                        return;
+                    }
+
+                    const imageProps = doc.getImageProperties(image);
+                    const cellWidth = data.cell.width;
+                    const cellHeight = data.cell.height;
+                    const imageWidth = imageProps.width;
+                    const imageHeight = imageProps.height;
+                    const aspectRatio = imageWidth / imageHeight;
+
+                    let drawWidth, drawHeight;
+
+                    if (cellWidth / cellHeight > aspectRatio) {
+                        drawHeight = cellHeight;
+                        drawWidth = drawHeight * aspectRatio;
+                    } else {
+                        drawWidth = cellWidth;
+                        drawHeight = drawWidth / aspectRatio;
+                    }
+
+                    const x = data.cell.x + (cellWidth - drawWidth) / 2;
+                    const y = data.cell.y + (cellHeight - drawHeight) / 2;
+
+                    doc.addImage(image, 'JPEG', x + 1, y + 1, drawWidth - 2, drawHeight - 2);
+                }
+            }
+        });
+    }
+
+    // ========== Termina Función Dibujar Fotos ==========
+
+    const inicioTabla = 42;
+    fn_dibujarDatosGenerales(inicioTabla);
+
+    doc.setFontSize(8);
+    doc.setFont('Helvetica', 'bold');
+    fn_dibujarDatosdelEquipo();
+
+    doc.setFont('Helvetica', 'normal');
+    fn_dibujarDiagnosticoTecnico();
+
+    doc.setFont('Helvetica', 'normal');
+    fn_dibujarTrabajos();
+
+    fn_dibujarFotos();
+
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    window.open(url);
+}
+
 
 $(document).on("click", "#retornarbody", function() {
     $('#btnListarHojasdeServicio').show();
@@ -631,7 +1482,7 @@ const nextImage = () => {
                                 </div>
                                 <div id="divDivision">
                                     <InputLabel for="div" value="Div" />
-                                    <TextInput v-model="form.div" type="text" id="div" disabled
+                                    <TextInput v-model="form.division" type="text" id="div" disabled
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                 </div>
                                 <div id="divCapacidad">
@@ -764,6 +1615,7 @@ const nextImage = () => {
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tbodyContenedorHojasServiciosBalanzas">
@@ -786,6 +1638,7 @@ const nextImage = () => {
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tbodyContenedorHojasServiciosTermometros">
@@ -806,6 +1659,7 @@ const nextImage = () => {
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tbodyContenedorHojasServiciosPesas">

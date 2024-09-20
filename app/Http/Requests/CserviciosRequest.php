@@ -26,7 +26,7 @@ class CserviciosRequest extends FormRequest
             'modelo' => 'required|string',
             'capacidad' => 'required|string',
             'serie' => 'nullable|string',
-            'div' => 'required|string',
+            'division' => 'required|string',
             'plataforma' => 'required|string',
             'requiere' => 'required|string',
             'fecha' => 'required|date',

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('hmarca_id')->constrained()->onDelete('cascade');
             $table->string('modelo');
             $table->string('serie');
-            $table->string('div');
+            $table->string('division');
             $table->string('capacidad');
             $table->string('n_informe');
             $table->string('razonSocial');

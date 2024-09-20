@@ -17,7 +17,7 @@ class C_Servicio extends Model
         'modelo',
         'capacidad',
         'requiere',
-        'div',
+        'division',
         'plataforma',
         'serie',
         'tselecionado',

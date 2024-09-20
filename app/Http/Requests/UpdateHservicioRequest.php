@@ -27,7 +27,7 @@ class UpdateHservicioRequest extends FormRequest
             'modelo' => 'required|string',
             'serie' => 'required|string',
             'tecnico' => '',
-            'div' => 'required|string',
+            'division' => 'required|string',
             'capacidad' => 'required|string',
             'plataforma' => 'required|string',
             'fecha' => 'required|date',

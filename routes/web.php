@@ -129,6 +129,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('permisos', PermisoController::class);
 });
 
+Route::get('/fn_consultarDatosDiagnosticosServ', [HservicioController::class, 'consultarDatosDiagnosticosServ']);
+
 Route::get('/fn_obtenerFechaHojaServicio', [HservicioController::class, 'obtenerFechaHojaServicio']);
 Route::get('/fn_verificarFechayDatos', [HservicioController::class, 'verificarFechayDatos']);
 Route::get('/fn_obtenerHojasServicioAnteriores', [HservicioController::class, 'obtenerHojasServicioAnteriores']);

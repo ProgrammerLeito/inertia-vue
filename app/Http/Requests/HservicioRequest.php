@@ -31,7 +31,7 @@ class HservicioRequest extends FormRequest
             'material' => 'nullable',
             'modelo' => 'nullable',
             'serie' => 'nullable',
-            'div' => 'nullable',
+            'division' => 'nullable',
             'capacidad' => 'nullable',
             'cliente_id' => 'nullable',
             'plataforma' => 'nullable',

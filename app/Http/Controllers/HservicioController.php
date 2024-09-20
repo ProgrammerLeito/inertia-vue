@@ -47,6 +47,49 @@ class HservicioController extends Controller
         return response()->json($servicios);
     }
 
+    public function consultarDatosDiagnosticosServ(Request $request)
+    {
+        $tbservicioId = $request->input('id');
+
+        $hservicios = DB::select("
+            SELECT
+                hservicios.id AS hservicio_id,
+                hservicios.n_servicio AS hservicio_n_servicio,
+                hservicios.hmarca_id,
+                hservicios.instrumento,
+                hservicios.rango,
+                hservicios.medida_bastago,
+                hservicios.codigo,
+                hservicios.material,
+                hservicios.modelo,
+                hservicios.serie,
+                hservicios.division,
+                hservicios.capacidad,
+                hservicios.cliente_id AS hservicio_cliente_id,
+                hservicios.plataforma,
+                hservicios.fecha AS hservicio_fecha,
+                hservicios.requiere,
+                hservicios.diagnostico,
+                hservicios.trabajos,
+                hservicios.tecnico,
+                hservicios.foto,
+                hservicios.foto2,
+                hservicios.foto3,
+                clientes.razonSocial,
+                servicios.id AS servicio_id,
+                servicios.fecha AS informetec_fecha
+            FROM hservicios
+            JOIN clientes ON hservicios.cliente_id = clientes.id
+            JOIN servicios ON hservicios.n_servicio = servicios.id
+            WHERE hservicios.id = ?
+        ", [$tbservicioId]);
+
+        return response()->json([
+            'hservicios' => $hservicios,
+            'tbservicioId' => $tbservicioId,
+        ]);
+    }
+
     public function obtenerFechaHojaServicio(Request $request)
     {
         $tbIdClientaso = $request->input('cliente_id');
@@ -113,7 +156,7 @@ class HservicioController extends Controller
                 hservicios.material,
                 hservicios.modelo,
                 hservicios.serie,
-                hservicios.div,
+                hservicios.division,
                 hservicios.capacidad,
                 hservicios.cliente_id,
                 hservicios.n_servicio,
@@ -153,7 +196,7 @@ class HservicioController extends Controller
                 hservicios.material,
                 hservicios.modelo,
                 hservicios.serie,
-                hservicios.div,
+                hservicios.division,
                 hservicios.capacidad,
                 hservicios.cliente_id,
                 hservicios.plataforma,
@@ -193,7 +236,7 @@ class HservicioController extends Controller
                 hservicios.material,
                 hservicios.modelo,
                 hservicios.serie,
-                hservicios.div,
+                hservicios.division,
                 hservicios.capacidad,
                 hservicios.cliente_id,
                 hservicios.plataforma,
