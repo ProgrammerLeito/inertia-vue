@@ -41,19 +41,44 @@ class CServicioController extends Controller
         return Inertia::render('C_Servicio/Balanzas', compact('servicios', 'users', 'datos', 'totalHservicio'));
     }
 
-    public function cotiza(Request $request)
+    public function cotiza(Request $request , $id)
     {
-        $servicio_id = $request->input('servicio_id');
-        $hservicios = Hservicio::with('hmarca')->where('servicio_id', $servicio_id)->orderBy('id', 'DESC')->paginate(5);
-        $servicios = Servicio::all();
-        $hmarcas = Hmarca::all();
-        $totalHservicio = Hservicio::where('servicio_id', $servicio_id)->count();
-        $countByRequiere = Hservicio::where('servicio_id', $servicio_id)
-            ->selectRaw('requiere, count(*) as total')
-            ->groupBy('requiere')
-            ->pluck('total', 'requiere')
-            ->toArray();
-        return Inertia::render('C_Servicio/Servicio', compact('hservicios', 'countByRequiere', 'totalHservicio', 'servicios', 'hmarcas'));
+        $hServicios = DB::select("
+            SELECT
+                hservicios.id AS hservicio_id,
+                hservicios.n_servicio AS hservicio_n_servicio,
+                hservicios.hmarca_id,
+                hservicios.instrumento,
+                hservicios.rango,
+                hservicios.medida_bastago,
+                hservicios.codigo,
+                hservicios.material,
+                hservicios.modelo,
+                hservicios.serie,
+                hservicios.division,
+                hservicios.capacidad,
+                hservicios.cliente_id AS hservicio_cliente_id,
+                hservicios.plataforma,
+                hservicios.fecha AS hservicio_fecha,
+                hservicios.requiere,
+                hservicios.diagnostico,
+                hservicios.trabajos,
+                hservicios.tecnico,
+                hservicios.foto,
+                hservicios.foto2,
+                hservicios.foto3,
+                clientes.razonSocial,
+                servicios.id AS servicio_id,
+                servicios.fecha AS informetec_fecha
+            FROM hservicios
+            JOIN clientes ON hservicios.cliente_id = clientes.id
+            JOIN servicios ON hservicios.n_servicio = servicios.id
+            WHERE hservicios.id = ?
+        ", [$id]);
+
+        return Inertia::render('C_Servicio/Servicio', [
+            'hServicios' => $hServicios
+        ]);
     }
 
     public function create()

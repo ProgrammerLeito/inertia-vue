@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import axios from "axios";
 import { Inertia } from '@inertiajs/inertia';
+import TextPrueba from '@/Components/TextPrueba.vue';
 
 const{hservicios}=defineProps({
     hservicios:{
@@ -28,14 +29,18 @@ const editHojaServicio = (hservicio) => {
     form.instrumento = hservicio.instrumento;
     form.rango = hservicio.rango;
     form.medida_bastago = hservicio.medida_bastago;
+    form.medida_bastago2 = hservicio.medida_bastago2;
     form.codigo = hservicio.codigo;
     form.material = hservicio.material;
     form.modelo = hservicio.modelo;
     form.serie = hservicio.serie;
     form.division = hservicio.division;
+    form.medida_division = hservicio.medida_division;
     form.capacidad = hservicio.capacidad;
+    form.medida_capacidad = hservicio.medida_capacidad;
     form.cliente_razonSocial = hservicio.cliente_razonSocial;
     form.plataforma = hservicio.plataforma;
+    form.medida_plataforma = hservicio.medida_plataforma;
     form.fecha = hservicio.fecha;
     form.requiere = hservicio.requiere;
     form.diagnostico = hservicio.diagnostico;
@@ -44,9 +49,9 @@ const editHojaServicio = (hservicio) => {
     form.foto2 = hservicio.foto2;
     form.foto3 = hservicio.foto3;
 
-    imagePreview1.value = '/hservicio_img/' + hservicio.foto;
-    imagePreview2.value = '/hservicio_img/' + hservicio.foto2;
-    imagePreview3.value = '/hservicio_img/' + hservicio.foto3;
+    imagePreview1.value = hservicio.foto ? '/hservicio_img/' + hservicio.foto : null;
+    imagePreview2.value = hservicio.foto2 ? '/hservicio_img/' + hservicio.foto2 : null;
+    imagePreview3.value = hservicio.foto3 ? '/hservicio_img/' + hservicio.foto3 : null;
 
     images.value = [
         imagePreview1.value, // imagen 1
@@ -68,6 +73,7 @@ const form = useForm({
     instrumento: '1',
     rango: '',
     medida_bastago: '',
+    medida_bastago2: '',
     codigo: '',
     material: '',
     modelo: '',
@@ -213,16 +219,16 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ contadorbal++ }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.hmarca_id }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad } ${hservicio.medida_capacidad}</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division } ${hservicio.medida_division}</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma} ${hservicio.medida_plataforma }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ hservicio.fecha }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">
                             <button class="bg-blue-600 px-1 rounded rounded-md py-0.5 btn-generate-pdf"><i class='bx bx-printer text-lg text-white'></i></button>
-                            <button class="bg-yellow-600 px-1.5 rounded rounded-md py-1"><i class='bx bxs-edit text-base text-white'></i></button>
+                            <button class="bg-yellow-600 px-1.5 rounded rounded-md py-1 btnGenerarInformeTecCliente"><i class='bx bxs-edit text-base text-white'></i></button>
                         </td>
                     </tr>
                     `;
@@ -238,8 +244,8 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.rango }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.medida_bastago }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.medida_bastago } ${hservicio.medida_bastago2}</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division } ${hservicio.medida_division}</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ hservicio.fecha }</td>
@@ -360,25 +366,57 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
     });
 });
 
+$(document).on('click', '.btnGenerarInformeTecCliente', function() {
+    let fila = $(this).closest('tr');
+    let hservicioData = fila.attr('data-hservicio');
+    let hservicioId = JSON.parse(hservicioData).id;
+    return Inertia.get(route('requiere.cotiza', hservicioId));
+});
+
+let timerIntervalPdf;
 $(document).on('click', '.btn-generate-pdf', function (event) {
-    event.preventDefault();
-    
+    let fila2 = $(this).closest('tr');
+    let contadorbal = fila2.find('td:eq(1)').text();
+    localStorage.setItem('contadorbalterpes', contadorbal);
+    console.log(contadorbal);
+
+    Swal.fire({
+        title: '¡Atención!',
+        html: 'La hoja de servicio se está generando, espere un momento.',
+        timer: 999999999,
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false, 
+        didOpen: () => {
+            Swal.showLoading();
+            timerIntervalPdf = setInterval(() => {
+                const content = Swal.getHtmlContainer();
+                if (content) {
+                    console.log("El temporizador sigue activo");
+                }
+            }, 1000);
+        },
+        willClose: () => {
+            clearInterval(timerIntervalPdf);
+        }
+    });
+
     let fila = $(this).closest('tr');
     let servicioId = fila.find('td:eq(0)').text();
-    console.log(servicioId);
+    // console.log(servicioId);
 
-    // Realizar la solicitud Ajax para obtener los diagnósticos
     $.ajax({
         url: '/fn_consultarDatosDiagnosticosServ',
         method: 'GET',
         data: { id: servicioId }
     })
     .then(function (diagnosticoServicioResponse) {
-        let hservicio = diagnosticoServicioResponse.hservicios[0]; // Tomamos el primer elemento del array hservicios
-        console.log('Datos PE:', hservicio);
+        let hservicio = diagnosticoServicioResponse.hservicios[0];
+        // console.log('Datos PE:', hservicio);
 
-        // Llamar a la función de previsualización pasando el objeto hservicio
         previsualizarpdf(hservicio);
+        
+        Swal.close();
     })
     .catch(function (error) {
         console.error('Error en la solicitud Ajax:', error);
@@ -552,12 +590,13 @@ function previsualizarpdf(hservicio) {
     // ========== Inicia Función Dibujar Datos del Equipo ==========
 
     function fn_dibujarDatosdelEquipo() {
-        console.log(hservicio.instrumento)
+        let contadores = localStorage.getItem('contadorbalterpes');
+        // console.log(hservicio.instrumento)
         if (hservicio.instrumento == "1"){
             doc.autoTable({
                 body: [
                     [
-                        'DATOS DEL EQUIPO : BALANZA'
+                        `DATOS DEL EQUIPO : BALANZA N°- ${contadores}`
                     ]
                 ],
                 rowPageBreak: 'avoid',
@@ -622,7 +661,7 @@ function previsualizarpdf(hservicio) {
                         'SERIE',
                         hservicio.serie,
                         'DIVISION',
-                        hservicio.division
+                        hservicio.division + ' ' + hservicio.medida_division
 
                     ]
                 ],
@@ -657,9 +696,9 @@ function previsualizarpdf(hservicio) {
                 body: [
                     [
                         'CAPACIDAD',
-                        hservicio.capacidad,
+                        hservicio.capacidad + ' ' + hservicio.medida_capacidad,
                         'PLATAFORMA',
-                        hservicio.plataforma
+                        hservicio.plataforma + ' ' + hservicio.medida_plataforma
 
                     ]
                 ],
@@ -723,7 +762,7 @@ function previsualizarpdf(hservicio) {
             doc.autoTable({
                 body: [
                     [
-                        'DATOS DEL EQUIPO : TERMOMETRO'
+                        `DATOS DEL EQUIPO : TERMOMETRO N°- ${contadores}`
                     ]
                 ],
                 rowPageBreak: 'avoid',
@@ -788,7 +827,7 @@ function previsualizarpdf(hservicio) {
                         'SERIE',
                         hservicio.serie,
                         'DIVISION',
-                        hservicio.division
+                        hservicio.division + ' ' + hservicio.medida_division
 
                     ]
                 ],
@@ -825,7 +864,7 @@ function previsualizarpdf(hservicio) {
                         'RANGO',
                         hservicio.rango,
                         'MEDIDA DE BASTAGO',
-                        hservicio.medida_bastago
+                        hservicio.medida_bastago + ' ' + hservicio.medida_bastago2
 
                     ]
                 ],
@@ -889,7 +928,7 @@ function previsualizarpdf(hservicio) {
             doc.autoTable({
                 body: [
                     [
-                        'DATOS DEL EQUIPO : PESA'
+                        `DATOS DEL EQUIPO : PESA N°- ${contadores}`
                     ]
                 ],
                 rowPageBreak: 'avoid',
@@ -917,7 +956,7 @@ function previsualizarpdf(hservicio) {
                         'MODELO',
                         hservicio.modelo,
                         'CAPACIDAD',
-                        hservicio.capacidad
+                        hservicio.capacidad + ' ' + hservicio.medida_capacidad
 
                     ]
                 ],
@@ -1224,7 +1263,6 @@ function previsualizarpdf(hservicio) {
     window.open(url);
 }
 
-
 $(document).on("click", "#retornarbody", function() {
     $('#btnListarHojasdeServicio').show();
     $('#retornarbody').hide();
@@ -1477,18 +1515,38 @@ const nextImage = () => {
                                 <div id="divMedidaBastago" class="hidden">
                                     <InputLabel for="medida_bastago" value="Medida de Bastago"
                                         class="block text-md font-medium text-gray-700 " />
-                                    <TextInput v-model="form.medida_bastago" type="text" id="medida_bastago" disabled
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                        <div class="flex">
+                                        <TextPrueba v-model="form.medida_bastago" type="text" id="medida_bastago"
+                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg" />
+                                            <InputError :message="form.errors.medida_bastago" class="mt-2"></InputError>
+                                            <input disabled v-model="form.medida_bastago2" class="mt-1 text-center focus:ring-indigo-500 focus:border-indigo-500 block w-16 cursor-pointer tracking-widest shadow-sm sm:text-sm border-gray-300 rounded-r-lg"/>
+                                        </div>
                                 </div>
                                 <div id="divDivision">
                                     <InputLabel for="div" value="Div" />
-                                    <TextInput v-model="form.division" type="text" id="div" disabled
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <div class="flex justify-center">
+                                        <TextPrueba v-model="form.division" type="text" id="div"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg" />
+                                        <InputError :message="form.errors.division" class="mt-2"></InputError>
+                                        <select id="medida_division" v-model="form.medida_division" required
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-24 cursor-pointer tracking-widest shadow-sm sm:text-sm border-gray-300 rounded-r-lg">
+                                            <option selected value="Kg">Kg</option>
+                                            <option value="g">g</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div id="divCapacidad">
                                     <InputLabel for="capacidad" value="Capacidad" />
-                                    <TextInput v-model="form.capacidad" type="text" id="capacidad" disabled
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <div class="flex justify-center">
+                                        <TextPrueba v-model="form.capacidad" type="text" id="capacidad"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg" />
+                                        <InputError :message="form.errors.capacidad" class="mt-2"></InputError>
+                                        <select id="medida_capacidad" v-model="form.medida_capacidad" required
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-24 cursor-pointer tracking-widest shadow-sm sm:text-sm border-gray-300 rounded-r-lg">
+                                            <option selected value="Kg">Kg</option>
+                                            <option value="g">g</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div id="divMaterial" class="hidden">
                                     <InputLabel for="material" value="Material" />
@@ -1497,21 +1555,25 @@ const nextImage = () => {
                                 </div>
                                 <div id="divPlataforma">
                                     <InputLabel for="plataforma" value="Plataforma" />
-                                    <TextInput v-model="form.plataforma" type="text" id="plataforma" disabled
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <div class="flex justify-center items-center">
+                                        <TextPrueba v-model="form.plataforma" type="text" id="plataforma"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg" />
+                                        <InputError :message="form.errors.plataforma" class="mt-2"></InputError>
+                                        <input disabled v-model="form.medida_plataforma" class="mt-1 text-center focus:ring-indigo-500 focus:border-indigo-500 block w-16 cursor-pointer tracking-widest shadow-sm sm:text-sm border-gray-300 rounded-r-lg"/>
+                                    </div>
                                 </div>
                                 <div>
                                     <InputLabel for="requiere" value="Requiere" />
-                                    <select id="requiere" v-model="form.requiere" required disabled
+                                    <select id="requiere" v-model="form.requiere" required
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         <option value="">Selecciona una opcion</option>
-                                        <option value="MANTENIMIENTO">MANTENIMIENTO</option>
-                                        <option value="REPARACION">REPARACION</option>
-                                        <option value="POR REVISAR">POR REVISAR</option>
-                                        <option value="CERTIFICACION">CERTIFICACION</option>
+                                        <option value="DIAGNOSTICO">DIAGNOSTICO</option>
+                                        <option value="MANTENIMIENTO PREVENTIVO">MANTENIMIENTO PREVENTIVO</option>
+                                        <option value="MANTENIMIENTO CORRECTIVO">MANTENIMIENTO CORRECTIVO</option>
+                                        <option value="CALIBRACION BALINSA">CALIBRACION BALINSA</option>
+                                        <option value="CALIBRACION TOTAL WEIGHT">CALIBRACION TOTAL WEIGHT</option>
                                         <option value="GARANTIA">GARANTIA</option>
-                                        <option value="IMPLEMENTACION">IMPLEMENTACION</option>
-                                        <option value="CALIBRACION">CALIBRACION</option>
+                                        <option value="INOPERATIVA">INOPERATIVA</option>
                                     </select>
                                 </div>
                                 <div>
@@ -1523,13 +1585,13 @@ const nextImage = () => {
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3">
                                 <div>
-                                    <InputLabel for="diagnostico" value="Diagnostico" />
+                                    <InputLabel for="diagnostico" value="Fiagnostico Tecnico" />
                                     <textarea id="diagnostico" rows="4" required v-model="form.diagnostico" disabled
                                         class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Escriba las diagnostico..."></textarea>
                                 </div>
                                 <div>
-                                    <InputLabel for="trabajos" value="Trabajos" />
+                                    <InputLabel for="trabajos" value="Trabajos a Realizar" />
                                     <textarea id="trabajos" rows="4" required v-model="form.trabajos" disabled
                                         class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Escriba las trabajos..."></textarea>

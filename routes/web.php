@@ -79,7 +79,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/cservicios/cambiar_estado', [CServicioController::class, 'cambiarEstado'])->name('cservicios.cambiar_estado');
     Route::post('/cservicios/codigoSunat', [CServicioController::class, 'codigoSunat'])->name('cservicios.codigoSunat');
     Route::get('/balanzas', [CServicioController::class, 'balanza'])->name('balanza');
-    Route::get('requiere', [CServicioController::class, 'cotiza'])->name('requiere.cotiza');
+    Route::get('requiere/{id}', [CServicioController::class, 'cotiza'])->name('requiere.cotiza');
     Route::resource('plantillas',PlantillaController::class);
     Route::resource('trealizados',TrealizadoController::class);
     Route::resource('condiciones',CondicioneController::class);
