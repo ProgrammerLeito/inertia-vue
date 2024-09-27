@@ -1434,12 +1434,6 @@ function previsualizarpdf() {
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 mb-3">
-                                <div id="divTecnicoResp">
-                                    <InputLabel for="tecnico" value="marca" />
-                                    <TextInput v-model="form.tecnico" type="text" id="tecnico"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    <InputError :message="form.errors.tecnico" class="mt-2"></InputError>
-                                </div>
                                 <div id="divMarca">
                                     <InputLabel for="hmarca_id" value="marca" />
                                     <TextInput v-model="form.hmarca_id" type="text" id="hmarca_id"
@@ -1516,7 +1510,7 @@ function previsualizarpdf() {
                                     <InputError :message="form.errors.material" class="mt-2"></InputError>
                                 </div>
                                 <div id="divPlataforma">
-                                    <InputLabel for="plataforma" value="plataforma" />
+                                    <InputLabel for="plataforma" value="Medida de Plataforma" />
                                     <div class="flex justify-center items-center">
                                         <TextPrueba v-model="form.plataforma" type="text" id="plataforma"
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-l-lg" />

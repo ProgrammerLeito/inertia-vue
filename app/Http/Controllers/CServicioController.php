@@ -41,7 +41,7 @@ class CServicioController extends Controller
         return Inertia::render('C_Servicio/Balanzas', compact('servicios', 'users', 'datos', 'totalHservicio'));
     }
 
-    public function cotiza(Request $request , $id)
+    public function cotiza(Request $request, $id)
     {
         $hServicios = DB::select("
             SELECT
@@ -51,14 +51,18 @@ class CServicioController extends Controller
                 hservicios.instrumento,
                 hservicios.rango,
                 hservicios.medida_bastago,
+                hservicios.medida_bastago2,
                 hservicios.codigo,
                 hservicios.material,
                 hservicios.modelo,
                 hservicios.serie,
                 hservicios.division,
+                hservicios.medida_division,
                 hservicios.capacidad,
+                hservicios.medida_capacidad,
                 hservicios.cliente_id AS hservicio_cliente_id,
                 hservicios.plataforma,
+                hservicios.medida_plataforma,
                 hservicios.fecha AS hservicio_fecha,
                 hservicios.requiere,
                 hservicios.diagnostico,
@@ -76,8 +80,11 @@ class CServicioController extends Controller
             WHERE hservicios.id = ?
         ", [$id]);
 
+        // Asegúrate de obtener el primer resultado como objeto
+        $hServicioData = !empty($hServicios) ? (array) $hServicios[0] : null;
+
         return Inertia::render('C_Servicio/Servicio', [
-            'hServicios' => $hServicios
+            'hServicio' => $hServicioData // Devuelve como objeto
         ]);
     }
 
