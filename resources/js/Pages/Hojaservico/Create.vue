@@ -147,6 +147,8 @@ const submitForm = () => {
                 if (response) {
                     let idServicio = response["id"]
                     form.n_servicio = idServicio;
+                    console.log(form);
+                    return;
                     form.post(route('hservicios.store'), {
                         onSuccess: () => {
                             show_alerta('La hoja de servicio se ha registrado correctamente.', 'success');
@@ -537,7 +539,7 @@ function previsualizarpdf() {
     const medida_capacidad = document.getElementById('medida_capacidad').options[document.getElementById("medida_capacidad").selectedIndex].text;
     const cliente_id = document.getElementById("cliente_id").value;
     const plataforma = document.getElementById("plataforma").value;
-    const medida_plataforma = $("#medida_plataforma").value;
+    const medida_plataforma = $("#medida_plataforma").val();
     const fecha = document.getElementById("fecha").value;
     const requiere = document.getElementById("requiere").value;
     const diagnostico = document.getElementById("diagnostico").value;
@@ -760,10 +762,10 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -797,10 +799,10 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -812,7 +814,7 @@ function previsualizarpdf() {
                     [
                         'CAPACIDAD',
                         capacidad + ' ' + medida_capacidad,
-                        'PLATAFORMA',
+                        'MEDIDA DE PLATAFORMA',
                         plataforma + ' ' + medida_plataforma
 
                     ]
@@ -834,10 +836,10 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -926,10 +928,10 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -963,10 +965,10 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -1000,10 +1002,10 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }

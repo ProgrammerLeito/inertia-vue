@@ -6,6 +6,7 @@ use App\Http\Requests\HservicioRequest;
 use App\Http\Requests\UpdateHservicioRequest;
 use App\Models\Cliente;
 use App\Models\Hservicio;
+use App\Models\InformesClientes;
 use App\Models\Servicio;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -274,6 +275,69 @@ class HservicioController extends Controller
         );
 
         return response()->json($obtenerdatos);
+    }
+
+    public function registrarInformesTecnicosdeCliente(Request $request)
+    {
+        $hmarca_id = $request->input('hmarca_id');
+        $lugar_servicio = $request->input('lugar_servicio');
+        $instrumento = $request->input('instrumento');
+        $rango = $request->input('rango');
+        $medida_bastago = $request->input('medida_bastago');
+        $medida_bastago2 = $request->input('medida_bastago2');
+        $codigo = $request->input('codigo');
+        $material = $request->input('material');
+        $modelo = $request->input('modelo');
+        $serie = $request->input('serie');
+        $division = $request->input('division');
+        $medida_division = $request->input('medida_division');
+        $capacidad = $request->input('capacidad');
+        $medida_capacidad = $request->input('medida_capacidad');
+        $cliente_id = $request->input('cliente_id');
+        $plataforma = $request->input('plataforma');
+        $medida_plataforma = $request->input('medida_plataforma');
+        $fecha = $request->input('fecha');
+        $fecha_final = $request->input('fecha_final');
+        $requiere = $request->input('requiere');
+        $diagnostico = $request->input('diagnostico');
+        $trabajos = $request->input('trabajos');
+        $tecnico = $request->input('tecnico');
+        $n_servicio = $request->input('n_servicio');
+        $foto = $request->input('foto');
+        $foto2 = $request->input('foto2');
+        $usuario_registrar = Auth::user()->name;
+
+        $resgistrarDatos = new InformesClientes;
+        $resgistrarDatos->hmarca_id = $hmarca_id;
+        $resgistrarDatos->lugar_servicio = $lugar_servicio;
+        $resgistrarDatos->instrumento = $instrumento;
+        $resgistrarDatos->rango = $rango;
+        $resgistrarDatos->medida_bastago = $medida_bastago;
+        $resgistrarDatos->medida_bastago2 = $medida_bastago2;
+        $resgistrarDatos->codigo = $codigo;
+        $resgistrarDatos->material = $material;
+        $resgistrarDatos->modelo = $modelo;
+        $resgistrarDatos->serie = $serie;
+        $resgistrarDatos->division = $division;
+        $resgistrarDatos->medida_division = $medida_division;
+        $resgistrarDatos->capacidad = $capacidad;
+        $resgistrarDatos->medida_capacidad = $medida_capacidad;
+        $resgistrarDatos->cliente_id = $cliente_id;
+        $resgistrarDatos->plataforma = $plataforma;
+        $resgistrarDatos->medida_plataforma = $medida_plataforma;
+        $resgistrarDatos->fecha = $fecha;
+        $resgistrarDatos->fecha_final = $fecha_final;
+        $resgistrarDatos->requiere = $requiere;
+        $resgistrarDatos->diagnostico = $diagnostico;
+        $resgistrarDatos->trabajos = $trabajos;
+        $resgistrarDatos->tecnico = $tecnico;
+        $resgistrarDatos->n_servicio = $n_servicio;
+        $resgistrarDatos->foto = $foto;
+        $resgistrarDatos->foto2 = $foto2;
+        $resgistrarDatos->usuario_registrar = $usuario_registrar;
+        $resgistrarDatos->save();
+
+        return response()->json($resgistrarDatos);
     }
 
     public function update(HservicioRequest $request, Hservicio $hservicio)

@@ -44,6 +44,14 @@ return [
             'throw' => false,
         ],
 
+        'informes_clientes' => [
+            'driver' => 'local',
+            'root' => public_path('informes_clientes'),
+            'url' => env('APP_URL').'/informes_clientes',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
