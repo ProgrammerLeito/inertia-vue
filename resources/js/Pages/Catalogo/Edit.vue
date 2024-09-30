@@ -232,6 +232,16 @@ const submitForm = () => {
                                     <InputError :message="$page.props.errors.garantia" class="mt-2" />
                                 </div>
                             </div>
+                            <div class="grid grid-cols-2 gap-y-4 mt-3">
+                                <div>
+                                    <InputLabel for="link_producto" class="block text-xs font-medium text-gray-700">Link 
+                                    </InputLabel>
+                                    <TextInput type="text" id="link_producto" v-model="form.link_producto"
+                                        placeholder="Escribe el del link_producto"
+                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    <InputError :message="$page.props.errors.link_producto" class="mt-2" />
+                                </div>
+                            </div>
                             <div class="grid grid-cols-1 gap-y-4 md:grid-cols-2 lg:grid-cols-3 sm:gap-x-8 mt-3">
                                 <div>
                                     <InputLabel for="capacidades" class="block text-xs font-medium text-gray-700">

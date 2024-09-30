@@ -132,7 +132,7 @@ Route::middleware(['auth:web'])->group(function () {
 Route::get('/fn_consultarDatosDiagnosticosServ', [HservicioController::class, 'consultarDatosDiagnosticosServ']);
 
 Route::get('/fn_obtenerFechaHojaServicio', [HservicioController::class, 'obtenerFechaHojaServicio']);
-Route::get('/fn_registrarInformesTecnicosdeCliente', [HservicioController::class, 'registrarInformesTecnicosdeCliente']);
+Route::post('/fn_registrarInformesTecnicosdeCliente', [HservicioController::class, 'registrarInformesTecnicosdeCliente']);
 Route::get('/fn_verificarFechayDatos', [HservicioController::class, 'verificarFechayDatos']);
 Route::get('/fn_obtenerHojasServicioAnteriores', [HservicioController::class, 'obtenerHojasServicioAnteriores']);
 Route::get('/fn_guardarCotizacion', [CventaController::class, 'guardarCotizacion']);

@@ -279,62 +279,60 @@ class HservicioController extends Controller
 
     public function registrarInformesTecnicosdeCliente(Request $request)
     {
-        $hmarca_id = $request->input('hmarca_id');
-        $lugar_servicio = $request->input('lugar_servicio');
-        $instrumento = $request->input('instrumento');
-        $rango = $request->input('rango');
-        $medida_bastago = $request->input('medida_bastago');
-        $medida_bastago2 = $request->input('medida_bastago2');
-        $codigo = $request->input('codigo');
-        $material = $request->input('material');
-        $modelo = $request->input('modelo');
-        $serie = $request->input('serie');
-        $division = $request->input('division');
-        $medida_division = $request->input('medida_division');
-        $capacidad = $request->input('capacidad');
-        $medida_capacidad = $request->input('medida_capacidad');
-        $cliente_id = $request->input('cliente_id');
-        $plataforma = $request->input('plataforma');
-        $medida_plataforma = $request->input('medida_plataforma');
-        $fecha = $request->input('fecha');
-        $fecha_final = $request->input('fecha_final');
-        $requiere = $request->input('requiere');
-        $diagnostico = $request->input('diagnostico');
-        $trabajos = $request->input('trabajos');
-        $tecnico = $request->input('tecnico');
-        $n_servicio = $request->input('n_servicio');
-        $foto = $request->input('foto');
-        $foto2 = $request->input('foto2');
-        $usuario_registrar = Auth::user()->name;
+        // Validación de los archivos de imagen
+        $request->validate([
+            'fotoInforme1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'fotoInforme2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
 
+        // Guardar los datos del formulario
         $resgistrarDatos = new InformesClientes;
-        $resgistrarDatos->hmarca_id = $hmarca_id;
-        $resgistrarDatos->lugar_servicio = $lugar_servicio;
-        $resgistrarDatos->instrumento = $instrumento;
-        $resgistrarDatos->rango = $rango;
-        $resgistrarDatos->medida_bastago = $medida_bastago;
-        $resgistrarDatos->medida_bastago2 = $medida_bastago2;
-        $resgistrarDatos->codigo = $codigo;
-        $resgistrarDatos->material = $material;
-        $resgistrarDatos->modelo = $modelo;
-        $resgistrarDatos->serie = $serie;
-        $resgistrarDatos->division = $division;
-        $resgistrarDatos->medida_division = $medida_division;
-        $resgistrarDatos->capacidad = $capacidad;
-        $resgistrarDatos->medida_capacidad = $medida_capacidad;
-        $resgistrarDatos->cliente_id = $cliente_id;
-        $resgistrarDatos->plataforma = $plataforma;
-        $resgistrarDatos->medida_plataforma = $medida_plataforma;
-        $resgistrarDatos->fecha = $fecha;
-        $resgistrarDatos->fecha_final = $fecha_final;
-        $resgistrarDatos->requiere = $requiere;
-        $resgistrarDatos->diagnostico = $diagnostico;
-        $resgistrarDatos->trabajos = $trabajos;
-        $resgistrarDatos->tecnico = $tecnico;
-        $resgistrarDatos->n_servicio = $n_servicio;
-        $resgistrarDatos->foto = $foto;
-        $resgistrarDatos->foto2 = $foto2;
-        $resgistrarDatos->usuario_registrar = $usuario_registrar;
+        $resgistrarDatos->hmarca_id = $request->input('hmarca_id');
+        $resgistrarDatos->lugar_servicio = $request->input('lugar_servicio');
+        $resgistrarDatos->instrumento = $request->input('instrumento');
+        $resgistrarDatos->rango = $request->input('rango');
+        $resgistrarDatos->medida_bastago = $request->input('medida_bastago');
+        $resgistrarDatos->medida_bastago2 = $request->input('medida_bastago2');
+        $resgistrarDatos->codigo = $request->input('codigo');
+        $resgistrarDatos->material = $request->input('material');
+        $resgistrarDatos->modelo = $request->input('modelo');
+        $resgistrarDatos->serie = $request->input('serie');
+        $resgistrarDatos->division = $request->input('division');
+        $resgistrarDatos->medida_division = $request->input('medida_division');
+        $resgistrarDatos->capacidad = $request->input('capacidad');
+        $resgistrarDatos->medida_capacidad = $request->input('medida_capacidad');
+        $resgistrarDatos->cliente_id = $request->input('cliente_id');
+        $resgistrarDatos->plataforma = $request->input('plataforma');
+        $resgistrarDatos->medida_plataforma = $request->input('medida_plataforma');
+        $resgistrarDatos->fecha = $request->input('fecha');
+        $resgistrarDatos->fecha_final = $request->input('fecha_final');
+        $resgistrarDatos->requiere = $request->input('requiere');
+        $resgistrarDatos->diagnostico = $request->input('diagnostico');
+        $resgistrarDatos->trabajos = $request->input('trabajos');
+        $resgistrarDatos->tecnico = $request->input('tecnico');
+        $resgistrarDatos->n_servicio = $request->input('n_servicio');
+        $resgistrarDatos->usuario_registrar = Auth::user()->name;
+
+        if ($request->hasFile('fotoInforme1')) {
+            $file = $request->file('fotoInforme1');
+            $routeName = $file->store('', ['disk' => 'informes_clientes']);
+            $validatedData['fotoInforme1'] = $routeName;
+
+            if ($resgistrarDatos->fotoInforme1) {
+                Storage::disk('informes_clientes')->delete($resgistrarDatos->fotoInforme1);
+            }
+        }
+        
+        if ($request->hasFile('fotoInforme2')) {
+            $file = $request->file('fotoInforme2');
+            $routeName = $file->store('', ['disk' => 'informes_clientes']);
+            $validatedData['fotoInforme2'] = $routeName;
+
+            if ($resgistrarDatos->fotoInforme2) {
+                Storage::disk('informes_clientes')->delete($resgistrarDatos->fotoInforme2);
+            }
+        }
+
         $resgistrarDatos->save();
 
         return response()->json($resgistrarDatos);

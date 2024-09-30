@@ -52,9 +52,9 @@ const editHojaServicio = (hservicio) => {
     isEditing.value = true;
 };
 
-const imagePreview1 = ref('');
-const imagePreview2 = ref('');
-const imagePreviews = ref(['', '', '']);
+const imageInformeCli1 = ref('');
+const imageInformeCli2 = ref('');
+const imagePreviewsInformesCli = ref(['', '', '']);
 
 const onSelectFoto = (e, fieldName) => {
     const files = e.target.files;
@@ -62,13 +62,13 @@ const onSelectFoto = (e, fieldName) => {
         const reader = new FileReader();
         reader.onload = (e) => {
             switch (fieldName) {
-                case 'foto':
-                    imagePreview1.value = e.target.result;
-                    imagePreviews.value[0] = e.target.result;
+                case 'fotoInforme1':
+                    imageInformeCli1.value = e.target.result;
+                    imagePreviewsInformesCli.value[0] = e.target.result;
                     break;
-                case 'foto2':
-                    imagePreview2.value = e.target.result;
-                    imagePreviews.value[1] = e.target.result;
+                case 'fotoInforme2':
+                    imageInformeCli2.value = e.target.result;
+                    imagePreviewsInformesCli.value[1] = e.target.result;
                     break;
                 default:
                     break;
@@ -111,8 +111,8 @@ const form = useForm({
     requiere: '',
     diagnostico: '',
     trabajos: '',
-    foto: '',
-    foto2: '',
+    fotoInforme1: '',
+    fotoInforme2: '',
 });
 
 let timerInterval;
@@ -2249,8 +2249,8 @@ function previewPDF2() {
             const totalWidth = columnWidth * 2;
             
             const imagenes = [
-                imagePreview1.value ? imagePreview1.value : '/img/sinFoto.png',
-                imagePreview2.value ? imagePreview2.value : '/img/sinFoto.png',
+                imageInformeCli1.value ? imageInformeCli1.value : '/img/sinFoto.png',
+                imageInformeCli2.value ? imageInformeCli2.value : '/img/sinFoto.png',
             ];
             
             doc.autoTable({
@@ -2343,41 +2343,51 @@ function previewPDF2() {
 
 const submitForm = async (event) => {
     event.preventDefault();
-    $.ajax({
-        url: '/fn_registrarInformesTecnicosdeCliente',
-        method: 'GET',
-        data: {
-            hmarca_id: form.hmarca_id,
-            lugar_servicio: form.lugar_servicio,
-            instrumento: form.instrumento,
-            rango: form.rango,
-            medida_bastago: form.medida_bastago,
-            medida_bastago2: form.medida_bastago2,
-            codigo: form.codigo,
-            material: form.material,
-            modelo: form.modelo,
-            serie: form.serie,
-            division: form.division,
-            medida_division: form.medida_division,
-            capacidad: form.capacidad,
-            medida_capacidad: form.medida_capacidad,
-            cliente_id: form.cliente_id,
-            plataforma: form.plataforma,
-            medida_plataforma: form.medida_plataforma,
-            fecha: form.fecha,
-            fecha_final: form.fecha_final,
-            require: form.require,
-            diagnostico: form.diagnostico,
-            trabajos: form.trabajos,
-            tecnico: form.tecnico,
-            n_servicio: form.n_servicio,
-            foto: form.foto,
-            foto2: form.foto2
-        },
-        success: function(response) {
-            console.log(response);
-        }
-    });
+
+    let formData = new FormData();
+    formData.append('hmarca_id', form.hmarca_id);
+    formData.append('lugar_servicio', form.lugar_servicio);
+    formData.append('instrumento', form.instrumento);
+    formData.append('rango', form.rango);
+    formData.append('medida_bastago', form.medida_bastago);
+    formData.append('medida_bastago2', form.medida_bastago2);
+    formData.append('codigo', form.codigo);
+    formData.append('material', form.material);
+    formData.append('modelo', form.modelo);
+    formData.append('serie', form.serie);
+    formData.append('division', form.division);
+    formData.append('medida_division', form.medida_division);
+    formData.append('capacidad', form.capacidad);
+    formData.append('medida_capacidad', form.medida_capacidad);
+    formData.append('cliente_id', form.cliente_id);
+    formData.append('plataforma', form.plataforma);
+    formData.append('medida_plataforma', form.medida_plataforma);
+    formData.append('fecha', form.fecha);
+    formData.append('fecha_final', form.fecha_final);
+    formData.append('requiere', form.requiere);
+    formData.append('diagnostico', form.diagnostico);
+    formData.append('trabajos', form.trabajos);
+    formData.append('tecnico', form.tecnico);
+    formData.append('n_servicio', form.n_servicio);
+
+    // Incluir las imágenes solo si se seleccionaron
+    if (form.fotoInforme1) {
+        formData.append('fotoInforme1', form.fotoInforme1);
+    }
+    if (form.fotoInforme2) {
+        formData.append('fotoInforme2', form.fotoInforme2);
+    }
+
+    try {
+        const response = await axios.post('/fn_registrarInformesTecnicosdeCliente', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        console.log(response.data);
+    } catch (error) {
+        console.error(error);
+    }
 };
 </script>
 
@@ -2602,26 +2612,26 @@ const submitForm = async (event) => {
                             <div class="mt-0 flex justify-center items-center flex-wrap gap-y-0 sm:gap-x-2">
                                 <div class="sm:col-span-1 flex-1 whitespace-nowrap">
                                     <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
-                                        <InputLabel for="foto" value="Imagen Antes"
+                                        <InputLabel for="fotoInforme1" value="Imagen Antes"
                                             class="block text-sm font-medium text-gray-700" />
-                                        <FileInput class="text-sm" id="foto" name="foto" @change="($event) => onSelectFoto($event, 'foto')" />
-                                        <InputError :message="$page.props.errors.foto" class="mt-2" />
+                                        <FileInput class="text-sm" id="fotoInforme1" name="fotoInforme1" @change="($event) => onSelectFoto($event, 'fotoInforme1')" />
+                                        <InputError :message="$page.props.errors.fotoInforme1" class="mt-2" />
                                         <div class="mt-2 flex items-center justify-center w-full"
-                                            v-if="form.foto !== ''">
-                                            <img :src="imagePreview1" alt="Vista previa de la foto"
+                                            v-if="form.fotoInforme1 !== ''">
+                                            <img :src="imageInformeCli1" alt="Vista previa de la foto"
                                                 class="p-2 block w-36 h-36 object-contain items-center text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="sm:col-span-1 flex-1 whitespace-nowrap">
                                     <div class="flex flex-wrap gap-4 items-center mb-4 mt-4">
-                                        <InputLabel for="foto2" value="Imagen Despues"
+                                        <InputLabel for="fotoInforme2" value="Imagen Despues"
                                             class="block text-sm font-medium text-gray-700" />
-                                        <FileInput class="text-sm" id="foto2" name="foto2" @change="($event) => onSelectFoto($event, 'foto2')" />
-                                        <InputError :message="$page.props.errors.foto2" class="mt-2" />
+                                        <FileInput class="text-sm" id="fotoInforme2" name="fotoInforme2" @change="($event) => onSelectFoto($event, 'fotoInforme2')" />
+                                        <InputError :message="$page.props.errors.fotoInforme2" class="mt-2" />
                                         <div class="mt-2 flex items-center justify-center w-full"
-                                            v-if="form.foto2 !== ''">
-                                            <img :src="imagePreview2" alt="Vista previa de la foto 2"
+                                            v-if="form.fotoInforme2 !== ''">
+                                            <img :src="imageInformeCli2" alt="Vista previa de la foto 2"
                                                 class="p-2 block w-36 h-36 items-center object-contain text-sm text-gray-900 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400">
                                         </div>
                                     </div>

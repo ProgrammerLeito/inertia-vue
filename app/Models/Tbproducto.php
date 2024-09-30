@@ -24,7 +24,8 @@ class Tbproducto extends Model
         'capacidades',
         'especificaciones',
         'foto',
-        'garantia'
+        'garantia',
+        'link_producto'
     ];
 
     public function tbcategoria()

@@ -37,9 +37,8 @@ class InformesClientes extends Model
         'diagnostico',
         'trabajos',
         'tecnico',
-        'foto',
-        'foto2',
-        'foto3',
+        'fotoInforme1',
+        'fotoInforme2',
     ];
 
     public static function boot()

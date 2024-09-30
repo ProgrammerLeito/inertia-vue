@@ -37,6 +37,7 @@ class UpdateTbproductoRequest extends FormRequest
             'especificaciones' => '',
             'foto' => 'nullable',
             'garantia' => '',
+            'link_producto' => '',
         ];
     }
 }

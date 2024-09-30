@@ -82,6 +82,15 @@ watchEffect(() => {
     }
 });
 
+const shortenUrl = (url) => {
+    try {
+        const urlObj = new URL(url);
+        return urlObj.hostname;
+    } catch (error) {
+        return url;
+    }
+};
+
 </script>
  
 <template>
@@ -169,20 +178,25 @@ watchEffect(() => {
                                                     <li v-for="(capacidad, index) in (tbproducto.capacidades || '').split('\n')" :key="index">{{ capacidad }}</li>
                                                 </ul>
                                             </td>
-                                            <td class="px-6 py-4 text-center border-r border-b whitespace-nowrap">
-                                                <div class="accordions">
-                                                    <dl>
-                                                        <dt @click="toggleAccordion(i)" class="cursor-pointer normal-case">
-                                                            Especificaciones
-                                                            <i :class="{'fa-solid fa-arrow-up-long ml-2': isActive(i), 'fa-solid fa-arrow-down-long ml-2': !isActive(i)}"></i>
-                                                        </dt>
-                                                        <dd v-if="isActive(i)" class="ml-4">
-                                                            <ul class="list-disc px-6 py-4 text-left">
-                                                                <li v-for="(item, index) in (tbproducto.especificaciones || '').split('\n')" :key="index">{{ item }}</li>
-                                                            </ul>
-                                                        </dd>
-                                                    </dl>
-                                                </div>
+                                            <td class="h-full w-full border-r border-b">
+                                                <td class="px-6 py-4 text-center whitespace-nowrap flex flex-col gap-y-5">
+                                                    <div class="accordions">
+                                                        <dl>
+                                                            <dt @click="toggleAccordion(i)" class="cursor-pointer normal-case">
+                                                                Especificaciones
+                                                                <i :class="{'fa-solid fa-arrow-up-long ml-2': isActive(i), 'fa-solid fa-arrow-down-long ml-2': !isActive(i)}"></i>
+                                                            </dt>
+                                                            <dd v-if="isActive(i)" class="ml-4">
+                                                                <ul class="list-disc px-6 py-4 text-left">
+                                                                    <li v-for="(item, index) in (tbproducto.especificaciones || '').split('\n')" :key="index">{{ item }}</li>
+                                                                </ul>
+                                                            </dd>
+                                                        </dl>
+                                                    </div>
+                                                    <a :href="tbproducto.link_producto" target="_blank" class="text-red-500 dark:text-white font-bold">
+                                                        {{ shortenUrl(tbproducto.link_producto) === null ? "Sin Url" : shortenUrl(tbproducto.link_producto) }}
+                                                    </a>
+                                                </td>
                                             </td>
                                             <td class="md:px-2 px-2 py-2 text-center border-r border-b">
                                                 <img @click="openModal('/productos_img/' + tbproducto.foto)"

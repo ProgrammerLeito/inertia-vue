@@ -140,6 +140,10 @@ onMounted(() => {
     setCurrentDate();
 });
 
+const retornarBack = () => {
+    window.history.back();
+};
+
 </script>
 
 <template>
@@ -152,12 +156,12 @@ onMounted(() => {
             <div class="h-full mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="p-6 bg-white border-gray-600 rounded-lg dark:bg-gray-800">
                     <div class="flex flex-wrap gap-2 justify-between">
+                        <button @click="retornarBack" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
+                            <i class="bi bi-arrow-left-short mx-1"></i>Regresar
+                        </button>
                         <ButtonRegister @click="$event => openModal(1)" v-if="$page.props.user.permissions.includes('Ingresar Entrada')">
                             <i class="bi bi-clipboard-check mx-1"></i>Ingresar Entrada
                         </ButtonRegister>
-                        <Link :href="route('categories.index')" class="text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded md:w-min whitespace-nowrap w-full text-center">
-                            <i class="bi bi-arrow-left-short mx-1"></i>Regresar
-                        </Link>
                     </div>
                     <div class="mt-4">
                         
