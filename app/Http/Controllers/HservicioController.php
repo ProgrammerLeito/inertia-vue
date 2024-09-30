@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\HservicioRequest;
+use App\Http\Requests\InformeTecnicoCli;
 use App\Http\Requests\UpdateHservicioRequest;
 use App\Models\Cliente;
 use App\Models\Hservicio;
@@ -277,15 +278,8 @@ class HservicioController extends Controller
         return response()->json($obtenerdatos);
     }
 
-    public function registrarInformesTecnicosdeCliente(Request $request)
+    public function registrarInformesTecnicosdeCliente(InformeTecnicoCli $request)
     {
-        // Validación de los archivos de imagen
-        $request->validate([
-            'fotoInforme1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'fotoInforme2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        // Guardar los datos del formulario
         $resgistrarDatos = new InformesClientes;
         $resgistrarDatos->hmarca_id = $request->input('hmarca_id');
         $resgistrarDatos->lugar_servicio = $request->input('lugar_servicio');
@@ -316,21 +310,13 @@ class HservicioController extends Controller
         if ($request->hasFile('fotoInforme1')) {
             $file = $request->file('fotoInforme1');
             $routeName = $file->store('', ['disk' => 'informes_clientes']);
-            $validatedData['fotoInforme1'] = $routeName;
-
-            if ($resgistrarDatos->fotoInforme1) {
-                Storage::disk('informes_clientes')->delete($resgistrarDatos->fotoInforme1);
-            }
+            $resgistrarDatos->fotoInforme1 = $routeName;
         }
-        
+
         if ($request->hasFile('fotoInforme2')) {
             $file = $request->file('fotoInforme2');
             $routeName = $file->store('', ['disk' => 'informes_clientes']);
-            $validatedData['fotoInforme2'] = $routeName;
-
-            if ($resgistrarDatos->fotoInforme2) {
-                Storage::disk('informes_clientes')->delete($resgistrarDatos->fotoInforme2);
-            }
+            $resgistrarDatos->fotoInforme2 = $routeName;
         }
 
         $resgistrarDatos->save();
@@ -379,7 +365,6 @@ class HservicioController extends Controller
         // Actualización del modelo
         $hservicio->update($validatedData);
     }
-
 
     public function destroy($id)
     {
