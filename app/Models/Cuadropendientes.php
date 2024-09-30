@@ -6,9 +6,12 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Hojaservicio extends Model
+class Cuadropendientes extends Model
 {
     use HasFactory;
+
+    protected $table = 'tb_pendientes';
+    
     protected $fillable=[
         'razon_social',
         'cantidad',
@@ -29,13 +32,13 @@ class Hojaservicio extends Model
     {
         parent::boot();
 
-        static::creating(function ($hojaservicio) {
-            $hojaservicio->created_at = Carbon::now()->setTimezone('America/Lima')->toDateTimeString();
-            $hojaservicio->updated_at = Carbon::now()->setTimezone('America/Lima')->toDateTimeString();
+        static::creating(function ($cuadropendientes) {
+            $cuadropendientes->created_at = Carbon::now()->setTimezone('America/Lima')->toDateTimeString();
+            $cuadropendientes->updated_at = Carbon::now()->setTimezone('America/Lima')->toDateTimeString();
         });
 
-        static::updating(function ($hojaservicio) {
-            $hojaservicio->updated_at = Carbon::now()->setTimezone('America/Lima')->toDateTimeString();
+        static::updating(function ($cuadropendientes) {
+            $cuadropendientes->updated_at = Carbon::now()->setTimezone('America/Lima')->toDateTimeString();
         });
     }
 }

@@ -15,7 +15,7 @@ use App\Http\Controllers\CventaController;
 use App\Http\Controllers\DatoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\HmarcaController;
-use App\Http\Controllers\HojaservicioController;
+use App\Http\Controllers\PendientesController;
 use App\Http\Controllers\HservicioController;
 use App\Http\Controllers\ObservacioneController;
 use App\Http\Controllers\PermisoController;
@@ -59,7 +59,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::put('/salidas.update', [SalidasController::class , 'update']);
 
     // Hojas de Servicio
-    Route::resource('hojasservicios', HojaservicioController::class);
+    Route::resource('cuadropendientes', PendientesController::class);
     
     // Catalago de productos
     Route::post('/tbproductos/{tbproducto}', [TbproductoController::class, 'update'])->name('tbproductos.update');

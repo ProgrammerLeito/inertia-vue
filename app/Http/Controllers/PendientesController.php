@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\hojaservicioRequest;
-use App\Models\Hojaservicio;
+use App\Models\Cuadropendientes;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class HojaservicioController extends Controller
+class PendientesController extends Controller
 {
     public function index(Request $request) {
         $fecha = $request->input('fecha', Carbon::now()->setTimezone('America/Lima')->toDateString()); // Ajusta la fecha a la zona horaria de Lima
-        $hojaservicios = Hojaservicio::whereDate('fecha', $fecha) // Filtra por la fecha seleccionada
+        $tb_pendientes = Cuadropendientes::whereDate('fecha', $fecha) // Filtra por la fecha seleccionada
                                      ->orderBy('created_at', 'desc')
                                      ->get();
-        return Inertia::render('Hojasservicios/Index', compact('hojaservicios', 'fecha'));
+        return Inertia::render('CuadroPendientes/Index', compact('tb_pendientes', 'fecha'));
     }  
 
     public function store(hojaservicioRequest $request){
@@ -25,20 +25,20 @@ class HojaservicioController extends Controller
         $data['usuario'] = $usuario;
         $data['created_at'] = Carbon::now()->setTimezone('America/Lima')->toDateTimeString();
         $data['updated_at'] = Carbon::now()->setTimezone('America/Lima')->toDateTimeString();
-        Hojaservicio::create($data);
+        Cuadropendientes::create($data);
         return redirect()->back();
     }
 
     public function update(hojaservicioRequest $request , $id){
         $data=$request->validated();
-        $hojaservicio=Hojaservicio::find($id);
-        $hojaservicio->update($data);
+        $cuadropendientes=Cuadropendientes::find($id);
+        $cuadropendientes->update($data);
     }
 
     public function destroy($id)
     {
-        $hojaservicio = Hojaservicio::find($id);
-        $hojaservicio->delete();
+        $cuadropendientes = Cuadropendientes::find($id);
+        $cuadropendientes->delete();
         return redirect()->back();
     }
 }

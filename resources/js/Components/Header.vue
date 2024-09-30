@@ -4,39 +4,11 @@
             <div class="flex justify-center items-center w-[50px] h-full cursor-pointer hover:bg-yellow-300" @click="clickHamburger">
                 <i class='bx bx-menu'></i>
             </div>
-            <!-- <div class="flex pr-1 gap-6 justify-between items-center h-[50px]">
-                <Link :href="route('hojasservicios.index')" class="cursor-pointer">
-                    <div class="flex gap-2 md:gap-1">
-                        <div class="border-dotted md:border-0 border-4 md:w-7 w-10 h-10 flex items-center border-white">
-                            <img src="../../../public/img/hoja_servicio.png" alt="" class="ml-1">
-                        </div>
-                        <span class="hidden sm:flex whitespace-nowrap font-bold items-center">Hoja de servicio</span>
-                    </div>
-                </Link>
-                <Link :href="route('profile.show')" class="flex items-center gap-2 cursor-pointer">
-                    <img class="p-1 w-8 h-8 rounded-full ring-2 ring-gray-100" :src="$page.props.auth.user.profile_photo_url">
-                    <h1 class="font-bold sm:flex hidden md:text-base text-sm uppercase text-gray-800 leading-tight">
-                        {{ $page.props.auth.user.name }}</h1>
-                </Link>
-            </div> -->
             <div class="flex pr-1 gap-6 justify-between items-center h-[50px]">
-                <!-- <Link :href="route('hojasservicios.index')" class="cursor-pointer">
-                    <div class="flex gap-2 md:gap-1">
-                        <div class="border-dotted md:border-0 border-4 md:w-7 w-10 h-10 flex items-center border-white">
-                            <img src="../../../public/img/hoja_servicio.png" alt="" class="ml-1">
-                        </div>
-                        <span class="hidden sm:flex whitespace-nowrap font-bold items-center">Hoja de servicio</span>
-                    </div>
-                </Link> -->
                 <Link :href="route('profile.show')" class="flex items-center gap-2 cursor-pointer">
-                    <!-- <img class="p-1 w-8 h-8 rounded-full ring-2 ring-gray-100" :src="$page.props.auth.user.profile_photo_url"> -->
                     <h1 class="font-bold shadow-white shadow-2xl sm:flex hidden md:text-xl text-sm uppercase text-white leading-tight text">
                         {{ greeting }},  {{ $page.props.auth.user.name }}</h1>
                 </Link>
-                <!-- <div class="flex items-center gap-2">
-                    <h1 class="font-bold shadow-white shadow-2xl sm:flex hidden md:text-xl text-sm uppercase text-white leading-tight text">
-                        INDUSTRIAS BALINSA E.I.R.L.</h1>
-                </div> -->
             </div>
         </div>
     </div>

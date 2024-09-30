@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hojaservicios', function (Blueprint $table) {
+        Schema::create('tb_pendientes', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('razon_social')->nullable();
             $table->string('cantidad')->nullable();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hojaservicios');
+        Schema::dropIfExists('tb_pendientes');
     }
 };

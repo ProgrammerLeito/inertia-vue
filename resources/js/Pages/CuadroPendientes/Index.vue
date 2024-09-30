@@ -10,7 +10,7 @@ import { ref, onMounted } from 'vue';
 import { show_alerta} from '@/utils/alertasSwal';
 
 const props = defineProps({
-    hojaservicios: {
+    tb_pendientes: {
         type: Object,
         required: true,
     }
@@ -27,7 +27,7 @@ const form = useForm({
 });
 
 const isEditing = ref(false);
-const hojaservicio = ref(null);
+const pendientes = ref(null);
 
 // Definir la variable para la fecha seleccionada
 const fechaSeleccionada = ref('');
@@ -40,7 +40,7 @@ const obtenerNombreDiaSemana = (fecha) => {
 };
 
 const filtrarPorFecha = () => {
-    router.get(route('hojasservicios.index'), { fecha: fechaSeleccionada.value });
+    router.get(route('cuadropendientes.index'), { fecha: fechaSeleccionada.value });
 };
 
 const setCurrentDate = () => {
@@ -85,22 +85,22 @@ onMounted(() => {
     actualizarDiaSemana();    // Establece dia de la semana como texto
 });
 
-const editHojaServicio = (hojaservicio) => {
-    form.id = hojaservicio.id;
-    form.razon_social = hojaservicio.razon_social;
-    form.cantidad = hojaservicio.cantidad;
-    form.descripcion = hojaservicio.descripcion;
-    form.fecha = hojaservicio.fecha;
-    form.hora = hojaservicio.hora;
-    form.lugar = hojaservicio.lugar;
-    form.contacto = hojaservicio.contacto;
-    form.nro_contacto = hojaservicio.nro_contacto;
+const editHojaServicio = (pendientes) => {
+    form.id = pendientes.id;
+    form.razon_social = pendientes.razon_social;
+    form.cantidad = pendientes.cantidad;
+    form.descripcion = pendientes.descripcion;
+    form.fecha = pendientes.fecha;
+    form.hora = pendientes.hora;
+    form.lugar = pendientes.lugar;
+    form.contacto = pendientes.contacto;
+    form.nro_contacto = pendientes.nro_contacto;
     isEditing.value = true;
 };
 
 const submitForm = () => {
     if (!form.id) {
-        form.post(route('hojasservicios.store'), {
+        form.post(route('cuadropendientes.store'), {
             onSuccess: () => {
                 form.reset();
                 setCurrentDate();
@@ -111,7 +111,7 @@ const submitForm = () => {
             },
         });
     } else {
-        form.put(route('hojasservicios.update', form.id), {
+        form.put(route('cuadropendientes.update', form.id), {
             onSuccess: () => {
                 form.reset();
                 setCurrentDate();
@@ -149,7 +149,7 @@ const deleteHojaServicio = (id, razon_social) => {
         },
     }).then((result) => {
         if (result.isConfirmed) {
-            form2.delete(route('hojasservicios.destroy', id), {
+            form2.delete(route('cuadropendientes.destroy', id), {
                 onSuccess: () => {
                     const Toast = Swal.mixin({
                         toast: true,
@@ -252,7 +252,7 @@ const deleteHojaServicio = (id, razon_social) => {
                                 <InputError :message="form.errors.descripcion" class="mt-2"></InputError>
                             </div>
                             <div class="flex flex-wrap gap-2 justify-end items-end">
-                                <ButtonResponsive v-if="!isEditing" @dblclick="editHojaServicio(hojaservicio)" class="uppercase text-xs">Generar Pendiente</ButtonResponsive>
+                                <ButtonResponsive v-if="!isEditing" @dblclick="editHojaServicio(pendientes)" class="uppercase text-xs">Generar Pendiente</ButtonResponsive>
                                 <ButtonResponsive v-if="isEditing" class="uppercase text-xs">Actualizar Pendiente</ButtonResponsive>
                             </div>
                         </div>
@@ -282,28 +282,28 @@ const deleteHojaServicio = (id, razon_social) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr @dblclick="editHojaServicio(hojaservicio)" v-for="hojaservicio in hojaservicios"
-                                    :key="hojaservicio.id"
+                                <tr @dblclick="editHojaServicio(pendientes)" v-for="pendientes in tb_pendientes"
+                                    :key="pendientes.id"
                                     class="bg-white text-black text-xs hover:text-white border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                     <!-- Mostrar los datos de cada hservicio -->
-                                    <td class="px-6 py-4 text-center">{{ hojaservicio.id }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.usuario }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b whitespace-break-spaces">{{hojaservicio.razon_social }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.cantidad }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b whitespace-break-spaces">{{hojaservicio.descripcion }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b whitespace-nowrap">{{ formatTime(hojaservicio.hora) }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.lugar }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.contacto }}</td>
-                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{hojaservicio.nro_contacto }}</td>
+                                    <td class="px-6 py-4 text-center">{{ pendientes.id }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{pendientes.usuario }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b whitespace-break-spaces">{{pendientes.razon_social }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{pendientes.cantidad }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b whitespace-break-spaces">{{pendientes.descripcion }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b whitespace-nowrap">{{ formatTime(pendientes.hora) }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{pendientes.lugar }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{pendientes.contacto }}</td>
+                                    <td class="px-6 py-3 text-center dark:border-white border-b">{{pendientes.nro_contacto }}</td>
                                     <td class="px-6 py-3 dark:border-white relative">
-                                        <button @click="$event => deleteHojaServicio(hojaservicio.id, hojaservicio.razon_social)" class="bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md" title="Eliminar Cliente">
+                                        <button @click="$event => deleteHojaServicio(pendientes.id, pendientes.razon_social)" class="bg-red-600 hover:bg-red-700 px-1.5 py-0.5 rounded-md" title="Eliminar Cliente">
                                             <i class='bx bxs-trash text-base text-white'></i>
                                         </button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div v-if="hojaservicios.length === 0" class="text-center py-2 dark:text-white">
+                        <div v-if="tb_pendientes.length === 0" class="text-center py-2 dark:text-white">
                             No se encontraron datos.
                         </div>
                     </div>
