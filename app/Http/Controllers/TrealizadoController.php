@@ -23,7 +23,6 @@ class TrealizadoController extends Controller
             'descripcion' => ''
         ]);
 
-        // Actualiza los campos del modelo con los datos validados
         $trealizado->update($validatedData);
 
         return redirect()->back();

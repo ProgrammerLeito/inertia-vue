@@ -326,7 +326,6 @@ class HservicioController extends Controller
 
     public function update(HservicioRequest $request, Hservicio $hservicio)
     {
-        // Datos validados del request
         $validatedData = $request->except('foto', 'foto2', 'foto3');
 
         // Manejo de archivo 'foto'

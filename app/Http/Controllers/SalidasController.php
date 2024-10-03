@@ -162,7 +162,6 @@ class SalidasController extends Controller
 
     public function update(Request $request, Salida $salida)
     {
-        // Valida los datos recibidos en la solicitud
         $validated = $request->validate([
             'empresa' => 'required|string',
             'unidad_salida' => 'required|numeric',
@@ -177,18 +176,15 @@ class SalidasController extends Controller
 
         if(isset($validated['unidad_devolucion']) && !empty($validated['unidad_devolucion'])) {$validated['devolucion'] = 2;}
 
-        // Inicia una transacción para asegurar la integridad de los datos
         DB::beginTransaction();
         try {
 
             // dd($validated);
-            // Actualiza los datos de la salida
             $salida->update($validated);
 
             // Encuentra el producto asociado a la salida
             $producto = Producto::findOrFail($validated['producto_id']);
 
-            // Confirma los cambios en la base de datos
             DB::commit();
 
             return redirect()->route('salidas.index', ['producto_id' => $producto->id])->with('success', 'Salida actualizada y stock actualizado correctamente.');
@@ -201,7 +197,6 @@ class SalidasController extends Controller
     
     public function destroy(Salida $salida)
     {
-        // Inicia una transacción para asegurar la integridad de los datos
         DB::beginTransaction();
         try {
             // Encuentra el producto asociado a la salida
@@ -210,7 +205,6 @@ class SalidasController extends Controller
             // Elimina la salida
             $salida->delete();
     
-            // Confirma los cambios en la base de datos
             DB::commit();
     
             return redirect()->route('salidas.index', ['producto_id' => $producto->id])->with('success', 'Salida eliminada y stock restaurado correctamente.');

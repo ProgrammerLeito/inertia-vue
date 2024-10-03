@@ -24,7 +24,6 @@ class ObservacioneController extends Controller
             'descripcion' => ''
         ]);
 
-        // Actualiza los campos del modelo con los datos validados
         $observacione->update($validatedData);
 
         return redirect()->back();

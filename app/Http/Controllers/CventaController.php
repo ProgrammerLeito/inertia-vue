@@ -225,10 +225,8 @@ class CventaController extends Controller
 
     public function update(Request $request, Cventa $cventa)
     {
-        // Actualiza el objeto Cventa con los datos del formulario
         $cventa->update($request->all());
 
-        // Redirige al usuario a la lista de cotizaciones
         return redirect()->route('cventas.index');
     }
 

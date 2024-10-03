@@ -18,11 +18,13 @@ class TbproductoController extends Controller
 
     public function index()
     {
-        $tbproductos=Tbproducto::with('tbcategoria','tbsubcategoria','tbmarca')->orderBy('id', 'DESC')->paginate(500);
-        $tbcategorias=Tbcategoria::with('tbsubcategorias')->get();
-        $tbsubcategorias=Tbsubcategoria::all();
-        $tbmarcas=Tbmarca::all();
-        return Inertia::render('Catalogo/Index',compact('tbproductos','tbcategorias','tbsubcategorias','tbmarcas'));
+        $tbproductos = Tbproducto::with('tbcategoria', 'tbsubcategoria', 'tbmarca')
+            ->orderBy('id', 'DESC')
+            ->paginate(500);
+        $tbcategorias = Tbcategoria::with('tbsubcategorias')->get();
+        $tbsubcategorias = Tbsubcategoria::orderByRaw("FIELD(id, 19, 20, 1, 3, 9, 10, 4, 16)")->get();
+        $tbmarcas = Tbmarca::all();
+        return Inertia::render('Catalogo/Index', compact('tbproductos', 'tbcategorias', 'tbsubcategorias', 'tbmarcas'));
     }
 
     public function create()

@@ -123,11 +123,9 @@ class ProductoController extends Controller
             $file = $request->file('imagen_producto');
             // Almacenar la nueva imagen y obtener la ruta
             $filePath = $file->store('', ['disk' => 'productos_inventario']);
-            // Agregar la nueva ruta de imagen a los datos
             $data['imagen_producto'] = $filePath;
         }
 
-        // Actualizar el producto con los nuevos datos
         $producto->update($data);
 
         return redirect()->route('productos.index', ['category_id' => $producto->category_id]);

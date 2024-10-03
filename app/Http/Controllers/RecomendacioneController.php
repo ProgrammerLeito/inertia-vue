@@ -20,7 +20,6 @@ class RecomendacioneController extends Controller
             'descripcion' => ''
         ]);
 
-        // Actualiza los campos del modelo con los datos validados
         $recomendacione->update($validatedData);
 
         return redirect()->back();

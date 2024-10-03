@@ -72,7 +72,9 @@ watchEffect(() => {
     // Buscar la primera subcategoría relacionada con la categoría seleccionada, si existe
     const categoriaSeleccionada = props.tbcategorias.find(categoria => categoria.id === selectedCategoria.value);
     if (categoriaSeleccionada) {
-        selectedSubcategoria.value = categoriaSeleccionada.tbsubcategorias.length > 0 ? categoriaSeleccionada.tbsubcategorias[0].id : '';
+        const subcategoria19 = categoriaSeleccionada.tbsubcategorias.find(subcategoria => subcategoria.id === 19);
+        selectedSubcategoria.value = subcategoria19 ? subcategoria19.id : 
+            (categoriaSeleccionada.tbsubcategorias.length > 0 ? categoriaSeleccionada.tbsubcategorias[0].id : '');
     }
 });
 
@@ -193,7 +195,7 @@ const shortenUrl = (url) => {
                                                             </dd>
                                                         </dl>
                                                     </div>
-                                                    <a :href="tbproducto.link_producto" target="_blank" class="text-red-500 dark:text-white font-bold">
+                                                    <a :href="tbproducto.link_producto" target="_blank" class="text-red-500 dark:text-red-500 font-bold">
                                                         {{ shortenUrl(tbproducto.link_producto) === null ? "Sin Url" : shortenUrl(tbproducto.link_producto) }}
                                                     </a>
                                                 </td>

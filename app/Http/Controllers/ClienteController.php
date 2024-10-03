@@ -60,7 +60,6 @@ class ClienteController extends Controller
         // Decodificar respuesta JSON
         $empresa = json_decode($response);
 
-        // Crear una nueva inscripción con los datos obtenidos de la API
         Cliente::create([
             'numeroDocumento' => $empresa->numeroDocumento,
             'razonSocial' => $empresa->razonSocial,

@@ -24,7 +24,6 @@ class CondicioneController extends Controller
             'descripcion' => ''
         ]);
 
-        // Actualiza los campos del modelo con los datos validados
         $condicione->update($validatedData);
 
         return redirect()->back();

@@ -9,6 +9,7 @@ import axios from "axios";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { formatDate, trimLeadingZeros, getFirstLetter } from '@/utils/funcionesglobales';
+import { show_alerta, show_confirmacion } from '@/utils/alertasSwal';
  
 const props = defineProps({
     cventas: {
@@ -55,43 +56,16 @@ const form = useForm({
 })
  
 const deleteCotizacion = (id, cliente_id, cventa) => {
-    const alerta = Swal.mixin({
-        buttonsStyling: true
-    });
-
-    // Verificar si cventa y cventa.cliente están definidos antes de acceder a razonSocial
     const razonSocial = cventa && cventa.cliente ? cventa.cliente.razonSocial : 'Cliente desconocido';
-    
-    alerta.fire({
-        title: `¿Estás seguro de eliminar la cotización de ${razonSocial}?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Sí, eliminar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
-    }).then((result) => {
+    show_confirmacion(`¿Estás seguro de eliminar la cotización de ${razonSocial}? ¡Esta cotización se eliminará definitivamente de la base de datos. Esta acción no se puede deshacer!`)
+    .then((result) => {
         if (result.isConfirmed) {
             form.delete(route('cventas.destroy', id), {
                 onSuccess: () => {
-                    alerta.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Cotización eliminada exitosamente',
-                        timer: 1000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
-                    });
+                    show_alerta('Cotización eliminada exitosamente de la base de datos.', 'success');
                 },
                 onError: () => {
-                    alerta.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Hubo un problema al eliminar la cotización',
-                        customClass: {
-                            title: 'text-2xl font-bold tracking-widest ',
-                            icon: 'text-base font-bold tracking-widest ',
-                            text: 'bg-red-500 hover:bg-red-600 tracking-widest ',
-                        },
-                    });
+                    show_alerta('Hubo un problema al eliminar la cotización, intente nuevamente.', 'error');
                 }
             });
         }
@@ -99,24 +73,28 @@ const deleteCotizacion = (id, cliente_id, cventa) => {
 }
  
 const openCtgModal = async (cventa) => {
-    const modalTitle = `Cotizacion del cliente: ${cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente'}`;
+    const modalTitle = `Asignar estado de cotización del cliente: ${cventa.cliente ? cventa.cliente.razonSocial : 'Sin cliente'}`;
  
     const options = {
         title: modalTitle,
+        icon: 'text-xs',
+        popup: 'small-alert-popup text-xs',
+        htmlContainer: 'small-alert-text text-xs',
+        confirmButton: 'small-alert-confirm-button text-xs',
+        cancelButton: 'small-alert-cancel-button text-xs',
         input: 'select',
         inputOptions: {
-            // 'Enviado': 'Enviado',
-            // 'Enviado': 'Enviado',
+            'Enviado': 'Enviado',
             'Aceptado': 'Aceptado',
             'Rechazado': 'Rechazado',
-            // 'Finalizado': 'Finalizado',
         },
         customClass: {
-            title: 'text-2xl font-bold tracking-widest ',
-            input: 'text-base tracking-widest ',
-            confirmButton: 'bg-red-500 hover:bg-red-600 tracking-widest ',
+            title: 'text-xl font-semibold tracking-tight',
+            input: 'text-sm tracking-tight',
+            confirmButton: 'bg-red-500 hover:bg-red-600 text-xl px-2 py-1',
+            cancelButton: 'bg-blue-500 hover:bg-blue-600 text-xl px-2 py-1'
         },
-        inputPlaceholder: 'Selecciona una opcion',
+        inputPlaceholder: 'Selecciona una opción',
         showCancelButton: true,
         confirmButtonColor: '#009846',
         cancelButtonColor: '#3085d6',
@@ -124,7 +102,7 @@ const openCtgModal = async (cventa) => {
         showLoaderOnConfirm: true,
         inputValidator: (value) => {
             if (!value) {
-                return 'Debes seleccionar un tipo de estado de envio';
+                return 'Debes seleccionar un tipo de estado';
             }
         },
         preConfirm: async (value) => {
@@ -133,7 +111,7 @@ const openCtgModal = async (cventa) => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Éxito',
-                    text: 'Calificación asignada exitosamente',
+                    text: 'Estado asignado exitosamente',
                     timer: 1000,
                     timerProgressBar: true,
                     showConfirmButton: false
@@ -1047,7 +1025,9 @@ function fn_previsualizarPDF(cventaId, tbagregadoId, variablebandera) {
                                             <button @click="openCtgModal(cventa)" class="inline-flex mx-1 items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md">
                                                 <i class='fas fa-star text-sm text-white'></i>
                                             </button>
-                                            <button v-if="$page.props.user.permissions.includes('Acciones Cotizacion')" @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id, cventa)" class="inline-flex mx-1 items-center justify-center bg-red-600 hover:bg-red-700 px-[7px] py-[3px] rounded-md">
+                                            <button v-if="$page.props.user.permissions.includes('Acciones Cotizacion')" 
+                                                @click="$event => deleteCotizacion(cventa.id, cventa.cliente_id, cventa)" 
+                                                class="inline-flex mx-1 items-center justify-center bg-red-600 hover:bg-red-700 px-[7px] py-[3px] rounded-md">
                                                 <i class='bi bi-trash3 text-sm text-white'></i>
                                             </button>
                                             <button @click="openModal(cventa)" class="inline-flex mx-1 items-center justify-center bg-blue-600 hover:bg-blue-700 px-[7px] py-[3px] rounded-md">

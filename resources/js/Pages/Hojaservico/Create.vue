@@ -147,8 +147,6 @@ const submitForm = () => {
                 if (response) {
                     let idServicio = response["id"]
                     form.n_servicio = idServicio;
-                    console.log(form);
-                    return;
                     form.post(route('hservicios.store'), {
                         onSuccess: () => {
                             show_alerta('La hoja de servicio se ha registrado correctamente.', 'success');

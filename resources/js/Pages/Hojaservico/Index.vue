@@ -2454,7 +2454,7 @@ const submitForm = async (event) => {
                     <div id="divMostrarInstrumento" class="hidden">
                         <form @submit.prevent="submitForm">
                             <div>
-                                <div class="grid grid-cols-1 sm:grid-cols-3 md:mt-2 gap-y-4 mt-2 mb-1 gap-x-6 items-start">
+                                <div class="grid grid-cols-1 md:grid-cols-6">
                                     <div class="hidden">
                                         <InputLabel for="cliente_id" value="Cliente" />
                                         <TextInput v-model="form.cliente_razonSocial" type="text" id="cliente_id"
@@ -2470,18 +2470,7 @@ const submitForm = async (event) => {
                                         <TextInput v-model="form.n_servicio" type="text" id="n_servicio"
                                             disabled class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     </div>
-                                    <div class="">
-                                        <InputLabel for="lugar_servicio" value="Lugar de Servicio" />
-                                        <TextInput v-model="form.lugar_servicio" type="text" id="lugar_servicio"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <div>
-                                        <InputLabel for="fecha_final" value="Fecha Final"
-                                            class="block text-md font-medium text-gray-700 " />
-                                        <TextInput v-model="form.fecha_final" type="date" id="fecha_final"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                    </div>
-                                    <div class="mt-1">
+                                    <div class="md:col-end-7 md:col-span-2">
                                         <InputLabel for="instrumento" class="block text-xs uppercase font-medium text-black dark:text-white">Instrumento</InputLabel>
                                         <select v-model="form.instrumento" disabled id="instrumento" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                                 <option value="1" selected>Balanzas</option>
@@ -2592,7 +2581,20 @@ const submitForm = async (event) => {
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3">
+                                <div class="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 md:mt-2 gap-y-2 mt-2 mb-1 gap-x-6 items-start">
+                                    <div class="">
+                                        <InputLabel for="lugar_servicio" value="Lugar de Servicio" />
+                                        <TextInput v-model="form.lugar_servicio" type="text" id="lugar_servicio"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    </div>
+                                    <div>
+                                        <InputLabel for="fecha_final" value="Fecha Final"
+                                            class="block text-md font-medium text-gray-700 " />
+                                        <TextInput v-model="form.fecha_final" type="date" id="fecha_final"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3 mt-4">
                                     <div>
                                         <InputLabel for="diagnostico" value="Diagnostico Tecnico" />
                                         <textarea id="diagnostico" rows="4" required v-model="form.diagnostico"
@@ -2606,8 +2608,6 @@ const submitForm = async (event) => {
                                             placeholder="Escriba las trabajos..."></textarea>
                                     </div>
                                 </div>
-                            </div>
-                            <div>
                             </div>
                             <div class="mt-0 flex justify-center items-center flex-wrap gap-y-0 sm:gap-x-2">
                                 <div class="sm:col-span-1 flex-1 whitespace-nowrap">

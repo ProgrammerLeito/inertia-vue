@@ -20,7 +20,6 @@ class DocumentoController extends Controller
             'descripcion' => ''
         ]);
 
-        // Actualiza los campos del modelo con los datos validados
         $documento->update($validatedData);
 
         return redirect()->back();
