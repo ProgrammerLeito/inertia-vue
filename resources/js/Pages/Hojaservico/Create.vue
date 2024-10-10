@@ -152,6 +152,7 @@ const submitForm = () => {
                             show_alerta('La hoja de servicio se ha registrado correctamente.', 'success');
                             obtenerDatosTiempoReal(form.fecha);
                             resetarDatosFrm();
+                            fn_limpiarCamposImag();
                             $("#btnguardarHojaServicio").show();
                             $("#loading-button").hide();
                         },
@@ -180,9 +181,10 @@ const submitForm = () => {
                 form.id = null;
                 isEditing.value = false;
                 obtenerDatosTiempoReal(form.fecha);
-                resetarDatosFrm();
                 $("#btnactualizarHojaServicio").show();
                 $("#loading-button").hide();
+                resetarDatosFrm();
+                fn_limpiarCamposImag();
             },
         });
     }
@@ -199,15 +201,6 @@ onMounted(() => {
 
 const { props } = usePage();
 const user = props.auth.user.name;
-
-// const obtenerNombreCompleto = (user) => {
-//     if (user) {
-//         return `${user.name} ${user.apellidopat} ${user.apellidomat}`;
-//     }
-//     return '';
-// };
-
-// const nombreCompleto = obtenerNombreCompleto(user);
 
 const searchTerm = ref('');
 const searchTermCodigoCli = ref('');
@@ -275,15 +268,15 @@ function obtenerDatosTiempoReal(fecha){
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorbal++ }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad } ${hservicio.medida_capacidad}</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division } ${hservicio.medida_division}</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma} ${hservicio.medida_plataforma }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id ? hservicio.hmarca_id : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo ? hservicio.modelo : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad ? hservicio.capacidad : 's/n' } ${ hservicio.medida_capacidad ? hservicio.medida_capacidad : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie ? hservicio.serie : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division ? hservicio.division : 's/n' } ${ hservicio.medida_division ? hservicio.medida_division : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma ? hservicio.plataforma : 's/n' } ${ hservicio.medida_plataforma ? hservicio.medida_plataforma : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                     </tr>
                     `;
                     $('#tbodyContenedorHojasServiciosBalanzas').append(nuevaFila);
@@ -293,15 +286,15 @@ function obtenerDatosTiempoReal(fecha){
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorter++ }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.rango }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.medida_bastago } ${hservicio.medida_bastago2}</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division } ${hservicio.medida_division}</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id ? hservicio.hmarca_id : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo ? hservicio.modelo : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie ? hservicio.serie : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.rango ? hservicio.rango : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.medida_bastago ? hservicio.medida_bastago : 's/n' } ${ hservicio.medida_bastago2 ? hservicio.medida_bastago2 : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division ? hservicio.division : 's/n' } ${ hservicio.medida_division ? hservicio.medida_division : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                     </tr>
                     `;
                     $('#tbodyContenedorHojasServiciosTermometros').append(nuevaFila);
@@ -311,13 +304,13 @@ function obtenerDatosTiempoReal(fecha){
                     nuevaFila = `
                     <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorpes++ }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.modelo }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.codigo }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.material }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
-                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.modelo ? hservicio.modelo : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.codigo ? hservicio.codigo : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad ? hservicio.capacidad : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.material ? hservicio.material : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                     </tr>
                     `;
                     $('#tbodyContenedorHojasServiciosPesas').append(nuevaFila);
@@ -372,10 +365,28 @@ function resetarDatosFrm(){
     isEditing.value = false;
 }
 
+$(document).on('click', '#btnLimpiarImagenesFrm', function (event) {
+    event.preventDefault();
+    fn_limpiarCamposImag();
+});
+
+function fn_limpiarCamposImag (){
+    form.foto = '';
+    form.foto2 = '';
+    form.foto3 = '';
+    imagePreview1.value = '';
+    imagePreview2.value = '';
+    imagePreview3.value = '';
+    document.getElementById('foto').value = '';
+    document.getElementById('foto2').value = '';
+    document.getElementById('foto3').value = '';
+}
+
 $(document).on('click', '#crearNuevaHojaServicio', function () {
     form.id = null;
     isEditing.value = false;
     resetarDatosFrm();
+    fn_limpiarCamposImag();
 });
 
 function actualizarVisibilidadIns(instrumento) {
@@ -418,6 +429,8 @@ function actualizarVisibilidadIns(instrumento) {
 $(document).on('change', '#instrumento', function () {
     let instrumento = $('#instrumento').val();
     actualizarVisibilidadIns(instrumento);
+    resetarDatosFrm();
+    fn_limpiarCamposImag();
 });
 
 $(document).on('change', '#fecha', function () {
@@ -453,15 +466,15 @@ $(document).on('change', '#fecha', function () {
                             nuevaFila = `
                             <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorbal++ }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad } ${hservicio.medida_capacidad}</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division } ${hservicio.medida_division}</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma} ${hservicio.medida_plataforma }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id ? hservicio.hmarca_id : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo ? hservicio.modelo : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad ? hservicio.capacidad : 's/n' } ${hservicio.medida_capacidad ? hservicio.medida_capacidad : 's/n'}</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie ? hservicio.serie : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division ? hservicio.division : 's/n' } ${ hservicio.medida_division ? hservicio.medida_division : 's/n'}</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma ? hservicio.plataforma : 's/n' } ${ hservicio.medida_plataforma ? hservicio.medida_plataforma : 's/n'}</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere? hservicio.requiere : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                             </tr>
                             `;
                             $('#tbodyContenedorHojasServiciosBalanzas').append(nuevaFila);
@@ -471,15 +484,15 @@ $(document).on('change', '#fecha', function () {
                             nuevaFila = `
                             <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorter++ }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.rango }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.medida_bastago }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.hmarca_id ? hservicio.hmarca_id : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.modelo ? hservicio.modelo : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.serie ? hservicio.serie : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.rango ? hservicio.rango : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.medida_bastago ? hservicio.medida_bastago : 's/n' } ${ hservicio.medida_bastago2 ? hservicio.medida_bastago2 : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division ? hservicio.division : 's/n' } ${ hservicio.medida_division ? hservicio.medida_division : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                             </tr>
                             `;
                             $('#tbodyContenedorHojasServiciosTermometros').append(nuevaFila);
@@ -489,13 +502,13 @@ $(document).on('change', '#fecha', function () {
                             nuevaFila = `
                             <tr data-hservicio='${hservicioJson}' class="bg-white text-black border-b text-xs border-gray-300 dark:bg-gray-700 dark:text-white hover:text-white dark:hover:bg-gray-900 hover:bg-gray-500 cursor-pointer">
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ contadorpes++ }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.modelo }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.codigo }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.material }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico }</td>
-                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-4 text-center">${ hservicio.modelo ? hservicio.modelo : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.codigo ? hservicio.codigo : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.capacidad ? hservicio.capacidad : 's/n' } ${ hservicio.medida_capacidad ? hservicio.medida_capacidad : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.material ? hservicio.material : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                             </tr>
                             `;
                             $('#tbodyContenedorHojasServiciosPesas').append(nuevaFila);
@@ -1543,7 +1556,7 @@ function previsualizarpdf() {
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3">
                                 <div>
-                                    <InputLabel for="diagnostico" value="diagnostico tecnico" />
+                                    <InputLabel for="diagnostico" value="diagnostico tecnico (ESTADO ACTUAL DEL INSTRUMENTO)" />
                                     <textarea id="diagnostico" v-model="form.diagnostico" rows="4" required
                                         class="mt-1 block p-2.5 w-full text-base text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-300 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Escriba las diagnostico..."></textarea>
@@ -1602,6 +1615,7 @@ function previsualizarpdf() {
                             </div>
                             <div class="d-flex mt-4">
                                 <div class="flex flex-wrap gap-x-4 gap-y-4 justify-end">
+                                    <ButtonResponsive v-if="!isEditing" id="btnLimpiarImagenesFrm" class="uppercase text-xs bg-red-600 hover:bg-red-700">Limpiar Campos de Imagenes</ButtonResponsive>
                                     <ButtonResponsive v-if="isEditing" id="crearNuevaHojaServicio" class="uppercase text-xs bg-red-600 hover:bg-red-700">Nuevo Informe Tecnico</ButtonResponsive>
                                     <button @click.prevent="previsualizarpdf" class="inline-block bg-green-700 text-white font-bold py-2 px-4 rounded hover:bg-green-800 md:w-min whitespace-nowrap w-full text-center uppercase text-xs">Previsualizar Informe Tecnico</button>
                                     <ButtonResponsive id="btnguardarHojaServicio" v-if="!isEditing" class="uppercase text-xs">Guadar Informe Tecnico</ButtonResponsive>

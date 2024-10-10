@@ -574,7 +574,7 @@ const ok4 = (msj) => {
                     <div class="w-full">
                         <InputLabel for="nombre" value="Nombre:" class="mb-2"></InputLabel>
                         <TextInput id="nombre" ref="nameInput4" v-model="form4.nombre" type="text" class="w-full"
-                                placeholder="Nombre"></TextInput>
+                                placeholder="Nombre de la categoria"></TextInput>
                         <InputError :message="form4.errors.nombre" class="mt-2"></InputError>
                     </div>
                 </div>
@@ -596,11 +596,11 @@ const ok4 = (msj) => {
                     <div class="w-full">
                         <InputLabel for="nombre" value="Nombre:" class="mb-2"></InputLabel>
                         <TextInput id="nombre" ref="nameInput2" v-model="form2.nombre" type="text" class="w-full"
-                                placeholder="Nombre"></TextInput>
+                                placeholder="Nombre de la Subcategoria"></TextInput>
                         <InputError :message="form2.errors.nombre" class="mt-2"></InputError>
                     </div>
                     <div class="w-full mt-4">
-                        <InputLabel for="tbcategoria_id" value="Categoría ID:" class="mb-2"></InputLabel>
+                        <InputLabel for="tbcategoria_id" value="Categoría:" class="mb-2"></InputLabel>
                         <select id="tbcategoria_id" v-model="form2.tbcategoria_id" required
                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                             <option value="">Seleccione una categoría</option>
@@ -626,14 +626,14 @@ const ok4 = (msj) => {
                     <div class="w-full">
                         <InputLabel for="nombre" value="Nombre:" class="mb-2"></InputLabel>
                         <TextInput id="nombre" ref="nameInput3" v-model="form3.nombre" type="text" class="w-full"
-                                placeholder="Nombre"></TextInput>
+                                placeholder="Nombre de la marca"></TextInput>
                         <InputError :message="form3.errors.nombre" class="mt-2"></InputError>
                     </div>
                     <div class="w-full mt-4">
-                        <InputLabel for="tbsubcategoria_id" value="Categoría ID:" class="mb-2"></InputLabel>
+                        <InputLabel for="tbsubcategoria_id" value="SubCategoría:" class="mb-2"></InputLabel>
                         <select id="tbsubcategoria_id" v-model="form3.tbsubcategoria_id" required
                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            <option value="">Seleccione una categoría</option>
+                            <option value="">Seleccione una subcategoría</option>
                             <option v-for="tbsubcategoria in tbsubcategorias" :key="tbsubcategoria.id" :value="tbsubcategoria.id">{{ tbsubcategoria.nombre }}</option>
                         </select>
                     </div>

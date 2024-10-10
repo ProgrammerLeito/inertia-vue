@@ -221,7 +221,7 @@ const selectCliente = (tbprovincia) => {
                                 </div>
                                 <div class="w-full flex items-end justify-center">
                                     <div class="w-full">
-                                        <InputLabel for="cliente_id">Cliente</InputLabel>
+                                        <InputLabel for="cliente_id">Ciudad</InputLabel>
                                         <div class="relative">
                                             <TextInputCliente v-model="searchTerm" autocomplete="off" type="text" id="cliente_id" @input="onInput" placeholder="Ingresa nombre de ciudad"
                                                 @keydown="onKeydown" required
