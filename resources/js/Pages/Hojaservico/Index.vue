@@ -46,6 +46,7 @@ const editHojaServicio = (hservicio) => {
     form.medida_plataforma = hservicio.medida_plataforma;
     form.fecha = hservicio.fecha;
     form.requiere = hservicio.requiere;
+    form.encargado = hservicio.encargado;
     form.diagnostico = hservicio.diagnostico;
     form.trabajos = hservicio.trabajos;
 
@@ -109,6 +110,7 @@ const form = useForm({
     plataforma: '',
     fecha: '',
     requiere: '',
+    encargado: '',
     diagnostico: '',
     trabajos: '',
     fotoInforme1: '',
@@ -249,6 +251,7 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma ? hservicio.plataforma : 's/n' } ${ hservicio.medida_plataforma ? hservicio.medida_plataforma : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.encargado ? hservicio.encargado : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ hservicio.fecha ? hservicio.fecha : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize hidden">${ hservicio.n_servicio }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize hidden">${ hservicio.tecnico }</td>
@@ -274,6 +277,7 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division ? hservicio.division : 's/n' } ${ hservicio.medida_division ? hservicio.medida_division : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.encargado ? hservicio.encargado : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ hservicio.fecha ? hservicio.fecha : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize hidden">${ hservicio.n_servicio }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize hidden">${ hservicio.tecnico }</td>
@@ -297,6 +301,7 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.material ? hservicio.material : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.encargado ? hservicio.encargado : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ hservicio.fecha ? hservicio.fecha : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize hidden">${ hservicio.n_servicio }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize hidden">${ hservicio.tecnico }</td>
@@ -412,13 +417,6 @@ $(document).on("dblclick", "#tbodyHojasServicioDiarias tr", function() {
         },
     });
 });
-
-// $(document).on('click', '.btnGenerarInformeTecCliente', function() {
-//     let fila = $(this).closest('tr');
-//     let hservicioData = fila.attr('data-hservicio');
-//     let hservicioId = JSON.parse(hservicioData).id;
-//     return Inertia.get(route('requiere.cotiza', hservicioId));
-// });
 
 $(document).on('click', '.btn-generate-pdf', function (event) {
     let fila2 = $(this).closest('tr');
@@ -670,10 +668,10 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -707,10 +705,10 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -744,10 +742,10 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -758,7 +756,9 @@ function previsualizarpdf(hservicio) {
                 body: [
                     [
                         'REQUIERE',
-                        hservicio.requiere
+                        hservicio.requiere,
+                        'PERSONAL ENCARGADO',
+                        hservicio.encargado
 
                     ]
                 ],
@@ -779,7 +779,12 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 150
+                        cellWidth: 50
+                    },
+                    2: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
                     }
                 },
             });
@@ -836,10 +841,10 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -873,10 +878,10 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -910,10 +915,10 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -924,7 +929,9 @@ function previsualizarpdf(hservicio) {
                 body: [
                     [
                         'REQUIERE',
-                        hservicio.requiere
+                        hservicio.requiere,
+                        'PERSONAL ENCARGADO',
+                        hservicio.encargado
 
                     ]
                 ],
@@ -945,7 +952,12 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 150
+                        cellWidth: 50
+                    },
+                    2: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
                     }
                 },
             });
@@ -1002,10 +1014,10 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -1039,10 +1051,10 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -1053,7 +1065,9 @@ function previsualizarpdf(hservicio) {
                 body: [
                     [
                         'REQUIERE',
-                        hservicio.requiere
+                        hservicio.requiere,
+                        'PERSONAL ENCARGADO',
+                        hservicio.encargado
 
                     ]
                 ],
@@ -1074,7 +1088,12 @@ function previsualizarpdf(hservicio) {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 150
+                        cellWidth: 50
+                    },
+                    2: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
                     }
                 },
             });
@@ -1476,6 +1495,7 @@ function previewPDF2() {
         const medida_plataforma = $("#medida_plataforma").val();
         const fecha = document.getElementById("fecha").value;
         const requiere = document.getElementById("requiere").value;
+        const encargado = document.getElementById("encargado").value;
         const diagnostico = document.getElementById("diagnostico").value;
         const trabajos = document.getElementById("trabajos").value;
         // Función para obtener el nombre del día de la semana en español
@@ -1547,7 +1567,7 @@ function previewPDF2() {
 
         doc.setFontSize(12);
         doc.setFont('Helvetica', 'bold');
-        fn_dibujarEncabezado(`REPORTE DE INFORME TECNICO : N° ${n_servicio}`);
+        fn_dibujarEncabezado(`REPORTE DE INFORME TECNICO PARA EL CLIENTE : N° ${n_servicio}`);
         // doc.text(eje_x, eje_y, "asgjd");
 
         // ========== Inicia Función Dibujar Datos Generales==========
@@ -1831,6 +1851,35 @@ function previewPDF2() {
                         }
                     },
                 });
+
+                doc.autoTable({
+                    body: [
+                        [
+                            'PERSONAL ENCARGADO',
+                            encargado,
+                        ]
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 2,
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: { left: 10, right: 10 },
+                    startY: doc.lastAutoTable.finalY,
+                    columnStyles: {
+                        0: {
+                            cellWidth: 40,
+                            fontStyle: 'bold',
+                            textColor: [0, 0, 0]
+                        },
+                        1: {
+                            cellWidth: 150
+                        }
+                    },
+                });
             } else if (instrumento == "Termometros"){
                 doc.autoTable({
                     body: [
@@ -2003,6 +2052,35 @@ function previewPDF2() {
                         }
                     },
                 });
+
+                doc.autoTable({
+                    body: [
+                        [
+                            'PERSONAL ENCARGADO',
+                            encargado,
+                        ]
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 2,
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: { left: 10, right: 10 },
+                    startY: doc.lastAutoTable.finalY,
+                    columnStyles: {
+                        0: {
+                            cellWidth: 40,
+                            fontStyle: 'bold',
+                            textColor: [0, 0, 0]
+                        },
+                        1: {
+                            cellWidth: 150
+                        }
+                    },
+                });
             } else if (instrumento == "Pesas"){
                 doc.autoTable({
                     body: [
@@ -2135,6 +2213,35 @@ function previewPDF2() {
                             cellWidth: 40,
                             fontStyle: 'bold',
                             textColor: [0, 0, 0]
+                        }
+                    },
+                });
+
+                doc.autoTable({
+                    body: [
+                        [
+                            'PERSONAL ENCARGADO',
+                            encargado,
+                        ]
+                    ],
+                    rowPageBreak: 'avoid',
+                    theme: 'grid',
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 2,
+                        lineWidth: 0.30,
+                        lineColor: [0, 0, 0]
+                    },
+                    margin: { left: 10, right: 10 },
+                    startY: doc.lastAutoTable.finalY,
+                    columnStyles: {
+                        0: {
+                            cellWidth: 40,
+                            fontStyle: 'bold',
+                            textColor: [0, 0, 0]
+                        },
+                        1: {
+                            cellWidth: 150
                         }
                     },
                 });
@@ -2375,6 +2482,7 @@ const submitForm = async (event) => {
     formData.append('fecha', form.fecha);
     formData.append('fecha_final', form.fecha_final);
     formData.append('requiere', form.requiere);
+    formData.append('encargado', form.encargado);
     formData.append('diagnostico', form.diagnostico);
     formData.append('trabajos', form.trabajos);
     formData.append('tecnico', form.tecnico);
@@ -2406,7 +2514,7 @@ const submitForm = async (event) => {
         <template #header>
             <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white" id="h1InformesTecnicos">Informes Tecnicos</h1>
             <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white hidden" id="h1DiagnosticodeInforme">Diagnosticos de Informes Tecnicos</h1>
-            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white hidden" id="h1PdfDiagnosticoInforme">Informe Tecnico / Cliente</h1>
+            <h1 class="font-semibold text-base uppercase text-gray-800 leading-tight dark:text-white hidden" id="h1PdfDiagnosticoInforme">Informe Tecnico Para el Cliente</h1>
         </template>
 
         <div id="divListarHojasdeServicio" class="py-2 md:py-4 min-h-[calc(100vh-185px)] overflow-auto">
@@ -2590,8 +2698,14 @@ const submitForm = async (event) => {
                                         <TextInput v-model="form.fecha" type="date" id="fecha"
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     </div>
-                                </div>
-                                <div class="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 md:mt-2 gap-y-2 mt-2 mb-1 gap-x-6 items-start">
+                                    <div>
+                                        <InputLabel for="encargado" value="Personal Encargado" />
+                                        <div>
+                                            <TextPrueba v-model="form.encargado" type="text" id="encargado" disabled
+                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                            <InputError :message="form.errors.encargado" class="mt-2"></InputError>
+                                        </div>
+                                    </div>
                                     <div class="">
                                         <InputLabel for="lugar_servicio" value="Lugar de Servicio" />
                                         <TextInput v-model="form.lugar_servicio" type="text" id="lugar_servicio"
@@ -2688,6 +2802,7 @@ const submitForm = async (event) => {
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Plataforma</th>
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">P. Encargada</th>
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                             </tr>
@@ -2711,6 +2826,7 @@ const submitForm = async (event) => {
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Div</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">P. Encargada</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                         </tr>
@@ -2732,6 +2848,7 @@ const submitForm = async (event) => {
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Material</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">P. Encargada</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Acciones</th>
                                         </tr>

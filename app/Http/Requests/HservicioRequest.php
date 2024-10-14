@@ -44,6 +44,7 @@ class HservicioRequest extends FormRequest
             'diagnostico' => 'nullable',
             'trabajos' => 'nullable',
             'tecnico' => 'nullable',
+            'encargado' => 'nullable',
             'foto' => 'nullable',
             'foto2' => 'nullable',
             'foto3' => 'nullable',

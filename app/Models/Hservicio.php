@@ -32,6 +32,7 @@ class Hservicio extends Model
         'diagnostico',
         'trabajos',
         'tecnico',
+        'encargado',
         'foto',
         'foto2',
         'foto3',

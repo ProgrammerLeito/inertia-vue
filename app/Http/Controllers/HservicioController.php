@@ -78,6 +78,7 @@ class HservicioController extends Controller
                 hservicios.diagnostico,
                 hservicios.trabajos,
                 hservicios.tecnico,
+                hservicios.encargado,
                 hservicios.foto,
                 hservicios.foto2,
                 hservicios.foto3,
@@ -176,6 +177,7 @@ class HservicioController extends Controller
                 hservicios.diagnostico,
                 hservicios.trabajos,
                 hservicios.tecnico,
+                hservicios.encargado,
                 hservicios.foto,
                 hservicios.foto2,
                 hservicios.foto3,
@@ -219,6 +221,7 @@ class HservicioController extends Controller
                 hservicios.diagnostico,
                 hservicios.trabajos,
                 hservicios.tecnico,
+                hservicios.encargado,
                 hservicios.n_servicio,
                 hservicios.foto,
                 hservicios.foto2,
@@ -263,6 +266,7 @@ class HservicioController extends Controller
                 hservicios.diagnostico,
                 hservicios.trabajos,
                 hservicios.tecnico,
+                hservicios.encargado,
                 hservicios.n_servicio,
                 hservicios.foto,
                 hservicios.foto2,
@@ -278,7 +282,7 @@ class HservicioController extends Controller
         return response()->json($obtenerdatos);
     }
 
-    public function registrarInformesTecnicosdeCliente(InformeTecnicoCli $request)
+    public function fn_registrarInformesTecnicosdeCliente(InformeTecnicoCli $request)
     {
         $resgistrarDatos = new InformesClientes;
         $resgistrarDatos->hmarca_id = $request->input('hmarca_id');
@@ -304,6 +308,7 @@ class HservicioController extends Controller
         $resgistrarDatos->diagnostico = $request->input('diagnostico');
         $resgistrarDatos->trabajos = $request->input('trabajos');
         $resgistrarDatos->tecnico = $request->input('tecnico');
+        $resgistrarDatos->encargado = $request->input('encargado');
         $resgistrarDatos->n_servicio = $request->input('n_servicio');
         $resgistrarDatos->usuario_registrar = Auth::user()->name;
 

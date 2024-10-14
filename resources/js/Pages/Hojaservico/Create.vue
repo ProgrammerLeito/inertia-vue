@@ -54,6 +54,7 @@ const form = useForm({
     requiere: '',
     diagnostico: '',
     trabajos: '',
+    encargado: '',
     foto: '',
     foto2: '',
     foto3: '',
@@ -85,6 +86,7 @@ const editHojaServicio = (hservicio) => {
     form.requiere = hservicio.requiere;
     form.diagnostico = hservicio.diagnostico;
     form.trabajos = hservicio.trabajos;
+    form.encargado = hservicio.encargado;
     form.foto = hservicio.foto;
     form.foto2 = hservicio.foto2;
     form.foto3 = hservicio.foto3;
@@ -276,6 +278,7 @@ function obtenerDatosTiempoReal(fecha){
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma ? hservicio.plataforma : 's/n' } ${ hservicio.medida_plataforma ? hservicio.medida_plataforma : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.encargado ? hservicio.encargado : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                     </tr>
                     `;
@@ -294,6 +297,7 @@ function obtenerDatosTiempoReal(fecha){
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division ? hservicio.division : 's/n' } ${ hservicio.medida_division ? hservicio.medida_division : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.encargado ? hservicio.encargado : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                     </tr>
                     `;
@@ -310,6 +314,7 @@ function obtenerDatosTiempoReal(fecha){
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.material ? hservicio.material : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                        <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.encargado ? hservicio.encargado : 's/n' }</td>
                         <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                     </tr>
                     `;
@@ -358,6 +363,7 @@ function resetarDatosFrm(){
     form.requiere = '';
     form.diagnostico = '';
     form.trabajos = '';
+    form.encargado = '';
     form.foto = '';
     form.foto2 = '';
     form.foto3 = '';
@@ -474,6 +480,7 @@ $(document).on('change', '#fecha', function () {
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.plataforma ? hservicio.plataforma : 's/n' } ${ hservicio.medida_plataforma ? hservicio.medida_plataforma : 's/n'}</td>
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere? hservicio.requiere : 's/n' }</td>
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.encargado ? hservicio.encargado : 's/n' }</td>
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                             </tr>
                             `;
@@ -492,6 +499,7 @@ $(document).on('change', '#fecha', function () {
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.division ? hservicio.division : 's/n' } ${ hservicio.medida_division ? hservicio.medida_division : 's/n' }</td>
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.encargado ? hservicio.encargado : 's/n' }</td>
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                             </tr>
                             `;
@@ -508,6 +516,7 @@ $(document).on('change', '#fecha', function () {
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.material ? hservicio.material : 's/n' }</td>
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.requiere ? hservicio.requiere : 's/n' }</td>
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.tecnico ? hservicio.tecnico : 's/n' }</td>
+                                <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center">${ hservicio.encargado ? hservicio.encargado : 's/n' }</td>
                                 <td class="px-4 border-b-2 border-r-[0.1px] dark:border-gray-500 dark:border-b-gray-400 py-3 text-center capitalize">${ formatDate(hservicio.fecha) ? hservicio.fecha : 's/n' }</td>
                             </tr>
                             `;
@@ -553,6 +562,7 @@ function previsualizarpdf() {
     const medida_plataforma = $("#medida_plataforma").val();
     const fecha = document.getElementById("fecha").value;
     const requiere = document.getElementById("requiere").value;
+    const encargado = document.getElementById("encargado").value;
     const diagnostico = document.getElementById("diagnostico").value;
     const trabajos = document.getElementById("trabajos").value;
     // Función para obtener el nombre del día de la semana en español
@@ -861,8 +871,9 @@ function previsualizarpdf() {
                 body: [
                     [
                         'REQUIERE',
-                        requiere
-
+                        requiere,
+                        'PERSONAL ENCARGADO',
+                        encargado
                     ]
                 ],
                 rowPageBreak: 'avoid',
@@ -882,7 +893,12 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 150
+                        cellWidth: 50
+                    },
+                    2: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
                     }
                 },
             });
@@ -1027,8 +1043,9 @@ function previsualizarpdf() {
                 body: [
                     [
                         'REQUIERE',
-                        requiere
-
+                        requiere,
+                        'PERSONAL ENCARGADO',
+                        encargado
                     ]
                 ],
                 rowPageBreak: 'avoid',
@@ -1048,7 +1065,12 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 150
+                        cellWidth: 50
+                    },
+                    2: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
                     }
                 },
             });
@@ -1105,10 +1127,10 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -1142,10 +1164,10 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 55
+                        cellWidth: 50
                     },
                     2: {
-                        cellWidth: 30,
+                        cellWidth: 40,
                         fontStyle: 'bold',
                         textColor: [0, 0, 0]
                     }
@@ -1156,8 +1178,9 @@ function previsualizarpdf() {
                 body: [
                     [
                         'REQUIERE',
-                        requiere
-
+                        requiere,
+                        'PERSONAL ENCARGADO',
+                        encargado
                     ]
                 ],
                 rowPageBreak: 'avoid',
@@ -1177,7 +1200,12 @@ function previsualizarpdf() {
                         textColor: [0, 0, 0]
                     },
                     1: {
-                        cellWidth: 150
+                        cellWidth: 50
+                    },
+                    2: {
+                        cellWidth: 40,
+                        fontStyle: 'bold',
+                        textColor: [0, 0, 0]
                     }
                 },
             });
@@ -1547,11 +1575,19 @@ function previsualizarpdf() {
                                     <InputError :message="$page.props.errors.descripcion" class="" />
                                 </div>
                                 <div>
-                                    <InputLabel for="fecha" value="Fecha"
+                                    <InputLabel for="fecha" value="Fecha Inicio"
                                         class="block text-md font-medium text-gray-700 " />
                                     <TextInput v-model="form.fecha" type="date" id="fecha" :disabled="!$page.props.user.permissions.includes('Acciones Administrador')"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                     <InputError :message="form.errors.fecha" class="mt-2"></InputError>
+                                </div>
+                                <div>
+                                    <InputLabel for="encargado" value="Personal Encargado" />
+                                    <div>
+                                        <TextPrueba v-model="form.encargado" type="text" id="encargado"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                        <InputError :message="form.errors.encargado" class="mt-2"></InputError>
+                                    </div>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-6 mb-3">
@@ -1649,6 +1685,7 @@ function previsualizarpdf() {
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Plataforma</th>
                                                 <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
+                                                <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">P. Encargada</th>
                                                 <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                             </tr>
                                         </thead>
@@ -1671,6 +1708,7 @@ function previsualizarpdf() {
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Div</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">P. Encargada</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                         </tr>
                                     </thead>
@@ -1691,6 +1729,7 @@ function previsualizarpdf() {
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Material</th>
                                             <th scope="col" class="px-6 py-3 text-center dark:border-white border-b-2">Requiere</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Tecnico</th>
+                                            <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">P. Encargada</th>
                                             <th scope="col" class="px-1 py-3 text-center dark:border-white border-b-2">Fecha</th>
                                         </tr>
                                     </thead>

@@ -17,7 +17,7 @@ class ClienteController extends Controller
 
     public function index()
     {
-        $clientes = Cliente::with('tbprovincia')->orderBy('id', 'DESC')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id','ctg','asesor','fechafactura','codigofactura')->paginate(100);
+        $clientes = Cliente::with('tbprovincia')->orderBy('id', 'DESC')->select('id', 'numeroDocumento', 'razonSocial', 'direccion','tbprovincia_id','ctg','asesor','fechafactura','codigofactura')->paginate(4000);
         $tbprovincias = Tbprovincias::all();
         return Inertia::render('Clientes/Index', compact('clientes','tbprovincias'));
     }

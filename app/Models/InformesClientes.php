@@ -37,6 +37,7 @@ class InformesClientes extends Model
         'diagnostico',
         'trabajos',
         'tecnico',
+        'encargado',
         'fotoInforme1',
         'fotoInforme2',
     ];
