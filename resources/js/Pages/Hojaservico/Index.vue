@@ -2458,54 +2458,54 @@ function previewPDF2() {
     }, 3000);
 }
 
-const submitForm = async (event) => {
+const submitForm = (event) => {
     event.preventDefault();
 
-    let formData = new FormData();
-    formData.append('hmarca_id', form.hmarca_id);
-    formData.append('lugar_servicio', form.lugar_servicio);
-    formData.append('instrumento', form.instrumento);
-    formData.append('rango', form.rango);
-    formData.append('medida_bastago', form.medida_bastago);
-    formData.append('medida_bastago2', form.medida_bastago2);
-    formData.append('codigo', form.codigo);
-    formData.append('material', form.material);
-    formData.append('modelo', form.modelo);
-    formData.append('serie', form.serie);
-    formData.append('division', form.division);
-    formData.append('medida_division', form.medida_division);
-    formData.append('capacidad', form.capacidad);
-    formData.append('medida_capacidad', form.medida_capacidad);
-    formData.append('cliente_id', form.cliente_id);
-    formData.append('plataforma', form.plataforma);
-    formData.append('medida_plataforma', form.medida_plataforma);
-    formData.append('fecha', form.fecha);
-    formData.append('fecha_final', form.fecha_final);
-    formData.append('requiere', form.requiere);
-    formData.append('encargado', form.encargado);
-    formData.append('diagnostico', form.diagnostico);
-    formData.append('trabajos', form.trabajos);
-    formData.append('tecnico', form.tecnico);
-    formData.append('n_servicio', form.n_servicio);
+    let formData = {
+        hmarca_id: form.hmarca_id,
+        lugar_servicio: form.lugar_servicio,
+        instrumento: form.instrumento,
+        rango: form.rango,
+        medida_bastago: form.medida_bastago,
+        medida_bastago2: form.medida_bastago2,
+        codigo: form.codigo,
+        material: form.material,
+        modelo: form.modelo,
+        serie: form.serie,
+        division: form.division,
+        medida_division: form.medida_division,
+        capacidad: form.capacidad,
+        medida_capacidad: form.medida_capacidad,
+        cliente_id: form.cliente_id,
+        plataforma: form.plataforma,
+        medida_plataforma: form.medida_plataforma,
+        fecha: form.fecha,
+        fecha_final: form.fecha_final,
+        requiere: form.requiere,
+        encargado: form.encargado,
+        diagnostico: form.diagnostico,
+        trabajos: form.trabajos,
+        tecnico: form.tecnico,
+        n_servicio: form.n_servicio,
+    };
 
     // Incluir las imágenes solo si se seleccionaron
     if (form.fotoInforme1) {
-        formData.append('fotoInforme1', form.fotoInforme1);
+        formData.fotoInforme1 = form.fotoInforme1;
     }
     if (form.fotoInforme2) {
-        formData.append('fotoInforme2', form.fotoInforme2);
+        formData.fotoInforme2 = form.fotoInforme2;
     }
 
-    try {
-        const response = await axios.post('/fn_registrarInformesTecnicosdeCliente', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-        console.log(response.data);
-    } catch (error) {
-        console.error(error);
-    }
+    // Usar Inertia para hacer el post
+    Inertia.post('/fn_registrarInformesTecnicosdeCliente', formData, {
+        onSuccess: (page) => {
+            console.log('Formulario enviado correctamente:', page);
+        },
+        onError: (errors) => {
+            console.error('Errores al enviar el formulario:', errors);
+        }
+    });
 };
 </script>
 

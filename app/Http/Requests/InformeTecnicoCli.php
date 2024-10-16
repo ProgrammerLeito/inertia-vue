@@ -22,6 +22,7 @@ class InformeTecnicoCli extends FormRequest
     public function rules(): array
     {
         return [
+            'n_servicio' => 'nullable',
             'hmarca_id' => 'nullable',
             'lugar_servicio' => 'nullable',
             'instrumento' => 'nullable',
@@ -42,9 +43,10 @@ class InformeTecnicoCli extends FormRequest
             'fecha' => 'nullable',
             'fecha_final' => 'nullable',
             'requiere' => 'nullable',
+            'diagnostico' => 'nullable',
             'trabajos' => 'nullable',
             'tecnico' => 'nullable',
-            'n_servicio' => 'nullable',
+            'encargado' => 'nullable',
             'fotoInforme1' => 'nullable',
             'fotoInforme2' => 'nullable',
         ];

@@ -2,8 +2,6 @@
 import { ref, onMounted } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
-// Agrega cualquier otra importación necesaria
-
 const isDarkMode = ref(false); // Estado para controlar el modo oscuro
 
 // Función para cambiar el modo oscuro
@@ -29,8 +27,6 @@ const logout = () => {
 <template>
         <div class="min-h-[calc(100vh-50px)] bg-gray-800" id="side-bar" :class="dataOpenSideBar==true?'side-bar-visible':'side-bar-close'">
             <div class="bg-gray-700 text-white dark:text-white h-[60px] flex justify-center items-center">
-                <!-- <link href='https://webbeta.balinsa.com/font/alphamalemodern.ttf' rel="stylesheet" type="text/css"> -->
-                <!-- <link href='http://127.0.0.1:8000/font/alphamalemodern.ttf' rel="stylesheet" type="text/css"> -->
                 <Link rel="stylesheet" :href="route('dashboard')">
                     <span v-show="dataOpenSideBar" class="gap-1 self-center text-2xl font-semibold whitespace-nowrap dark:text-white flex justify-center items-center">
                         <div class="border-dashed border-4 w-12 h-12 p-2 flex justify-center items-center rounded-full border-white">
@@ -65,15 +61,7 @@ const logout = () => {
                     <!-- Scrool para sidebar -->
                     <div :class="{'scroll-sidebar h-[calc(100vh-415px)] overflow-x-auto': dataOpenSideBar, 'h-[calc(100vh-205px)] overflow-hidden': !dataOpenSideBar}">
                         <Link :href="route('clientes.index')" :active="route().current('clientes.*')" class="py-3 rounded-sm text-gray-400 px-2 flex space-x-2 p-2 cursor-pointer hover:text-white whitespace-pre-line"><span class='bi bi-people'><span v-show="dataOpenSideBar" class="ml-2">Listar Clientes</span></span></Link>
-                        <!-- <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
-                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-telephone'><span v-show="dataOpenSideBar" class="ml-2">Visitas y Llamadas</span></span></summary>
-                            <Link href="#" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white py-2 items-center gap-2 whitespace-pre-line"><span class="ml-4">Control de llamadas Diarias</span> <img src="../../../public/img/excel.png" class="w-4"></Link>
-                        </details> -->
                         <Link :href="route('tbproductos.index')" :active="route().current('tbproductos.*')" class="py-3 rounded-sm text-gray-400 px-2 flex space-x-2 p-2 cursor-pointer hover:text-white whitespace-pre-line"><span class=""><i class="fa-solid fa-cart-plus"></i><span v-show="dataOpenSideBar" class="ml-2">Catalago de Productos</span></span></Link>
-                        <!-- <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
-                            <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-cart'><span v-show="dataOpenSideBar" class="ml-2">Productos</span></span></summary>
-                            <Link :href="route('tbproductos.index')" :active="route().current('tbproductos.index')" v-show="dataOpenSideBar" class="px-2 flex space-x-2 p-2 ms-4 cursor-pointer hover:text-white whitespace-pre-line"><span class="ml-4">Catalago de Productos</span></Link>
-                        </details> -->
                         <Link :href="route('cuadropendientes.index')" :active="route().current('cuadropendientes.*')" class="py-3 rounded-sm text-gray-400 px-2 flex space-x-2 p-2 cursor-pointer hover:text-white whitespace-pre-line"><span class=""><i class="fa-solid fa-file-powerpoint ml-1"></i><span v-show="dataOpenSideBar" class="ml-2.5">Cuadro de Pendientes</span></span></Link>
                         <details class="py-3 rounded-sm text-gray-400 cursor-pointer">
                             <summary class="px-2 flex space-x-2 hover:text-white"><span class='bi bi-gear-wide-connected'><span v-show="dataOpenSideBar" class="ml-2">Servicio Tecnico</span></span></summary>

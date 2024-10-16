@@ -189,13 +189,13 @@ const totalCount = props.categories.total;
                                 <thead class="text-xs text-white uppercase bg-green-600">
                                     <tr>
                                         <th scope="col" class="px-6 py-3">Categorias</th>
-                                        <th scope="col" class="text-center px-6 py-3">Acciones</th>
+                                        <th scope="col" class="text-center px-6 py-3" v-if="$page.props.user.permissions.includes('Acciones Categorias')">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="bg-white text-black border-b border-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer" @dblclick="guardarCategoriaId(category.id, category.name, category.descripcion); redirectToDetails(category.id)" v-for="category in filteredCategories" :key="category.id">
                                         <td class="px-6 py-4 font-extrabold uppercase text-md">{{ category.name }} <a class="font-medium normal-case text-sm">({{ category.descripcion ? category.descripcion : "S/N" }})</a></td>
-                                        <td class="p-3 text-center whitespace-nowrap" v-if="$page.props.user.permissions.includes('Acciones Categorias')">
+                                        <td class="p-3 text-center whitespace-nowrap">
                                             <button @click="$event => openModal(2, category.name, category.descripcion,category.id)" class="inline-flex mx-1 items-center justify-center bg-amber-400 hover:bg-amber-500 px-1.5 py-0.5 rounded-md">
                                                 <i class='bx bxs-edit text-base text-white'></i>
                                             </button>
